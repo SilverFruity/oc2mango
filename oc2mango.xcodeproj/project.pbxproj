@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
+		EE6E6CDC225E496600616C7E /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
+		EE6E6CDD225E496600616C7E /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		EE6E6CCF225E488000616C7E /* oc2mango */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oc2mango; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6E6CD2225E488000616C7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EE6E6CDA225E496600616C7E /* cal.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = cal.y; sourceTree = "<group>"; };
+		EE6E6CDB225E496600616C7E /* cal.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = cal.l; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +62,8 @@
 			isa = PBXGroup;
 			children = (
 				EE6E6CD2225E488000616C7E /* main.m */,
+				EE6E6CDB225E496600616C7E /* cal.l */,
+				EE6E6CDA225E496600616C7E /* cal.y */,
 			);
 			path = oc2mango;
 			sourceTree = "<group>";
@@ -118,6 +124,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE6E6CDD225E496600616C7E /* cal.l in Sources */,
+				EE6E6CDC225E496600616C7E /* cal.y in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -240,6 +248,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_INPUT_FILETYPE = sourcecode.c.objc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -248,6 +257,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_INPUT_FILETYPE = sourcecode.c.objc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

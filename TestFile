@@ -1,0 +1,4 @@
+@interface Object:NSObject
+[[[x y] z] x1];
+x =[[[x y] z] x1];
+@end
