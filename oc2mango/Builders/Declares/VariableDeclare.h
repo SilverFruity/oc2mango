@@ -7,12 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TypeSpecial.h"
 @protocol Expression <NSObject>
 
 @end
-@interface VariableDeclare : NSObject
-@property NSString *type;
+
+@interface VariableDeclare : NSObject <NSCopying>
+@property TypeSpecial *type;
 @property NSString *name;
 @property id <Expression> expression;
 @end
+
+
 

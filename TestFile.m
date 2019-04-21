@@ -2,35 +2,27 @@
 #import <Foundation/Foundation.h>
 
 @interface Demo: NSObject
-{
-    NSObject *a;
-    NSObject *b;
-}
 @property (nonatomic, assign)NSInteger value;
 @property (nonatomic, strong)NSObject *object;
 @property (nonatomic, copy)NSObject* (^callback)(NSInteger *);
 - (void)objectMethod;
-- (void)objectMethod:(NSInteger)parameter;
-- (void)objectMethod:(NSInteger)parameter parameter1:(NSInteger)parameter1;
+- (NSInteger)objectMethod:(NSInteger)parameter;
+- (NSInteger)objectMethod:(NSInteger)parameter parameter1:(NSInteger)parameter1;
 + (void)classMethod;
 @end
 
-//@implementation Demo
-//- (void)objectMethod{
-//    int a = 1;
-//    int b = 2;
-//    a = b;
-//    self.value = a;
-//    self.object = [NSObject new];
-//}
-//- (void)objectMethod:(NSInteger)parameter{
-//
-//}
-//- (void)objectMethod:(NSInteger)parameter parameter1:(NSInteger)parameter1{
-//
-//}
-//+ (void)classMethod{
-//
-//}
-//
-//@end
+@implementation Demo
+- (void)objectMethod{
+    [self objectMethod:[self objectMethod:1 parameter1:2]];
+}
+- (NSInteger)objectMethod:(NSInteger)parameter{
+    return 1;
+}
+- (NSInteger)objectMethod:(NSInteger)parameter parameter1:(NSInteger)parameter1{
+    return 1;
+}
++ (void)classMethod{
+
+}
+
+@end

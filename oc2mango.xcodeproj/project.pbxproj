@@ -10,15 +10,16 @@
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE6E6CDC225E496600616C7E /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
 		EE6E6CDD225E496600616C7E /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
-		EE982EE1226B1C78008712C2 /* TestFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EE0226B1C78008712C2 /* TestFile.m */; };
-		EE982EE4226B6019008712C2 /* ClassBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EE3226B6019008712C2 /* ClassBuilder.m */; };
-		EE982EE8226B602D008712C2 /* PropertyBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EE7226B602D008712C2 /* PropertyBuilder.m */; };
-		EE982EEB226B6039008712C2 /* MethodBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EEA226B6039008712C2 /* MethodBuilder.m */; };
-		EE982EEE226B609F008712C2 /* ExpressionBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EED226B609F008712C2 /* ExpressionBuilder.m */; };
-		EE982EF2226B66A2008712C2 /* BuilderRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EF1226B66A2008712C2 /* BuilderRunner.m */; };
 		EE982EF5226B7759008712C2 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EF4226B7759008712C2 /* Log.m */; };
 		EE982EF8226C45CF008712C2 /* TypeSpecial.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EF7226C45CF008712C2 /* TypeSpecial.m */; };
 		EE982EFB226C7F7B008712C2 /* VariableDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EFA226C7F7B008712C2 /* VariableDeclare.m */; };
+		EE982EFE226CA662008712C2 /* ClassDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EFD226CA662008712C2 /* ClassDeclare.m */; };
+		EE982F01226CA69B008712C2 /* PropertyDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F00226CA69B008712C2 /* PropertyDeclare.m */; };
+		EE982F04226CB3C7008712C2 /* MethodDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F03226CB3C7008712C2 /* MethodDeclare.m */; };
+		EE982F07226CB4E4008712C2 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
+		EE982F0D226CBD11008712C2 /* ClassImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F0C226CBD11008712C2 /* ClassImplementation.m */; };
+		EE982F10226CBD28008712C2 /* MethodImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F0F226CBD28008712C2 /* MethodImplementation.m */; };
+		EE982F11226CC24D008712C2 /* TestFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EE0226B1C78008712C2 /* TestFile.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,23 +40,24 @@
 		EE6E6CDA225E496600616C7E /* cal.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = cal.y; sourceTree = "<group>"; };
 		EE6E6CDB225E496600616C7E /* cal.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = cal.l; sourceTree = "<group>"; };
 		EE982EE0226B1C78008712C2 /* TestFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestFile.m; sourceTree = SOURCE_ROOT; };
-		EE982EE2226B6019008712C2 /* ClassBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ClassBuilder.h; sourceTree = "<group>"; };
-		EE982EE3226B6019008712C2 /* ClassBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClassBuilder.m; sourceTree = "<group>"; };
-		EE982EE6226B602D008712C2 /* PropertyBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PropertyBuilder.h; sourceTree = "<group>"; };
-		EE982EE7226B602D008712C2 /* PropertyBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PropertyBuilder.m; sourceTree = "<group>"; };
-		EE982EE9226B6039008712C2 /* MethodBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MethodBuilder.h; sourceTree = "<group>"; };
-		EE982EEA226B6039008712C2 /* MethodBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MethodBuilder.m; sourceTree = "<group>"; };
-		EE982EEC226B609F008712C2 /* ExpressionBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpressionBuilder.h; sourceTree = "<group>"; };
-		EE982EED226B609F008712C2 /* ExpressionBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExpressionBuilder.m; sourceTree = "<group>"; };
-		EE982EEF226B618E008712C2 /* CodeBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CodeBuilder.h; sourceTree = "<group>"; };
-		EE982EF0226B66A2008712C2 /* BuilderRunner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BuilderRunner.h; sourceTree = "<group>"; };
-		EE982EF1226B66A2008712C2 /* BuilderRunner.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BuilderRunner.m; sourceTree = "<group>"; };
 		EE982EF3226B7759008712C2 /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
 		EE982EF4226B7759008712C2 /* Log.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Log.m; sourceTree = "<group>"; };
 		EE982EF6226C45CF008712C2 /* TypeSpecial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeSpecial.h; sourceTree = "<group>"; };
 		EE982EF7226C45CF008712C2 /* TypeSpecial.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeSpecial.m; sourceTree = "<group>"; };
 		EE982EF9226C7F7B008712C2 /* VariableDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VariableDeclare.h; sourceTree = "<group>"; };
 		EE982EFA226C7F7B008712C2 /* VariableDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VariableDeclare.m; sourceTree = "<group>"; };
+		EE982EFC226CA662008712C2 /* ClassDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ClassDeclare.h; sourceTree = "<group>"; };
+		EE982EFD226CA662008712C2 /* ClassDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClassDeclare.m; sourceTree = "<group>"; };
+		EE982EFF226CA69B008712C2 /* PropertyDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PropertyDeclare.h; sourceTree = "<group>"; };
+		EE982F00226CA69B008712C2 /* PropertyDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PropertyDeclare.m; sourceTree = "<group>"; };
+		EE982F02226CB3C7008712C2 /* MethodDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MethodDeclare.h; sourceTree = "<group>"; };
+		EE982F03226CB3C7008712C2 /* MethodDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MethodDeclare.m; sourceTree = "<group>"; };
+		EE982F05226CB443008712C2 /* MakeDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MakeDeclare.h; sourceTree = "<group>"; };
+		EE982F06226CB4E4008712C2 /* MakeDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MakeDeclare.m; sourceTree = "<group>"; };
+		EE982F0B226CBD11008712C2 /* ClassImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ClassImplementation.h; sourceTree = "<group>"; };
+		EE982F0C226CBD11008712C2 /* ClassImplementation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClassImplementation.m; sourceTree = "<group>"; };
+		EE982F0E226CBD28008712C2 /* MethodImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MethodImplementation.h; sourceTree = "<group>"; };
+		EE982F0F226CBD28008712C2 /* MethodImplementation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MethodImplementation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,8 +93,6 @@
 				EE982EE0226B1C78008712C2 /* TestFile.m */,
 				EE982EF3226B7759008712C2 /* Log.h */,
 				EE982EF4226B7759008712C2 /* Log.m */,
-				EE982EF0226B66A2008712C2 /* BuilderRunner.h */,
-				EE982EF1226B66A2008712C2 /* BuilderRunner.m */,
 				EE982EE5226B601C008712C2 /* Builders */,
 				EE6E6CD2225E488000616C7E /* main.m */,
 				EE6E6CDB225E496600616C7E /* cal.l */,
@@ -104,21 +104,40 @@
 		EE982EE5226B601C008712C2 /* Builders */ = {
 			isa = PBXGroup;
 			children = (
-				EE982EEF226B618E008712C2 /* CodeBuilder.h */,
-				EE982EE2226B6019008712C2 /* ClassBuilder.h */,
-				EE982EE3226B6019008712C2 /* ClassBuilder.m */,
-				EE982EE6226B602D008712C2 /* PropertyBuilder.h */,
-				EE982EE7226B602D008712C2 /* PropertyBuilder.m */,
-				EE982EE9226B6039008712C2 /* MethodBuilder.h */,
-				EE982EEA226B6039008712C2 /* MethodBuilder.m */,
-				EE982EEC226B609F008712C2 /* ExpressionBuilder.h */,
-				EE982EED226B609F008712C2 /* ExpressionBuilder.m */,
-				EE982EF9226C7F7B008712C2 /* VariableDeclare.h */,
-				EE982EFA226C7F7B008712C2 /* VariableDeclare.m */,
-				EE982EF6226C45CF008712C2 /* TypeSpecial.h */,
-				EE982EF7226C45CF008712C2 /* TypeSpecial.m */,
+				EE982F05226CB443008712C2 /* MakeDeclare.h */,
+				EE982F06226CB4E4008712C2 /* MakeDeclare.m */,
+				EE982F08226CBCD2008712C2 /* Declares */,
+				EE982F0A226CBCFA008712C2 /* Implementations */,
 			);
 			path = Builders;
+			sourceTree = "<group>";
+		};
+		EE982F08226CBCD2008712C2 /* Declares */ = {
+			isa = PBXGroup;
+			children = (
+				EE982EFC226CA662008712C2 /* ClassDeclare.h */,
+				EE982EFD226CA662008712C2 /* ClassDeclare.m */,
+				EE982EF6226C45CF008712C2 /* TypeSpecial.h */,
+				EE982EF7226C45CF008712C2 /* TypeSpecial.m */,
+				EE982EF9226C7F7B008712C2 /* VariableDeclare.h */,
+				EE982EFA226C7F7B008712C2 /* VariableDeclare.m */,
+				EE982EFF226CA69B008712C2 /* PropertyDeclare.h */,
+				EE982F00226CA69B008712C2 /* PropertyDeclare.m */,
+				EE982F02226CB3C7008712C2 /* MethodDeclare.h */,
+				EE982F03226CB3C7008712C2 /* MethodDeclare.m */,
+			);
+			path = Declares;
+			sourceTree = "<group>";
+		};
+		EE982F0A226CBCFA008712C2 /* Implementations */ = {
+			isa = PBXGroup;
+			children = (
+				EE982F0B226CBD11008712C2 /* ClassImplementation.h */,
+				EE982F0C226CBD11008712C2 /* ClassImplementation.m */,
+				EE982F0E226CBD28008712C2 /* MethodImplementation.h */,
+				EE982F0F226CBD28008712C2 /* MethodImplementation.m */,
+			);
+			path = Implementations;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -177,16 +196,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE982F11226CC24D008712C2 /* TestFile.m in Sources */,
+				EE982F0D226CBD11008712C2 /* ClassImplementation.m in Sources */,
 				EE6E6CDD225E496600616C7E /* cal.l in Sources */,
-				EE982EEB226B6039008712C2 /* MethodBuilder.m in Sources */,
-				EE982EF2226B66A2008712C2 /* BuilderRunner.m in Sources */,
-				EE982EE4226B6019008712C2 /* ClassBuilder.m in Sources */,
-				EE982EE1226B1C78008712C2 /* TestFile.m in Sources */,
+				EE982F10226CBD28008712C2 /* MethodImplementation.m in Sources */,
+				EE982F04226CB3C7008712C2 /* MethodDeclare.m in Sources */,
+				EE982F07226CB4E4008712C2 /* MakeDeclare.m in Sources */,
 				EE6E6CDC225E496600616C7E /* cal.y in Sources */,
 				EE982EF5226B7759008712C2 /* Log.m in Sources */,
-				EE982EEE226B609F008712C2 /* ExpressionBuilder.m in Sources */,
+				EE982EFE226CA662008712C2 /* ClassDeclare.m in Sources */,
+				EE982F01226CA69B008712C2 /* PropertyDeclare.m in Sources */,
 				EE982EF8226C45CF008712C2 /* TypeSpecial.m in Sources */,
-				EE982EE8226B602D008712C2 /* PropertyBuilder.m in Sources */,
 				EE982EFB226C7F7B008712C2 /* VariableDeclare.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
 			);
