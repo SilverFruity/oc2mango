@@ -17,9 +17,7 @@
 
 int main(int argc, const char * argv[]) {
     NSString *path  = [NSString stringWithUTF8String:argv[1]];
-    
     NSString *source = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-    
     extern void yy_set_source_string(char const *source);
     yy_set_source_string([source UTF8String]);
     
@@ -30,5 +28,8 @@ int main(int argc, const char * argv[]) {
         NSLog(@"ERROR!!!");
         return 0;
     }
+    
     return 0;
 }
+
+

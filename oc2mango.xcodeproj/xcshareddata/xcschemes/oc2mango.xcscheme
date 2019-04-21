@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/jiang/Desktop/oc2mango/TestFile"
+            argument = "/Users/jiang/Desktop/oc2mango/TestFile.m"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
