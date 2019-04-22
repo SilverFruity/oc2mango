@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EE5CC884226DFECA003AD212 /* FunctionImp.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC883226DFECA003AD212 /* FunctionImp.m */; };
+		EE5CC887226E0DAC003AD212 /* Statement.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC886226E0DAC003AD212 /* Statement.m */; };
+		EE5CC88A226E0FBA003AD212 /* Expression.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC889226E0FBA003AD212 /* Expression.m */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE6E6CDC225E496600616C7E /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
 		EE6E6CDD225E496600616C7E /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
@@ -35,6 +38,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EE5CC882226DFECA003AD212 /* FunctionImp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FunctionImp.h; sourceTree = "<group>"; };
+		EE5CC883226DFECA003AD212 /* FunctionImp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FunctionImp.m; sourceTree = "<group>"; };
+		EE5CC885226E0DAC003AD212 /* Statement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Statement.h; sourceTree = "<group>"; };
+		EE5CC886226E0DAC003AD212 /* Statement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Statement.m; sourceTree = "<group>"; };
+		EE5CC888226E0FBA003AD212 /* Expression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Expression.h; sourceTree = "<group>"; };
+		EE5CC889226E0FBA003AD212 /* Expression.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Expression.m; sourceTree = "<group>"; };
 		EE6E6CCF225E488000616C7E /* oc2mango */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oc2mango; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6E6CD2225E488000616C7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EE6E6CDA225E496600616C7E /* cal.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = cal.y; sourceTree = "<group>"; };
@@ -136,6 +145,12 @@
 				EE982F0C226CBD11008712C2 /* ClassImplementation.m */,
 				EE982F0E226CBD28008712C2 /* MethodImplementation.h */,
 				EE982F0F226CBD28008712C2 /* MethodImplementation.m */,
+				EE5CC885226E0DAC003AD212 /* Statement.h */,
+				EE5CC886226E0DAC003AD212 /* Statement.m */,
+				EE5CC888226E0FBA003AD212 /* Expression.h */,
+				EE5CC889226E0FBA003AD212 /* Expression.m */,
+				EE5CC882226DFECA003AD212 /* FunctionImp.h */,
+				EE5CC883226DFECA003AD212 /* FunctionImp.m */,
 			);
 			path = Implementations;
 			sourceTree = "<group>";
@@ -203,11 +218,14 @@
 				EE982F04226CB3C7008712C2 /* MethodDeclare.m in Sources */,
 				EE982F07226CB4E4008712C2 /* MakeDeclare.m in Sources */,
 				EE6E6CDC225E496600616C7E /* cal.y in Sources */,
+				EE5CC88A226E0FBA003AD212 /* Expression.m in Sources */,
 				EE982EF5226B7759008712C2 /* Log.m in Sources */,
+				EE5CC887226E0DAC003AD212 /* Statement.m in Sources */,
 				EE982EFE226CA662008712C2 /* ClassDeclare.m in Sources */,
 				EE982F01226CA69B008712C2 /* PropertyDeclare.m in Sources */,
 				EE982EF8226C45CF008712C2 /* TypeSpecial.m in Sources */,
 				EE982EFB226C7F7B008712C2 /* VariableDeclare.m in Sources */,
+				EE5CC884226DFECA003AD212 /* FunctionImp.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

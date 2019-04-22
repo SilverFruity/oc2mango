@@ -36,10 +36,8 @@
 %}
 %start C_COMMENT CC_COMMENT STRING_LITERAL_STATE
 %%
-<INITIAL>"-" {return SUB; }
-<INITIAL>"+" {return ADD; }
-<INITIAL>":" { return COLON; }
-<INITIAL>"^" { return POWER; }
+
+
 <INITIAL>"," { return COMMA ;}
 <INITIAL>";" { return SEMICOLON; }
 <INITIAL>"(" { return LP; }
@@ -50,12 +48,41 @@
 <INITIAL>"}" { return RC; }
 <INITIAL>"." { return DOT; }
 <INITIAL>"@" { return AT; }
-<INITIAL>"=" { return ASSIGN; }
+<INITIAL>"#" {return PS; }
+
+<INITIAL>"?" {return QUESTION; }
+<INITIAL>":" { return COLON; }
+
+<INITIAL>"==" {return EQ; }
+<INITIAL>"!=" {return NE; }
 <INITIAL>"<" {return LT; }
+<INITIAL>"<=" {return LE; }
 <INITIAL>">" {return GT; }
+<INITIAL>">=" {return GE; }   
+
+<INITIAL>"&&" {return LOGIC_AND; }
+<INITIAL>"||" {return LOGIC_OR; }
+<INITIAL>"!" {return  LOGIC_NOT; }
+
+<INITIAL>"&" {return AND; }
+<INITIAL>"|" {return OR; }
+<INITIAL>"^" {return POWER; }
+<INITIAL>"-" {return SUB; }
+<INITIAL>"+" {return ADD; }
 <INITIAL>"/" {return DIV; }
 <INITIAL>"*" {return ASTERISK; }
-<INITIAL>"#" {return PS; }
+
+<INITIAL>"&=" {return AND_ASSIGN; }
+<INITIAL>"|=" {return OR_ASSIGN; }
+<INITIAL>"^=" {return POWER_ASSIGN; }
+<INITIAL>"-=" {return SUB_ASSIGN; }
+<INITIAL>"+=" {return ADD_ASSIGN; }
+<INITIAL>"/=" {return DIV_ASSIGN; }
+<INITIAL>"*=" {return ASTERISK_ASSIGN; }
+
+<INITIAL>"++" { return INCREMENT; }
+<INITIAL>"--" { return DECREMENT; }
+
 
 <INITIAL>"if" { return IF; }
 <INITIAL>"endif" { return ENDIF; }
@@ -94,6 +121,7 @@
 <INITIAL>"continue" { TypeReturn(continue); }
 <INITIAL>"goto" { TypeReturn(goto); }
 <INITIAL>"else" { TypeReturn(else); }
+<INITIAL>"elseif" { TypeReturn(elseif); }
 <INITIAL>"do" { TypeReturn(do); }
 <INITIAL>"while" { TypeReturn(while); }
 <INITIAL>"switch" { TypeReturn(switch); }

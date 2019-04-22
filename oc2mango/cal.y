@@ -21,20 +21,22 @@
 
 
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE 
-%token <identifier> _return _break _continue _goto _else _while _do _in _for _case _switch _default
+%token <identifier> QUESTION  _return _break _continue _goto _else _elseif _while _do _in _for _case _switch _default
 %token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
-%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC ASTERISK
+%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC
 %token <identifier> IDENTIFIER STRING_LITERAL
-%token <identifier> SUB ADD COMMA COLON POWER SEMICOLON LT GT DIV LP RP RIP LB RB LC RC DOT AT  ASSIGN PS
+%token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS
+%token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR LOGIC_NOT
+%token <identifier> AND OR POWER SUB ADD DIV ASTERISK AND_ASSIGN OR_ASSIGN POWER_ASSIGN SUB_ASSIGN ADD_ASSIGN DIV_ASSIGN ASTERISK_ASSIGN INCREMENT DECREMENT
 %token <identifier> _self _super _nil _NULL _YES _NO 
-%token <identifier>  _Class _id _void _BOOL _SEL _CHAR _SHORT _INT _LONG _LLONG  _UCHAR _USHORT _UINT _ULONG  _ULLONG _DOUBLE _FLOAT
+%token <identifier>  _Class _id _void _BOOL _SEL _CHAR _SHORT _INT _LONG _LLONG  _UCHAR _USHORT _UINT _ULONG  _ULLONG _DOUBLE _FLOAT 
 %token <identifier> INTETER_LITERAL DOUBLE_LITERAL SELECTOR 
 %type  <include> PS_Define includeHeader
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare 
 %type  <declare>  value_declaer block_declare block_parameteres class_property_type
 %type  <type> value_declare_type block_type method_caller_type value_type
-%type  <implementation> class_implementation method_implementation methodcall
+%type  <implementation> class_implementation method_implementation objc_method_call
 %type  <expression> primary_expression 
 
 %%
@@ -324,7 +326,7 @@ method_implementation:
             |  method_implementation RC
             ;
 primary_expression:
-            | methodcall SEMICOLON
+            | objc_method_call SEMICOLON
             {
                 log(@"success");
             }
@@ -346,27 +348,101 @@ value_type:
         | INTETER_LITERAL
         | DOUBLE_LITERAL
         | SELECTOR
-        | methodcall
+        | objc_method_call
         {
             $$ = _vretained [NSString stringWithFormat:@"ret"];
         }
         | LP value_declare_type RP value_type
         ;
-methodcall:
+objc_method_call:
           | method_caller_type
           {
               log(@"start ",$1);
           }
-          | methodcall IDENTIFIER
+          | objc_method_call IDENTIFIER
           {
               log(@"next ",$2);
           }
-          | methodcall IDENTIFIER COLON value_type
+          | objc_method_call IDENTIFIER COLON value_type
           {
               log(@"next ",$2,$4);
           }
-          | LB methodcall RB
+          | LB objc_method_call RB
           ;
+
+
+if_statement:
+        | IF LP value_type RP LC
+        // 类似函数实现 LC{ .... }RC
+        | if_statement primary_expression
+        | if_statement elseif_statement
+        | if_statement else_statement
+        | if_statement RC
+        ;
+else_statement:
+        | _else LC
+        // 类似函数实现 LC{ .... }RC
+        | else_statement primary_expression
+        | else_statement RC
+        ;
+elseif_statement:
+        | _elseif LP value_type RP LC
+        // 类似函数实现 LC{ .... }RC
+        | else_statement primary_expression
+        | else_statement RC
+        ;
+dowhile_statement:
+        | _do LC
+        // 类似函数实现 LC{ .... }RC
+        | dowhile_statement primary_expression
+        | dowhile_statement RC _while LP value_type RP
+        ;
+while_statement:
+        | _while LP value_type RP LC
+        // 类似函数实现 LC{ .... }RC
+        | while_statement primary_expression
+        | while_statement RC
+        ;
+case_value_type:
+        //数字或者枚举类型
+        | INTETER_LITERAL
+        | IDENTIFIER
+        ;
+case_statement:
+        | _case case_value_type COLON
+        | _default case_value_type COLON
+        | case_statement LC
+        // 类似函数实现 LC{ .... }RC
+        | case_statement primary_expression
+        | case_statement RC
+        ;
+switch_statement:
+        | _switch LP value_type RP LC
+        | switch_statement case_statement
+        | switch_statement RC
+        ;
+for_parameter_list:
+        // 赋值表达式
+        | primary_expression
+        // 判断表达式 或者 基本加减表达式
+        | for_parameter_list SEMICOLON primary_expression 
+        ;
+for_statement:
+        | _for LP for_parameter_list RP LC
+        | for_statement primary_expression
+        | for_statement RC
+        ;
+forin_loop_value_tyep:
+        | IDENTIFIER
+        | objc_method_call
+        ;
+forin_statement:
+        // 变量名称或者方法调用
+        | _for value_declaer _in forin_loop_value_tyep LC
+        // 类似函数实现 LC{ .... }RC
+        | forin_statement primary_expression
+        | forin_statement RC
+        ;
 
 %%
 int yyerror(char *s){
