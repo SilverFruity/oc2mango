@@ -28,16 +28,18 @@
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR LOGIC_NOT
 %token <identifier> AND OR POWER SUB ADD DIV ASTERISK AND_ASSIGN OR_ASSIGN POWER_ASSIGN SUB_ASSIGN ADD_ASSIGN DIV_ASSIGN ASTERISK_ASSIGN INCREMENT DECREMENT
+SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %token <identifier> _self _super _nil _NULL _YES _NO 
 %token <identifier>  _Class _id _void _BOOL _SEL _CHAR _SHORT _INT _LONG _LLONG  _UCHAR _USHORT _UINT _ULONG  _ULLONG _DOUBLE _FLOAT 
 %token <identifier> INTETER_LITERAL DOUBLE_LITERAL SELECTOR 
 %type  <include> PS_Define includeHeader
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare 
-%type  <declare>  value_declaer block_declare block_parameteres class_property_type
+%type  <declare>  value_declare block_declare block_parameteres class_property_type
 %type  <type> value_declare_type block_type method_caller_type value_type
-%type  <implementation> class_implementation method_implementation objc_method_call
-%type  <expression> primary_expression 
+%type  <implementation> class_implementation  objc_method_call
+%type  <expression> numerical_value_type block_implementation assign_operator unary_operator binary_operator 
+judgement_operator ternary_exression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  return_expressoin
 
 %%
 
@@ -87,7 +89,7 @@ class_declare:
                 declare.privateVariables = _transfer(NSMutableArray *) $2;
                 $$ = _vretained declare;
             }
-            | class_declare class_property_declare value_declaer SEMICOLON
+            | class_declare class_property_declare value_declare SEMICOLON
             {
                 PropertyDeclare *property = [PropertyDeclare new];
                 property.keywords = _transfer(NSMutableArray *) $2;
@@ -119,11 +121,12 @@ class_implementation:
                 imp.privateVariables = _transfer(NSMutableArray *)$2;
                 $$ = _vretained imp;
             }
-            | class_implementation method_implementation
+            | class_implementation method_declare function_implementation
             {
-                ClassImplementation *imp = _transfer(ClassImplementation *) $1;
-                [imp.methodImps addObject:_transfer(MethodImplementation *)$2];
-                $$ = _vretained imp;
+                MethodImplementation *imp = makeMethodImplementation(_transfer(MethodDeclare *) $2);
+                ClassImplementation *clasImp = _transfer(ClassImplementation *) $1;
+                [clasImp.methodImps addObject:imp];
+                $$ = _vretained clasImp;
             }
             | class_implementation END
             ;
@@ -149,7 +152,7 @@ class_private_varibale_declare:
                 NSMutableArray *list = [NSMutableArray array];
 				$$ = (__bridge_retained void *)list;
             }
-            | class_private_varibale_declare value_declaer SEMICOLON
+            | class_private_varibale_declare value_declare SEMICOLON
             {
                 NSMutableArray *list = _transfer(NSMutableArray *) $1;
 				[list addObject:_transfer(VariableDeclare *) $2];
@@ -159,7 +162,7 @@ class_private_varibale_declare:
             ;
 
 class_property_type:
-            | ASSIGN_MEM
+              ASSIGN_MEM
             | WEAK
             | STRONG
             | COPY
@@ -187,15 +190,14 @@ class_property_declare:
             }
             ;
 
-value_declaer:
-            | value_declare_type IDENTIFIER
+value_declare:
+             value_declare_type IDENTIFIER
             {
                 $$ = _vretained makeVariableDeclare((__bridge TypeSpecial *)$1,(__bridge NSString *)$2);
             }
             | block_declare
             ;
-value_declare_type: 
-            | _UCHAR
+value_declare_type:  _UCHAR
             {
                  $$ = _vretained makeTypeSpecial(SpecialTypeUChar);
             }
@@ -222,6 +224,10 @@ value_declare_type:
             | _SHORT
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeShort);
+            }
+            | _INT
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeInt);
             }
             | _LONG
             {
@@ -271,19 +277,19 @@ value_declare_type:
             }
             ;
 block_declare: 
-            | value_declare_type LP POWER IDENTIFIER RP
+              value_declare_type LP POWER IDENTIFIER RP
             {
                 $$ = _vretained makeVariableDeclare(makeTypeSpecial(SpecialTypeBlock),(__bridge NSString *)$4);
             }
             | block_declare LP block_parameteres RP
             ;
 block_type: 
-            | value_declare_type LP POWER RP
+             value_declare_type LP POWER RP
             | block_type LP block_parameteres RP
             ;
 
-block_parametere_type:
-            | value_declaer
+block_parametere_type: 
+              value_declare
             | value_declare_type
             ;
 block_parameteres:
@@ -315,134 +321,222 @@ method_declare:
                 $$ = _vretained method;
             }
             ;
-
-method_implementation:
-            |  method_declare LC
-            {
-                MethodImplementation *imp = makeMethodImplementation(_transfer(MethodDeclare *) $1);
-                $$ = _vretained imp;
-            }
-            |  method_implementation primary_expression
-            |  method_implementation RC
-            ;
-primary_expression:
-            | objc_method_call SEMICOLON
-            {
-                log(@"success");
-            }
-            | _return value_type SEMICOLON
-            | _return SEMICOLON
-            ;
-
-
+            
 method_caller_type:
-         | _self
+           _self
          | _super
          | IDENTIFIER
-         | LP value_declare_type RP IDENTIFIER
-         {
-             $$ = $4;
-         }
          ;
-value_type:
-        | INTETER_LITERAL
+objc_method_call:
+        | method_caller_type
+        | objc_method_call IDENTIFIER
+        {
+            log($2);
+        }
+        | objc_method_call IDENTIFIER COLON value_expression
+        {
+            log($2,$4);
+        }
+        | LB objc_method_call RB
+        {
+            log($2);
+        }
+        | objc_method_call DOT IDENTIFIER
+        {
+            log($3);
+        }
+        | objc_method_call DOT LP value_expression RP
+        {
+            log($4);
+        }
+        ;
+
+numerical_value_type:
+          INTETER_LITERAL
         | DOUBLE_LITERAL
-        | SELECTOR
+        ;
+
+block_implementation: 
+        | value_declare_type POWER LP block_parameteres RP function_implementation
+
+        | POWER LP block_parameteres RP function_implementation  
+
+        ;
+
+value_type:
+          numerical_value_type
+        | block_implementation
         | objc_method_call
         {
-            $$ = _vretained [NSString stringWithFormat:@"ret"];
+            log(@"ret -- ");
         }
         | LP value_declare_type RP value_type
+        | _self
+        | _super
+        | _nil
+        | _NULL
+        //| NSDictionary
+        //| NSArray
+        // NSNumber
+        | AT LP numerical_value_type RP 
+        | IDENTIFIER
+        | ASTERISK IDENTIFIER
+        | AND IDENTIFIER
+        | _break
+        | _continue
         ;
-objc_method_call:
-          | method_caller_type
-          {
-              log(@"start ",$1);
-          }
-          | objc_method_call IDENTIFIER
-          {
-              log(@"next ",$2);
-          }
-          | objc_method_call IDENTIFIER COLON value_type
-          {
-              log(@"next ",$2,$4);
-          }
-          | LB objc_method_call RB
-          ;
+
+assign_operator:
+          AND_ASSIGN
+        | OR_ASSIGN
+        | POWER_ASSIGN
+        | ADD_ASSIGN
+        | SUB_ASSIGN
+        | DIV_ASSIGN
+        | MOD_ASSIGN
+        ; 
+
+unary_operator: 
+          INCREMENT
+        | DECREMENT
+        ;
+
+binary_operator:
+          ADD
+        | SUB
+        | ASTERISK
+        | DIV
+        | MOD
+        | SHIFTLEFT
+        | SHIFTRIGHT
+        | AND
+        | OR
+        | POWER
+        ;
+
+judgement_operator:
+          EQ        
+        | NE
+        | LE
+        | LT
+        | GE
+        | GT
+        | LOGIC_AND
+        | LOGIC_OR
+        | LOGIC_NOT
+        ;
 
 
+ternary_exression:
+        | judgement_expression QUESTION value_expression COLON value_expression
+        | judgement_expression QUESTION COLON value_expression 
+        | ternary_exression SEMICOLON
+        ;
+
+calculator_expression:
+        | ternary_exression
+        | value_expression binary_operator value_expression
+        | value_expression unary_operator
+        | calculator_expression SEMICOLON
+        ;
+judgement_expression:
+        | value_expression judgement_operator value_expression
+        | LOGIC_OR value_expression
+        | value_expression SEMICOLON
+        ;
+
+value_expression:
+        | value_type
+        | judgement_expression
+        | calculator_expression
+        | value_expression SEMICOLON
+        ;
+
+assign_expression:
+        | value_expression
+        | value_declare
+        | value_declare ASSIGN value_expression
+        {
+            log($1);
+        }
+        | value_type assign_operator value_expression
+        | assign_expression SEMICOLON
+        ; 
+return_expressoin:
+        | _return value_expression SEMICOLON
+        | _return SEMICOLON
+        ;
 if_statement:
-        | IF LP value_type RP LC
-        // 类似函数实现 LC{ .... }RC
-        | if_statement primary_expression
+         IF LP value_expression RP LC
+        | if_statement function_implementation
         | if_statement elseif_statement
         | if_statement else_statement
         | if_statement RC
         ;
 else_statement:
-        | _else LC
-        // 类似函数实现 LC{ .... }RC
-        | else_statement primary_expression
+         _else LC
+        | else_statement function_implementation
         | else_statement RC
         ;
 elseif_statement:
-        | _elseif LP value_type RP LC
-        // 类似函数实现 LC{ .... }RC
-        | else_statement primary_expression
+          _elseif LP value_expression RP LC
+        | else_statement function_implementation
         | else_statement RC
         ;
 dowhile_statement:
-        | _do LC
-        // 类似函数实现 LC{ .... }RC
-        | dowhile_statement primary_expression
-        | dowhile_statement RC _while LP value_type RP
+        | _do function_implementation
+        | dowhile_statement RC _while LP value_expression RP
         ;
 while_statement:
-        | _while LP value_type RP LC
-        // 类似函数实现 LC{ .... }RC
-        | while_statement primary_expression
+        | _while LP value_expression RP LC
+        | while_statement function_implementation
         | while_statement RC
         ;
 case_value_type:
         //数字或者枚举类型
-        | INTETER_LITERAL
+          INTETER_LITERAL
         | IDENTIFIER
         ;
 case_statement:
         | _case case_value_type COLON
         | _default case_value_type COLON
         | case_statement LC
-        // 类似函数实现 LC{ .... }RC
-        | case_statement primary_expression
+        | case_statement function_implementation
         | case_statement RC
         ;
 switch_statement:
-        | _switch LP value_type RP LC
+        | _switch LP value_expression RP LC  
         | switch_statement case_statement
         | switch_statement RC
         ;
 for_parameter_list:
-        // 赋值表达式
-        | primary_expression
-        // 判断表达式 或者 基本加减表达式
-        | for_parameter_list SEMICOLON primary_expression 
+        | assign_expression
+        | for_parameter_list SEMICOLON value_expression
         ;
-for_statement:
-        | _for LP for_parameter_list RP LC
-        | for_statement primary_expression
-        | for_statement RC
+for_statement: _for LP for_parameter_list RP LC function_implementation RC
         ;
-forin_loop_value_tyep:
-        | IDENTIFIER
-        | objc_method_call
+
+forin_statement: _for LP value_declare RP _in value_expression LC function_implementation RC
         ;
-forin_statement:
-        // 变量名称或者方法调用
-        | _for value_declaer _in forin_loop_value_tyep LC
-        // 类似函数实现 LC{ .... }RC
-        | forin_statement primary_expression
-        | forin_statement RC
+
+control_statement: 
+        | if_statement
+        | switch_statement
+        | while_statement
+        | dowhile_statement
+        | for_statement
+        | forin_statement
         ;
+
+
+function_implementation:
+        | LC
+        | function_implementation assign_expression
+        | function_implementation control_statement
+        | function_implementation return_expressoin
+        | function_implementation RC
+        ;
+        
 
 %%
 int yyerror(char *s){

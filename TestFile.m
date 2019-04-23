@@ -5,21 +5,30 @@
 @property (nonatomic, assign)NSInteger value;
 @property (nonatomic, strong)NSObject *object;
 @property (nonatomic, copy)NSObject* (^callback)(NSInteger *);
-- (void)objectMethod;
-- (NSInteger)objectMethod:(NSInteger)parameter;
-- (NSInteger)objectMethod:(NSInteger)parameter parameter1:(NSInteger)parameter1;
+- (Demo *)objectMethod;
+- (Demo *)objectMethod:(NSInteger)parameter;
+- (Demo *)objectMethod:(NSInteger)parameter parameter1:(NSInteger)parameter1;
 + (void)classMethod;
 @end
 
 @implementation Demo
-- (void)objectMethod{
-    [self objectMethod:[self objectMethod:1 parameter1:2]];
+- (Demo *)objectMethod{
+    int x = 1;
+    if (x) {
+        [NSDictionary dictionary];
+    }else if (x){
+        [NSDictionary dictionary];
+    }else{
+        [NSDictionary dictionary];
+    }
+    NSMutableArray *array  = [NSMutableArray array];
+    [[self objectMethod] objectMethod:1 parameter1:2];
+    [NSDictionary dictionary];
+    return self;
 }
-- (NSInteger)objectMethod:(NSInteger)parameter{
-    return 1;
-}
-- (NSInteger)objectMethod:(NSInteger)parameter parameter1:(NSInteger)parameter1{
-    return 1;
+
+- (Demo *)objectMethod:(NSInteger)parameter parameter1:(NSInteger)parameter1{
+    return self;
 }
 + (void)classMethod{
 

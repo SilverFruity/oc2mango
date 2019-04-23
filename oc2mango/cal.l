@@ -59,11 +59,12 @@
 <INITIAL>"<=" {return LE; }
 <INITIAL>">" {return GT; }
 <INITIAL>">=" {return GE; }   
-
 <INITIAL>"&&" {return LOGIC_AND; }
 <INITIAL>"||" {return LOGIC_OR; }
 <INITIAL>"!" {return  LOGIC_NOT; }
 
+<INITIAL>"<<" {return SHIFTLEFT; }
+<INITIAL>">>" {return SHIFTRIGHT; }
 <INITIAL>"&" {return AND; }
 <INITIAL>"|" {return OR; }
 <INITIAL>"^" {return POWER; }
@@ -71,7 +72,9 @@
 <INITIAL>"+" {return ADD; }
 <INITIAL>"/" {return DIV; }
 <INITIAL>"*" {return ASTERISK; }
+<INITIAL>"%" {return MOD; }
 
+<INITIAL>"=" {return ASSIGN; }
 <INITIAL>"&=" {return AND_ASSIGN; }
 <INITIAL>"|=" {return OR_ASSIGN; }
 <INITIAL>"^=" {return POWER_ASSIGN; }
@@ -79,6 +82,7 @@
 <INITIAL>"+=" {return ADD_ASSIGN; }
 <INITIAL>"/=" {return DIV_ASSIGN; }
 <INITIAL>"*=" {return ASTERISK_ASSIGN; }
+<INITIAL>"%=" {return MOD_ASSIGN; }
 
 <INITIAL>"++" { return INCREMENT; }
 <INITIAL>"--" { return DECREMENT; }
