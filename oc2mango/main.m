@@ -14,21 +14,11 @@
 // .*(^$name)(.*?) -> Block $name
 // .*(^)(.*?) -> Block
 #import <Foundation/Foundation.h>
-
+#import <oc2mangoLib/oc2mangoLib.h>
 int main(int argc, const char * argv[]) {
     NSString *path  = [NSString stringWithUTF8String:argv[1]];
     NSString *source = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-    extern void yy_set_source_string(char const *source);
-    yy_set_source_string([source UTF8String]);
-    
-    extern void yyrestart (FILE * input_file );
-    extern int yyparse(void);
-    if (yyparse()) {
-        yyrestart(NULL);
-        NSLog(@"ERROR!!!");
-        return 0;
-    }
-    
+    [[Parser new] parseSource:source];
     return 0;
 }
 

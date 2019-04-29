@@ -21,7 +21,7 @@
 
 
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE 
-%token <identifier> QUESTION  _return _break _continue _goto _else _elseif _while _do _in _for _case _switch _default
+%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default
 %token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
 %token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC
 %token <identifier> IDENTIFIER STRING_LITERAL
@@ -53,6 +53,9 @@ definition:
             | PS_Define
             | class_declare
             | class_implementation
+            {
+                log($1);
+            }
 			;
 PS_Define: 
             | PS PS_Define 
@@ -65,7 +68,7 @@ includeHeader:
             | includeHeader STRING_LITERAL
             ;
 class_declare:
-            | INTERFACE IDENTIFIER COLON IDENTIFIER
+            INTERFACE IDENTIFIER COLON IDENTIFIER
             {
                 ClassDeclare *declare = makeClassDeclare(_transfer(NSString *) $2);
                 declare.superClassName = _transfer(NSString *)$4;
@@ -104,7 +107,7 @@ class_declare:
 class_category:
             ;
 class_implementation:
-            | IMPLEMENTATION IDENTIFIER
+            IMPLEMENTATION IDENTIFIER
             {
                 ClassImplementation *imp = makeClassImplementation(_transfer(NSString *)$2);
                 $$ = _vretained imp;
@@ -141,7 +144,7 @@ protocol_list: IDENTIFIER
 			;
 
 class_private_varibale_declare:
-            | LC
+            LC
             {
                 NSMutableArray *list = [NSMutableArray array];
 				$$ = (__bridge_retained void *)list;
@@ -165,7 +168,7 @@ class_property_type:
             ;
 
 class_property_declare:
-            | PROPERTY LP
+            PROPERTY LP
             {
                 NSMutableArray *list = [NSMutableArray array];
 				$$ = (__bridge_retained void *)list;
@@ -287,12 +290,12 @@ block_parametere_type:
             | value_declare_type
             ;
 block_parameteres:
-            | block_parametere_type
+            block_parametere_type
             | block_parameteres COMMA block_parametere_type 
             ;
 
 method_declare:
-            | SUB LP value_declare_type RP
+            SUB LP value_declare_type RP
             {   
                 $$ = _vretained makeMethodDeclare(NO,_transfer(TypeSpecial *) $3);
             }
@@ -317,12 +320,34 @@ method_declare:
             ;
             
 method_caller_type:
-           _self
+         _self
          | _super
          | IDENTIFIER
+         {
+             log($1);
+         }
+         ;
+
+objc_property_get: 
+         method_caller_type IDENTIFIER
+         {
+             log($1,$2);
+         }
+         | method_caller_type IDENTIFIER COLON value_expression 
+         {
+             log($1,$2,$4);
+         }
+         | method_caller_type DOT IDENTIFIER
+         {
+             log($1,$3);
+         }
+         | method_caller_type DOT LP value_expression RP
+         {
+             log($4);
+         }
          ;
 objc_method_call:
-        | method_caller_type
+        objc_property_get
         | objc_method_call IDENTIFIER
         {
             log($2);
@@ -331,18 +356,12 @@ objc_method_call:
         {
             log($2,$4);
         }
-        | LB objc_method_call RB
-        {
-            log($2);
-        }
         | objc_method_call DOT IDENTIFIER
         {
             log($3);
         }
         | objc_method_call DOT LP value_expression RP
-        {
-            log($4);
-        }
+        | LB objc_method_call RB
         ;
 
 numerical_value_type:
@@ -351,37 +370,88 @@ numerical_value_type:
         ;
 
 block_implementation: 
-        | value_declare_type POWER LP block_parameteres RP function_implementation
+        value_declare_type POWER LP block_parameteres RP function_implementation
 
         | POWER LP block_parameteres RP function_implementation  
 
         ;
 
 value_type:
-          numerical_value_type
-        | block_implementation
-        | objc_method_call
+        IDENTIFIER
+         {
+             log($$);
+         }
+        | numerical_value_type
         {
-            log(@"method ret -- ");
+            $$ = @"num";
+            log($$);
         }
         | LP value_declare_type RP value_type
+        {
+            $$ = @"convert";
+            log($$);
+        }
         | _self
+        {
+            $$ = @"self";
+            log($$);
+        }
         | _super
+        {
+            $$ = @"super";
+        }
         | _nil
+        {
+            $$ = @"nil";
+            log($$);
+        }
         | _NULL
+        {
+            $$ = @"NULL";
+            log($$);
+        }
         //| NSDictionary
         //| NSArray
         // NSNumber
         | AT LP numerical_value_type RP 
-        | IDENTIFIER
+        {
+            $$ = @"@(num)";
+            log($$);
+        }
         | ASTERISK IDENTIFIER
+        {
+            $$ = @"*取值";
+            log($$);
+        }
         | AND IDENTIFIER
+        {
+            $$ = @"&去地址";
+            log($$);
+        }
         | _break
+        {
+            $$ = @"break";
+            log($$);
+        }
         | _continue
+        {
+            $$ = @"continue";
+            log($$);
+        }
+        | block_implementation
+        {
+            $$ = @"block imp";
+            log($$);
+        }
+        | objc_method_call
+        {
+            $$ = @"method return -- "; 
+            log(@"method return -- ");
+        }
         ;
 
 assign_operator:
-          AND_ASSIGN
+        AND_ASSIGN
         | OR_ASSIGN
         | POWER_ASSIGN
         | ADD_ASSIGN
@@ -391,12 +461,12 @@ assign_operator:
         ; 
 
 unary_operator: 
-          INCREMENT
+        INCREMENT
         | DECREMENT
         ;
 
 binary_operator:
-          ADD
+        ADD
         | SUB
         | ASTERISK
         | DIV
@@ -409,7 +479,7 @@ binary_operator:
         ;
 
 judgement_operator:
-          EQ        
+        EQ        
         | NE
         | LE
         | LT
@@ -422,32 +492,42 @@ judgement_operator:
 
 
 ternary_exression:
-        | judgement_expression QUESTION value_expression COLON value_expression
+        judgement_expression QUESTION value_expression COLON value_expression
         | judgement_expression QUESTION COLON value_expression 
-        | ternary_exression SEMICOLON
         ;
 
 calculator_expression:
-        | ternary_exression
-        | value_expression binary_operator value_expression
+        value_expression binary_operator value_expression
+        {
+            log(@"binary");
+        }
         | value_expression unary_operator
-        | calculator_expression SEMICOLON
+        {
+            log(@"unary");
+        }
+        | ternary_exression
+        {
+            log(@"ternary");
+        }
         ;
 judgement_expression:
-        | value_expression judgement_operator value_expression
-        | LOGIC_OR value_expression
-        | value_expression SEMICOLON
+         value_expression judgement_operator value_expression
         ;
 
 value_expression:
-        | value_type
+        value_type
         | judgement_expression
+        {
+            log(@"judge expressoin");
+        }
         | calculator_expression
-        | value_expression SEMICOLON
+        {
+            log(@"calculator expressoin");
+        }
         ;
 
 assign_expression:
-        | value_expression
+        value_expression
         | value_declare
         | value_declare ASSIGN value_expression
         {
@@ -457,32 +537,24 @@ assign_expression:
         | assign_expression SEMICOLON
         ; 
 return_expressoin:
-        | _return value_expression SEMICOLON
+        _return value_expression SEMICOLON
         | _return SEMICOLON
         ;
 if_statement:
-         IF LP value_expression RP LC
-        | if_statement function_implementation
-        | if_statement elseif_statement
-        | if_statement else_statement
-        | if_statement RC
+         IF LP value_expression RP function_implementation
+         {
+             log(@"if statement");
+         }
+        | if_statement _else IF LP value_expression RP function_implementation
+        | if_statement _else function_implementation
         ;
-else_statement:
-         _else LC
-        | else_statement function_implementation
-        | else_statement RC
-        ;
-elseif_statement:
-          _elseif LP value_expression RP LC
-        | else_statement function_implementation
-        | else_statement RC
-        ;
+
 dowhile_statement:
-        | _do function_implementation
+        _do function_implementation
         | dowhile_statement RC _while LP value_expression RP
         ;
 while_statement:
-        | _while LP value_expression RP LC
+        _while LP value_expression RP LC
         | while_statement function_implementation
         | while_statement RC
         ;
@@ -492,14 +564,14 @@ case_value_type:
         | IDENTIFIER
         ;
 case_statement:
-        | _case case_value_type COLON
+         _case case_value_type COLON
         | _default case_value_type COLON
         | case_statement LC
         | case_statement function_implementation
         | case_statement RC
         ;
 switch_statement:
-        | _switch LP value_expression RP LC  
+         _switch LP value_expression RP LC  
         | switch_statement case_statement
         | switch_statement RC
         ;
@@ -507,14 +579,14 @@ for_parameter_list:
         | assign_expression
         | for_parameter_list SEMICOLON value_expression
         ;
-for_statement: _for LP for_parameter_list RP LC function_implementation RC
+for_statement: _for LP for_parameter_list RP function_implementation
         ;
 
-forin_statement: _for LP value_declare RP _in value_expression LC function_implementation RC
+forin_statement: _for LP value_declare RP _in value_expression function_implementation
         ;
 
 control_statement: 
-        | if_statement
+        if_statement
         | switch_statement
         | while_statement
         | dowhile_statement
@@ -524,9 +596,15 @@ control_statement:
 
 
 function_implementation:
-        | LC
+        LC
         | function_implementation assign_expression
+        {
+            log(@"function -> assign");
+        }
         | function_implementation control_statement
+        {
+            log(@"function -> control statement");
+        }
         | function_implementation return_expressoin
         | function_implementation RC
         ;

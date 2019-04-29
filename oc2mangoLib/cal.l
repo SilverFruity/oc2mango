@@ -125,7 +125,6 @@
 <INITIAL>"continue" { TypeReturn(continue); }
 <INITIAL>"goto" { TypeReturn(goto); }
 <INITIAL>"else" { TypeReturn(else); }
-<INITIAL>"elseif" { TypeReturn(elseif); }
 <INITIAL>"do" { TypeReturn(do); }
 <INITIAL>"while" { TypeReturn(while); }
 <INITIAL>"switch" { TypeReturn(switch); }

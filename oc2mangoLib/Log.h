@@ -45,7 +45,7 @@ _121,_122,_123,_124,_125,_126,_127,N,...) N
 9,8,7,6,5,4,3,2,1,0
 extern NSString *_generatorFormmt(size_t argc);
 
-#define logFormat [NSString stringWithFormat:@"[%d] %@",__LINE__,_generatorFormmt(PP_NARG(__VA_ARGS__))]
-#define log(...) NSLog(logFormat, __VA_ARGS__)
+#define logFormat(...) [NSString stringWithFormat:@"[%d] %@",__LINE__,_generatorFormmt(PP_NARG(__VA_ARGS__))]
+#define log(...) NSLog(logFormat(__VA_ARGS__), __VA_ARGS__)
 #define format(...) [NSString stringWithFormat:_generatorFormmt(PP_NARG(__VA_ARGS__)), __VA_ARGS__]
 

@@ -16,7 +16,7 @@
     return self;
 }
 - (NSString *)description{
-    return [NSString stringWithFormat:@"%@%@",self.type.description,self.name];
+    return [NSString stringWithFormat:@"%@ %@",self.type.description,self.name];
 }
 - (id)copy{
     VariableDeclare *var = [VariableDeclare new];
