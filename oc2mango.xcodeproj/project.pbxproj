@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EE5068D02277653A0063B250 /* TestSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5068CF2277653A0063B250 /* TestSource.swift */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE982F11226CC24D008712C2 /* TestFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EE0226B1C78008712C2 /* TestFile.m */; };
 		EED67A772270AE0F0015AC02 /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
@@ -71,6 +72,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EE5068CF2277653A0063B250 /* TestSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSource.swift; sourceTree = "<group>"; };
 		EE5CC882226DFECA003AD212 /* FunctionImp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FunctionImp.h; sourceTree = "<group>"; };
 		EE5CC883226DFECA003AD212 /* FunctionImp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FunctionImp.m; sourceTree = "<group>"; };
 		EE5CC885226E0DAC003AD212 /* Statement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Statement.h; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 		EED67A7A2270AE0F0015AC02 /* oc2mangoLibTests */ = {
 			isa = PBXGroup;
 			children = (
+				EE5068CF2277653A0063B250 /* TestSource.swift */,
 				EED67A7D2270AE0F0015AC02 /* Info.plist */,
 				EED67AB62270B55D0015AC02 /* oc2mangoLibTests-Bridging-Header.h */,
 				EED67ABB2270B5A30015AC02 /* StatementTest.swift */,
@@ -418,6 +421,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE5068D02277653A0063B250 /* TestSource.swift in Sources */,
 				EED67ABC2270B5A30015AC02 /* StatementTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

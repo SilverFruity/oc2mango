@@ -335,7 +335,7 @@ objc_property_get:
          }
          | method_caller_type IDENTIFIER COLON value_expression 
          {
-             log($1,$2,$4);
+             log($2,$4);
          }
          | method_caller_type DOT IDENTIFIER
          {
@@ -413,6 +413,7 @@ value_type:
         //| NSDictionary
         //| NSArray
         // NSNumber
+        | AT STRING_LITERAL
         | AT LP numerical_value_type RP 
         {
             $$ = @"@(num)";
@@ -549,14 +550,11 @@ if_statement:
         | if_statement _else function_implementation
         ;
 
-dowhile_statement:
-        _do function_implementation
-        | dowhile_statement RC _while LP value_expression RP
+dowhile_statement: 
+        _do function_implementation _while LP value_expression RP
         ;
 while_statement:
-        _while LP value_expression RP LC
-        | while_statement function_implementation
-        | while_statement RC
+        _while LP value_expression RP function_implementation
         ;
 case_value_type:
         //数字或者枚举类型
@@ -566,9 +564,7 @@ case_value_type:
 case_statement:
          _case case_value_type COLON
         | _default case_value_type COLON
-        | case_statement LC
         | case_statement function_implementation
-        | case_statement RC
         ;
 switch_statement:
          _switch LP value_expression RP LC  

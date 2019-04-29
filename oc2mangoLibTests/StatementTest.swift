@@ -22,7 +22,13 @@ class StatementTest: XCTestCase {
 """
 @implementation Demo
 - (Demo *)objectMethods{
+    
     [[self.x method].y method];
+    [[object setValue:self forKey:@"name"] test:@"string"];
+    [[object valueForKey:@"key"] object];
+    [object setCallBack:^(NSString *name){
+        
+    }];
 }
 @end
 """
@@ -48,8 +54,8 @@ class StatementTest: XCTestCase {
 @implementation Demo
 - (Demo *)objectMethod{
     do{
-        [[self.x method].y method];
-    }while(x > 0)
+        
+    }while(x > 0 && x < 0)
 }
 @end
 """
