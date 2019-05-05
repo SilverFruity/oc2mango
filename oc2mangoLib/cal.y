@@ -412,7 +412,7 @@ value_type:
         }
         | objc_method_call
         {
-            $$ = @"method return -- "; 
+            $$ = @"method return --"; 
         }
         | numerical_value_type
         {
@@ -604,7 +604,7 @@ function_implementation:
         LC
         | function_implementation expression
         {
-            log(@"function -> assign");
+            log(@"function -> assign\n");
         }
         | function_implementation control_statement
         {
