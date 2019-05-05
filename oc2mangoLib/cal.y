@@ -39,7 +39,8 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <type> value_declare_type block_type method_caller_type value_type
 %type  <implementation> class_implementation  objc_method_call
 %type  <expression> numerical_value_type block_implementation assign_operator unary_operator binary_operator 
-judgement_operator ternary_exression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  return_expressoin
+judgement_operator ternary_expression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  control_expression
+expression
 
 %%
 
@@ -451,16 +452,6 @@ value_type:
             $$ = @"&去地址";
             log($$);
         }
-        | _break
-        {
-            $$ = @"break";
-            log($$);
-        }
-        | _continue
-        {
-            $$ = @"continue";
-            log($$);
-        }
         | block_implementation
         {
             $$ = @"block imp";
@@ -473,8 +464,11 @@ value_type:
         }
         ;
 
+
+
 assign_operator:
-        AND_ASSIGN
+        ASSIGN
+        | AND_ASSIGN
         | OR_ASSIGN
         | POWER_ASSIGN
         | ADD_ASSIGN
@@ -514,7 +508,7 @@ judgement_operator:
         ;
 
 
-ternary_exression:
+ternary_expression:
         judgement_expression QUESTION value_expression COLON value_expression
         | judgement_expression QUESTION COLON value_expression 
         ;
@@ -528,7 +522,7 @@ calculator_expression:
         {
             log(@"unary");
         }
-        | ternary_exression
+        | ternary_expression
         {
             log(@"ternary");
         }
@@ -549,20 +543,31 @@ value_expression:
         }
         ;
 
-assign_expression:
-        value_expression
-        | value_declare
-        | value_declare ASSIGN value_expression
-        {
-            log($1);
-        }
-        | value_type assign_operator value_expression
-        | assign_expression SEMICOLON
-        ; 
-return_expressoin:
-        _return value_expression SEMICOLON
-        | _return SEMICOLON
+control_expression:
+        _return
+        | _return value_expression
+        | _break
+        | _continue
+        | _goto IDENTIFIER COLON
         ;
+
+assign_expression:
+        declare_assign_expression
+        | var_assign_expression
+        ;
+declare_assign_expression:
+        value_declare
+        | value_declare ASSIGN value_expression
+        ;
+var_assign_expression: 
+        value_type assign_operator value_expression
+        ;
+
+expression:
+        assign_expression SEMICOLON
+        | value_expression SEMICOLON
+        | control_expression SEMICOLON;
+
 if_statement:
          IF LP value_expression RP function_implementation
          {
@@ -615,7 +620,7 @@ control_statement:
 
 function_implementation:
         LC
-        | function_implementation assign_expression
+        | function_implementation expression
         {
             log(@"function -> assign");
         }
@@ -623,7 +628,6 @@ function_implementation:
         {
             log(@"function -> control statement");
         }
-        | function_implementation return_expressoin
         | function_implementation RC
         ;
         

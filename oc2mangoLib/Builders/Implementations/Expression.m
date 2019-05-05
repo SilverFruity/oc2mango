@@ -8,6 +8,3 @@
 
 #import "Expression.h"
 
-@implementation Expression
-
-@end

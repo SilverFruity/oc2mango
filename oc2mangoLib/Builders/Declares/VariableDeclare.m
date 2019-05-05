@@ -22,7 +22,6 @@
     VariableDeclare *var = [VariableDeclare new];
     var.type = self.type;
     var.name = self.name;
-    var.expression = self.expression;
     return var;
 }
 @end
