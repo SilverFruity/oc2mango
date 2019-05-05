@@ -22,13 +22,13 @@ class StatementTest: XCTestCase {
 """
 @implementation Demo
 - (Demo *)objectMethods{
+    [[NSObject new] test];
     [[self.x method].y method1];
-    [NSObject new];
-    [[object setValue:self forKey:@"name"] test:@"string"];
-    [[object valueForKey:@"key"] object];
-    [object setCallBack:^(NSString *name){
-
-    }];
+//    [[object setValue:self forKey:@"name"] test:@"string"];
+//    [[object valueForKey:@"key"] object];
+//    [object setCallBack:^(NSString *name){
+//
+//    }];
 }
 @end
 """

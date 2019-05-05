@@ -36,7 +36,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare 
 %type  <declare>  value_declare block_declare block_parameteres class_property_type
-%type  <type> value_declare_type block_type method_caller_type value_type object_value_type
+%type  <type> value_declare_type block_type method_caller_type value_type
 %type  <implementation> class_implementation  objc_method_call
 %type  <expression> numerical_value_type block_implementation assign_operator unary_operator binary_operator 
 judgement_operator ternary_expression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  control_expression
@@ -343,14 +343,19 @@ method_declare:
             ;
             
 method_caller_type:
-         object_value_type
-         | object_value_type DOT IDENTIFIER
+         value_type
+         {
+             log($1);
+         }
+         | value_type DOT IDENTIFIER
          {
              log($3);
+             log(@"-- get method");
          }
-         | object_value_type DOT LP value_expression RP
+         | value_type DOT LP value_expression RP
          {
              log($4);
+             log(@"-- get method");
          }
          ;
 objc_method_call_pramameters:
@@ -371,6 +376,9 @@ objc_method_call_pramameters:
 objc_method_call:
         | LB method_caller_type
         | objc_method_call objc_method_call_pramameters RB
+        {
+            log(@"-- method return");
+        }
         ;
 
 numerical_value_type:
@@ -384,7 +392,7 @@ block_implementation:
         | POWER LP block_parameteres RP function_implementation  
         ;
 
-object_value_type:
+value_type:
         IDENTIFIER
         | _self
         | _super
@@ -405,11 +413,7 @@ object_value_type:
         | objc_method_call
         {
             $$ = @"method return -- "; 
-            log(@"method return -- ");
         }
-        ;
-value_type:
-        object_value_type
         | numerical_value_type
         {
             $$ = @"num";
