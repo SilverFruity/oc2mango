@@ -36,7 +36,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare 
 %type  <declare>  value_declare block_declare block_parameteres class_property_type
-%type  <type> value_declare_type block_type method_caller_type value_type
+%type  <type> value_declare_type block_type method_caller_type value_type object_value_type
 %type  <implementation> class_implementation  objc_method_call
 %type  <expression> numerical_value_type block_implementation assign_operator unary_operator binary_operator 
 judgement_operator ternary_expression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  control_expression
@@ -281,7 +281,7 @@ value_declare_type:  _UCHAR
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeVoid);
             }
-            | IDENTIFIER
+            | IDENTIFIER ASTERISK
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
             }
@@ -343,48 +343,34 @@ method_declare:
             ;
             
 method_caller_type:
-         _self
-         | _super
-         | IDENTIFIER
+         object_value_type
+         | object_value_type DOT IDENTIFIER
          {
-             log($1);
+             log($3);
          }
-         ;
-
-objc_property_get: 
-         method_caller_type IDENTIFIER
-         {
-             log($1,$2);
-         }
-         | method_caller_type IDENTIFIER COLON value_expression 
-         {
-             log($2,$4);
-         }
-         | method_caller_type DOT IDENTIFIER
-         {
-             log($1,$3);
-         }
-         | method_caller_type DOT LP value_expression RP
+         | object_value_type DOT LP value_expression RP
          {
              log($4);
          }
          ;
-objc_method_call:
-        objc_property_get
-        | objc_method_call IDENTIFIER
+objc_method_call_pramameters:
+        IDENTIFIER
+        {
+            log($1);
+        }
+        | IDENTIFIER COLON value_expression
+        {
+            log($1);
+        }
+        | objc_method_call_pramameters IDENTIFIER COLON value_expression
         {
             log($2);
         }
-        | objc_method_call IDENTIFIER COLON value_expression
-        {
-            log($2,$4);
-        }
-        | objc_method_call DOT IDENTIFIER
-        {
-            log($3);
-        }
-        | objc_method_call DOT LP value_expression RP
-        | LB objc_method_call RB
+        ;
+
+objc_method_call:
+        | LB method_caller_type
+        | objc_method_call objc_method_call_pramameters RB
         ;
 
 numerical_value_type:
@@ -396,60 +382,19 @@ block_implementation:
         value_declare_type POWER LP block_parameteres RP function_implementation
         | POWER function_implementation
         | POWER LP block_parameteres RP function_implementation  
-
         ;
 
-value_type:
+object_value_type:
         IDENTIFIER
-         {
-             log($$);
-         }
-        | numerical_value_type
-        {
-            $$ = @"num";
-            log($$);
-        }
-        | LP value_declare_type RP value_type
-        {
-            $$ = @"convert";
-            log($$);
-        }
         | _self
-        {
-            $$ = @"self";
-            log($$);
-        }
         | _super
-        {
-            $$ = @"super";
-        }
-        | _nil
-        {
-            $$ = @"nil";
-            log($$);
-        }
-        | _NULL
-        {
-            $$ = @"NULL";
-            log($$);
-        }
-        //| NSDictionary
-        //| NSArray
+        // NSDictionary
+        // NSArray
         // NSNumber
         | AT STRING_LITERAL
         | AT LP numerical_value_type RP 
         {
             $$ = @"@(num)";
-            log($$);
-        }
-        | ASTERISK IDENTIFIER
-        {
-            $$ = @"*取值";
-            log($$);
-        }
-        | AND IDENTIFIER
-        {
-            $$ = @"&去地址";
             log($$);
         }
         | block_implementation
@@ -461,6 +406,39 @@ value_type:
         {
             $$ = @"method return -- "; 
             log(@"method return -- ");
+        }
+        ;
+value_type:
+        object_value_type
+        | numerical_value_type
+        {
+            $$ = @"num";
+            log($$);
+        }
+        | LP value_declare_type RP value_type
+        {
+            $$ = @"convert";
+            log($$);
+        }
+        | _nil
+        {
+            $$ = @"nil";
+            log($$);
+        }
+        | _NULL
+        {
+            $$ = @"NULL";
+            log($$);
+        }
+        | ASTERISK IDENTIFIER
+        {
+            $$ = @"*取值";
+            log($$);
+        }
+        | AND IDENTIFIER
+        {
+            $$ = @"&去地址";
+            log($$);
         }
         ;
 
