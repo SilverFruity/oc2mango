@@ -2,7 +2,7 @@
 #import <Foundation/Foundation.h>
 #import "Log.h"
 #import "MakeDeclare.h"
-
+#import "Parser.h"
 #define YYDEBUG 1
 #define YYERROR_VERBOSE
 #define _retained(type) (__bridge_retained type)
@@ -23,7 +23,7 @@
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE 
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default
 %token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
-%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC
+%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE
 %token <identifier> IDENTIFIER STRING_LITERAL
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -52,10 +52,14 @@ definition_list: definition
 definition:  
             | PS_Define
             | class_declare
+            {
+                [OCParser.classeInterfaces addObject:_transfer(ClassDeclare *)$1];
+            }
             | class_implementation
             {
                 log($1);
             }
+            | 
 			;
 PS_Define: 
             | PS PS_Define 
@@ -74,6 +78,12 @@ class_declare:
                 declare.superClassName = _transfer(NSString *)$4;
                 $$ = _vretained declare;
             }
+            | INTERFACE IDENTIFIER LP IDENTIFIER RP
+            {
+                ClassDeclare *declare = makeClassDeclare(_transfer(NSString *) $2);
+                declare.categoryName = _transfer(NSString *)$4;
+                $$ = _vretained declare;
+            }
             | class_declare LT protocol_list GT
             {
                 ClassDeclare *declare = _transfer(ClassDeclare *) $1;
@@ -86,11 +96,11 @@ class_declare:
                 declare.privateVariables = _transfer(NSMutableArray *) $2;
                 $$ = _vretained declare;
             }
-            | class_declare class_property_declare value_declare SEMICOLON
+            | class_declare PROPERTY class_property_declare value_declare SEMICOLON
             {
                 PropertyDeclare *property = [PropertyDeclare new];
-                property.keywords = _transfer(NSMutableArray *) $2;
-                property.var = _transfer(VariableDeclare *) $3;
+                property.keywords = _transfer(NSMutableArray *) $3;
+                property.var = _transfer(VariableDeclare *) $4;
                 ClassDeclare *declare = _transfer(ClassDeclare *) $1;
                 [declare.properties addObject:property];
                 [declare.privateVariables addObject:property.privateVar];
@@ -110,6 +120,12 @@ class_implementation:
             IMPLEMENTATION IDENTIFIER
             {
                 ClassImplementation *imp = makeClassImplementation(_transfer(NSString *)$2);
+                $$ = _vretained imp;
+            }
+            | IMPLEMENTATION IDENTIFIER LP IDENTIFIER RP
+            {
+                ClassImplementation *imp = makeClassImplementation(_transfer(NSString *)$2);
+                imp.categoryName = _transfer(NSString *)$4;
                 $$ = _vretained imp;
             }
             | class_implementation class_private_varibale_declare
@@ -165,10 +181,16 @@ class_property_type:
             | COPY
             | NONATOMIC
             | ATOMIC
+            | READONLY 
+            | READWRITE
             ;
 
 class_property_declare:
-            PROPERTY LP
+            {
+                NSMutableArray *list = [NSMutableArray array];
+				$$ = (__bridge_retained void *)list;
+            }
+            | LP
             {
                 NSMutableArray *list = [NSMutableArray array];
 				$$ = (__bridge_retained void *)list;
@@ -289,8 +311,8 @@ block_parametere_type:
               value_declare
             | value_declare_type
             ;
-block_parameteres:
-            block_parametere_type
+block_parameteres: /* empty */
+            | block_parametere_type
             | block_parameteres COMMA block_parametere_type 
             ;
 
@@ -371,7 +393,7 @@ numerical_value_type:
 
 block_implementation: 
         value_declare_type POWER LP block_parameteres RP function_implementation
-
+        | POWER function_implementation
         | POWER LP block_parameteres RP function_implementation  
 
         ;

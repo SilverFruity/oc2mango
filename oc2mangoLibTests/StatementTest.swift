@@ -50,7 +50,7 @@ class StatementTest: XCTestCase {
     }
     func testDoWhileStatement(){
         let source =
-        """
+"""
 @implementation Demo
 - (Demo *)objectMethod{
     do{

@@ -13,22 +13,17 @@
  2.Prefix Compile Tool
  1.Class Pool{
     className:{
-        interface:
+        interface/category:
         {
             protocols:
             privateVariables:
             properties:
             methods:
         }
-        catergory:
-        {
-            properties:
-            methods:
-        }
-        implementation:
+        implementation/category:
         {
             privateVariables:
-            methods:
+            methodsImp:
         }
  
     }
@@ -51,6 +46,9 @@
             [self.privateVariables componentsJoinedByString:@";\n"],
             [self.properties componentsJoinedByString:@";\n"],
             [self.methods componentsJoinedByString:@";\n"]];
+}
+- (BOOL)isCategory{
+    return self.categoryName != nil && self.superClassName == nil;
 }
 @end
 

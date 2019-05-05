@@ -10,12 +10,14 @@
 #import "MethodDeclare.h"
 
 @interface ClassDeclare : NSObject
-@property NSString *className;
-@property NSString *superClassName;
-@property NSMutableArray *protocolNames;
-@property NSMutableArray <VariableDeclare *> *privateVariables;
-@property NSMutableArray <PropertyDeclare *> *properties;
-@property NSMutableArray <MethodDeclare *> *methods;
+@property (nonatomic,copy) NSString *className;
+@property (nonatomic,copy) NSString *superClassName;
+@property (nonatomic,copy) NSString *categoryName;
+@property (nonatomic,strong) NSMutableArray *protocolNames;
+@property (nonatomic,strong) NSMutableArray <VariableDeclare *> *privateVariables;
+@property (nonatomic,strong) NSMutableArray <PropertyDeclare *> *properties;
+@property (nonatomic,strong) NSMutableArray <MethodDeclare *> *methods;
+@property (nonatomic,readonly) BOOL isCategory;
 @end
 
 

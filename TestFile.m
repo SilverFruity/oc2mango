@@ -25,3 +25,13 @@
 }
 
 @end
+
+@interface NSObject (Ex)
+
+@end
+
+@implementation NSObject(Ex)
+
+
+
+@end

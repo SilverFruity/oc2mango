@@ -9,8 +9,11 @@
 #import <Foundation/Foundation.h>
 #import <oc2mangoLib/ClassImplementation.h>
 #import <oc2mangoLib/ClassDeclare.h>
+#define OCParser [Parser shared]
 @interface Parser : NSObject
 @property(nonatomic,strong)NSMutableArray <ClassDeclare *>*classeInterfaces;
 @property(nonatomic,strong)NSMutableArray <ClassImplementation *>*classeImps;
++ (instancetype)shared;
 - (void)parseSource:(NSString *)source;
+- (void)clear;
 @end

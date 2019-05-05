@@ -11,7 +11,7 @@
 @implementation MethodDeclare
 - (NSString *)description{
     NSMutableString *string = [NSMutableString string];
-    if (self.methodNames.count == 1) {
+    if (self.methodNames.count == 1 && self.parameterTypes.count == 0) {
         [string appendString:self.methodNames.firstObject];
     }else{
         for (int i = 0 ; i < self.methodNames.count; i++) {

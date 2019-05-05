@@ -109,6 +109,8 @@
 <INITIAL>"assign" { yylval.identifier =(__bridge_retained void *)@"assign"; return ASSIGN_MEM; }
 <INITIAL>"nonatomic" { yylval.identifier =(__bridge_retained void *)@"nonatomic"; return NONATOMIC; }
 <INITIAL>"atomic" { yylval.identifier =(__bridge_retained void *)@"atomic"; return ATOMIC; }
+<INITIAL>"readonly" { yylval.identifier =(__bridge_retained void *)@"readonly"; return READONLY; }
+<INITIAL>"readwrite" { yylval.identifier =(__bridge_retained void *)@"readwrite"; return READWRITE; }
 
 <INITIAL>"@selector" {return SELECTOR; }
 
