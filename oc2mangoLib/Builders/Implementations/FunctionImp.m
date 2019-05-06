@@ -9,5 +9,11 @@
 #import "FunctionImp.h"
 
 @implementation FunctionImp
+- (instancetype)init {
+    self = [super init];
+    self.expressions = [NSMutableArray array];
+    self.statements = [NSMutableArray array];
+    return self;
+}
 
 @end

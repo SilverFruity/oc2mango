@@ -7,6 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		606F0033CF95FC5CD811C346 /* ControlExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0B5A60BB2B2397BAFC09 /* ControlExpression.m */; };
+		606F0207B162A6162D433799 /* OCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* OCValue.m */; };
+		606F04C9061EDFA1537A0326 /* JudgementExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F05170E1D12991EF44F2E /* JudgementExpression.m */; };
+		606F0CFF2C3466DF8008ED43 /* CalculateExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */; };
+		606F0D79DBF761E8157171FB /* AssignExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F4E67BF3B652ED16B8C /* AssignExpression.m */; };
+		EE127792228084260065B1E4 /* AssignExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F5861A2716E15003E7D /* AssignExpression.h */; };
+		EE127793228084260065B1E4 /* AssignExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F4E67BF3B652ED16B8C /* AssignExpression.m */; };
+		EE127794228084260065B1E4 /* CalculateExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0644932CF15853A6BAA9 /* CalculateExpression.h */; };
+		EE127795228084260065B1E4 /* CalculateExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */; };
+		EE127796228084260065B1E4 /* ControlExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F03882206B1C511825ECE /* ControlExpression.h */; };
+		EE127797228084260065B1E4 /* ControlExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0B5A60BB2B2397BAFC09 /* ControlExpression.m */; };
+		EE127798228084260065B1E4 /* Expression.h in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC888226E0FBA003AD212 /* Expression.h */; };
+		EE127799228084260065B1E4 /* JudgementExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0DBE32BE70D24628C9E6 /* JudgementExpression.h */; };
+		EE12779A228084260065B1E4 /* JudgementExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F05170E1D12991EF44F2E /* JudgementExpression.m */; };
+		EE12779B228084260065B1E4 /* OCValue.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* OCValue.h */; };
+		EE12779C228084260065B1E4 /* OCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* OCValue.m */; };
 		EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE147260227F054300566B3F /* ClassDeclareTest.swift */; };
 		EE5068D02277653A0063B250 /* TestSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5068CF2277653A0063B250 /* TestSource.swift */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
@@ -73,6 +89,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		606F03882206B1C511825ECE /* ControlExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlExpression.h; sourceTree = "<group>"; };
+		606F05170E1D12991EF44F2E /* JudgementExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JudgementExpression.m; sourceTree = "<group>"; };
+		606F0644932CF15853A6BAA9 /* CalculateExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalculateExpression.h; sourceTree = "<group>"; };
+		606F0B5A60BB2B2397BAFC09 /* ControlExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControlExpression.m; sourceTree = "<group>"; };
+		606F0BB1839E29D74A0630F6 /* OCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCValue.m; sourceTree = "<group>"; };
+		606F0D12A0E0AD5D65BAF937 /* OCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCValue.h; sourceTree = "<group>"; };
+		606F0DBE32BE70D24628C9E6 /* JudgementExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JudgementExpression.h; sourceTree = "<group>"; };
+		606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalculateExpression.m; sourceTree = "<group>"; };
+		606F0F4E67BF3B652ED16B8C /* AssignExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssignExpression.m; sourceTree = "<group>"; };
+		606F0F5861A2716E15003E7D /* AssignExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssignExpression.h; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
 		EE5068CF2277653A0063B250 /* TestSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSource.swift; sourceTree = "<group>"; };
 		EE5CC882226DFECA003AD212 /* FunctionImp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FunctionImp.h; sourceTree = "<group>"; };
@@ -142,6 +168,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EE12779122807CE40065B1E4 /* Expression */ = {
+			isa = PBXGroup;
+			children = (
+				606F0F5861A2716E15003E7D /* AssignExpression.h */,
+				606F0F4E67BF3B652ED16B8C /* AssignExpression.m */,
+				606F0644932CF15853A6BAA9 /* CalculateExpression.h */,
+				606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */,
+				606F03882206B1C511825ECE /* ControlExpression.h */,
+				606F0B5A60BB2B2397BAFC09 /* ControlExpression.m */,
+				EE5CC888226E0FBA003AD212 /* Expression.h */,
+				EE5CC889226E0FBA003AD212 /* Expression.m */,
+				606F0DBE32BE70D24628C9E6 /* JudgementExpression.h */,
+				606F05170E1D12991EF44F2E /* JudgementExpression.m */,
+				606F0D12A0E0AD5D65BAF937 /* OCValue.h */,
+				606F0BB1839E29D74A0630F6 /* OCValue.m */,
+			);
+			path = Expression;
+			sourceTree = "<group>";
+		};
 		EE147262227F0A4E00566B3F /* Declare */ = {
 			isa = PBXGroup;
 			children = (
@@ -224,8 +269,7 @@
 				EE982F0F226CBD28008712C2 /* MethodImplementation.m */,
 				EE5CC885226E0DAC003AD212 /* Statement.h */,
 				EE5CC886226E0DAC003AD212 /* Statement.m */,
-				EE5CC888226E0FBA003AD212 /* Expression.h */,
-				EE5CC889226E0FBA003AD212 /* Expression.m */,
+				EE12779122807CE40065B1E4 /* Expression */,
 				EE5CC882226DFECA003AD212 /* FunctionImp.h */,
 				EE5CC883226DFECA003AD212 /* FunctionImp.m */,
 			);
@@ -411,6 +455,11 @@
 			files = (
 				EE982F11226CC24D008712C2 /* TestFile.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
+				606F0207B162A6162D433799 /* OCValue.m in Sources */,
+				606F0D79DBF761E8157171FB /* AssignExpression.m in Sources */,
+				606F04C9061EDFA1537A0326 /* JudgementExpression.m in Sources */,
+				606F0033CF95FC5CD811C346 /* ControlExpression.m in Sources */,
+				606F0CFF2C3466DF8008ED43 /* CalculateExpression.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -418,6 +467,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE127792228084260065B1E4 /* AssignExpression.h in Sources */,
+				EE127793228084260065B1E4 /* AssignExpression.m in Sources */,
+				EE127794228084260065B1E4 /* CalculateExpression.h in Sources */,
+				EE127795228084260065B1E4 /* CalculateExpression.m in Sources */,
+				EE127796228084260065B1E4 /* ControlExpression.h in Sources */,
+				EE127797228084260065B1E4 /* ControlExpression.m in Sources */,
+				EE127798228084260065B1E4 /* Expression.h in Sources */,
+				EE127799228084260065B1E4 /* JudgementExpression.h in Sources */,
+				EE12779A228084260065B1E4 /* JudgementExpression.m in Sources */,
+				EE12779B228084260065B1E4 /* OCValue.h in Sources */,
+				EE12779C228084260065B1E4 /* OCValue.m in Sources */,
 				EED67A9B2270B0CA0015AC02 /* VariableDeclare.m in Sources */,
 				EED67A9C2270B0CA0015AC02 /* PropertyDeclare.m in Sources */,
 				EED67AA12270B0CA0015AC02 /* Expression.m in Sources */,

@@ -25,8 +25,8 @@ class ClassDeclareTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.classeInterfaces.count == 1)
-        let declare: ClassDeclare = ocparser.classeInterfaces?.firstObject as! ClassDeclare
+        XCTAssert(ocparser.classInterfaces.count == 1)
+        let declare: ClassDeclare = ocparser.classInterfaces?.firstObject as! ClassDeclare
         XCTAssert(declare.categoryName == nil)
         XCTAssert(declare.className == "Demo")
         XCTAssert(declare.superClassName == "NSObject")
@@ -42,9 +42,9 @@ class ClassDeclareTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.classeInterfaces.count == 1)
-        print(ocparser.classeInterfaces)
-        let declare: ClassDeclare = ocparser.classeInterfaces[0] as! ClassDeclare
+        XCTAssert(ocparser.classInterfaces.count == 1)
+        print(ocparser.classInterfaces)
+        let declare: ClassDeclare = ocparser.classInterfaces[0] as! ClassDeclare
         XCTAssert(declare.categoryName == "Category")
         XCTAssert(declare.className == "Demo")
         XCTAssert(declare.superClassName == nil)
@@ -65,8 +65,8 @@ class ClassDeclareTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.classeInterfaces.count == 1)
-        if let declare = ocparser.classeInterfaces?.firstObject as? ClassDeclare {
+        XCTAssert(ocparser.classInterfaces.count == 1)
+        if let declare = ocparser.classInterfaces?.firstObject as? ClassDeclare {
             let propertyFirst = declare.properties[0] as! PropertyDeclare
             XCTAssert(propertyFirst.keywords == ["nonatomic","atomic"])
             XCTAssert(propertyFirst.var.type.type == SpecialTypeObject)
@@ -88,8 +88,8 @@ class ClassDeclareTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.classeInterfaces.count == 1)
-        let declare: ClassDeclare = ocparser.classeInterfaces?.firstObject as! ClassDeclare
+        XCTAssert(ocparser.classInterfaces.count == 1)
+        let declare: ClassDeclare = ocparser.classInterfaces?.firstObject as! ClassDeclare
         let method = declare.methods.firstObject as! MethodDeclare
         XCTAssert(method.methodNames == ["method2"])
         XCTAssert(method.parameterNames == ["callback"])

@@ -9,7 +9,7 @@
 import XCTest
 
 class StatementTest: XCTestCase {
-    let ocparser = Parser()
+    let ocparser = Parser.shared()!
     override func setUp() {
         
     }
@@ -33,6 +33,12 @@ class StatementTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
+        XCTAssert(ocparser.classImps.count > 0);
+        let classImp : ClassImplementation  = ocparser.classImps!.firstObject as! ClassImplementation
+        let methodImp : MethodImplementation = classImp.methodImps!.firstObject as! MethodImplementation
+        let funcImp : FunctionImp = methodImp.imp;
+        XCTAssert(funcImp.expressions.count == 5);
+        print(funcImp.expressions);
     }
     func testIfStatement(){
         let source =

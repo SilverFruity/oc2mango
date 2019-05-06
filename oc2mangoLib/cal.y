@@ -40,7 +40,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <implementation> class_implementation  objc_method_call
 %type  <expression> numerical_value_type block_implementation assign_operator unary_operator binary_operator 
 judgement_operator ternary_expression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  control_expression
-expression
+expression objc_method_call_pramameters
 
 %%
 
@@ -54,11 +54,11 @@ definition:
             | PS_Define
             | class_declare
             {
-                [OCParser.classeInterfaces addObject:_transfer(ClassDeclare *)$1];
+                [OCParser.classInterfaces addObject:_transfer(ClassDeclare *)$1];
             }
             | class_implementation
             {
-                log($1);
+                [OCParser.classImps addObject:_transfer(ClassImplementation *)$1];
             }
             | 
 			;
@@ -138,6 +138,8 @@ class_implementation:
             | class_implementation method_declare function_implementation
             {
                 MethodImplementation *imp = makeMethodImplementation(_transfer(MethodDeclare *) $2);
+                FunctionImp * funcImp = _transfer(FunctionImp *) $3;
+                imp.imp = funcImp;
                 ClassImplementation *clasImp = _transfer(ClassImplementation *) $1;
                 [clasImp.methodImps addObject:imp];
                 $$ = _vretained clasImp;
@@ -344,40 +346,65 @@ method_declare:
             
 method_caller_type:
          value_type
-         {
-             log($1);
-         }
+         // Get
          | value_type DOT IDENTIFIER
          {
-             log($3);
-             log(@"-- get method");
+             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+             OCValue *caller = _transfer(OCValue *)$1;
+             methodcall.caller =  caller;
+
+             OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
+             element.name = _transfer(NSString *)$3;
+             methodcall.element = element;
+
+             $$ = _vretained methodcall;
          }
-         | value_type DOT LP value_expression RP
+         // Block Get
+         | value_type DOT IDENTIFIER LP value_expression RP
          {
-             log($4);
-             log(@"-- get method");
+             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+             OCValue *caller = _transfer(OCValue *)$1;
+             methodcall.caller = caller;
+
+             OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
+             element.name = _transfer(NSString *)$3;
+             [element.values addObject:_transfer(id) $5];
+             methodcall.element = element;
+
+             $$ = _vretained methodcall;
          }
          ;
 objc_method_call_pramameters:
         IDENTIFIER
         {
-            log($1);
+            OCMethodCallNormalElement *element = makeMethodCallElement(OCMethodCallNormalCall);
+            [element.names addObject:_transfer(NSString *)$1];
+            $$ = _vretained element;
         }
         | IDENTIFIER COLON value_expression
         {
-            log($1);
+            OCMethodCallNormalElement *element = makeMethodCallElement(OCMethodCallNormalCall);
+            [element.names addObject:_transfer(NSString *)$1];
+            [element.values addObject:_transfer(id)$3];
+            $$ = _vretained element;
         }
         | objc_method_call_pramameters IDENTIFIER COLON value_expression
         {
-            log($2);
+            OCMethodCallNormalElement *element = _transfer(OCMethodCallNormalElement *)$1;
+            [element.names addObject:_transfer(NSString *)$2];
+            [element.values addObject:_transfer(id)$4];
+            $$ = _vretained element;
         }
         ;
 
 objc_method_call:
-        | LB method_caller_type
-        | objc_method_call objc_method_call_pramameters RB
+        LB method_caller_type objc_method_call_pramameters RB
         {
-            log(@"-- method return");
+             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+             OCValue *caller = _transfer(OCValue *)$2;
+             methodcall.caller =  caller;
+             methodcall.element = _transfer(id <OCMethodElement>)$3;
+             $$ = _vretained methodcall;
         }
         ;
 
@@ -394,55 +421,63 @@ block_implementation:
 
 value_type:
         IDENTIFIER
+        {
+            $$ = _vretained makeValue(OCValueObject);
+        }
         | _self
+        {
+            $$ = _vretained makeValue(OCValueSelf);
+        }
         | _super
+        {
+            $$ = _vretained makeValue(OCValueSuper);
+        }
         // NSDictionary
         // NSArray
-        // NSNumber
-        | AT STRING_LITERAL
-        | AT LP numerical_value_type RP 
+        | AT LP value_expression RP 
         {
-            $$ = @"@(num)";
-            log($$);
+            $$ = _vretained makeValue(OCValueNSNumber);
+        }
+        | AT numerical_value_type
+        {
+            $$ = _vretained makeValue(OCValueNSNumber);
+        }
+        | AT STRING_LITERAL
+        {
+            $$ = _vretained makeValue(OCValueString);
+        }
+        | STRING_LITERAL
+        {
+            $$ = _vretained makeValue(OCValueCString);
         }
         | block_implementation
         {
-            $$ = @"block imp";
-            log($$);
+            $$ = _vretained makeValue(OCValueBlock);
         }
         | objc_method_call
-        {
-            $$ = @"method return --"; 
-        }
         | numerical_value_type
         {
-            $$ = @"num";
-            log($$);
+            $$ = _vretained makeValue(OCValueNumber);
         }
         | LP value_declare_type RP value_type
         {
-            $$ = @"convert";
-            log($$);
+            $$ = _vretained makeValue(OCValueConvert);
         }
         | _nil
         {
-            $$ = @"nil";
-            log($$);
+            $$ = _vretained makeValue(OCValueNil);
         }
         | _NULL
         {
-            $$ = @"NULL";
-            log($$);
+            $$ = _vretained makeValue(OCValueNULL);
         }
         | ASTERISK IDENTIFIER
         {
-            $$ = @"*取值";
-            log($$);
+            $$ = _vretained makeValue(OCValuePointValue);
         }
         | AND IDENTIFIER
         {
-            $$ = @"&去地址";
-            log($$);
+            $$ = _vretained makeValue(OCValueVarPoint);
         }
         ;
 
@@ -602,9 +637,14 @@ control_statement:
 
 function_implementation:
         LC
+        {
+            $$ = _vretained makeFuncImp();
+        }
         | function_implementation expression
         {
-            log(@"function -> assign\n");
+            FunctionImp *imp = _transfer(FunctionImp *)$1;
+            [imp.expressions addObject:_transfer(id) $2];
+            $$ = _vretained imp;
         }
         | function_implementation control_statement
         {

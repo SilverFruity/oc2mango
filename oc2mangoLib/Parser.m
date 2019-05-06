@@ -20,8 +20,8 @@
 - (instancetype)init
 {
     self = [super init];
-    self.classeInterfaces = [NSMutableArray array];
-    self.classeImps = [NSMutableArray array];
+    self.classInterfaces = [NSMutableArray array];
+    self.classImps = [NSMutableArray array];
     return self;
 }
 - (void)parseSource:(NSString *)source{
@@ -35,7 +35,7 @@
     }
 }
 - (void)clear{
-    [self.classeInterfaces removeAllObjects];
-    [self.classeImps removeAllObjects];
+    [self.classInterfaces removeAllObjects];
+    [self.classImps removeAllObjects];
 }
 @end

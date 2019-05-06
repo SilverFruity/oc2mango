@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "MethodDeclare.h"
+#import "FunctionImp.h"
 @interface MethodImplementation : NSObject
-@property MethodDeclare *declare;
-@property NSMutableArray *expressions;
+@property (nonatomic,strong) MethodDeclare *declare;
+@property (nonatomic,strong) FunctionImp *imp;
 @end
 
