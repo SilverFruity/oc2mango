@@ -27,6 +27,7 @@
 		EE5068D02277653A0063B250 /* TestSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5068CF2277653A0063B250 /* TestSource.swift */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE982F11226CC24D008712C2 /* TestFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EE0226B1C78008712C2 /* TestFile.m */; };
+		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
 		EED67A772270AE0F0015AC02 /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67A702270AE0E0015AC02 /* oc2mangoLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67A912270AE2B0015AC02 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
@@ -128,6 +129,7 @@
 		EE982F0C226CBD11008712C2 /* ClassImplementation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClassImplementation.m; sourceTree = "<group>"; };
 		EE982F0E226CBD28008712C2 /* MethodImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MethodImplementation.h; sourceTree = "<group>"; };
 		EE982F0F226CBD28008712C2 /* MethodImplementation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MethodImplementation.m; sourceTree = "<group>"; };
+		EEB17FFA22849273003D5C36 /* MethodCallTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodCallTest.swift; sourceTree = "<group>"; };
 		EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = oc2mangoLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EED67A702270AE0E0015AC02 /* oc2mangoLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = oc2mangoLib.h; sourceTree = "<group>"; };
 		EED67A712270AE0E0015AC02 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 		EE147263227F1D6B00566B3F /* Implementation */ = {
 			isa = PBXGroup;
 			children = (
+				EEB17FFA22849273003D5C36 /* MethodCallTest.swift */,
 			);
 			path = Implementation;
 			sourceTree = "<group>";
@@ -500,6 +503,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */,
 				EE5068D02277653A0063B250 /* TestSource.swift in Sources */,
 				EED67ABC2270B5A30015AC02 /* StatementTest.swift in Sources */,
 				EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */,

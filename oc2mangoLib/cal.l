@@ -26,7 +26,6 @@
     }
     static int string_input(char *buf, int need_len,int max_size)
     {
-        printf("%d %d\n",need_len,max_size);
         unsigned long len = st_source_len - st_current_char_index;
         if(len <= 0){
             return 0;

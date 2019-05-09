@@ -42,6 +42,9 @@
                   Identifier = "ClassDeclareTest">
                </Test>
                <Test
+                  Identifier = "StatementTest">
+               </Test>
+               <Test
                   Identifier = "StatementTest/testDoWhileStatement()">
                </Test>
                <Test
