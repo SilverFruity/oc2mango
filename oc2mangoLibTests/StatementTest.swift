@@ -22,6 +22,8 @@ class StatementTest: XCTestCase {
 """
 @implementation Demo
 - (Demo *)objectMethods{
+    self.callback(response,data,error);
+    self.callback(self,@(20),@"123");
     [[NSObject new] test];
     [[self.x method].y method1];
     [[object setValue:self forKey:@"name"] test:@"string"];
@@ -29,6 +31,17 @@ class StatementTest: XCTestCase {
     [object setCallBack:^(NSString *name){
 
     }];
+    [object setValue:[NSObject new]];
+    [object setValue:[NSObject new].x];
+    [self.chartView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(back.mas_bottom);
+        make.left.right.equalTo(self.view);
+        make.height.equalTo(@(240));
+    }];
+    make.top.equalTo(back.mas_bottom);
+    make.left.right.equalTo(self.view);
+    make.height.equalTo(@(240));
+    
 }
 @end
 """
@@ -37,7 +50,7 @@ class StatementTest: XCTestCase {
         let classImp : ClassImplementation  = ocparser.classImps!.firstObject as! ClassImplementation
         let methodImp : MethodImplementation = classImp.methodImps!.firstObject as! MethodImplementation
         let funcImp : FunctionImp = methodImp.imp;
-        XCTAssert(funcImp.expressions.count == 5);
+        XCTAssert(funcImp.expressions.count > 0);
         print(funcImp.expressions);
     }
     func testIfStatement(){

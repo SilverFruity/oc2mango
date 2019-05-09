@@ -9,6 +9,9 @@
 @implementation OCValue {
 
 }
+- (NSString *)description{
+    return [NSString stringWithFormat:@"<OCValue:%d>",self.value_type];
+}
 @end
 @implementation OCMethodCallNormalElement
 - (instancetype)init {
@@ -40,9 +43,9 @@
 }
 - (NSString *)description{
     if (self.values.count > 0) {
-        return [NSString stringWithFormat:@".%@(%@)",self.name,self.values];
+        return [NSString stringWithFormat:@"%@(%@)",self.name,self.values];
     }else{
-        return [NSString stringWithFormat:@".%@",self.name];
+        return [NSString stringWithFormat:@"%@",self.name];
     }
 }
 @end
@@ -51,6 +54,11 @@
 
 }
 - (NSString *)description{
-    return [NSString stringWithFormat:@"[%@ %@]",self.caller,self.element];
+    if ([self.element isKindOfClass:[OCMethodCallGetElement class]]) {
+        return [NSString stringWithFormat:@"%@.%@",self.caller,self.element];
+    }else{
+        return [NSString stringWithFormat:@"[%@ %@]",self.caller,self.element];
+    }
+    
 }
 @end

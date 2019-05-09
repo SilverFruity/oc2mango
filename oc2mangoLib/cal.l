@@ -1,29 +1,32 @@
+/* 不需要yywrap */
+%option noyywrap
 %{
     #include <Foundation/Foundation.h>
     #include "y.tab.h"
     
-    int yywrap(){
-        return 1;
-    }
-    
     // 自定义输入源
     // 替换宏定义 YY_INPUT DriveData->项目名/*/*.yy.c 修改文件输入流
     #undef YY_INPUT
-    #define YY_INPUT(buf, result, max_size) (result = string_input(buf, max_size))
+    #define YY_INPUT(buf, result, max_size) (result = string_input(buf, result,max_size))
     #define TypeReturn(Type) yylval.identifier =(__bridge_retained void *)[NSString stringWithFormat:@"%@",@#Type]; return _##Type;
     #define smaller(a, b) ((a) < (b) ? (a) : (b))
     #define larger(a, b) ((a) > (b) ? (a) : (b))
     static char const *st_source_string;
     static unsigned long st_current_char_index;
     static unsigned long st_source_len;
+    unsigned long lex_read_line = 1;
+    unsigned long lex_read_column = 1;
     void yy_set_source_string(char const *source)
     {
         st_source_string = source;
         st_current_char_index = 0;
         st_source_len = strlen(source);
+        lex_read_line = 1;
+        lex_read_column = 1;
     }
-    static int string_input(char *buf, int max_size)
+    static int string_input(char *buf, int need_len,int max_size)
     {
+        printf("%d %d\n",need_len,max_size);
         unsigned long len = st_source_len - st_current_char_index;
         if(len <= 0){
             return 0;
@@ -33,7 +36,9 @@
         st_current_char_index += len;
         return (int)len;
     }
+
 %}
+
 %start C_COMMENT CC_COMMENT STRING_LITERAL_STATE
 %%
 
@@ -211,10 +216,10 @@ BEGIN STRING_LITERAL_STATE;
 }
 
 <INITIAL>[\t] ;
-<INITIAL>[\n] ;
+<INITIAL>[\n] { lex_read_column = 1; lex_read_line++; };
 
-<INITIAL>"/*" {    BEGIN C_COMMENT; }
-<INITIAL>"//" { BEGIN CC_COMMENT; }
+<INITIAL>"/*" {  BEGIN C_COMMENT; }
+<INITIAL>"//" {  BEGIN CC_COMMENT; }
 <INITIAL>. ;
 
 <C_COMMENT>\n;
@@ -230,8 +235,8 @@ BEGIN STRING_LITERAL_STATE;
 
 
 <STRING_LITERAL_STATE>\" {
-    yylval.identifier = (void *)yytext;
     BEGIN  INITIAL;
+    yylval.identifier = (void *)yytext;
     return STRING_LITERAL;
 }
 

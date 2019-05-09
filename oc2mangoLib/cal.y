@@ -35,12 +35,12 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <include> PS_Define includeHeader
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare 
-%type  <declare>  value_declare block_declare block_parameteres class_property_type
-%type  <type> value_declare_type block_type method_caller_type value_type
+%type  <declare>  value_declare block_declare block_declare_parameters class_property_type
+%type  <type> value_declare_type block_type method_caller_type value_type object_value_type
 %type  <implementation> class_implementation  objc_method_call
 %type  <expression> numerical_value_type block_implementation assign_operator unary_operator binary_operator 
 judgement_operator ternary_expression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  control_expression
-expression objc_method_call_pramameters
+expression objc_method_call_pramameters objc_method_get value_expression_list
 
 %%
 
@@ -303,20 +303,20 @@ block_declare:
             {
                 $$ = _vretained makeVariableDeclare(makeTypeSpecial(SpecialTypeBlock),(__bridge NSString *)$4);
             }
-            | block_declare LP block_parameteres RP
+            | block_declare LP block_declare_parameters RP
             ;
 block_type: 
              value_declare_type LP POWER RP
-            | block_type LP block_parameteres RP
+            | block_type LP block_declare_parameters RP
             ;
 
 block_parametere_type: 
               value_declare
             | value_declare_type
             ;
-block_parameteres: /* empty */
+block_declare_parameters: /* empty */
             | block_parametere_type
-            | block_parameteres COMMA block_parametere_type 
+            | block_declare_parameters COMMA block_parametere_type 
             ;
 
 method_declare:
@@ -343,11 +343,23 @@ method_declare:
                 $$ = _vretained method;
             }
             ;
-            
-method_caller_type:
-         value_type
-         // Get
-         | value_type DOT IDENTIFIER
+
+value_expression_list:
+            value_expression
+            {
+                NSMutableArray *list = [NSMutableArray array];
+				[list addObject:_transfer(id)$1];
+				$$ = _vretained list;
+            }
+            | value_expression_list COMMA value_expression
+            {
+                NSMutableArray *list = (__bridge_transfer NSMutableArray *)$1;
+				[list addObject:_transfer(id) $3];
+				$$ = (__bridge_retained void *)list;
+            }
+            ;
+objc_method_get:
+         object_value_type DOT IDENTIFIER
          {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$1;
@@ -360,7 +372,7 @@ method_caller_type:
              $$ = _vretained methodcall;
          }
          // Block Get
-         | value_type DOT IDENTIFIER LP value_expression RP
+         | object_value_type DOT IDENTIFIER LP value_expression_list RP
          {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$1;
@@ -373,6 +385,36 @@ method_caller_type:
 
              $$ = _vretained methodcall;
          }
+         // Get
+         | objc_method_get DOT IDENTIFIER
+         {
+             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+             methodcall.caller =  _transfer(OCValue *)$1;
+
+             OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
+             element.name = _transfer(NSString *)$3;
+             methodcall.element = element;
+
+             $$ = _vretained methodcall;
+         }
+         // Block Get
+         | objc_method_get DOT IDENTIFIER LP value_expression_list RP
+         {
+             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+             methodcall.caller =  _transfer(OCValue *)$1;
+
+             OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
+             element.name = _transfer(NSString *)$3;
+             [element.values addObject:_transfer(id) $5];
+             methodcall.element = element;
+
+             $$ = _vretained methodcall;
+         }
+        ;
+
+method_caller_type:
+         object_value_type
+         | objc_method_get
          ;
 objc_method_call_pramameters:
         IDENTIFIER
@@ -398,7 +440,8 @@ objc_method_call_pramameters:
         ;
 
 objc_method_call:
-        LB method_caller_type objc_method_call_pramameters RB
+        objc_method_get
+        | LB method_caller_type objc_method_call_pramameters RB
         {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$2;
@@ -408,18 +451,15 @@ objc_method_call:
         }
         ;
 
-numerical_value_type:
-          INTETER_LITERAL
-        | DOUBLE_LITERAL
-        ;
+
 
 block_implementation: 
-        value_declare_type POWER LP block_parameteres RP function_implementation
+        value_declare_type POWER LP block_declare_parameters RP function_implementation
         | POWER function_implementation
-        | POWER LP block_parameteres RP function_implementation  
+        | POWER LP block_declare_parameters RP function_implementation  
         ;
 
-value_type:
+object_value_type:
         IDENTIFIER
         {
             $$ = _vretained makeValue(OCValueObject);
@@ -446,6 +486,16 @@ value_type:
         {
             $$ = _vretained makeValue(OCValueString);
         }
+        | objc_method_call
+        ;
+
+numerical_value_type:
+          INTETER_LITERAL
+        | DOUBLE_LITERAL
+        ;
+
+value_type:
+        object_value_type
         | STRING_LITERAL
         {
             $$ = _vretained makeValue(OCValueCString);
@@ -454,7 +504,6 @@ value_type:
         {
             $$ = _vretained makeValue(OCValueBlock);
         }
-        | objc_method_call
         | numerical_value_type
         {
             $$ = _vretained makeValue(OCValueNumber);
@@ -656,7 +705,9 @@ function_implementation:
 
 %%
 int yyerror(char *s){
-    printf("error: %s\n",s);
+    extern unsigned long lex_read_line;
+    extern unsigned long lex_read_column;
+    printf("------yyerror------\nline:%lu error: %s\n-------------------\n",lex_read_line,s);
     return 0;
 }
 
