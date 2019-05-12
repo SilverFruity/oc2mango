@@ -385,6 +385,7 @@
 				EED67A6A2270AE0E0015AC02 /* Sources */,
 				EED67A6B2270AE0E0015AC02 /* Frameworks */,
 				EED67A6C2270AE0E0015AC02 /* Resources */,
+				EE1C71F522884BA40077A71E /* TODO Warning */,
 			);
 			buildRules = (
 			);
@@ -471,6 +472,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		EE1C71F522884BA40077A71E /* TODO Warning */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "TODO Warning";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "KEYWORDS=\"TODO:|FIXME:|DevTeam:|XXX:\"\nfind \"${SRCROOT}\" \\( -name \"*.h\" -or -name \"*.m\" -or -name \"*.l\" -or -name \"*.y\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($KEYWORDS).*\\$\" | perl -p -e \"s/($KEYWORDS)/ warning: \\$1/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EE6E6CCB225E488000616C7E /* Sources */ = {
