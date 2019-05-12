@@ -39,16 +39,16 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "AssignExpressionTest">
+               </Test>
+               <Test
                   Identifier = "ClassDeclareTest">
                </Test>
                <Test
+                  Identifier = "MethodCallTest">
+               </Test>
+               <Test
                   Identifier = "StatementTest">
-               </Test>
-               <Test
-                  Identifier = "StatementTest/testDoWhileStatement()">
-               </Test>
-               <Test
-                  Identifier = "StatementTest/testIfStatement()">
                </Test>
             </SkippedTests>
          </TestableReference>

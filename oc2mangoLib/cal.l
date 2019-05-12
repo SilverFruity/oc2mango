@@ -11,7 +11,7 @@
     #define TypeReturn(Type) yylval.identifier =(__bridge_retained void *)[NSString stringWithFormat:@"%@",@#Type]; return _##Type;
     #define smaller(a, b) ((a) < (b) ? (a) : (b))
     #define larger(a, b) ((a) > (b) ? (a) : (b))
-    static char const *st_source_string;
+    char const *st_source_string;
     static unsigned long st_current_char_index;
     static unsigned long st_source_len;
     unsigned long lex_read_line = 1;
@@ -123,6 +123,8 @@
 <INITIAL>"BOOL" { TypeReturn(BOOL); }
 <INITIAL>"void" { TypeReturn(void); }
 <INITIAL>"id" { TypeReturn(id); }
+<INITIAL>"instancetype" { TypeReturn(instancetype); }
+
 
 <INITIAL>"return" { TypeReturn(return); }
 <INITIAL>"for" { TypeReturn(for); }
@@ -152,6 +154,8 @@
 <INITIAL>"unsigned long long" { TypeReturn(ULLONG); }
 <INITIAL>"NSUInteger" { TypeReturn(ULONG); }
 
+<INITIAL>"typeof" { TypeReturn(typeof); }
+<INITIAL>"enum" { TypeReturn(enum); }
 <INITIAL>"char" { TypeReturn(CHAR); }
 <INITIAL>"short" { TypeReturn(SHORT); }
 <INITIAL>"int" { TypeReturn(INT); }
@@ -221,13 +225,14 @@ BEGIN STRING_LITERAL_STATE;
 <INITIAL>"//" {  BEGIN CC_COMMENT; }
 <INITIAL>. ;
 
-<C_COMMENT>\n;
+<C_COMMENT>\n { lex_read_line++; };
 <C_COMMENT>. ;
 <C_COMMENT>"*/"    { BEGIN INITIAL; }
 <C_COMMENT><<EOF>>   ;
 
 <CC_COMMENT>.    ;
 <CC_COMMENT>\n    {
+    lex_read_line++;
     BEGIN INITIAL;
 }
 <CC_COMMENT><<EOF>> { BEGIN INITIAL; }

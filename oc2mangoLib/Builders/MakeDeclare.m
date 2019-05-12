@@ -87,9 +87,13 @@ OCValue *makeValue(OC_VALUE_TYPE type){
         case OCValueNULL:
         case OCValuePointValue:
         case OCValueVarPoint:
+        case OCValueSelector:
             value = [OCValue new];
             break;
         case OCValueMethodCall:
+            value = [OCMethodCall new];
+            break;
+        case OCValueFuncCall:
             value = [OCMethodCall new];
             break;
     }
@@ -120,4 +124,55 @@ BinaryExpression *makeBinaryExpression(BinaryOperatorType type)
 }
 TernaryExpression *makeTernaryExpression(){
     return [TernaryExpression  new];
+}
+
+DeclareAssignExpression *makeDeaclareAssignExpression(VariableDeclare *declare)
+{
+    DeclareAssignExpression *expression = [DeclareAssignExpression new];
+    expression.declare = declare;
+    return expression;
+}
+VariableAssignExpression *makeVarAssignExpression(AssignOperatorType type){
+    VariableAssignExpression *expression = [VariableAssignExpression new];
+    expression.assignType = type;
+    return expression;
+}
+
+
+
+IfStatement *makeIfStatement(id <Expression> judgement, FunctionImp *imp){
+    IfStatement *statement = [IfStatement new];
+    statement.funcImp = imp;
+    statement.condition = judgement;
+    return statement;
+}
+WhileStatement *makeWhileStatement(id <Expression>judgement, FunctionImp *imp){
+    WhileStatement *statement = [WhileStatement new];
+    statement.funcImp = imp;
+    return statement;
+}
+DoWhileStatement *makeDoWhileStatement(id <Expression>judgement, FunctionImp *imp){
+    DoWhileStatement *statement = [DoWhileStatement new];
+    statement.funcImp = imp;
+    return statement;
+}
+extern CaseStatement *makeCaseStatement(OCValue *value){
+    CaseStatement *statement = [CaseStatement new];
+    statement.value = value;
+    return statement;
+}
+SwitchStatement *makeSwitchStatement(OCValue *value){
+    SwitchStatement *statement = [SwitchStatement new];
+    statement.value = value;
+    return statement;
+}
+ForStatement *makeForStatement(FunctionImp *imp){
+    ForStatement *statement = [ForStatement new];
+    statement.funcImp = imp;
+    return statement;
+}
+ForInStatement *makeForInStatement(FunctionImp *imp){
+    ForInStatement *statement = [ForInStatement new];
+    statement.funcImp = imp;
+    return statement;
 }

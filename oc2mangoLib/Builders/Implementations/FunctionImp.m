@@ -11,7 +11,6 @@
 @implementation FunctionImp
 - (instancetype)init {
     self = [super init];
-    self.expressions = [NSMutableArray array];
     self.statements = [NSMutableArray array];
     return self;
 }

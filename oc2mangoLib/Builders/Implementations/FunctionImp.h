@@ -10,6 +10,5 @@
 #import "Statement.h"
 #import "Expression.h"
 @interface FunctionImp : NSObject
-@property NSMutableArray <id <Expression>>* expressions;
-@property NSMutableArray <Statement  *>* statements;
+@property NSMutableArray * statements;
 @end

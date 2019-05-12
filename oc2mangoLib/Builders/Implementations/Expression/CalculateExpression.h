@@ -19,6 +19,7 @@ typedef enum {
 }UnaryOperatorType;
 
 @interface UnaryExpression: CalculateExpression
+@property (nonatomic,strong)id <ValueExpression> value;
 @property (nonatomic,assign)UnaryOperatorType operatorType;
 @end
 
@@ -44,4 +45,5 @@ typedef enum {
 @interface TernaryExpression : CalculateExpression
 @property (nonatomic,strong)JudgementExpression *judgeExpression;
 @property (nonatomic,strong)NSMutableArray <id <ValueExpression>>*values;
+
 @end

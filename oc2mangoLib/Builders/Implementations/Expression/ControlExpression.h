@@ -17,4 +17,5 @@ typedef enum{
 // MARK: - Control
 @interface ControlExpression: NSObject <Expression>
 @property (nonatomic,assign)ControlExpressionType controlType;
+@property (nonatomic,strong)id <ValueExpression> expression;
 @end

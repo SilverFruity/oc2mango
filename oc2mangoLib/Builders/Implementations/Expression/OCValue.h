@@ -12,6 +12,7 @@ typedef enum {
     OCValueSelf,
     OCValueSuper,
     OCValueBlock,
+    OCValueSelector,
     OCValueDictionary,
     OCValueArray,
     OCValueNSNumber,
@@ -23,7 +24,8 @@ typedef enum {
     OCValueNULL,
     OCValuePointValue,
     OCValueVarPoint,
-    OCValueMethodCall
+    OCValueMethodCall,
+    OCValueFuncCall
 }OC_VALUE_TYPE;
 
 @interface OCValue: NSObject <ValueExpression>

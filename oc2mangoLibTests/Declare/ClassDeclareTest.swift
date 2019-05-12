@@ -22,10 +22,12 @@ class ClassDeclareTest: XCTestCase {
         let source =
 """
 @interface Demo: NSObject
+- (instancetype)initWithBaseUrl:(NSURL *)baseUrl;
 @end
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.classInterfaces.count == 1)
+        XCTAssert(ocparser.error == nil)
         let declare: ClassDeclare = ocparser.classInterfaces?.firstObject as! ClassDeclare
         XCTAssert(declare.categoryName == nil)
         XCTAssert(declare.className == "Demo")

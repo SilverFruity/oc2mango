@@ -13,7 +13,12 @@
 @interface Parser : NSObject
 @property(nonatomic,strong)NSMutableArray <ClassDeclare *>*classInterfaces;
 @property(nonatomic,strong)NSMutableArray <ClassImplementation *>*classImps;
+@property(nonatomic,nullable,copy)NSString *error;
+@property(nonatomic,nullable,copy)NSString *source;
+
+- (nonnull NSArray *)expressions;
+- (nonnull NSArray *)statements;
 + (instancetype)shared;
-- (void)parseSource:(NSString *)source;
+- (void)parseSource:(nullable NSString *)source;
 - (void)clear;
 @end

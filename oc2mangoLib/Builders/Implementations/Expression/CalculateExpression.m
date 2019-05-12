@@ -22,5 +22,10 @@
 @end
 
 @implementation TernaryExpression
-
+- (instancetype)init
+{
+    self = [super init];
+    self.values = [NSMutableArray array];
+    return self;
+}
 @end
