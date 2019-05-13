@@ -12,6 +12,8 @@
 		606F04C9061EDFA1537A0326 /* JudgementExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F05170E1D12991EF44F2E /* JudgementExpression.m */; };
 		606F0CFF2C3466DF8008ED43 /* CalculateExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */; };
 		606F0D79DBF761E8157171FB /* AssignExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F4E67BF3B652ED16B8C /* AssignExpression.m */; };
+		6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */; };
+		6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */; };
 		EE127792228084260065B1E4 /* AssignExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F5861A2716E15003E7D /* AssignExpression.h */; };
 		EE127793228084260065B1E4 /* AssignExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F4E67BF3B652ED16B8C /* AssignExpression.m */; };
 		EE127794228084260065B1E4 /* CalculateExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0644932CF15853A6BAA9 /* CalculateExpression.h */; };
@@ -108,6 +110,8 @@
 		606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalculateExpression.m; sourceTree = "<group>"; };
 		606F0F4E67BF3B652ED16B8C /* AssignExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssignExpression.m; sourceTree = "<group>"; };
 		606F0F5861A2716E15003E7D /* AssignExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssignExpression.h; sourceTree = "<group>"; };
+		6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FuncDeclare.h; sourceTree = "<group>"; };
+		6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FuncDeclare.m; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
 		EE1C71E522880AED0077A71E /* AssignExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignExpressionTest.swift; sourceTree = "<group>"; };
 		EE1C71ED22882DBF0077A71E /* TestSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestSource.h; sourceTree = "<group>"; };
@@ -271,6 +275,8 @@
 				EE982F00226CA69B008712C2 /* PropertyDeclare.m */,
 				EE982F02226CB3C7008712C2 /* MethodDeclare.h */,
 				EE982F03226CB3C7008712C2 /* MethodDeclare.m */,
+				6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */,
+				6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */,
 			);
 			path = Declares;
 			sourceTree = "<group>";
@@ -349,6 +355,7 @@
 				EED67AB32270B51B0015AC02 /* Statement.h in Headers */,
 				EE1C71E7228829E90077A71E /* AssignExpression.h in Headers */,
 				EE1C71E8228829E90077A71E /* CalculateExpression.h in Headers */,
+				6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */,
 				EE1C71E9228829E90077A71E /* ControlExpression.h in Headers */,
 				EE1C71EA228829E90077A71E /* JudgementExpression.h in Headers */,
 				EE1C71EB228829E90077A71E /* OCValue.h in Headers */,
@@ -523,6 +530,7 @@
 				EE127799228084260065B1E4 /* JudgementExpression.h in Sources */,
 				EE12779A228084260065B1E4 /* JudgementExpression.m in Sources */,
 				EE12779B228084260065B1E4 /* OCValue.h in Sources */,
+				6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */,
 				EE12779C228084260065B1E4 /* OCValue.m in Sources */,
 				EED67A9B2270B0CA0015AC02 /* VariableDeclare.m in Sources */,
 				EED67A9C2270B0CA0015AC02 /* PropertyDeclare.m in Sources */,

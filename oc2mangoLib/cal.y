@@ -444,7 +444,6 @@ objc_method_call_pramameters:
         {
             OCMethodCallNormalElement *element = makeMethodCallElement(OCMethodCallNormalCall);
             [element.names addObject:_transfer(NSString *)$1];
-            log($3);
             [element.values addObject:_transfer(id)$3];
             $$ = _vretained element;
         }

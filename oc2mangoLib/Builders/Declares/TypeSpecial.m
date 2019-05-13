@@ -43,7 +43,7 @@
         case SpecialTypeId:
             return @"id";
         case SpecialTypeObject:
-            return _name;
+            return [NSString stringWithFormat:@"%@ *",_name];
         case SpecialTypeBlock:
             return @"Block";
         default:

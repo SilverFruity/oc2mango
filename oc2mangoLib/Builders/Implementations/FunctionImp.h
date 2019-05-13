@@ -12,3 +12,7 @@
 @interface FunctionImp : NSObject
 @property NSMutableArray * statements;
 @end
+
+@interface BlockImp : NSObject
+@property FunctionImp *funcImp;
+@end
