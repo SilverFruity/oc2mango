@@ -53,6 +53,7 @@
 - (NSURLSessionDataTask *)request:(NSURLRequest *)request
                            plugin:(NSString *)plugin
                        completion:(void(^)(NSHTTPURLResponse *response, id data ,NSError * error))completion{
+    @selector(handleWithRequest:Reponse:data:error:);
     NSMutableArray *plugins = [NSMutableArray array];
     while (plugin) {
         [plugins addObject:plugin];

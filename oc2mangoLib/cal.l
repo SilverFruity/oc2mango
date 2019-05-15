@@ -123,8 +123,7 @@
 <INITIAL>"__weak"  { yylval.identifier =(__bridge_retained void *)@"__weak"; return _WEAK; }
 <INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
 
-<INITIAL>"@selector" {return SELECTOR; }
-
+<INITIAL>"@selector\("[^()]*+"\)" {yylval.identifier = (__bridge_retained void *)@"selector value";  return SELECTOR; }
 <INITIAL>"SEL" { TypeReturn(SEL); }
 <INITIAL>"Class" { TypeReturn(Class);}
 <INITIAL>"BOOL" { TypeReturn(BOOL); }

@@ -37,7 +37,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare 
 %type  <declare>  value_declare block_declare func_declare_parameters class_property_type
-%type  <type> value_declare_type block_parametere_type block_type method_caller_type value_type object_value_type selector_value_type
+%type  <type> value_declare_type block_parametere_type block_type method_caller_type value_type object_value_type 
 %type  <implementation> class_implementation  objc_method_call
 %type  <expression> numerical_value_type block_implementation declare_assign_expression var_assign_expression
  ternary_expression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  control_expression
@@ -523,19 +523,6 @@ block_implementation:
             $$ = _vretained imp; 
         }
         ;
-// FIXME: implementation selector_value_type;
-selector_value_type:
-        SELECTOR LP IDENTIFIER RP
-        {
-            $$ = _vretained makeValue(OCValueSelector);
-        }
-        | SELECTOR LP IDENTIFIER COLON
-        {
-            $$ = _vretained makeValue(OCValueSelector);
-        }
-        | selector_value_type IDENTIFIER COLON
-        | selector_value_type RP
-        ;
 object_value_type:
         IDENTIFIER
         {
@@ -579,7 +566,10 @@ numerical_value_type:
 
 value_type:
         object_value_type
-        | selector_value_type
+        | SELECTOR
+        {
+            $$ = _vretained makeValue(OCValueSelector);
+        }
         | PROTOCOL LP IDENTIFIER RP
         | STRING_LITERAL
         {
