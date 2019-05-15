@@ -62,3 +62,10 @@
     
 }
 @end
+
+@implementation BlockImp
+- (NSString *)description{
+    return [NSString stringWithFormat:@"%@(%@)%@",self.returnType,self.varibles,self.funcImp];
+}
+
+@end

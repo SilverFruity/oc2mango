@@ -75,7 +75,6 @@ OCValue *makeValue(OC_VALUE_TYPE type){
         case OCValueObject:
         case OCValueSelf:
         case OCValueSuper:
-        case OCValueBlock:
         case OCValueDictionary:
         case OCValueArray:
         case OCValueNSNumber:
@@ -95,6 +94,9 @@ OCValue *makeValue(OC_VALUE_TYPE type){
             break;
         case OCValueFuncCall:
             value = [OCMethodCall new];
+            break;
+        case OCValueBlock:
+            value = [BlockImp new];
             break;
     }
     value.value_type = type;

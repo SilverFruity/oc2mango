@@ -115,6 +115,13 @@
 <INITIAL>"atomic" { yylval.identifier =(__bridge_retained void *)@"atomic"; return ATOMIC; }
 <INITIAL>"readonly" { yylval.identifier =(__bridge_retained void *)@"readonly"; return READONLY; }
 <INITIAL>"readwrite" { yylval.identifier =(__bridge_retained void *)@"readwrite"; return READWRITE; }
+<INITIAL>"nonnull" { yylval.identifier =(__bridge_retained void *)@"nonnull"; return NONNULL; }
+<INITIAL>"nullable" { yylval.identifier =(__bridge_retained void *)@"nullable"; return NULLABLE; }
+<INITIAL>"_Nonnull" { yylval.identifier =(__bridge_retained void *)@"_Nonnull"; return _NONNULL; }
+<INITIAL>"_Nullable" { yylval.identifier =(__bridge_retained void *)@"_Nullable"; return _NULLABLE; }
+<INITIAL>"__strong" { yylval.identifier =(__bridge_retained void *)@"__strong"; return _STRONG; }
+<INITIAL>"__weak"  { yylval.identifier =(__bridge_retained void *)@"__weak"; return _WEAK; }
+<INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
 
 <INITIAL>"@selector" {return SELECTOR; }
 

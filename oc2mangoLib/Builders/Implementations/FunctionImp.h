@@ -8,11 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "Statement.h"
-#import "Expression.h"
 @interface FunctionImp : NSObject
-@property NSMutableArray * statements;
-@end
-
-@interface BlockImp : NSObject
-@property FunctionImp *funcImp;
+@property(nonatomic,strong)NSMutableArray * statements;
 @end

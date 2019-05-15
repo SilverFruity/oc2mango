@@ -27,9 +27,8 @@ class FileTest: XCTestCase {
         XCTAssert(ocparser.source != nil)
         XCTAssert(ocparser.error == nil)
         for imp: ClassImplementation in ocparser.classImps as! [ClassImplementation] {
-//            print(imp.methodImps.lastObject!)
+            print(imp.methodImps.lastObject!)
         }
-        print(ocparser.statements())
     }
 
 

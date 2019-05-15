@@ -24,7 +24,7 @@
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE 
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof
 %token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
-%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE
+%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE _NONNULL _NULLABLE _STRONG _WEAK _BLOCK
 %token <identifier> IDENTIFIER STRING_LITERAL
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -37,7 +37,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare 
 %type  <declare>  value_declare block_declare func_declare_parameters class_property_type
-%type  <type> value_declare_type block_type method_caller_type value_type object_value_type selector_value_type
+%type  <type> value_declare_type block_parametere_type block_type method_caller_type value_type object_value_type selector_value_type
 %type  <implementation> class_implementation  objc_method_call
 %type  <expression> numerical_value_type block_implementation declare_assign_expression var_assign_expression
  ternary_expression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  control_expression
@@ -137,10 +137,10 @@ class_implementation:
                 imp.privateVariables = _transfer(NSMutableArray *)$2;
                 $$ = _vretained imp;
             }
-            | class_implementation method_declare function_implementation
+            | class_implementation method_declare LC function_implementation RC
             {
                 MethodImplementation *imp = makeMethodImplementation(_transfer(MethodDeclare *) $2);
-                FunctionImp * funcImp = _transfer(FunctionImp *) $3;
+                FunctionImp * funcImp = _transfer(FunctionImp *) $4;
                 imp.imp = funcImp;
                 ClassImplementation *clasImp = _transfer(ClassImplementation *) $1;
                 [clasImp.methodImps addObject:imp];
@@ -188,6 +188,8 @@ class_property_type:
             | ATOMIC
             | READONLY 
             | READWRITE
+            | NONNULL
+            | NULLABLE
             ;
 
 class_property_declare:
@@ -283,6 +285,10 @@ value_declare_type:  _UCHAR
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeId);
             }
+            | _id LE IDENTIFIER GT
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeId);
+            }
             | _void
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeVoid);
@@ -292,6 +298,10 @@ value_declare_type:  _UCHAR
                 $$ = _vretained makeTypeSpecial(SpecialTypeId);
             }
             | IDENTIFIER ASTERISK
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
+            }
+            | IDENTIFIER LE IDENTIFIER GT ASTERISK
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
             }
@@ -328,12 +338,25 @@ block_type:
             ;
 
 block_parametere_type: 
-              value_declare
+            value_declare
             | value_declare_type
             ;
 func_declare_parameters: /* empty */
+            {
+                $$ = _vretained [NSMutableArray array];
+            }
             | block_parametere_type
+            {
+                NSMutableArray *array = [NSMutableArray array];
+                [array addObject:_transfer(id)$1];
+                $$ = _vretained array;
+            }
             | func_declare_parameters COMMA block_parametere_type 
+            {
+                NSMutableArray *array = _transfer(NSMutableArray *)$1;
+                [array addObject:_transfer(id) $3];
+                $$ = _vretained array;
+            }
             ;
 
 method_declare:
@@ -468,14 +491,39 @@ objc_method_call:
         }
         ;
 
-
 block_implementation:
-        POWER value_declare_type function_implementation
-        | POWER value_declare_type LP func_declare_parameters RP function_implementation
-        | POWER function_implementation
-        | POWER LP func_declare_parameters RP function_implementation  
+        POWER value_declare_type LC function_implementation RC
+        {
+            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            imp.funcImp = _transfer(id)$4;
+            imp.returnType = _transfer(id) $2;
+            $$ = _vretained imp; 
+        }
+        | POWER value_declare_type LP func_declare_parameters RP LC function_implementation RC
+        {
+            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            imp.funcImp = _transfer(id)$6;
+            imp.returnType = _transfer(id)$2;
+            imp.varibles = _transfer(id)$4;
+            $$ = _vretained imp; 
+        }
+        | POWER LC function_implementation RC
+        {
+            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            imp.funcImp = _transfer(id)$2;
+            imp.returnType = makeTypeSpecial(SpecialTypeVoid);
+            $$ = _vretained imp; 
+        }
+        | POWER LP func_declare_parameters RP LC function_implementation RC
+        {
+            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            imp.funcImp = _transfer(id)$6;
+            imp.returnType = makeTypeSpecial(SpecialTypeVoid);
+            imp.varibles = _transfer(id) $3;
+            $$ = _vretained imp; 
+        }
         ;
-// FIXME: implementation selector_value_type
+// FIXME: implementation selector_value_type;
 selector_value_type:
         SELECTOR LP IDENTIFIER RP
         {
@@ -532,14 +580,12 @@ numerical_value_type:
 value_type:
         object_value_type
         | selector_value_type
+        | PROTOCOL LP IDENTIFIER RP
         | STRING_LITERAL
         {
             $$ = _vretained makeValue(OCValueCString);
         }
         | block_implementation
-        {
-            $$ = _vretained makeValue(OCValueBlock);
-        }
         | numerical_value_type
         {
             $$ = _vretained makeValue(OCValueNumber);
@@ -828,38 +874,38 @@ expression:
         ;
 
 if_statement:
-         IF LP value_expression RP function_implementation
+         IF LP value_expression RP LC function_implementation RC
          {
-            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(FunctionImp *)$4);
+            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(FunctionImp *)$5);
             $$ = _vretained statement;
          }
-        | if_statement _else IF LP value_expression RP function_implementation
+        | if_statement _else IF LP value_expression RP LC function_implementation RC
         {
             IfStatement *statement = _transfer(IfStatement *)$1;
-            IfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(FunctionImp *)$7);
+            IfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(FunctionImp *)$8);
             elseIfStatement.last = statement;
             $$  = _vretained elseIfStatement;
         }
-        | if_statement _else function_implementation
+        | if_statement _else LC function_implementation RC
         {
             IfStatement *statement = _transfer(IfStatement *)$1;
-            IfStatement *elseStatement = makeIfStatement(nil,_transfer(FunctionImp *)$3);
+            IfStatement *elseStatement = makeIfStatement(nil,_transfer(FunctionImp *)$4);
             elseStatement.last = statement;
             $$  = _vretained elseStatement;
         }
         ;
 
 dowhile_statement: 
-        _do function_implementation _while LP value_expression RP
+        _do LC function_implementation RC _while LP value_expression RP
         {
-            DoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$5,_transfer(FunctionImp *)$2);
+            DoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$5,_transfer(FunctionImp *)$3);
             $$ = _vretained statement;
         }
         ;
 while_statement:
-        _while LP value_expression RP function_implementation
+        _while LP value_expression RP LC function_implementation RC
         {
-            WhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(FunctionImp *)$5);
+            WhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(FunctionImp *)$6);
             $$ = _vretained statement;
         }
         ;
@@ -880,10 +926,10 @@ case_statement:
         {
             $$ = _vretained makeCaseStatement(nil);
         }
-        | case_statement function_implementation
+        | case_statement LC function_implementation RC
         {
             CaseStatement *statement =  _transfer(CaseStatement *)$1;
-            statement.funcImp = _transfer(FunctionImp *) $2;
+            statement.funcImp = _transfer(FunctionImp *) $3;
             $$ = _vretained statement;
         }
         ;
@@ -920,17 +966,17 @@ for_parameter_list:
             $$ = _vretained expressions;
         }
         ;
-for_statement: _for LP for_parameter_list RP function_implementation
+for_statement: _for LP for_parameter_list RP LC function_implementation RC
         {
-            ForStatement* statement = makeForStatement(_transfer(FunctionImp *) $5);
+            ForStatement* statement = makeForStatement(_transfer(FunctionImp *) $6);
             statement.expressions = _transfer(NSMutableArray *) $3;
             $$ = _vretained statement;
         }
         ;
 
-forin_statement: _for LP value_declare _in value_type RP function_implementation
+forin_statement: _for LP value_declare _in value_type RP LC function_implementation RC
         {
-            ForInStatement * statement = makeForInStatement(_transfer(FunctionImp *)$7);
+            ForInStatement * statement = makeForInStatement(_transfer(FunctionImp *)$8);
             statement.declare = _transfer(id) $3;
             statement.value = _transfer(id)$5;
             $$ = _vretained statement;
@@ -948,7 +994,6 @@ control_statement:
 
 
 function_implementation:
-        LC
         {
             $$ = _vretained makeFuncImp();
         }
@@ -963,10 +1008,6 @@ function_implementation:
             FunctionImp *imp = _transfer(FunctionImp *)$1;
             [imp.statements addObject:_transfer(id) $2];
             $$ = _vretained imp;
-        }
-        | function_implementation RC
-        {
-            $$ = $1;
         }
         ;
         

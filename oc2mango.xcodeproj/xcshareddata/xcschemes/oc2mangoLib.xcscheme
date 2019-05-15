@@ -37,6 +37,20 @@
                BlueprintName = "oc2mangoLibTests"
                ReferencedContainer = "container:oc2mango.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AssignExpressionTest">
+               </Test>
+               <Test
+                  Identifier = "ClassDeclareTest">
+               </Test>
+               <Test
+                  Identifier = "MethodCallTest">
+               </Test>
+               <Test
+                  Identifier = "StatementTest">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

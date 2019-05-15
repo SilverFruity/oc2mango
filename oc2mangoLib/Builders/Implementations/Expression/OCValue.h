@@ -5,6 +5,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Expression.h"
+#import "Statement.h"
 
 // MARK: - ValueType
 typedef enum {
@@ -54,4 +55,12 @@ typedef enum{
 @interface OCMethodCall : OCValue
 @property (nonatomic, strong)OCValue *caller;
 @property (nonatomic, strong)id <OCMethodElement> element;
+@end
+
+
+
+@interface BlockImp : OCValue
+@property(nonatomic,strong) TypeSpecial *returnType;
+@property(nonatomic,strong) NSMutableArray <VariableDeclare *>*varibles;
+@property(nonatomic,strong) FunctionImp *funcImp;
 @end
