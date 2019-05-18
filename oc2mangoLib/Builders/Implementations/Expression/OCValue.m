@@ -64,8 +64,10 @@
 @end
 
 @implementation BlockImp
-- (NSString *)description{
-    return [NSString stringWithFormat:@"%@(%@)%@",self.returnType,self.varibles,self.funcImp];
+- (instancetype)init
+{
+    self = [super init];
+    self.declare  = [FuncDeclare new];
+    return self;
 }
-
 @end
