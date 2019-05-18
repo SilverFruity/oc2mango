@@ -1,6 +1,15 @@
 
 #import "SFHTTPClient.h"
 #import "SFHTTPPlugin.h"
+
+static NSString *queryPramameters(NSDictionary *param){
+    NSMutableArray *pairs = [NSMutableArray array];
+    [param enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        [pairs addObject:[NSString stringWithFormat:@"%@=%@",key,obj]];
+    }];
+    return [pairs componentsJoinedByString:@"&"];
+}
+
 @implementation SFHTTPClient{
     NSURL * _baseUrl;
 }

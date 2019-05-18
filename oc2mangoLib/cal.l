@@ -120,7 +120,7 @@
 <INITIAL>"nonnull" { yylval.identifier =(__bridge_retained void *)@"nonnull"; return NONNULL; }
 <INITIAL>"nullable" { yylval.identifier =(__bridge_retained void *)@"nullable"; return NULLABLE; }
 
-
+<INITIAL>"extern" { yylval.identifier =(__bridge_retained void *)@"extern"; return EXTERN; }
 <INITIAL>"static" { yylval.identifier =(__bridge_retained void *)@"static"; return STATIC; }
 <INITIAL>"const" { yylval.identifier =(__bridge_retained void *)@"const"; return CONST; }
 <INITIAL>"_Nonnull" { yylval.identifier =(__bridge_retained void *)@"_Nonnull"; return _NONNULL; }

@@ -27,7 +27,7 @@ extern void yyerror(const char *s);
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof _struct
 %token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
 %token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE 
-%token <identifier> STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK
+%token <identifier> EXTERN STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK
 %token <identifier> IDENTIFIER STRING_LITERAL
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -39,7 +39,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <identifier> class_property_type declare_left_attribute declare_right_attribute
 %type  <include> PS_Define includeHeader
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
-%type  <declare>  class_property_declare method_declare 
+%type  <declare>  class_property_declare method_declare c_func_declare
 %type  <declare>  value_declare block_declare func_declare_parameters 
 %type  <type> value_declare_type block_parametere_type block_type method_caller_type  object_value_type objc_method_call 
 %type  <implementation> class_implementation  
@@ -67,6 +67,8 @@ definition:
                 [OCParser.classImps addObject:_transfer(ClassImplementation *)$1];
             }
 // FIXME: C func declare && implementation
+            | c_func_declare SEMICOLON
+            | c_func_declare LC function_implementation RC
 			;
 PS_Define: 
             | PS PS_Define 
@@ -330,7 +332,8 @@ value_declare_type:  _UCHAR
             ;
 
 declare_left_attribute:
-            STATIC
+            EXTERN
+            | STATIC
             | CONST
             | NONNULL
             | NULLABLE
@@ -485,14 +488,14 @@ objc_method_call_pramameters:
             [element.names addObject:_transfer(NSString *)$1];
             $$ = _vretained element;
         }
-        | IDENTIFIER COLON value_expression
+        | IDENTIFIER COLON value_expression_list
         {
             OCMethodCallNormalElement *element = makeMethodCallElement(OCMethodCallNormalCall);
             [element.names addObject:_transfer(NSString *)$1];
             [element.values addObject:_transfer(id)$3];
             $$ = _vretained element;
         }
-        | objc_method_call_pramameters IDENTIFIER COLON value_expression
+        | objc_method_call_pramameters IDENTIFIER COLON value_expression_list
         {
             OCMethodCallNormalElement *element = _transfer(OCMethodCallNormalElement *)$1;
             [element.names addObject:_transfer(NSString *)$2];
@@ -999,6 +1002,9 @@ forin_statement: _for LP value_declare _in value_type RP LC function_implementat
         }
         ;
 
+c_func_declare:
+        value_declare_type IDENTIFIER LP func_declare_parameters RP 
+        ;
 control_statement: 
         if_statement
         | switch_statement
