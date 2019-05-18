@@ -10,16 +10,6 @@
 #import "JudgementExpression.h"
 
 
-ClassDeclare * makeClassDeclare(NSString *className){
-    ClassDeclare *declare = [ClassDeclare new];
-    declare.className = className;
-    declare.properties = [NSMutableArray array];
-    declare.protocolNames = [NSMutableArray array];
-    declare.privateVariables = [NSMutableArray array];
-    declare.methods = [NSMutableArray array];
-    return declare;
-}
-
 TypeSpecial *makeTypeSpecial(SpecialType type ,NSString *name){
     return [TypeSpecial specialWithType:type name:name];
 }
@@ -44,14 +34,12 @@ MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnType){
     return method;
 }
 
-ClassImplementation *makeClassImplementation(NSString *className){
-    ClassImplementation *imp = [ClassImplementation new];
-    imp.className = className;
-    imp.privateVariables = [NSMutableArray array];
-    imp.methodImps = [NSMutableArray array];
-    return imp;
+FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars){
+    FuncDeclare *decl = [FuncDeclare new];
+    decl.returnType = returnType;
+    decl.variables = vars;
+    return decl;
 }
-
 MethodImplementation *makeMethodImplementation(MethodDeclare *declare){
     MethodImplementation *imp = [MethodImplementation new];
     imp.declare = declare;

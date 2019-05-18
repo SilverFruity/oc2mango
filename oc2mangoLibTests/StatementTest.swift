@@ -34,10 +34,6 @@ class StatementTest: XCTestCase {
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.error == nil)
-        let statement: IfStatement = ocparser.statements().first as! IfStatement
-        XCTAssert(statement.last != nil)
-        XCTAssert(statement.condition == nil)
-        print(ocparser.statements())
         ocparser.clear()
     }
     func testDoWhileStatement(){
@@ -53,7 +49,6 @@ class StatementTest: XCTestCase {
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.error == nil)
-        XCTAssert(ocparser.statements().count > 0)
         
         ocparser.clear()
     }
@@ -102,7 +97,6 @@ class StatementTest: XCTestCase {
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.error == nil);
-        print(ocparser.statements().first! is SwitchStatement)
         ocparser.clear()
     }
     func testForStatement(){
@@ -119,7 +113,6 @@ class StatementTest: XCTestCase {
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.error == nil);
-        print(ocparser.statements())
         ocparser.clear()
     }
     
@@ -136,7 +129,6 @@ class StatementTest: XCTestCase {
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.error == nil);
-        print(ocparser.statements())
         ocparser.clear()
     }
 }

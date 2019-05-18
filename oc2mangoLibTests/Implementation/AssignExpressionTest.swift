@@ -31,8 +31,6 @@ class AssignExpressionTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.classImps.count > 0);
-        print(ocparser.expressions());
         ocparser.clear()
     }
 }

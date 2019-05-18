@@ -9,6 +9,22 @@ static NSString *queryPramameters(NSDictionary *param){
     }];
     return [pairs componentsJoinedByString:@"&"];
 }
+static NSString *name = @"";
+
+@interface SFHTTPClient : NSObject
+@property (nonatomic,readonly) NSURL *baseUrl;
+- (instancetype)initWithBaseUrl:(NSURL *)baseUrl;
+
+- (NSURLSessionDataTask *)requestWithMethod:(SFNHTTPMethod)method uri:(NSString *)uri parameters:(NSDictionary *)param plugin:(id <SFPlugin>)plugin completion:(HTTPHandler)completion;
+
+- (NSMutableURLRequest *)createRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)URLString parameters:(nullable NSDictionary *)param;
+
+- (NSMutableURLRequest *)createEncryptedRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)URLString parameters:(NSDictionary *)param;
+
+
+- (NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id <SFPlugin>)plugin completion:(HTTPHandler)completion;
+@end
+
 
 @implementation SFHTTPClient{
     NSURL * _baseUrl;

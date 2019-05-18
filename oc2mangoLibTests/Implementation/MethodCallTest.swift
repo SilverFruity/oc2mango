@@ -51,7 +51,6 @@ class MethodCallTest: XCTestCase {
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.error == nil)
-        print(ocparser.expressions());
         ocparser.clear()
     }
 

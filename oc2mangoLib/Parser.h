@@ -7,18 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ClassImplementation.h"
-#import "ClassDeclare.h"
+#import "AST.h"
 #define OCParser [Parser shared]
+#define LibAst OCParser.ast
+
 @interface Parser : NSObject
-@property(nonatomic,nonnull,strong)NSMutableArray <ClassDeclare *>*classInterfaces;
-@property(nonatomic,nonnull,strong)NSMutableArray <ClassImplementation *>*classImps;
+@property(nonatomic,nonnull,strong)AST *ast;
 @property(nonatomic,nullable,copy)NSString *error;
 @property(nonatomic,nullable,copy)NSString *source;
-
-- (nonnull NSArray *)expressions;
-- (nonnull NSArray *)statements;
 + (instancetype)shared;
 - (void)parseSource:(NSString *)source;
+- (BOOL)isSuccess;
 - (void)clear;
 @end
+
+

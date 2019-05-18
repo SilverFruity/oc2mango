@@ -24,11 +24,8 @@ class FileTest: XCTestCase {
         let data = try? Data.init(contentsOf:URL.init(fileURLWithPath: path!))
         let source = String.init(data: data ?? Data.init(), encoding: .utf8)
         ocparser.parseSource(source)
-        XCTAssert(ocparser.source != nil)
-        XCTAssert(ocparser.error == nil)
-        for imp: ClassImplementation in ocparser.classImps as! [ClassImplementation] {
-            print(imp.methodImps.lastObject!)
-        }
+        XCTAssert(ocparser.isSuccess())
+        print(ocparser.ast.classCache)
     }
 
 

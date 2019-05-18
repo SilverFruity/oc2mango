@@ -21,35 +21,11 @@
 - (instancetype)init
 {
     self = [super init];
-    self.classInterfaces = [NSMutableArray array];
-    self.classImps = [NSMutableArray array];
+    self.ast = [AST shared];
     return self;
 }
-- (NSArray *)expressions{
-    NSMutableArray *array = [NSMutableArray array];
-    for (ClassImplementation *imp in self.classImps) {
-        for (MethodImplementation *methodImp in imp.methodImps ) {
-            for (id <Expression>expression in methodImp.imp.statements) {
-                if ([expression conformsToProtocol:@protocol(Expression)]) {
-                    [array addObject:expression];
-                }
-            }
-        }
-    }
-    return [array copy];
-}
-- (NSArray *)statements{
-    NSMutableArray *array = [NSMutableArray array];
-    for (ClassImplementation *imp in self.classImps) {
-        for (MethodImplementation *methodImp in imp.methodImps ) {
-            for (Statement *statement in methodImp.imp.statements) {
-                if ([statement isKindOfClass:[Statement class]]) {
-                    [array addObject:statement];
-                }
-            }
-        }
-    }
-    return [array copy];
+- (BOOL)isSuccess{
+    return self.source && self.error == nil;
 }
 - (void)parseSource:(NSString *)source{
     extern void yy_set_source_string(char const *source);
@@ -63,8 +39,6 @@
     }
 }
 - (void)clear{
-    [self.classInterfaces removeAllObjects];
-    [self.classImps removeAllObjects];
     self.error = nil;
 }
 @end

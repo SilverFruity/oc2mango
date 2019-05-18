@@ -59,16 +59,13 @@ definition_list: definition
 definition:  
             | PS_Define
             | class_declare
-            {
-                [OCParser.classInterfaces addObject:_transfer(ClassDeclare *)$1];
-            }
             | class_implementation
-            {
-                [OCParser.classImps addObject:_transfer(ClassImplementation *)$1];
-            }
+// FIXME: Global 
 // FIXME: C func declare && implementation
             | c_func_declare SEMICOLON
             | c_func_declare LC function_implementation RC
+// FIXME: var declare
+            | assign_expression SEMICOLON
 			;
 PS_Define: 
             | PS PS_Define 
@@ -81,46 +78,47 @@ includeHeader:
             | includeHeader STRING_LITERAL
             ;
 class_declare:
+            //
             INTERFACE IDENTIFIER COLON IDENTIFIER
             {
-                ClassDeclare *declare = makeClassDeclare(_transfer(NSString *) $2);
-                declare.superClassName = _transfer(NSString *)$4;
-                $$ = _vretained declare;
+                OCClass *occlass = [LibAst classForName:_transfer(id)$2];
+                occlass.superClassName = _transfer(id)$4;
+                $$ = _vretained occlass;
             }
+            // category 
             | INTERFACE IDENTIFIER LP IDENTIFIER RP
             {
-                ClassDeclare *declare = makeClassDeclare(_transfer(NSString *) $2);
-                declare.categoryName = _transfer(NSString *)$4;
-                $$ = _vretained declare;
+                $$ = _vretained [LibAst classForName:_transfer(id)$2];
+            }
+            | INTERFACE IDENTIFIER LP RP
+            {
+                $$ = _vretained [LibAst classForName:_transfer(id)$2];
             }
             | class_declare LT protocol_list GT
             {
-                ClassDeclare *declare = _transfer(ClassDeclare *) $1;
-                declare.protocolNames = _transfer(NSMutableArray *) $3;
-                $$ = _vretained declare;
+                OCClass *occlass = _transfer(OCClass *) $1;
+                occlass.protocols = _transfer(id) $3;
+                $$ = _vretained occlass;
             }
             | class_declare class_private_varibale_declare
             {
-                ClassDeclare *declare = _transfer(ClassDeclare *) $1;
-                declare.privateVariables = _transfer(NSMutableArray *) $2;
-                $$ = _vretained declare;
+                OCClass *occlass = _transfer(OCClass *) $1;
+                [occlass.privateVariables addObjectsFromArray:_transfer(id) $2];
+                $$ = _vretained occlass;
             }
             | class_declare PROPERTY class_property_declare value_declare SEMICOLON
             {
+                OCClass *occlass = _transfer(OCClass *) $1;
+
                 PropertyDeclare *property = [PropertyDeclare new];
                 property.keywords = _transfer(NSMutableArray *) $3;
                 property.var = _transfer(VariableDeclare *) $4;
-                ClassDeclare *declare = _transfer(ClassDeclare *) $1;
-                [declare.properties addObject:property];
-                [declare.privateVariables addObject:property.privateVar];
-                $$ = _vretained declare;
+                
+                [occlass.properties addObject:property];
+                $$ = _vretained occlass;
             }
+            // 方法声明，不做处理
             | class_declare method_declare SEMICOLON
-            {
-                ClassDeclare *declare = _transfer(ClassDeclare *) $1;
-                [declare.methods addObject: _transfer(MethodDeclare *) $2];
-                $$ = _vretained declare;
-            }
             | class_declare END
             ;
 class_category:
@@ -128,29 +126,26 @@ class_category:
 class_implementation:
             IMPLEMENTATION IDENTIFIER
             {
-                ClassImplementation *imp = makeClassImplementation(_transfer(NSString *)$2);
-                $$ = _vretained imp;
+                $$ = _vretained [LibAst classForName:_transfer(id)$2];
             }
+            // category
             | IMPLEMENTATION IDENTIFIER LP IDENTIFIER RP
             {
-                ClassImplementation *imp = makeClassImplementation(_transfer(NSString *)$2);
-                imp.categoryName = _transfer(NSString *)$4;
-                $$ = _vretained imp;
+                $$ = _vretained [LibAst classForName:_transfer(id)$2];
             }
             | class_implementation class_private_varibale_declare
             {
-                ClassImplementation *imp = _transfer(ClassImplementation *) $1;
-                imp.privateVariables = _transfer(NSMutableArray *)$2;
-                $$ = _vretained imp;
+                OCClass *occlass = _transfer(OCClass *) $1;
+                [occlass.privateVariables addObjectsFromArray:_transfer(id) $2];
+                $$ = _vretained occlass;
             }
             | class_implementation method_declare LC function_implementation RC
             {
                 MethodImplementation *imp = makeMethodImplementation(_transfer(MethodDeclare *) $2);
-                FunctionImp * funcImp = _transfer(FunctionImp *) $4;
-                imp.imp = funcImp;
-                ClassImplementation *clasImp = _transfer(ClassImplementation *) $1;
-                [clasImp.methodImps addObject:imp];
-                $$ = _vretained clasImp;
+                imp.imp = _transfer(FunctionImp *) $4;
+                OCClass *occlass = _transfer(OCClass *) $1;
+                [occlass.methods addObject:imp];
+                $$ = _vretained occlass;
             }
             | class_implementation END
             ;
@@ -521,34 +516,36 @@ objc_method_call:
         ;
 
 block_implementation:
+        //^returnType{ }
         POWER value_declare_type LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
             imp.funcImp = _transfer(id)$4;
-            imp.returnType = _transfer(id) $2;
+            imp.declare = makeFuncDeclare(_transfer(id)$2,nil);
             $$ = _vretained imp; 
         }
+        //^returnType(int x, int y, int z){  }
         | POWER value_declare_type LP func_declare_parameters RP LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            imp.declare = makeFuncDeclare(_transfer(id)$2,_transfer(id)$4);
             imp.funcImp = _transfer(id)$6;
-            imp.returnType = _transfer(id)$2;
-            imp.varibles = _transfer(id)$4;
             $$ = _vretained imp; 
         }
+        //^{   }
         | POWER LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            imp.declare = makeFuncDeclare(makeTypeSpecial(SpecialTypeVoid),nil);
             imp.funcImp = _transfer(id)$2;
-            imp.returnType = makeTypeSpecial(SpecialTypeVoid);
             $$ = _vretained imp; 
         }
+        //^(int x, int y){    }
         | POWER LP func_declare_parameters RP LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            imp.declare = makeFuncDeclare(makeTypeSpecial(SpecialTypeVoid),_transfer(id) $3);
             imp.funcImp = _transfer(id)$6;
-            imp.returnType = makeTypeSpecial(SpecialTypeVoid);
-            imp.varibles = _transfer(id) $3;
             $$ = _vretained imp; 
         }
         ;
