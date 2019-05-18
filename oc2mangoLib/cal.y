@@ -8,6 +8,8 @@
 #define _retained(type) (__bridge_retained type)
 #define _vretained _retained(void *)
 #define _transfer(type) (__bridge_transfer type)
+extern int yylex (void);
+extern void yyerror(const char *s);
 %}
 %union{
     void *identifier;
@@ -22,9 +24,10 @@
 
 
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE 
-%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof
+%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof _struct
 %token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
-%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE _NONNULL _NULLABLE _STRONG _WEAK _BLOCK
+%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE 
+%token <identifier> STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK
 %token <identifier> IDENTIFIER STRING_LITERAL
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -33,17 +36,18 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %token <identifier> _self _super _nil _NULL _YES _NO 
 %token <identifier>  _Class _id _void _BOOL _SEL _CHAR _SHORT _INT _LONG _LLONG  _UCHAR _USHORT _UINT _ULONG  _ULLONG _DOUBLE _FLOAT _instancetype
 %token <identifier> INTETER_LITERAL DOUBLE_LITERAL SELECTOR 
+%type  <identifier> class_property_type declare_left_attribute declare_right_attribute
 %type  <include> PS_Define includeHeader
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare 
-%type  <declare>  value_declare block_declare func_declare_parameters class_property_type
-%type  <type> value_declare_type block_parametere_type block_type method_caller_type value_type object_value_type 
-%type  <implementation> class_implementation  objc_method_call
-%type  <expression> numerical_value_type block_implementation declare_assign_expression var_assign_expression
- ternary_expression calculator_expression judgement_expression value_expression assign_expression control_statement function_implementation  control_expression
+%type  <declare>  value_declare block_declare func_declare_parameters 
+%type  <type> value_declare_type block_parametere_type block_type method_caller_type  object_value_type objc_method_call 
+%type  <implementation> class_implementation  
+%type  <expression> value_type numerical_value_type block_implementation declare_assign_expression var_assign_expression
+ ternary_expression calculator_expression judgement_expression value_expression assign_expression  function_implementation  control_expression
 expression objc_method_call_pramameters objc_method_get value_expression_list for_parameter_list
-%type <Operator> judgement_operator binary_operator unary_operator assign_operator
-%type <statement> if_statement while_statement dowhile_statement switch_statement for_statement forin_statement case_statement
+%type <Operator> judgement_operator binary_operator unary_operator assign_operator value_get_operator
+%type <statement> if_statement while_statement dowhile_statement switch_statement for_statement forin_statement case_statement control_statement
 %%
 
 compile_util: /*empty*/
@@ -62,7 +66,7 @@ definition:
             {
                 [OCParser.classImps addObject:_transfer(ClassImplementation *)$1];
             }
-            | 
+// FIXME: C func declare && implementation
 			;
 PS_Define: 
             | PS PS_Define 
@@ -297,11 +301,7 @@ value_declare_type:  _UCHAR
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeId);
             }
-            | IDENTIFIER ASTERISK
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
-            }
-            | IDENTIFIER LE IDENTIFIER GT ASTERISK
+            | IDENTIFIER
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
             }
@@ -310,10 +310,8 @@ value_declare_type:  _UCHAR
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,@"typeof");
             }
-            | _enum IDENTIFIER
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeInt);
-            }
+            // FIXME: id <protocl>
+            | value_declare_type LT IDENTIFIER GT
             | value_declare_type ASTERISK
             {
                 TypeSpecial *specail = _transfer(TypeSpecial *) $1;
@@ -324,6 +322,26 @@ value_declare_type:  _UCHAR
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeBlock);
             }
+            | declare_left_attribute value_declare_type
+            {
+                $$ = $2;
+            }
+            | value_declare_type declare_right_attribute
+            ;
+
+declare_left_attribute:
+            STATIC
+            | CONST
+            | NONNULL
+            | NULLABLE
+            | _STRONG
+            | _WEAK
+            | _BLOCK
+            ;
+declare_right_attribute:
+            _NONNULL
+            | _NULLABLE
+            | CONST
             ;
 block_declare: 
               value_declare_type LP POWER IDENTIFIER RP
@@ -398,8 +416,12 @@ value_expression_list:
 				$$ = (__bridge_retained void *)list;
             }
             ;
+value_get_operator:
+             DOT
+            | SUB GT
+            ;
 objc_method_get:
-         object_value_type DOT IDENTIFIER
+         object_value_type value_get_operator IDENTIFIER
          {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$1;
@@ -412,7 +434,7 @@ objc_method_get:
              $$ = _vretained methodcall;
          }
          // Block Get
-         | object_value_type DOT IDENTIFIER LP value_expression_list RP
+         | object_value_type value_get_operator IDENTIFIER LP value_expression_list RP
          {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$1;
@@ -426,7 +448,7 @@ objc_method_get:
              $$ = _vretained methodcall;
          }
          // Get
-         | objc_method_get DOT IDENTIFIER
+         | objc_method_get value_get_operator IDENTIFIER
          {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              methodcall.caller =  _transfer(OCValue *)$1;
@@ -438,7 +460,7 @@ objc_method_get:
              $$ = _vretained methodcall;
          }
          // Block Get
-         | objc_method_get DOT IDENTIFIER LP value_expression_list RP
+         | objc_method_get value_get_operator IDENTIFIER LP value_expression_list RP
          {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              methodcall.caller =  _transfer(OCValue *)$1;
@@ -478,7 +500,11 @@ objc_method_call_pramameters:
             $$ = _vretained element;
         }
         ;
-
+/*
+ FIXME:
+ 1. self->var
+ 2. struct NAME var; var.name = xxx; var->name = xxx;
+ */
 objc_method_call:
         objc_method_get
         | LB method_caller_type objc_method_call_pramameters RB
@@ -1003,14 +1029,24 @@ function_implementation:
         
 
 %%
-int yyerror(char *s){
-    extern unsigned long lex_read_line;
+void yyerror(const char *s){
+    extern unsigned long yylineno , yycolumn , yylen;
     extern char const *st_source_string;
     NSArray *lines = [[NSString stringWithUTF8String:st_source_string] componentsSeparatedByString:@"\n"];
-    
-    NSString *errorInfo = [NSString stringWithFormat:@"------yyerror------\nline:%lu\nsource:%s \nerror: %s\n-------------------\n",lex_read_line,[lines[lex_read_line - 1] UTF8String],s];
+    NSString *line = lines[yylineno - 1];
+    unsigned long location = yycolumn - yylen - 1;
+    unsigned long len = yylen; 
+    log(@"wocao");
+    NSMutableString *str = [NSMutableString string];
+    for (unsigned i = 0; i < location; i++){
+        [str appendString:@" "];
+    }
+    for (unsigned i = 0; i < len; i++){
+        [str appendString:@"^"];
+    }
+    NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\n%@\n%@\n error: %s\n-------------------\n",line,str,s];
     OCParser.error = errorInfo;
     log(OCParser.error);
-    return 0;
+
 }
 

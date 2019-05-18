@@ -1,9 +1,13 @@
 /* 不需要yywrap */
-%option noyywrap
+%option noyywrap yylineno
 %{
     #include <Foundation/Foundation.h>
     #include "y.tab.h"
     
+    unsigned long yycolumn = 1;
+    unsigned long yylen = 0;
+    #define YY_USER_ACTION yycolumn += yyleng; yylen = yyleng;
+
     // 自定义输入源
     // 替换宏定义 YY_INPUT DriveData->项目名/*/*.yy.c 修改文件输入流
     #undef YY_INPUT
@@ -14,14 +18,12 @@
     char const *st_source_string;
     static unsigned long st_current_char_index;
     static unsigned long st_source_len;
-    unsigned long lex_read_line = 1;
     unsigned long lex_read_column = 1;
     void yy_set_source_string(char const *source)
     {
         st_source_string = source;
         st_current_char_index = 0;
         st_source_len = strlen(source);
-        lex_read_line = 1;
         lex_read_column = 1;
     }
     static int string_input(char *buf, int need_len,int max_size)
@@ -117,13 +119,18 @@
 <INITIAL>"readwrite" { yylval.identifier =(__bridge_retained void *)@"readwrite"; return READWRITE; }
 <INITIAL>"nonnull" { yylval.identifier =(__bridge_retained void *)@"nonnull"; return NONNULL; }
 <INITIAL>"nullable" { yylval.identifier =(__bridge_retained void *)@"nullable"; return NULLABLE; }
+
+
+<INITIAL>"static" { yylval.identifier =(__bridge_retained void *)@"static"; return STATIC; }
+<INITIAL>"const" { yylval.identifier =(__bridge_retained void *)@"const"; return CONST; }
 <INITIAL>"_Nonnull" { yylval.identifier =(__bridge_retained void *)@"_Nonnull"; return _NONNULL; }
 <INITIAL>"_Nullable" { yylval.identifier =(__bridge_retained void *)@"_Nullable"; return _NULLABLE; }
 <INITIAL>"__strong" { yylval.identifier =(__bridge_retained void *)@"__strong"; return _STRONG; }
 <INITIAL>"__weak"  { yylval.identifier =(__bridge_retained void *)@"__weak"; return _WEAK; }
 <INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
 
-<INITIAL>"@selector\("[^()]*+"\)" {yylval.identifier = (__bridge_retained void *)@"selector value";  return SELECTOR; }
+<INITIAL>"@protocol\("[^()]*"\)" {yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];  return IDENTIFIER; }
+<INITIAL>"@selector\("[^()]*"\)" {yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];  return SELECTOR; }
 <INITIAL>"SEL" { TypeReturn(SEL); }
 <INITIAL>"Class" { TypeReturn(Class);}
 <INITIAL>"BOOL" { TypeReturn(BOOL); }
@@ -162,6 +169,7 @@
 
 <INITIAL>"typeof" { TypeReturn(typeof); }
 <INITIAL>"enum" { TypeReturn(enum); }
+<INITIAL>"struct" { TypeReturn(struct); }
 <INITIAL>"char" { TypeReturn(CHAR); }
 <INITIAL>"short" { TypeReturn(SHORT); }
 <INITIAL>"int" { TypeReturn(INT); }
@@ -225,20 +233,20 @@ BEGIN STRING_LITERAL_STATE;
 }
 
 <INITIAL>[\t] ;
-<INITIAL>[\n] { lex_read_column = 1; lex_read_line++; };
+<INITIAL>[\n] { yycolumn = 1; };
 
 <INITIAL>"/*" {  BEGIN C_COMMENT; }
 <INITIAL>"//" {  BEGIN CC_COMMENT; }
 <INITIAL>. ;
 
-<C_COMMENT>\n { lex_read_line++; };
+<C_COMMENT>\n { yycolumn = 1; };
 <C_COMMENT>. ;
 <C_COMMENT>"*/"    { BEGIN INITIAL; }
 <C_COMMENT><<EOF>>   ;
 
 <CC_COMMENT>.    ;
 <CC_COMMENT>\n    {
-    lex_read_line++;
+    yycolumn = 1;
     BEGIN INITIAL;
 }
 <CC_COMMENT><<EOF>> { BEGIN INITIAL; }

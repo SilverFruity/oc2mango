@@ -23,7 +23,28 @@ class MethodCallTest: XCTestCase {
         """
 @implementation Demo
 - (Demo *)objectMethods{
+    [[NSObject new] test];
     [self setValue:self forKey:value forKey:value forKey:value];
+    
+    [[object valueForKey:@"key"] object];
+    [[object setValue:self forKey:@"name"] test:@"string"];
+    [object setValue:[NSObject new]];
+    [object setValue:[NSObject new].x];
+    
+    [[self.x method].y method1];
+    [[self.x method].y method1].x;
+
+    [object setCallBack:^(NSString *name){ }];
+
+    self.callback(self,@(20),@"123");
+    [self.chartView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(back.mas_bottom);
+        make.left.right.equalTo(self.view);
+        make.height.equalTo(@(240));
+    }];
+    make.top.equalTo(back.mas_bottom);
+    make.left.right.equalTo(self.view);
+    make.height.equalTo(@(240));
 
 }
 @end

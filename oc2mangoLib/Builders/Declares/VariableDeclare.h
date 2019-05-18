@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "TypeSpecial.h"
-@interface VariableDeclare : NSObject <NSCopying>
+@interface VariableDeclare : NSObject
 @property TypeSpecial *type;
 @property NSString *name;
 @end

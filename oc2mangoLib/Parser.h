@@ -19,6 +19,6 @@
 - (nonnull NSArray *)expressions;
 - (nonnull NSArray *)statements;
 + (instancetype)shared;
-- (void)parseSource:(nullable NSString *)source;
+- (void)parseSource:(NSString *)source;
 - (void)clear;
 @end

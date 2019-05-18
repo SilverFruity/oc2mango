@@ -1,28 +1,25 @@
-//
-//  TestSource.m
-//  oc2mangoLibTests
-//
-//  Created by Jiang on 2019/5/12.
-//  Copyright © 2019年 SilverFruity. All rights reserved.
-//
 
-#import "TestSource.h"
-
-@implementation TestSource
+#import "SFHTTPClient.h"
+#import "SFHTTPPlugin.h"
+@implementation SFHTTPClient{
+    NSURL * _baseUrl;
+}
 - (instancetype)initWithBaseUrl:(NSURL *)baseUrl{
     self = [super init];
+    self->_baseUrl = baseUrl;
     return self;
 }
-- (NSURLSessionDataTask *)requestWithMethod:(enum SFNHTTPMethod)method
+- (NSURLSessionDataTask *)requestWithMethod:(SFNHTTPMethod)method
                                         uri:(NSString *)URLString
-                                 parameters:(NSDictionary *)param
-                                 completion:(void(^)(NSHTTPURLResponse *response, id data ,NSError * error))completion{
+                                 parameters:(nullable NSDictionary *)param
+                                    plugin:(nullable id <SFPlugin>)plugin
+                                 completion:(HTTPHandler)completion{
     
     NSMutableURLRequest *request = [self createRequestWithMethod:method uri:URLString parameters:param];
     return [self request:request plugin:plugin completion:completion];
 }
 
-- (NSMutableURLRequest *)createRequestWithMethod:(enum SFNHTTPMethod)method uri:(NSString *)uri parameters:( NSDictionary *)param{
+- (NSMutableURLRequest *)createRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)uri parameters:(nullable NSDictionary *)param{
     NSURL *url = [self.baseUrl URLByAppendingPathComponent:uri];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.timeoutInterval = 15;
@@ -36,7 +33,7 @@
     }
     return request;
 }
-- (NSMutableURLRequest *)createEncryptedRequestWithMethod:(enum SFNHTTPMethod)method uri:(NSString *)uri parameters:(NSDictionary *)param{
+- (NSMutableURLRequest *)createEncryptedRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)uri parameters:(NSDictionary *)param{
     NSURL *url = [self.baseUrl URLByAppendingPathComponent:uri];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.timeoutInterval = 15;
@@ -44,6 +41,7 @@
     request.HTTPMethod = @"POST";
     NSData *originalData = [NSJSONSerialization dataWithJSONObject:param options:0 error:nil];
     NSString *jsonStr = [[NSString alloc] initWithData:originalData encoding:NSUTF8StringEncoding];
+
     NSDictionary *container = [NSDictionary dictionary];
     request.HTTPBody = [NSJSONSerialization dataWithJSONObject:container options:0 error:nil];
     
@@ -51,9 +49,8 @@
 }
 
 - (NSURLSessionDataTask *)request:(NSURLRequest *)request
-                           plugin:(NSString *)plugin
-                       completion:(void(^)(NSHTTPURLResponse *response, id data ,NSError * error))completion{
-    @selector(handleWithRequest:Reponse:data:error:);
+                          plugin:(nullable id <SFPlugin>)plugin
+                       completion:(HTTPHandler)completion{
     NSMutableArray *plugins = [NSMutableArray array];
     while (plugin) {
         [plugins addObject:plugin];
@@ -63,7 +60,7 @@
     void (^completeHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error){
         NSHTTPURLResponse *httpReponse = (NSHTTPURLResponse *)response;
         id result = data;
-        for (id plugin in plugins) {
+        for (id <SFPlugin>plugin in plugins) {
             if ([plugin respondsToSelector:@selector(handleWithRequest:Reponse:data:error:)]) {
                 // 如果是缓存、此时不调用缓存插件的保存方法
                 if (!response && [plugin respondsToSelector:@selector(cachedDataForRequest:)]) {
@@ -76,21 +73,21 @@
     };
     
     // check cache
-    for (id plugin in plugins) {
+    for (id <SFPlugin>plugin in plugins) {
         if ([plugin respondsToSelector:@selector(cachedDataForRequest:)]) {
             id cahce = [plugin cachedDataForRequest:request];
             completeHandler(cahce, nil, nil);
             return nil;
         }
     }
-    typeof(plugins) weakPlugins  = plugins;
+    __weak typeof(plugins) weakPlugins  = plugins;
     NSURLSessionDataTask* (^resumeTask)(void) = ^NSURLSessionDataTask *{
-        for (id plugin in weakPlugins) {
+        for (id <SFPlugin>plugin in weakPlugins) {
             if ([plugin respondsToSelector:@selector(willStart:)]) {
                 [plugin willStart:request];
             }
         }
-        for (id plugin in weakPlugins){ // send test data before task resume
+        for (id <SFPlugin>plugin in weakPlugins){ // send test data before task resume
             if ([plugin respondsToSelector:@selector(testDataForRequest:completionHandler:)]) {
                 [plugin testDataForRequest:request completionHandler:^(NSData *data, NSError *error) {
                     completeHandler(data, [NSHTTPURLResponse new],error);
@@ -104,7 +101,7 @@
     };
     
     // set plugin's retry block
-    for (id plugin in plugins) {
+    for (id <SFPlugin>plugin in plugins) {
         if ([plugin respondsToSelector:@selector(canRetry)]) {
             if ([plugin canRetry] && [plugin respondsToSelector:@selector(setRetryClosure:)]) {
                 [plugin setRetryClosure:resumeTask];
