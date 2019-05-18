@@ -32,6 +32,7 @@ typedef enum {
 
 @interface OCValue: NSObject <ValueExpression>
 @property (nonatomic,assign)OC_VALUE_TYPE value_type;
+@property (nonatomic,strong)id value;
 @end
 typedef enum{
     OCMethodCallNormalCall,

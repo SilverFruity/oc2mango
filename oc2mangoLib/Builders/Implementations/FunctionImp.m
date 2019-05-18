@@ -14,9 +14,6 @@
     self.statements = [NSMutableArray array];
     return self;
 }
-- (NSString *)description{
-    return [NSString stringWithFormat:@"{\n%@\n}\n",self.statements];
-}
 
 @end
 

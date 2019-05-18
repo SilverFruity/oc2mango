@@ -9,7 +9,7 @@
 import XCTest
 
 class StatementTest: XCTestCase {
-    let ocparser = Parser.shared()!
+    let ocparser = Parser.shared()
     override func setUp() {
         
     }

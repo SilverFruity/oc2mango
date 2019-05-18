@@ -9,16 +9,5 @@
 #import "MethodDeclare.h"
 
 @implementation MethodDeclare
-- (NSString *)description{
-    NSMutableString *string = [NSMutableString string];
-    if (self.methodNames.count == 1 && self.parameterTypes.count == 0) {
-        [string appendString:self.methodNames.firstObject];
-    }else{
-        for (int i = 0 ; i < self.methodNames.count; i++) {
-            [string appendFormat:@"%@:(%@)%@ ",
-             self.methodNames[i],self.parameterTypes[i],self.parameterNames[i]];
-        }
-    }
-    return [NSString stringWithFormat:@"%@(%@)%@",self.isClassMethod?@"+":@"-",self.returnType,string];
-}
+
 @end

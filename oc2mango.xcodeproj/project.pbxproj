@@ -12,7 +12,7 @@
 		606F04C9061EDFA1537A0326 /* JudgementExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F05170E1D12991EF44F2E /* JudgementExpression.m */; };
 		606F0CFF2C3466DF8008ED43 /* CalculateExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */; };
 		606F0D79DBF761E8157171FB /* AssignExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F4E67BF3B652ED16B8C /* AssignExpression.m */; };
-		6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */; };
+		6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */; };
 		EE127792228084260065B1E4 /* AssignExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F5861A2716E15003E7D /* AssignExpression.h */; };
 		EE127793228084260065B1E4 /* AssignExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F4E67BF3B652ED16B8C /* AssignExpression.m */; };
@@ -36,8 +36,10 @@
 		EE1C71F42288314C0077A71E /* FileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71F32288314C0077A71E /* FileTest.swift */; };
 		EE5534CF2290032700A4B32E /* AST.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534CD2290032700A4B32E /* AST.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE5534D02290032700A4B32E /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
-		EE5534D32290053800A4B32E /* Convert.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534D12290053800A4B32E /* Convert.h */; };
+		EE5534D32290053800A4B32E /* Convert.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534D12290053800A4B32E /* Convert.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE5534D42290053800A4B32E /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
+		EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5534DB22900DFF00A4B32E /* ConvertTest.swift */; };
+		EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F05226CB443008712C2 /* MakeDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE982F11226CC24D008712C2 /* TestFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EE0226B1C78008712C2 /* TestFile.m */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
@@ -119,6 +121,7 @@
 		EE5534CE2290032700A4B32E /* AST.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AST.m; sourceTree = "<group>"; };
 		EE5534D12290053800A4B32E /* Convert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		EE5534D22290053800A4B32E /* Convert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert.m; sourceTree = "<group>"; };
+		EE5534DB22900DFF00A4B32E /* ConvertTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertTest.swift; sourceTree = "<group>"; };
 		EE5CC882226DFECA003AD212 /* FunctionImp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FunctionImp.h; sourceTree = "<group>"; };
 		EE5CC883226DFECA003AD212 /* FunctionImp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FunctionImp.m; sourceTree = "<group>"; };
 		EE5CC885226E0DAC003AD212 /* Statement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Statement.h; sourceTree = "<group>"; };
@@ -219,6 +222,14 @@
 			path = Implementation;
 			sourceTree = "<group>";
 		};
+		EE5534D822900DD700A4B32E /* Convert */ = {
+			isa = PBXGroup;
+			children = (
+				EE5534DB22900DFF00A4B32E /* ConvertTest.swift */,
+			);
+			path = Convert;
+			sourceTree = "<group>";
+		};
 		EE6E6CC6225E488000616C7E = {
 			isa = PBXGroup;
 			children = (
@@ -317,6 +328,7 @@
 				EE1C71EE22882DBF0077A71E /* TestSource.imp */,
 				EED67A7D2270AE0F0015AC02 /* Info.plist */,
 				EED67AB62270B55D0015AC02 /* oc2mangoLibTests-Bridging-Header.h */,
+				EE5534D822900DD700A4B32E /* Convert */,
 				EE1C71F32288314C0077A71E /* FileTest.swift */,
 				EED67ABB2270B5A30015AC02 /* StatementTest.swift */,
 				EE147263227F1D6B00566B3F /* Implementation */,
@@ -349,6 +361,7 @@
 				EED67AB02270B51B0015AC02 /* PropertyDeclare.h in Headers */,
 				EED67AB12270B51B0015AC02 /* MethodDeclare.h in Headers */,
 				EED67AB32270B51B0015AC02 /* Statement.h in Headers */,
+				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
 				EE1C71E7228829E90077A71E /* AssignExpression.h in Headers */,
 				EE1C71E8228829E90077A71E /* CalculateExpression.h in Headers */,
 				6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */,
@@ -553,6 +566,7 @@
 				EE1C71F42288314C0077A71E /* FileTest.swift in Sources */,
 				EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */,
 				EED67ABC2270B5A30015AC02 /* StatementTest.swift in Sources */,
+				EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */,
 				EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */,
 				EE1C71E622880AED0077A71E /* AssignExpressionTest.swift in Sources */,
 			);

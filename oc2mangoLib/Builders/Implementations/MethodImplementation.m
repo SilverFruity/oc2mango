@@ -9,8 +9,5 @@
 #import "MethodImplementation.h"
 
 @implementation MethodImplementation
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"%@\n%@", self.declare,self.imp];
-}
+
 @end

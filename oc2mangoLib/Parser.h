@@ -15,7 +15,7 @@
 @property(nonatomic,nonnull,strong)AST *ast;
 @property(nonatomic,nullable,copy)NSString *error;
 @property(nonatomic,nullable,copy)NSString *source;
-+ (instancetype)shared;
++ (nonnull instancetype)shared;
 - (void)parseSource:(NSString *)source;
 - (BOOL)isSuccess;
 - (void)clear;

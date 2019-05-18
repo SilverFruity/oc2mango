@@ -39,7 +39,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <identifier> class_property_type declare_left_attribute declare_right_attribute
 %type  <include> PS_Define includeHeader
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
-%type  <declare>  class_property_declare method_declare c_func_declare
+%type  <declare>  class_property_declare method_declare
 %type  <declare>  value_declare block_declare func_declare_parameters 
 %type  <type> value_declare_type block_parametere_type block_type method_caller_type  object_value_type objc_method_call 
 %type  <implementation> class_implementation  
@@ -60,12 +60,24 @@ definition:
             | PS_Define
             | class_declare
             | class_implementation
-// FIXME: Global 
-// FIXME: C func declare && implementation
-            | c_func_declare SEMICOLON
-            | c_func_declare LC function_implementation RC
-// FIXME: var declare
-            | assign_expression SEMICOLON
+// TODO: Global 
+// TODO: C func declare && implementation
+            | value_declare_type IDENTIFIER LP func_declare_parameters RP  SEMICOLON
+            | value_declare_type IDENTIFIER LP func_declare_parameters RP  LC function_implementation RC
+            {
+                BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+                imp.declare = makeFuncDeclare(_transfer(id)$2,_transfer(id)$4);
+                imp.funcImp = _transfer(id)$7;
+                [LibAst.globalStatements addObject:_transfer(id) $1];
+            }
+            | expression SEMICOLON
+            {
+                [LibAst.globalStatements addObject:_transfer(id) $1];
+            }
+            | control_statement
+            {
+                [LibAst.globalStatements addObject:_transfer(id) $1];
+            }
 			;
 PS_Define: 
             | PS PS_Define 
@@ -120,8 +132,6 @@ class_declare:
             // 方法声明，不做处理
             | class_declare method_declare SEMICOLON
             | class_declare END
-            ;
-class_category:
             ;
 class_implementation:
             IMPLEMENTATION IDENTIFIER
@@ -529,7 +539,7 @@ block_implementation:
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
             imp.declare = makeFuncDeclare(_transfer(id)$2,_transfer(id)$4);
-            imp.funcImp = _transfer(id)$6;
+            imp.funcImp = _transfer(id)$7;
             $$ = _vretained imp; 
         }
         //^{   }
@@ -537,7 +547,7 @@ block_implementation:
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
             imp.declare = makeFuncDeclare(makeTypeSpecial(SpecialTypeVoid),nil);
-            imp.funcImp = _transfer(id)$2;
+            imp.funcImp = _transfer(id)$3;
             $$ = _vretained imp; 
         }
         //^(int x, int y){    }
@@ -999,9 +1009,7 @@ forin_statement: _for LP value_declare _in value_type RP LC function_implementat
         }
         ;
 
-c_func_declare:
-        value_declare_type IDENTIFIER LP func_declare_parameters RP 
-        ;
+
 control_statement: 
         if_statement
         | switch_statement
@@ -1036,6 +1044,7 @@ void yyerror(const char *s){
     extern unsigned long yylineno , yycolumn , yylen;
     extern char const *st_source_string;
     NSArray *lines = [[NSString stringWithUTF8String:st_source_string] componentsSeparatedByString:@"\n"];
+    if(lines.count < yylineno) return;
     NSString *line = lines[yylineno - 1];
     unsigned long location = yycolumn - yylen - 1;
     unsigned long len = yylen; 

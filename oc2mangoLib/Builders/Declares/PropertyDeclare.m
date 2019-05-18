@@ -9,10 +9,7 @@
 #import "PropertyDeclare.h"
 
 @implementation PropertyDeclare
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"@property (%@) %@", [self.keywords componentsJoinedByString:@","],self.var];
-}
+
 - (VariableDeclare *)privateVar{
     if (!_privateVar) {
         _privateVar = [self.var copy];

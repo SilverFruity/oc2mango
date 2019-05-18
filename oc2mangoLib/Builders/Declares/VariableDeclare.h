@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "TypeSpecial.h"
 @interface VariableDeclare : NSObject
-@property TypeSpecial *type;
-@property NSString *name;
+@property(nonatomic,strong) TypeSpecial *type;
+@property(nonatomic,copy) NSString *name;
 @end
 
 

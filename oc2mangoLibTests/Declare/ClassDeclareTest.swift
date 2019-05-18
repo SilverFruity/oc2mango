@@ -9,13 +9,14 @@
 import XCTest
 
 class ClassDeclareTest: XCTestCase {
-    let ocparser = Parser.shared()!
+    let ocparser = Parser.shared()
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        ocparser.clear()
     }
 
     func testNormalDeclare(){
@@ -43,16 +44,16 @@ class ClassDeclareTest: XCTestCase {
 """
 @interface Demo: NSObject
 @property (nonatomic,atomic) NSString *className;
-@property (weak,strong) NSMutableArray *protocolNames;
-@property (readwrite,readonly) BOOL isCategory;
-@property (copy) void (^block)(void);
-@property void (^block)(void);
-@property NSString *name;
-@property (copy,assign) void (^block)();
 @end
 """
         ocparser.parseSource(source)
-
+        let occlass = ocparser.ast.class(forName: "Demo")
+        let prop = occlass.properties.firstObject as! PropertyDeclare
+        XCTAssert(ocparser.isSuccess())
+        XCTAssert(prop.var.name == "className")
+        XCTAssert(prop.var.type.type == SpecialTypeObject)
+        XCTAssert(prop.keywords == ["nonatomic","atomic"])
+        
         ocparser.clear()
     }
     

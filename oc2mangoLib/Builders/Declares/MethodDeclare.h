@@ -9,10 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "TypeSpecial.h"
 @interface MethodDeclare : NSObject
-@property BOOL isClassMethod;
-@property TypeSpecial *returnType;
-@property NSMutableArray *methodNames;
-@property NSMutableArray <TypeSpecial *>*parameterTypes;
-@property NSMutableArray *parameterNames;
+@property(nonatomic,assign) BOOL isClassMethod;
+@property(nonatomic,strong) TypeSpecial *returnType;
+@property(nonatomic,strong) NSMutableArray *methodNames;
+@property(nonatomic,strong) NSMutableArray <TypeSpecial *>*parameterTypes;
+@property(nonatomic,strong) NSMutableArray *parameterNames;
 @end
 

@@ -7,11 +7,33 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "MakeDeclare.h"
 NS_ASSUME_NONNULL_BEGIN
-
 @interface Convert : NSObject
+- (NSString *)convert:(id)content;
+- (NSString *)convertOCClass:(OCClass *)occlass;
+- (NSString *)convertExpression:(id <Expression>)exp;
+- (NSString *)convertStatement:(Statement *)statement;
 
+- (NSString *)convertTypeSpecial:(TypeSpecial *)type;
+- (NSString *)convertVariableDeclare:(VariableDeclare *)varDecl;
+- (NSString *)convertPropertyDeclare:(PropertyDeclare *)propertyDecl;
+- (NSString *)convertMethoDeclare:(MethodDeclare *)methodDecl;
+- (NSString *)convertMethodImp:(MethodImplementation *)methodImp;
+- (NSString *)convertFuncDeclare:(FuncDeclare *)funcDecl;
+- (NSString *)convertFuncImp:(FunctionImp *)imp;
+
+- (NSString *)convertAssginExp:(AssignExpression *)exp;
+- (NSString *)convertCalculateExp:(CalculateExpression *)exp;
+- (NSString *)convertControlExp:(ControlExpression *)exp;
+- (NSString *)convertJudgementExp:(JudgementExpression *)exp;
+- (NSString *)convertOCValue:(OCValue *)value;
+
+- (NSString *)convertIfStatement:(IfStatement *)statement;
+- (NSString *)convertWhileStatement:(WhileStatement *)statement;
+- (NSString *)convertDoWhileStatement:(DoWhileStatement *)statement;
+- (NSString *)convertSwitchStatement:(SwitchStatement *)statement;
+- (NSString *)convertForStatement:(ForStatement *)statement;
+- (NSString *)convertForInStatement:(ForInStatement *)statement;
 @end
-
 NS_ASSUME_NONNULL_END

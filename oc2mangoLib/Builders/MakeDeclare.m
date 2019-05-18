@@ -57,8 +57,8 @@ extern id <OCMethodElement> makeMethodCallElement(OCMethodCallType type){
             return [OCMethodCallGetElement  new];
     }
 }
-OCValue *makeValue(OC_VALUE_TYPE type){
-    OCValue *value;
+OCValue *makeValue(OC_VALUE_TYPE type, id value){
+    OCValue *ocvalue;
     switch (type){
         case OCValueObject:
         case OCValueSelf:
@@ -75,20 +75,24 @@ OCValue *makeValue(OC_VALUE_TYPE type){
         case OCValuePointValue:
         case OCValueVarPoint:
         case OCValueSelector:
-            value = [OCValue new];
+            ocvalue = [OCValue new];
             break;
         case OCValueMethodCall:
-            value = [OCMethodCall new];
+            ocvalue = [OCMethodCall new];
             break;
         case OCValueFuncCall:
-            value = [OCMethodCall new];
+            ocvalue = [OCMethodCall new];
             break;
         case OCValueBlock:
-            value = [BlockImp new];
+            ocvalue = [BlockImp new];
             break;
     }
-    value.value_type = type;
-    return value;
+    ocvalue.value_type = type;
+    ocvalue.value = value;
+    return ocvalue;
+}
+OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
+    return makeValue(type, nil);
 }
 JudgementExpression *makeJudgementExpression(JudgementOperatorType type)
 {

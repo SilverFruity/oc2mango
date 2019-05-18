@@ -28,7 +28,9 @@ extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars
 extern FunctionImp *makeFuncImp(void);
 extern id <OCMethodElement> makeMethodCallElement(OCMethodCallType type);
 
-extern OCValue *makeValue(OC_VALUE_TYPE type);
+extern OCValue *makeValue(OC_VALUE_TYPE type, id value);
+extern OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
+
 extern UnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern BinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern TernaryExpression *makeTernaryExpression(void);
