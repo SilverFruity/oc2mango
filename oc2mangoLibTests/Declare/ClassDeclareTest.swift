@@ -22,12 +22,27 @@ class ClassDeclareTest: XCTestCase {
     func testNormalDeclare(){
         let source =
 """
-@interface Demo: NSObject
-- (instancetype)initWithBaseUrl:(NSURL *)baseUrl;
+@implementation Demo
+- (instancetype)initWithBaseUrl:(NSURL *)baseUrl{
+
+}
+- (NSString *)method2:(void(^)(NSString *name))callback{
+
+}
 @end
 """
         ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let methodImp = ocparser.ast.class(forName: "Demo").methods[0] as? MethodImplementation
+        XCTAssert(methodImp?.declare.methodNames == ["initWithBaseUrl"])
+        XCTAssert(methodImp?.declare.isClassMethod == false)
+        XCTAssert(methodImp?.declare.returnType.type == SpecialTypeId)
         
+        let methodImp1 = ocparser.ast.class(forName: "Demo").methods[1] as? MethodImplementation
+        XCTAssert(methodImp1?.declare.methodNames == ["method2"])
+        XCTAssert(methodImp1?.declare.isClassMethod == false)
+        XCTAssert(methodImp1?.declare.returnType.type == SpecialTypeObject)
+        XCTAssert((methodImp1?.declare.parameterTypes.firstObject as! TypeSpecial).type == SpecialTypeBlock)
     }
     
     func testCategoryDeclare(){
@@ -55,20 +70,6 @@ class ClassDeclareTest: XCTestCase {
         XCTAssert(prop.keywords == ["nonatomic","atomic"])
         
         ocparser.clear()
-    }
-    
-    func testMethodDeclare(){
-        let source =
-"""
-@interface Demo: NSObject
-- (NSString *)method2:(void(^)(NSString *name))callback;
-@end
-"""
-        ocparser.parseSource(source)
-        
-        
-        ocparser.clear()
-        
     }
 
 }

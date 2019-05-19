@@ -16,6 +16,7 @@ class StatementTest: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        ocparser.clear()
     }
     func testIfStatement(){
         let source =
@@ -33,8 +34,8 @@ class StatementTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.error == nil)
-        ocparser.clear()
+        XCTAssert(ocparser.isSuccess())
+        
     }
     func testDoWhileStatement(){
         let source =
@@ -48,9 +49,9 @@ class StatementTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.error == nil)
+        XCTAssert(ocparser.isSuccess())
         
-        ocparser.clear()
+        
     }
     func testWhileStatement(){
         let source =
@@ -64,9 +65,9 @@ class StatementTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.error == nil);
+        XCTAssert(ocparser.isSuccess())
         
-        ocparser.clear()
+        
     }
     func testSwitchStatement(){
         let source =
@@ -96,8 +97,8 @@ class StatementTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.error == nil);
-        ocparser.clear()
+        XCTAssert(ocparser.isSuccess());
+        
     }
     func testForStatement(){
         let source =
@@ -112,8 +113,8 @@ class StatementTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.error == nil);
-        ocparser.clear()
+        XCTAssert(ocparser.isSuccess());
+        
     }
     
     func testForInStatement(){
@@ -128,7 +129,7 @@ class StatementTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.error == nil);
-        ocparser.clear()
+        XCTAssert(ocparser.isSuccess());
+        
     }
 }

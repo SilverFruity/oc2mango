@@ -56,11 +56,11 @@ compile_util: /*empty*/
 definition_list: definition
             | definition_list definition
             ;
-definition:  
+definition:
             | PS_Define
             | class_declare
             | class_implementation
-// TODO: Global 
+// TODO: Global
 // TODO: C func declare && implementation
             | value_declare_type IDENTIFIER LP func_declare_parameters RP  SEMICOLON
             | value_declare_type IDENTIFIER LP func_declare_parameters RP  LC function_implementation RC
@@ -78,7 +78,7 @@ definition:
             {
                 [LibAst.globalStatements addObject:_transfer(id) $1];
             }
-			;
+	    ;
 PS_Define: 
             | PS PS_Define 
             | includeHeader
@@ -317,7 +317,7 @@ value_declare_type:  _UCHAR
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,@"typeof");
             }
-            // FIXME: id <protocl>
+            // FIXME: id <protocol>
             | value_declare_type LT IDENTIFIER GT
             | value_declare_type ASTERISK
             {
@@ -450,7 +450,7 @@ objc_method_get:
 
              OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
              element.name = _transfer(NSString *)$3;
-             [element.values addObject:_transfer(id) $5];
+             [element.values addObjectsFromArray:_transfer(id) $5];
              methodcall.element = element;
 
              $$ = _vretained methodcall;
@@ -475,7 +475,7 @@ objc_method_get:
 
              OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
              element.name = _transfer(NSString *)$3;
-             [element.values addObject:_transfer(id) $5];
+             [element.values addObjectsFromArray:_transfer(id) $5];
              methodcall.element = element;
 
              $$ = _vretained methodcall;
@@ -497,14 +497,14 @@ objc_method_call_pramameters:
         {
             OCMethodCallNormalElement *element = makeMethodCallElement(OCMethodCallNormalCall);
             [element.names addObject:_transfer(NSString *)$1];
-            [element.values addObject:_transfer(id)$3];
+            [element.values addObjectsFromArray:_transfer(id)$3];
             $$ = _vretained element;
         }
         | objc_method_call_pramameters IDENTIFIER COLON value_expression_list
         {
             OCMethodCallNormalElement *element = _transfer(OCMethodCallNormalElement *)$1;
             [element.names addObject:_transfer(NSString *)$2];
-            [element.values addObject:_transfer(id)$4];
+            [element.values addObjectsFromArray:_transfer(id)$4];
             $$ = _vretained element;
         }
         ;
@@ -562,35 +562,40 @@ block_implementation:
 object_value_type:
         IDENTIFIER
         {
-            $$ = _vretained makeValue(OCValueObject);
+            $$ = _vretained makeValue(OCValueObject,_transfer(id)$1);
         }
         | _self
         {
-            $$ = _vretained makeValue(OCValueSelf);
+            $$ = _vretained makeValue(OCValueSelf,_transfer(id)$1);
         }
         | _super
         {
-            $$ = _vretained makeValue(OCValueSuper);
+            $$ = _vretained makeValue(OCValueSuper,_transfer(id)$1);
         }
         // NSDictionary
         // NSArray
         | AT LP value_expression RP 
         {
-            $$ = _vretained makeValue(OCValueNSNumber);
+            $$ = _vretained makeValue(OCValueNSNumber,_transfer(id)$3);
         }
         | AT numerical_value_type
         {
-            $$ = _vretained makeValue(OCValueNSNumber);
+            $$ = _vretained makeValue(OCValueNSNumber,_transfer(id)$2);
         }
+// FIXME: NSString
         | AT STRING_LITERAL
         {
+//            $$ = _vretained makeValue(OCValueString,_transfer(id)$2);
             $$ = _vretained makeValue(OCValueString);
         }
         | objc_method_call
         // FIXME:  C func call
         | IDENTIFIER LP value_expression_list RP
         {
-            $$ = _vretained makeValue(OCValueFuncCall);
+            CFuncCall *call = makeValue(OCValueFuncCall);
+            call.name = _transfer(id) $1;
+            call.expressions = _transfer(id) $3;
+            $$ = _vretained call;
         }
         ;
 
@@ -604,21 +609,24 @@ value_type:
         object_value_type
         | SELECTOR
         {
-            $$ = _vretained makeValue(OCValueSelector);
+            $$ = _vretained makeValue(OCValueSelector,_transfer(id)$1);
         }
         | PROTOCOL LP IDENTIFIER RP
+        {
+            $$ = _vretained makeValue(OCValueProtocol,_transfer(id)$3);
+        }
         | STRING_LITERAL
         {
-            $$ = _vretained makeValue(OCValueCString);
+            $$ = _vretained makeValue(OCValueCString,_transfer(id)$1);
         }
         | block_implementation
         | numerical_value_type
         {
-            $$ = _vretained makeValue(OCValueNumber);
+            $$ = _vretained makeValue(OCValueNumber,_transfer(id)$1);
         }
         | LP value_declare_type RP value_type
         {
-            $$ = _vretained makeValue(OCValueConvert);
+            $$ = _vretained makeValue(OCValueConvert,_transfer(id)$4);
         }
         | _nil
         {
@@ -630,11 +638,11 @@ value_type:
         }
         | ASTERISK IDENTIFIER
         {
-            $$ = _vretained makeValue(OCValuePointValue);
+            $$ = _vretained makeValue(OCValuePointValue,_transfer(id)$2);
         }
         | AND IDENTIFIER
         {
-            $$ = _vretained makeValue(OCValueVarPoint);
+            $$ = _vretained makeValue(OCValueVarPoint,_transfer(id)$2);
         }
         ;
 
@@ -810,7 +818,7 @@ judgement_operator:
         ;
 
 /*
-FIXME
+ FIXME:
     if (x)
     if (!x)
 */
@@ -894,8 +902,8 @@ var_assign_expression:
         ;
 
 expression:
-        assign_expression
-        | value_expression
+         value_expression
+        | assign_expression
         | control_expression
         ;
 
@@ -974,7 +982,7 @@ switch_statement:
         | switch_statement RC
         ;
 /*
-FIXME
+ FIXME:
     int x = 0;
     for(x; x < value; x ++){}
 */
@@ -1047,8 +1055,7 @@ void yyerror(const char *s){
     if(lines.count < yylineno) return;
     NSString *line = lines[yylineno - 1];
     unsigned long location = yycolumn - yylen - 1;
-    unsigned long len = yylen; 
-    log(@"wocao");
+    unsigned long len = yylen;
     NSMutableString *str = [NSMutableString string];
     for (unsigned i = 0; i < location; i++){
         [str appendString:@" "];

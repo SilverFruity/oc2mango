@@ -9,9 +9,6 @@
 @implementation OCValue {
 
 }
-- (NSString *)description{
-    return [NSString stringWithFormat:@"<OCValue:%d>",self.value_type];
-}
 @end
 @implementation OCMethodCallNormalElement
 - (instancetype)init {
@@ -32,6 +29,11 @@
 @end
 
 @implementation OCMethodCall
+
+@end
+
+@implementation CFuncCall
+
 @end
 
 @implementation BlockImp

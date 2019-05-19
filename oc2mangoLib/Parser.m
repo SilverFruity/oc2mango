@@ -40,5 +40,6 @@
 }
 - (void)clear{
     self.error = nil;
+    [self.ast clear];
 }
 @end

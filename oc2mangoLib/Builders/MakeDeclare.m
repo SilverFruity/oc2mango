@@ -81,7 +81,7 @@ OCValue *makeValue(OC_VALUE_TYPE type, id value){
             ocvalue = [OCMethodCall new];
             break;
         case OCValueFuncCall:
-            ocvalue = [OCMethodCall new];
+            ocvalue = [CFuncCall new];
             break;
         case OCValueBlock:
             ocvalue = [BlockImp new];

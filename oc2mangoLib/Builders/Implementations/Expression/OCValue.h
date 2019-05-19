@@ -15,6 +15,7 @@ typedef enum {
     OCValueSuper,
     OCValueBlock,
     OCValueSelector,
+    OCValueProtocol,
     OCValueDictionary,
     OCValueArray,
     OCValueNSNumber,
@@ -59,7 +60,10 @@ typedef enum{
 @property (nonatomic, strong)id <OCMethodElement> element;
 @end
 
-
+@interface CFuncCall: OCValue
+@property (nonatomic, copy)NSString *name;
+@property (nonatomic, strong)NSMutableArray <id <ValueExpression>>*expressions;
+@end
 
 @interface BlockImp : OCValue
 @property(nonatomic,strong) FuncDeclare *declare;

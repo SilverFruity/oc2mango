@@ -7,7 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-
+/*
+ int            : SpecialTypeInt, isPoint=NO, name = nil
+ int *          : SpecialTypeInt, isPoint=YES, name = nil
+ NSObject *     : SpecialTypeInt, isPoint=YES, name = @"NSObject"
+ SEL            : SpecialTypeSelector, isPoint=NO, name = nil
+ void(^name)(x,...) : SpecialTypeBlock, isPoint=NO, name = @"name"
+ */
 typedef enum : NSUInteger {
     SpecialTypeUChar,
     SpecialTypeUShort,
@@ -41,9 +47,9 @@ typedef enum : NSUInteger {
 
 
 @interface TypeSpecial : NSObject
-@property (nonatomic, copy) NSString * name;
 @property (nonatomic, assign) SpecialType type;
 @property (nonatomic, assign) BOOL isPointer;
+@property (nonatomic, nullable, copy) NSString * name;
 
 + (instancetype)specialWithType:(SpecialType )type name:(NSString *)name;
 @end

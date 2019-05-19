@@ -129,7 +129,6 @@
 <INITIAL>"__weak"  { yylval.identifier =(__bridge_retained void *)@"__weak"; return _WEAK; }
 <INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
 
-<INITIAL>"@protocol\("[^()]*"\)" {yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];  return IDENTIFIER; }
 <INITIAL>"@selector\("[^()]*"\)" {yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];  return SELECTOR; }
 <INITIAL>"SEL" { TypeReturn(SEL); }
 <INITIAL>"Class" { TypeReturn(Class);}

@@ -26,6 +26,7 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      codeCoverageEnabled = "YES"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
@@ -37,6 +38,38 @@
                BlueprintName = "oc2mangoLibTests"
                ReferencedContainer = "container:oc2mango.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AssignExpressionTest">
+               </Test>
+               <Test
+                  Identifier = "CalculateExpressionTest">
+               </Test>
+               <Test
+                  Identifier = "ClassDeclareTest">
+               </Test>
+               <Test
+                  Identifier = "ConvertTest">
+               </Test>
+               <Test
+                  Identifier = "ConvertTest/testAssignExpressoin()">
+               </Test>
+               <Test
+                  Identifier = "ConvertTest/testExample()">
+               </Test>
+               <Test
+                  Identifier = "ConvertTest/testTypeSpecail()">
+               </Test>
+               <Test
+                  Identifier = "FileTest">
+               </Test>
+               <Test
+                  Identifier = "MethodCallTest">
+               </Test>
+               <Test
+                  Identifier = "StatementTest">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

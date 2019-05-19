@@ -34,6 +34,9 @@
 		EE1C71EB228829E90077A71E /* OCValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* OCValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE1C71F122882F750077A71E /* TestSource.imp in Resources */ = {isa = PBXBuildFile; fileRef = EE1C71EE22882DBF0077A71E /* TestSource.imp */; };
 		EE1C71F42288314C0077A71E /* FileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71F32288314C0077A71E /* FileTest.swift */; };
+		EE2EF4312291400D0019A768 /* AssignExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2EF4302291400D0019A768 /* AssignExpressionTest.swift */; };
+		EE2EF43722914EEE0019A768 /* JudgementExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2EF43622914EEE0019A768 /* JudgementExpressionTest.swift */; };
+		EE2EF43922914EFF0019A768 /* CalculateExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2EF43822914EFF0019A768 /* CalculateExpressionTest.swift */; };
 		EE5534CF2290032700A4B32E /* AST.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534CD2290032700A4B32E /* AST.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE5534D02290032700A4B32E /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE5534D32290053800A4B32E /* Convert.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534D12290053800A4B32E /* Convert.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -117,6 +120,9 @@
 		EE1C71E522880AED0077A71E /* AssignExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignExpressionTest.swift; sourceTree = "<group>"; };
 		EE1C71EE22882DBF0077A71E /* TestSource.imp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestSource.imp; sourceTree = "<group>"; };
 		EE1C71F32288314C0077A71E /* FileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTest.swift; sourceTree = "<group>"; };
+		EE2EF4302291400D0019A768 /* AssignExpressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssignExpressionTest.swift; sourceTree = "<group>"; };
+		EE2EF43622914EEE0019A768 /* JudgementExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JudgementExpressionTest.swift; sourceTree = "<group>"; };
+		EE2EF43822914EFF0019A768 /* CalculateExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculateExpressionTest.swift; sourceTree = "<group>"; };
 		EE5534CD2290032700A4B32E /* AST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AST.h; sourceTree = "<group>"; };
 		EE5534CE2290032700A4B32E /* AST.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AST.m; sourceTree = "<group>"; };
 		EE5534D12290053800A4B32E /* Convert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
@@ -216,8 +222,12 @@
 		EE147263227F1D6B00566B3F /* Implementation */ = {
 			isa = PBXGroup;
 			children = (
+				EE2EF4302291400D0019A768 /* AssignExpressionTest.swift */,
+				EED67ABB2270B5A30015AC02 /* StatementTest.swift */,
 				EEB17FFA22849273003D5C36 /* MethodCallTest.swift */,
 				EE1C71E522880AED0077A71E /* AssignExpressionTest.swift */,
+				EE2EF43622914EEE0019A768 /* JudgementExpressionTest.swift */,
+				EE2EF43822914EFF0019A768 /* CalculateExpressionTest.swift */,
 			);
 			path = Implementation;
 			sourceTree = "<group>";
@@ -326,11 +336,10 @@
 			isa = PBXGroup;
 			children = (
 				EE1C71EE22882DBF0077A71E /* TestSource.imp */,
+				EE1C71F32288314C0077A71E /* FileTest.swift */,
 				EED67A7D2270AE0F0015AC02 /* Info.plist */,
 				EED67AB62270B55D0015AC02 /* oc2mangoLibTests-Bridging-Header.h */,
 				EE5534D822900DD700A4B32E /* Convert */,
-				EE1C71F32288314C0077A71E /* FileTest.swift */,
-				EED67ABB2270B5A30015AC02 /* StatementTest.swift */,
 				EE147263227F1D6B00566B3F /* Implementation */,
 				EE147262227F0A4E00566B3F /* Declare */,
 			);
@@ -565,10 +574,13 @@
 			files = (
 				EE1C71F42288314C0077A71E /* FileTest.swift in Sources */,
 				EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */,
+				EE2EF43922914EFF0019A768 /* CalculateExpressionTest.swift in Sources */,
 				EED67ABC2270B5A30015AC02 /* StatementTest.swift in Sources */,
+				EE2EF43722914EEE0019A768 /* JudgementExpressionTest.swift in Sources */,
 				EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */,
 				EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */,
 				EE1C71E622880AED0077A71E /* AssignExpressionTest.swift in Sources */,
+				EE2EF4312291400D0019A768 /* AssignExpressionTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
