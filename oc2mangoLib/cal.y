@@ -317,7 +317,7 @@ value_declare_type:  _UCHAR
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,@"typeof");
             }
-            // FIXME: id <protocol>
+            // ERROR: id <protocol> conflict x < 1
             | value_declare_type LT IDENTIFIER GT
             | value_declare_type ASTERISK
             {
