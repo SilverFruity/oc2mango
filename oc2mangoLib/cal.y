@@ -23,14 +23,14 @@ extern void yyerror(const char *s);
 }
 
 
-%token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE 
+%token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof _struct
 %token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
 %token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE 
 %token <identifier> EXTERN STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK
 %token <identifier> IDENTIFIER STRING_LITERAL
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS
-%token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR LOGIC_NOT
+%token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR NOT
 %token <identifier> AND OR POWER SUB ADD DIV ASTERISK AND_ASSIGN OR_ASSIGN POWER_ASSIGN SUB_ASSIGN ADD_ASSIGN DIV_ASSIGN ASTERISK_ASSIGN INCREMENT DECREMENT
 SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %token <identifier> _self _super _nil _NULL _YES _NO 
@@ -41,12 +41,12 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare
 %type  <declare>  value_declare block_declare func_declare_parameters 
-%type  <type> value_declare_type block_parametere_type block_type method_caller_type  object_value_type objc_method_call 
+%type  <type> declare_type value_declare_type block_parametere_type block_type method_caller_type  primary_expression objc_method_call 
 %type  <implementation> class_implementation  
-%type  <expression> value_type numerical_value_type block_implementation declare_assign_expression var_assign_expression
+%type  <expression> primary_expression numerical_value_type block_implementation declare_assign_expression var_assign_expression
  ternary_expression calculator_expression judgement_expression value_expression assign_expression  function_implementation  control_expression
-expression objc_method_call_pramameters objc_method_get value_expression_list for_parameter_list
-%type <Operator> judgement_operator binary_operator unary_operator assign_operator value_get_operator
+expression objc_method_call_pramameters objc_method_get value_expression_list for_parameter_list 
+%type <Operator> judgement_operator  binary_operator unary_operator assign_operator value_get_operator
 %type <statement> if_statement while_statement dowhile_statement switch_statement for_statement forin_statement case_statement control_statement
 %%
 
@@ -57,20 +57,10 @@ definition_list: definition
             | definition_list definition
             ;
 definition:
-            | PS_Define
+            PS_Define
             | class_declare
             | class_implementation
-// TODO: Global
-// TODO: C func declare && implementation
-            | value_declare_type IDENTIFIER LP func_declare_parameters RP  SEMICOLON
-            | value_declare_type IDENTIFIER LP func_declare_parameters RP  LC function_implementation RC
-            {
-                BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-                imp.declare = makeFuncDeclare(_transfer(id)$2,_transfer(id)$4);
-                imp.funcImp = _transfer(id)$7;
-                [LibAst.globalStatements addObject:_transfer(id) $1];
-            }
-            | expression SEMICOLON
+            | expression
             {
                 [LibAst.globalStatements addObject:_transfer(id) $1];
             }
@@ -79,12 +69,10 @@ definition:
                 [LibAst.globalStatements addObject:_transfer(id) $1];
             }
 	    ;
-PS_Define: 
-            | PS PS_Define 
-            | includeHeader
+PS_Define: PS includeHeader
             ;
 includeHeader:
-            | IMPORT 
+            IMPORT 
             | INCLUDE 
             | includeHeader LT IDENTIFIER DIV IDENTIFIER DOT IDENTIFIER GT
             | includeHeader STRING_LITERAL
@@ -236,71 +224,85 @@ value_declare:
             ;
 
 // FIXME: id <protocl> vlaue
-value_declare_type:  _UCHAR
+declare_type:  
+            // FIXME: id <protocol> conflict x < 1
+            | LT value_declare_type GT declare_type
+            | ASTERISK 
+            {
+                TypeSpecial *specail = makeTypeSpecial(SpecialTypeUChar);
+                specail.isPointer = YES;
+                $$ =  _vretained specail;
+            }
+            | declare_type declare_right_attribute
+            ;
+            
+value_declare_type:
+            declare_left_attribute value_declare_type
+            {
+                $$ = $2;
+            }
+           // FIXME: implementation typeof type
+            | _typeof LP value_expression RP
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeObject,@"typeof");
+            }
+            | _UCHAR declare_type
             {
                  $$ = _vretained makeTypeSpecial(SpecialTypeUChar);
             }
-            | _USHORT
+            | _USHORT declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeUShort);
             }
-            | _UINT
+            | _UINT declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeUInt);
             }
-            | _ULONG
+            | _ULONG declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeULong);
             }
-            | _ULLONG
+            | _ULLONG declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeULongLong);
             }            
-            | _CHAR
+            | _CHAR declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeChar);
             }
-            | _SHORT
+            | _SHORT declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeShort);
             }
-            | _INT
+            | _INT declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeInt);
             }
-            | _LONG
+            | _LONG declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeLong);
             }
-            | _LLONG
+            | _LLONG declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeLongLong);
             }
-            | _DOUBLE
+            | _DOUBLE declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeDouble);
             }
-            | _FLOAT
+            | _FLOAT declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeFloat);
             }
-            | _Class
+            | _Class declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeClass);
             }
-            | _BOOL
+            | _BOOL declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeBOOL);
             }
-            | _id
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeId);
-            }
-            | _id LE IDENTIFIER GT
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeId);
-            }
-            | _void
+            | _void declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeVoid);
             }
@@ -308,32 +310,18 @@ value_declare_type:  _UCHAR
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeId);
             }
-            | IDENTIFIER
+            | IDENTIFIER declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
             }
-            // FIXME: implementation typeof type
-            | _typeof LP value_expression RP
+            | _id declare_type
             {
-                $$ = _vretained makeTypeSpecial(SpecialTypeObject,@"typeof");
-            }
-            // ERROR: id <protocol> conflict x < 1
-            | value_declare_type LT IDENTIFIER GT
-            | value_declare_type ASTERISK
-            {
-                TypeSpecial *specail = _transfer(TypeSpecial *) $1;
-                specail.isPointer = YES;
-                $$ =  _vretained specail;
+                $$ = _vretained makeTypeSpecial(SpecialTypeId);
             }
             | block_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeBlock);
             }
-            | declare_left_attribute value_declare_type
-            {
-                $$ = $2;
-            }
-            | value_declare_type declare_right_attribute
             ;
 
 declare_left_attribute:
@@ -429,7 +417,7 @@ value_get_operator:
             | SUB GT
             ;
 objc_method_get:
-         object_value_type value_get_operator IDENTIFIER
+         primary_expression
          {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$1;
@@ -442,7 +430,7 @@ objc_method_get:
              $$ = _vretained methodcall;
          }
          // Block Get
-         | object_value_type value_get_operator IDENTIFIER LP value_expression_list RP
+         | objc_method_get LP value_expression_list RP
          {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$1;
@@ -450,32 +438,7 @@ objc_method_get:
 
              OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
              element.name = _transfer(NSString *)$3;
-             [element.values addObjectsFromArray:_transfer(id) $5];
-             methodcall.element = element;
-
-             $$ = _vretained methodcall;
-         }
-         // Get
-         | objc_method_get value_get_operator IDENTIFIER
-         {
-             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
-             methodcall.caller =  _transfer(OCValue *)$1;
-
-             OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
-             element.name = _transfer(NSString *)$3;
-             methodcall.element = element;
-
-             $$ = _vretained methodcall;
-         }
-         // Block Get
-         | objc_method_get value_get_operator IDENTIFIER LP value_expression_list RP
-         {
-             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
-             methodcall.caller =  _transfer(OCValue *)$1;
-
-             OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
-             element.name = _transfer(NSString *)$3;
-             [element.values addObjectsFromArray:_transfer(id) $5];
+             [element.values addObjectsFromArray:_transfer(id) $3];
              methodcall.element = element;
 
              $$ = _vretained methodcall;
@@ -483,7 +446,7 @@ objc_method_get:
         ;
 
 method_caller_type:
-         object_value_type
+         primary_expression
          | objc_method_get
          ;
 objc_method_call_pramameters:
@@ -559,19 +522,18 @@ block_implementation:
             $$ = _vretained imp; 
         }
         ;
-object_value_type:
+numerical_value_type:
+        INTETER_LITERAL
+        | DOUBLE_LITERAL
+    ;
+
+primary_expression:
         IDENTIFIER
-        {
-            $$ = _vretained makeValue(OCValueObject,_transfer(id)$1);
-        }
         | _self
-        {
-            $$ = _vretained makeValue(OCValueSelf,_transfer(id)$1);
-        }
         | _super
-        {
-            $$ = _vretained makeValue(OCValueSuper,_transfer(id)$1);
-        }
+        | objc_method_call
+        | primary_expression DOT IDENTIFIER
+        | primary_expression SUB GT IDENTIFIER
         // NSDictionary
         // NSArray
         | AT LP value_expression RP 
@@ -582,13 +544,10 @@ object_value_type:
         {
             $$ = _vretained makeValue(OCValueNSNumber,_transfer(id)$2);
         }
-// FIXME: NSString
         | AT STRING_LITERAL
         {
-//            $$ = _vretained makeValue(OCValueString,_transfer(id)$2);
             $$ = _vretained makeValue(OCValueString);
         }
-        | objc_method_call
         // FIXME:  C func call
         | IDENTIFIER LP value_expression_list RP
         {
@@ -597,16 +556,6 @@ object_value_type:
             call.expressions = _transfer(id) $3;
             $$ = _vretained call;
         }
-        ;
-
-numerical_value_type:
-          INTETER_LITERAL
-        | DOUBLE_LITERAL
-        ;
-
-
-value_type:
-        object_value_type
         | SELECTOR
         {
             $$ = _vretained makeValue(OCValueSelector,_transfer(id)$1);
@@ -620,30 +569,8 @@ value_type:
             $$ = _vretained makeValue(OCValueCString,_transfer(id)$1);
         }
         | block_implementation
-        | numerical_value_type
-        {
-            $$ = _vretained makeValue(OCValueNumber,_transfer(id)$1);
-        }
-        | LP value_declare_type RP value_type
-        {
-            $$ = _vretained makeValue(OCValueConvert,_transfer(id)$4);
-        }
         | _nil
-        {
-            $$ = _vretained makeValue(OCValueNil);
-        }
         | _NULL
-        {
-            $$ = _vretained makeValue(OCValueNULL);
-        }
-        | ASTERISK IDENTIFIER
-        {
-            $$ = _vretained makeValue(OCValuePointValue,_transfer(id)$2);
-        }
-        | AND IDENTIFIER
-        {
-            $$ = _vretained makeValue(OCValueVarPoint,_transfer(id)$2);
-        }
         ;
 
 
@@ -745,7 +672,7 @@ binary_operator:
 
 
 ternary_expression:
-        judgement_expression QUESTION value_expression COLON value_expression
+        judgement_expression QUESTION ternary_expression value_expression COLON value_expression
         {
             TernaryExpression *expression = makeTernaryExpression();
             expression.judgeExpression = _transfer(JudgementExpression *)$1;
@@ -823,7 +750,7 @@ judgement_operator:
     if (!x)
 */
 judgement_expression:
-         LOGIC_NOT value_expression
+         NOT value_expression
          {
              JudgementExpression *expression = makeJudgementExpression(JudgementOperatorNOT);
              expression.left = _transfer(id) $2;
@@ -839,7 +766,7 @@ judgement_expression:
         ;
 
 value_expression:
-        value_type
+        primary_expression
         | judgement_expression
         | calculator_expression
         | LP value_expression RP
@@ -892,7 +819,7 @@ declare_assign_expression:
         }
         ;
 var_assign_expression: 
-        value_type assign_operator value_expression
+        primary_expression assign_operator value_expression
         {
             VariableAssignExpression *expression = makeVarAssignExpression($2);
             expression.expression = _transfer(id) $3;
@@ -902,9 +829,9 @@ var_assign_expression:
         ;
 
 expression:
-         value_expression
-        | assign_expression
-        | control_expression
+         value_expression SEMICOLON
+        | assign_expression SEMICOLON
+        | control_expression SEMICOLON
         ;
 
 if_statement:
@@ -952,7 +879,7 @@ FIXME:
 
 */
 case_statement:
-         _case value_type COLON
+         _case primary_expression COLON
          {
              $$ = _vretained makeCaseStatement(_transfer(OCValue *)$2);
          }
@@ -968,7 +895,7 @@ case_statement:
         }
         ;
 switch_statement:
-         _switch LP value_type RP LC
+         _switch LP primary_expression RP LC
          {
              SwitchStatement *statement = makeSwitchStatement(_transfer(id) $3);
              $$ = _vretained statement;
@@ -1008,7 +935,7 @@ for_statement: _for LP for_parameter_list RP LC function_implementation RC
         }
         ;
 
-forin_statement: _for LP value_declare _in value_type RP LC function_implementation RC
+forin_statement: _for LP value_declare _in primary_expression RP LC function_implementation RC
         {
             ForInStatement * statement = makeForInStatement(_transfer(FunctionImp *)$8);
             statement.declare = _transfer(id) $3;
@@ -1032,7 +959,7 @@ function_implementation:
         {
             $$ = _vretained makeFuncImp();
         }
-        | function_implementation expression SEMICOLON
+        | function_implementation expression 
         {
             FunctionImp *imp = _transfer(FunctionImp *)$1;
             [imp.statements addObject:_transfer(id) $2];
@@ -1046,6 +973,92 @@ function_implementation:
         }
         ;
         
+
+expression_list: ternary_expressoin
+        | expression_list COMMA ternary_expressoin
+;
+
+// = /= %= /= *=  -= += <<= >>= &= ^= |= 
+assign_expression: ternary_expression
+            | primary_expression assignment_operator ternary_operator_expression
+;
+
+// ?:
+ternary_expressoin: logic_or_expression
+            | logic_or_expression  QUESTION ternary_operator_expression  COLON ternary_operator_expression
+			| logic_or_expression  QUESTION COLON ternary_operator_expression
+            ;
+
+
+// ||
+logic_or_expression: logic_and_expression
+            | logic_or_expression LOGIC_OR logic_and_expression
+            ;
+
+// &&
+logic_and_expression: bite_or_expression
+            | logic_and_expression LOGIC_AND bite_or_expression
+            ;
+// |
+bite_or_expression: bite_xor_expression
+            | bite_or_expression OR bite_xor_expression
+            ;
+// ^
+bite_xor_expression: bite_and_expression
+            | bite_xor_expression POWER bite_and_expression
+            ;
+
+// &
+bite_and_expression: equality_expression
+            | bite_and_expression AND equality_expression
+            ;
+
+// == !=
+equality_expression: relational_expression
+			| equality_expression EQ relational_expression
+			| equality_expression NE relational_expression
+;
+// < <= > >=
+relational_expression: bite_shift_expression
+			| relational_expression LT bite_shift_expression
+			| relational_expression LE bite_shift_expression
+			| relational_expression GT bite_shift_expression
+			| relational_expression GE bite_shift_expression
+            ;
+// >> <<
+bite_shift_expression: additive_expression
+            | bite_shift_expression SHIFTLEFT additive_expression
+            | bite_shift_expression SHIFTRIGHT additive_expression
+            ;
+// + -
+additive_expression: multiplication_expression
+			| additive_expression ADD multiplication_expression
+			| additive_expression SUB multiplication_expression
+            ;
+
+// * / %
+multiplication_expression: unary_expression
+			| multiplication_expression ASTERISK unary_expression
+			| multiplication_expression DIV unary_expression
+			| multiplication_expression MOD unary_expression
+            ;
+
+// !x -x *x &x ~x sizof(x) (type)x x++ x-- ++x --x
+unary_expression: primary_expression
+            | NOT unary_expression
+			| SUB unary_expression
+            | ASTERISK unary_expression
+            | AND unary_expression
+            | TILDE unary_expression
+            | sizeof unary_expression
+            | LP value_declare_type RP unary_expression
+            | unary_expression INCREMENT
+            | unary_expression DECREMENT
+            | INCREMENT unary_expression
+            | DECREMENT unary_expression
+            ;
+
+
 
 %%
 void yyerror(const char *s){
@@ -1068,4 +1081,3 @@ void yyerror(const char *s){
     log(OCParser.error);
 
 }
-

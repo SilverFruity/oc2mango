@@ -22,6 +22,7 @@ class JudgementExpressionTest: XCTestCase {
     func testNormalJudgement(){
         source =
 """
+        x++;
         x < 1;
         x < 1 && b > 0;
 """

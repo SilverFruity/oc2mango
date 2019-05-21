@@ -67,7 +67,8 @@
 <INITIAL>">=" {return GE; }   
 <INITIAL>"&&" {return LOGIC_AND; }
 <INITIAL>"||" {return LOGIC_OR; }
-<INITIAL>"!" {return  LOGIC_NOT; }
+<INITIAL>"!" {return  NOT; }
+<INITIAL>"~" {return TILDE; }
 
 <INITIAL>"<<" {return SHIFTLEFT; }
 <INITIAL>">>" {return SHIFTRIGHT; }

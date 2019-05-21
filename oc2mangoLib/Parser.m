@@ -9,6 +9,11 @@
 #import "Parser.h"
 #import "Expression.h"
 #import "Statement.h"
+void UncaughtExceptionHandler(NSException *exception) {
+    extern unsigned long yylineno;
+    NSArray *array = [OCParser.source componentsSeparatedByString:@"\n"];
+    NSLog(@"error :%@",array[yylineno]);
+}
 @implementation Parser
 + (instancetype)shared{
     static dispatch_once_t onceToken;
@@ -22,6 +27,7 @@
 {
     self = [super init];
     self.ast = [AST shared];
+    NSSetUncaughtExceptionHandler(&UncaughtExceptionHandler);
     return self;
 }
 - (BOOL)isSuccess{
@@ -41,5 +47,6 @@
 - (void)clear{
     self.error = nil;
     [self.ast clear];
+    
 }
 @end
