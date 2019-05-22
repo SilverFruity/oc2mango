@@ -14,8 +14,16 @@
 
 @end
 typedef enum {
-    UnaryOperatorIncrement,
-    UnaryOperatorDecrement
+    UnaryOperatorIncrementSuffix,
+    UnaryOperatorDecrementSuffix,
+    UnaryOperatorIncrementPrefix,
+    UnaryOperatorDecrementPrefix,
+    UnaryOperatorNot,
+    UnaryOperatorNegative,
+    UnaryOperatorBiteNot,
+    UnaryOperatorSizeOf,
+    UnaryOperatorAdressPoint,
+    UnaryOperatorPointValue
 }UnaryOperatorType;
 
 @interface UnaryExpression: CalculateExpression
@@ -43,7 +51,7 @@ typedef enum {
 @end
 
 @interface TernaryExpression : CalculateExpression
-@property (nonatomic,strong)JudgementExpression *judgeExpression;
+@property (nonatomic,strong)id <ValueExpression> expression;
 @property (nonatomic,strong)NSMutableArray <id <ValueExpression>>*values;
 
 @end

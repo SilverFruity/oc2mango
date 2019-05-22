@@ -36,7 +36,9 @@
     return content;
 }
 - (NSString *)convertExpression:(id <Expression>)exp{
-    if ([exp isKindOfClass:[AssignExpression class]]) {
+    if ([exp isKindOfClass:[DeclareExpression class]]) {
+        return [self convertDeclareExp:exp];
+    }else if ([exp isKindOfClass:[AssignExpression class]]) {
         return [self convertAssginExp:exp];
     }else if ([exp isKindOfClass:[CalculateExpression class]]){
         return [self convertCalculateExp:exp];
@@ -148,21 +150,16 @@
     return content;
 }
 
-
-- (NSString *)convertAssginExp:(AssignExpression *)exp{
-    if ([exp isKindOfClass:[DeclareAssignExpression class]]) {
-        DeclareAssignExpression *declExp = (DeclareAssignExpression *) exp;
-        if (declExp.expression) {
-            return [NSString stringWithFormat:@"%@ = %@",[self convertVariableDeclare:declExp.declare],[self convertExpression:declExp.expression]];
-        }else{
-            return [NSString stringWithFormat:@"%@",[self convertVariableDeclare:declExp.declare]];
-        }
-    }else if ([exp isKindOfClass:[VariableAssignExpression class]]){
-        VariableAssignExpression *varExp = (VariableAssignExpression *) exp;
-        NSString *operator = @"=";
-        return [NSString stringWithFormat:@"%@ %@ %@",[self convertOCValue:varExp.value],operator,[self convertExpression:varExp.expression]];
+- (NSString *)convertDeclareExp:(DeclareExpression *)exp{
+    if (exp.expression) {
+        return [NSString stringWithFormat:@"%@ = %@",[self convertVariableDeclare:exp.declare],[self convertExpression:exp.expression]];
+    }else{
+        return [NSString stringWithFormat:@"%@",[self convertVariableDeclare:exp.declare]];
     }
-    return @"";
+}
+- (NSString *)convertAssginExp:(AssignExpression *)exp{
+    NSString *operator = @"=";
+    return [NSString stringWithFormat:@"%@ %@ %@",[self convertOCValue:exp.value],operator,[self convertExpression:exp.expression]];
 }
 - (NSString *)convertCalculateExp:(CalculateExpression *)exp{
     return @"";

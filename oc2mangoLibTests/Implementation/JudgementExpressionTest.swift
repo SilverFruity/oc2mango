@@ -28,7 +28,7 @@ class JudgementExpressionTest: XCTestCase {
 """
         ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
-        let assign = ocparser.ast.globalStatements[0] as? DeclareAssignExpression;
+        
     }
 
 }

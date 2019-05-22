@@ -35,8 +35,8 @@ extern UnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern BinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern TernaryExpression *makeTernaryExpression(void);
 extern JudgementExpression *makeJudgementExpression(JudgementOperatorType type);
-extern DeclareAssignExpression *makeDeaclareAssignExpression(VariableDeclare *declare);
-extern VariableAssignExpression *makeVarAssignExpression(AssignOperatorType type);
+extern AssignExpression *makeAssignExpression(AssignOperatorType type);
+extern DeclareExpression *makeDeclareExpression(VariableDeclare *declare);
 extern ControlExpression *makeControlExpression(ControlExpressionType type);
 
 

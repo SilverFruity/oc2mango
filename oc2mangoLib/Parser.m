@@ -45,8 +45,7 @@ void UncaughtExceptionHandler(NSException *exception) {
     }
 }
 - (void)clear{
+    self.ast = [AST new];
     self.error = nil;
-    [self.ast clear];
-    
 }
 @end

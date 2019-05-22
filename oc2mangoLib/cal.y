@@ -21,15 +21,17 @@ extern void yyerror(const char *s);
     void *expression;
     int Operator;
 }
+%left level3
+%left level2
+%left level1
 
-
-%token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE
-%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof _struct
+%token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE 
+%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof _struct _sizeof
 %token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
 %token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE 
 %token <identifier> EXTERN STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK
 %token <identifier> IDENTIFIER STRING_LITERAL
-%token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS
+%token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS POINT
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR NOT
 %token <identifier> AND OR POWER SUB ADD DIV ASTERISK AND_ASSIGN OR_ASSIGN POWER_ASSIGN SUB_ASSIGN ADD_ASSIGN DIV_ASSIGN ASTERISK_ASSIGN INCREMENT DECREMENT
 SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
@@ -40,14 +42,13 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <include> PS_Define includeHeader
 %type  <declare>  class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare
-%type  <declare>  value_declare block_declare func_declare_parameters 
-%type  <type> declare_type value_declare_type block_parametere_type block_type method_caller_type  primary_expression objc_method_call 
+%type  <declare>  declare_variable block_declare func_declare_parameters 
+%type  <type>  type_specified block_parametere_type block_type  objc_method_call  declare_type
 %type  <implementation> class_implementation  
-%type  <expression> primary_expression numerical_value_type block_implementation declare_assign_expression var_assign_expression
- ternary_expression calculator_expression judgement_expression value_expression assign_expression  function_implementation  control_expression
-expression objc_method_call_pramameters objc_method_get value_expression_list for_parameter_list 
-%type <Operator> judgement_operator  binary_operator unary_operator assign_operator value_get_operator
-%type <statement> if_statement while_statement dowhile_statement switch_statement for_statement forin_statement case_statement control_statement
+%type  <expression> primary_expression numerical_value_type block_implementation  function_implementation  control_expression objc_method_call_pramameters  expression_list for_parameter_list unary_expression
+%type <Operator>  assign_operator 
+%type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement case_statement control_statement 
+%type <expression> expression declare_expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression
 %%
 
 compile_util: /*empty*/
@@ -60,7 +61,7 @@ definition:
             PS_Define
             | class_declare
             | class_implementation
-            | expression
+            | expression_statement
             {
                 [LibAst.globalStatements addObject:_transfer(id) $1];
             }
@@ -106,7 +107,7 @@ class_declare:
                 [occlass.privateVariables addObjectsFromArray:_transfer(id) $2];
                 $$ = _vretained occlass;
             }
-            | class_declare PROPERTY class_property_declare value_declare SEMICOLON
+            | class_declare PROPERTY class_property_declare declare_variable SEMICOLON
             {
                 OCClass *occlass = _transfer(OCClass *) $1;
 
@@ -169,7 +170,7 @@ class_private_varibale_declare:
                 NSMutableArray *list = [NSMutableArray array];
 				$$ = (__bridge_retained void *)list;
             }
-            | class_private_varibale_declare value_declare SEMICOLON
+            | class_private_varibale_declare declare_variable SEMICOLON
             {
                 NSMutableArray *list = _transfer(NSMutableArray *) $1;
 				[list addObject:_transfer(VariableDeclare *) $2];
@@ -215,34 +216,27 @@ class_property_declare:
             }
             ;
 
-value_declare:
-             value_declare_type IDENTIFIER
+declare_variable:
+             type_specified IDENTIFIER
             {
                 $$ = _vretained makeVariableDeclare((__bridge TypeSpecial *)$1,(__bridge NSString *)$2);
             }
             | block_declare
             ;
 
-// FIXME: id <protocl> vlaue
-declare_type:  
+declare_type:
             // FIXME: id <protocol> conflict x < 1
-            | LT value_declare_type GT declare_type
-            | ASTERISK 
-            {
-                TypeSpecial *specail = makeTypeSpecial(SpecialTypeUChar);
-                specail.isPointer = YES;
-                $$ =  _vretained specail;
-            }
+//            | LT type_specified GT declare_type
             | declare_type declare_right_attribute
             ;
-            
-value_declare_type:
-            declare_left_attribute value_declare_type
+
+type_specified:
+            declare_left_attribute type_specified
             {
                 $$ = $2;
             }
-           // FIXME: implementation typeof type
-            | _typeof LP value_expression RP
+            // FIXME: implementation typeof type
+            | _typeof LP expression RP
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,@"typeof");
             }
@@ -265,7 +259,7 @@ value_declare_type:
             | _ULLONG declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeULongLong);
-            }            
+            }
             | _CHAR declare_type
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeChar);
@@ -322,7 +316,13 @@ value_declare_type:
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeBlock);
             }
-            ;
+            | type_specified ASTERISK
+            {
+                TypeSpecial *type = _transfer(id) $1;
+                type.isPointer = YES;
+                $$ = _vretained type;
+            }
+;
 
 declare_left_attribute:
             EXTERN
@@ -340,20 +340,20 @@ declare_right_attribute:
             | CONST
             ;
 block_declare: 
-              value_declare_type LP POWER IDENTIFIER RP
+              type_specified LP POWER IDENTIFIER RP
             {
                 $$ = _vretained makeVariableDeclare(makeTypeSpecial(SpecialTypeBlock),(__bridge NSString *)$4);
             }
             | block_declare LP func_declare_parameters RP
             ;
 block_type: 
-             value_declare_type LP POWER RP
+             type_specified LP POWER RP
             | block_type LP func_declare_parameters RP
             ;
 
 block_parametere_type: 
-            value_declare
-            | value_declare_type
+            declare_variable
+            | type_specified
             ;
 func_declare_parameters: /* empty */
             {
@@ -374,11 +374,11 @@ func_declare_parameters: /* empty */
             ;
 
 method_declare:
-            SUB LP value_declare_type RP
+            SUB LP type_specified RP
             {   
                 $$ = _vretained makeMethodDeclare(NO,_transfer(TypeSpecial *) $3);
             }
-            | ADD LP value_declare_type RP
+            | ADD LP type_specified RP
             {
                 $$ = _vretained makeMethodDeclare(YES,_transfer(TypeSpecial *) $3);
             }
@@ -388,7 +388,7 @@ method_declare:
                 [method.methodNames addObject:_transfer(NSString *) $2];
                 $$ = _vretained method;
             }
-            | method_declare IDENTIFIER COLON LP value_declare_type RP IDENTIFIER
+            | method_declare IDENTIFIER COLON LP type_specified RP IDENTIFIER
             {
                 MethodDeclare *method = _transfer(MethodDeclare *)$$;
                 [method.methodNames addObject:_transfer(NSString *) $2];
@@ -398,57 +398,6 @@ method_declare:
             }
             ;
 
-value_expression_list:
-            | value_expression
-            {
-                NSMutableArray *list = [NSMutableArray array];
-				[list addObject:_transfer(id)$1];
-				$$ = _vretained list;
-            }
-            | value_expression_list COMMA value_expression
-            {
-                NSMutableArray *list = (__bridge_transfer NSMutableArray *)$1;
-				[list addObject:_transfer(id) $3];
-				$$ = (__bridge_retained void *)list;
-            }
-            ;
-value_get_operator:
-             DOT
-            | SUB GT
-            ;
-objc_method_get:
-         primary_expression
-         {
-             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
-             OCValue *caller = _transfer(OCValue *)$1;
-             methodcall.caller =  caller;
-
-             OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
-             element.name = _transfer(NSString *)$3;
-             methodcall.element = element;
-
-             $$ = _vretained methodcall;
-         }
-         // Block Get
-         | objc_method_get LP value_expression_list RP
-         {
-             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
-             OCValue *caller = _transfer(OCValue *)$1;
-             methodcall.caller = caller;
-
-             OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
-             element.name = _transfer(NSString *)$3;
-             [element.values addObjectsFromArray:_transfer(id) $3];
-             methodcall.element = element;
-
-             $$ = _vretained methodcall;
-         }
-        ;
-
-method_caller_type:
-         primary_expression
-         | objc_method_get
-         ;
 objc_method_call_pramameters:
         IDENTIFIER
         {
@@ -456,14 +405,14 @@ objc_method_call_pramameters:
             [element.names addObject:_transfer(NSString *)$1];
             $$ = _vretained element;
         }
-        | IDENTIFIER COLON value_expression_list
+        | IDENTIFIER COLON expression_list
         {
             OCMethodCallNormalElement *element = makeMethodCallElement(OCMethodCallNormalCall);
             [element.names addObject:_transfer(NSString *)$1];
             [element.values addObjectsFromArray:_transfer(id)$3];
             $$ = _vretained element;
         }
-        | objc_method_call_pramameters IDENTIFIER COLON value_expression_list
+        | objc_method_call_pramameters IDENTIFIER COLON expression_list
         {
             OCMethodCallNormalElement *element = _transfer(OCMethodCallNormalElement *)$1;
             [element.names addObject:_transfer(NSString *)$2];
@@ -471,14 +420,8 @@ objc_method_call_pramameters:
             $$ = _vretained element;
         }
         ;
-/*
- FIXME:
- 1. self->var
- 2. struct NAME var; var.name = xxx; var->name = xxx;
- */
-objc_method_call:
-        objc_method_get
-        | LB method_caller_type objc_method_call_pramameters RB
+
+objc_method_call: LB primary_expression objc_method_call_pramameters RB
         {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$2;
@@ -490,7 +433,7 @@ objc_method_call:
 
 block_implementation:
         //^returnType{ }
-        POWER value_declare_type LC function_implementation RC
+        POWER type_specified LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
             imp.funcImp = _transfer(id)$4;
@@ -498,7 +441,7 @@ block_implementation:
             $$ = _vretained imp; 
         }
         //^returnType(int x, int y, int z){  }
-        | POWER value_declare_type LP func_declare_parameters RP LC function_implementation RC
+        | POWER type_specified LP func_declare_parameters RP LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
             imp.declare = makeFuncDeclare(_transfer(id)$2,_transfer(id)$4);
@@ -522,58 +465,208 @@ block_implementation:
             $$ = _vretained imp; 
         }
         ;
-numerical_value_type:
-        INTETER_LITERAL
-        | DOUBLE_LITERAL
-    ;
 
-primary_expression:
-        IDENTIFIER
-        | _self
-        | _super
-        | objc_method_call
-        | primary_expression DOT IDENTIFIER
-        | primary_expression SUB GT IDENTIFIER
-        // NSDictionary
-        // NSArray
-        | AT LP value_expression RP 
+
+control_expression:
+        _return
         {
-            $$ = _vretained makeValue(OCValueNSNumber,_transfer(id)$3);
+            ControlExpression *expression = makeControlExpression(ControlExpressionReturn);
+            $$ = _vretained expression;
         }
-        | AT numerical_value_type
+        | _return ternary_expression
         {
-            $$ = _vretained makeValue(OCValueNSNumber,_transfer(id)$2);
+            ControlExpression *expression = makeControlExpression(ControlExpressionReturn);
+            expression.expression = _transfer(id) $2;
+            $$ = _vretained expression;
         }
-        | AT STRING_LITERAL
+        | _break
         {
-            $$ = _vretained makeValue(OCValueString);
+            $$ = _vretained makeControlExpression(ControlExpressionBreak);
         }
-        // FIXME:  C func call
-        | IDENTIFIER LP value_expression_list RP
+        | _continue
         {
-            CFuncCall *call = makeValue(OCValueFuncCall);
-            call.name = _transfer(id) $1;
-            call.expressions = _transfer(id) $3;
-            $$ = _vretained call;
+            $$ = _vretained makeControlExpression(ControlExpressionContinue);
         }
-        | SELECTOR
+        | _goto IDENTIFIER COLON
         {
-            $$ = _vretained makeValue(OCValueSelector,_transfer(id)$1);
+            $$ = _vretained makeControlExpression(ControlExpressionGoto);
         }
-        | PROTOCOL LP IDENTIFIER RP
+        ;
+
+declare_expression:
+         declare_variable 
+         {
+             $$ = _vretained makeDeclareExpression(_transfer(id) $1);
+         }
+         | declare_expression ASSIGN ternary_expression
+         {
+             DeclareExpression *exp = _transfer(id) $1;
+             exp.expression = _transfer(id) $3;
+             $$ = _vretained exp;
+         }
+        ;
+
+expression: ternary_expression;
+
+expression_statement:
+        declare_expression SEMICOLON
+        | assign_expression SEMICOLON
+        | control_expression SEMICOLON
+        ;
+
+if_statement:
+         IF LP ternary_expression RP LC function_implementation RC
+         {
+            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(FunctionImp *)$5);
+            $$ = _vretained statement;
+         }
+        | if_statement _else IF LP ternary_expression RP LC function_implementation RC
         {
-            $$ = _vretained makeValue(OCValueProtocol,_transfer(id)$3);
+            IfStatement *statement = _transfer(IfStatement *)$1;
+            IfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(FunctionImp *)$8);
+            elseIfStatement.last = statement;
+            $$  = _vretained elseIfStatement;
         }
-        | STRING_LITERAL
+        | if_statement _else LC function_implementation RC
         {
-            $$ = _vretained makeValue(OCValueCString,_transfer(id)$1);
+            IfStatement *statement = _transfer(IfStatement *)$1;
+            IfStatement *elseStatement = makeIfStatement(nil,_transfer(FunctionImp *)$4);
+            elseStatement.last = statement;
+            $$  = _vretained elseStatement;
         }
-        | block_implementation
-        | _nil
-        | _NULL
+        ;
+
+dowhile_statement: 
+        _do LC function_implementation RC _while LP ternary_expression RP
+        {
+            DoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$5,_transfer(FunctionImp *)$3);
+            $$ = _vretained statement;
+        }
+        ;
+while_statement:
+        _while LP ternary_expression RP LC function_implementation RC
+        {
+            WhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(FunctionImp *)$6);
+            $$ = _vretained statement;
+        }
+        ;
+/*
+FIXME:
+    case condition:
+        int x = 0;
+        // .... 不含有{ } 
+        break;
+
+*/
+case_statement:
+         _case primary_expression COLON
+         {
+             $$ = _vretained makeCaseStatement(_transfer(OCValue *)$2);
+         }
+        | _default COLON
+        {
+            $$ = _vretained makeCaseStatement(nil);
+        }
+        | case_statement LC function_implementation RC
+        {
+            CaseStatement *statement =  _transfer(CaseStatement *)$1;
+            statement.funcImp = _transfer(FunctionImp *) $3;
+            $$ = _vretained statement;
+        }
+        ;
+switch_statement:
+         _switch LP ternary_expression RP LC
+         {
+             SwitchStatement *statement = makeSwitchStatement(_transfer(id) $3);
+             $$ = _vretained statement;
+         }
+        | switch_statement case_statement
+        {
+            SwitchStatement *statement = _transfer(SwitchStatement *)$1;
+            [statement.cases addObject:_transfer(id) $2];
+            $$ = _vretained statement;
+        }
+        | switch_statement RC
+        ;
+/*
+ FIXME:
+    int x = 0;
+    for(x; x < value; x ++){}
+*/
+for_parameter_list:
+        expression
+        {
+            NSMutableArray *expressions = [NSMutableArray array];
+            [expressions addObject:_transfer(id)$1];
+            $$ = _vretained expressions;
+        }
+        | for_parameter_list SEMICOLON expression
+        {
+            NSMutableArray *expressions = _transfer(NSMutableArray *)$$;
+            [expressions addObject:_transfer(id) $3];
+            $$ = _vretained expressions;
+        }
+        ;
+for_statement: _for LP for_parameter_list RP LC function_implementation RC
+        {
+            ForStatement* statement = makeForStatement(_transfer(FunctionImp *) $6);
+            statement.expressions = _transfer(NSMutableArray *) $3;
+            $$ = _vretained statement;
+        }
+        ;
+
+forin_statement: _for LP declare_variable _in ternary_expression RP LC function_implementation RC
+        {
+            ForInStatement * statement = makeForInStatement(_transfer(FunctionImp *)$8);
+            statement.declare = _transfer(id) $3;
+            statement.value = _transfer(id)$5;
+            $$ = _vretained statement;
+        }
         ;
 
 
+control_statement: 
+        if_statement
+        | switch_statement
+        | while_statement
+        | dowhile_statement
+        | for_statement
+        | forin_statement
+        ;
+
+
+function_implementation:
+        {
+            $$ = _vretained makeFuncImp();
+        }
+        | function_implementation expression_statement 
+        {
+            FunctionImp *imp = _transfer(FunctionImp *)$1;
+            [imp.statements addObject:_transfer(id) $2];
+            $$ = _vretained imp;
+        }
+        | function_implementation control_statement
+        {
+            FunctionImp *imp = _transfer(FunctionImp *)$1;
+            [imp.statements addObject:_transfer(id) $2];
+            $$ = _vretained imp;
+        }
+        ;
+        
+
+expression_list: ternary_expression
+        {
+            NSMutableArray *list = [NSMutableArray array];
+            [list addObject:_transfer(id)$1];
+            $$ = _vretained list;
+        }
+        | expression_list COMMA ternary_expression
+        {
+            NSMutableArray *list = (__bridge_transfer NSMutableArray *)$1;
+            [list addObject:_transfer(id) $3];
+            $$ = (__bridge_retained void *)list;
+        }
+;
 
 assign_operator:
         ASSIGN
@@ -614,451 +707,360 @@ assign_operator:
         }
         ; 
 
-unary_operator: 
-        INCREMENT
-        {
-            $$ = UnaryOperatorIncrement;
-        }
-        | DECREMENT
-        {
-            $$ = UnaryOperatorDecrement;
-        }
-        ;
-
-binary_operator:
-        ADD
-        {
-            $$ = BinaryOperatorAdd;
-        }
-        | SUB
-        {
-            $$ = BinaryOperatorSub;
-        }
-        | ASTERISK
-        {
-            $$ = BinaryOperatorMulti;
-        }
-        | DIV
-        {
-            $$ = BinaryOperatorDiv;
-        }
-        | MOD
-        {
-            $$ = BinaryOperatorMod;
-        }
-        | SHIFTLEFT
-        {
-            $$ = BinaryOperatorShiftLeft;
-        }
-        | SHIFTRIGHT
-        {
-            $$ = BinaryOperatorShiftRight;
-        }
-        | AND
-        {
-            $$ = BinaryOperatorAnd;
-        }
-        | OR
-        {
-            $$ = BinaryOperatorOr;
-        }
-        | POWER
-        {
-            $$ = BinaryOperatorXor;
-        }
-        ;
-
-
-
-
-ternary_expression:
-        judgement_expression QUESTION ternary_expression value_expression COLON value_expression
-        {
-            TernaryExpression *expression = makeTernaryExpression();
-            expression.judgeExpression = _transfer(JudgementExpression *)$1;
-            [expression.values addObject:_transfer(id)$3];
-            [expression.values addObject:_transfer(id)$5];
-            $$ = _vretained expression;
-        }
-        | judgement_expression QUESTION COLON value_expression 
-        {
-            TernaryExpression *expression = makeTernaryExpression();
-            expression.judgeExpression = _transfer(JudgementExpression *)$1;
-            [expression.values addObject:_transfer(id)$4];
-            $$ = _vretained expression;
-        }
-        ;
-
-calculator_expression:
-        value_expression binary_operator value_expression
-        {
-             BinaryExpression *expression = makeBinaryExpression($2);
-             expression.left = _transfer(id) $1;
-             expression.right = _transfer(id) $3;
-             $$ = _vretained expression;
-        }
-        | value_expression unary_operator
-        {
-            UnaryExpression *expression = makeUnaryExpression($2);
-            expression.value = _transfer(id) $1;
-            $$ = _vretained expression;
-        }
-        | ternary_expression
-        {
-            log(@"ternary");
-        }
-        ;
-
-judgement_operator:
-        EQ
-        {
-            $$ = JudgementOperatorEQ;
-        }
-        | NE
-        {
-            $$ = JudgementOperatorNE;
-        }
-        | LE
-        {
-            $$ = JudgementOperatorLE;
-        }
-        | LT
-        {
-            $$ = JudgementOperatorLT;
-        }
-        | GE
-        {
-            $$ = JudgementOperatorGE;
-        }
-        | GT
-        {
-            $$ = JudgementOperatorGT;
-        }
-        | LOGIC_AND
-        {
-            $$ = JudgementOperatorAND;
-        }
-        | LOGIC_OR
-        {
-            $$ = JudgementOperatorOR;
-        }
-        ;
-
-/*
- FIXME:
-    if (x)
-    if (!x)
-*/
-judgement_expression:
-         NOT value_expression
-         {
-             JudgementExpression *expression = makeJudgementExpression(JudgementOperatorNOT);
-             expression.left = _transfer(id) $2;
-             $$ = _vretained expression;
-         }
-         |value_expression judgement_operator value_expression
-         {
-             JudgementExpression *expression = makeJudgementExpression($2);
-             expression.left = _transfer(id) $1;
-             expression.right = _transfer(id) $3;
-             $$ = _vretained expression;
-         }
-        ;
-
-value_expression:
-        primary_expression
-        | judgement_expression
-        | calculator_expression
-        | LP value_expression RP
-        {
-            $$ = $2;
-        }
-        ;
-
-control_expression:
-        _return
-        {
-            ControlExpression *expression = makeControlExpression(ControlExpressionReturn);
-            $$ = _vretained expression;
-        }
-        | _return value_expression
-        {
-            ControlExpression *expression = makeControlExpression(ControlExpressionReturn);
-            expression.expression = _transfer(id) $2;
-            $$ = _vretained expression;
-        }
-        | _break
-        {
-            $$ = _vretained makeControlExpression(ControlExpressionBreak);
-        }
-        | _continue
-        {
-            $$ = _vretained makeControlExpression(ControlExpressionContinue);
-        }
-        | _goto IDENTIFIER COLON
-        {
-            $$ = _vretained makeControlExpression(ControlExpressionGoto);
-        }
-        ;
-
-assign_expression:
-        declare_assign_expression
-        | var_assign_expression
-        ;
-declare_assign_expression:
-        value_declare
-        {
-            DeclareAssignExpression *expression = makeDeaclareAssignExpression(_transfer(VariableDeclare *) $1);
-            $$ = _vretained expression;
-        }
-        | value_declare ASSIGN value_expression
-        {
-            DeclareAssignExpression *expression = makeDeaclareAssignExpression(_transfer(VariableDeclare *) $1);
-            expression.expression = _transfer(id) $3;
-            $$ = _vretained expression;
-        }
-        ;
-var_assign_expression: 
-        primary_expression assign_operator value_expression
-        {
-            VariableAssignExpression *expression = makeVarAssignExpression($2);
-            expression.expression = _transfer(id) $3;
-            expression.value = _transfer(OCValue *)$1;
-            $$ = _vretained expression;
-        }
-        ;
-
-expression:
-         value_expression SEMICOLON
-        | assign_expression SEMICOLON
-        | control_expression SEMICOLON
-        ;
-
-if_statement:
-         IF LP value_expression RP LC function_implementation RC
-         {
-            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(FunctionImp *)$5);
-            $$ = _vretained statement;
-         }
-        | if_statement _else IF LP value_expression RP LC function_implementation RC
-        {
-            IfStatement *statement = _transfer(IfStatement *)$1;
-            IfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(FunctionImp *)$8);
-            elseIfStatement.last = statement;
-            $$  = _vretained elseIfStatement;
-        }
-        | if_statement _else LC function_implementation RC
-        {
-            IfStatement *statement = _transfer(IfStatement *)$1;
-            IfStatement *elseStatement = makeIfStatement(nil,_transfer(FunctionImp *)$4);
-            elseStatement.last = statement;
-            $$  = _vretained elseStatement;
-        }
-        ;
-
-dowhile_statement: 
-        _do LC function_implementation RC _while LP value_expression RP
-        {
-            DoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$5,_transfer(FunctionImp *)$3);
-            $$ = _vretained statement;
-        }
-        ;
-while_statement:
-        _while LP value_expression RP LC function_implementation RC
-        {
-            WhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(FunctionImp *)$6);
-            $$ = _vretained statement;
-        }
-        ;
-/*
-FIXME:
-    case condition:
-        int x = 0;
-        // .... 不含有{ } 
-        break;
-
-*/
-case_statement:
-         _case primary_expression COLON
-         {
-             $$ = _vretained makeCaseStatement(_transfer(OCValue *)$2);
-         }
-        | _default COLON
-        {
-            $$ = _vretained makeCaseStatement(nil);
-        }
-        | case_statement LC function_implementation RC
-        {
-            CaseStatement *statement =  _transfer(CaseStatement *)$1;
-            statement.funcImp = _transfer(FunctionImp *) $3;
-            $$ = _vretained statement;
-        }
-        ;
-switch_statement:
-         _switch LP primary_expression RP LC
-         {
-             SwitchStatement *statement = makeSwitchStatement(_transfer(id) $3);
-             $$ = _vretained statement;
-         }
-        | switch_statement case_statement
-        {
-            SwitchStatement *statement = _transfer(SwitchStatement *)$1;
-            [statement.cases addObject:_transfer(id) $2];
-            $$ = _vretained statement;
-        }
-        | switch_statement RC
-        ;
-/*
- FIXME:
-    int x = 0;
-    for(x; x < value; x ++){}
-*/
-for_parameter_list:
-        expression
-        {
-            NSMutableArray *expressions = [NSMutableArray array];
-            [expressions addObject:_transfer(id)$1];
-            $$ = _vretained expressions;
-        }
-        | for_parameter_list SEMICOLON expression
-        {
-            NSMutableArray *expressions = _transfer(NSMutableArray *)$$;
-            [expressions addObject:_transfer(id) $3];
-            $$ = _vretained expressions;
-        }
-        ;
-for_statement: _for LP for_parameter_list RP LC function_implementation RC
-        {
-            ForStatement* statement = makeForStatement(_transfer(FunctionImp *) $6);
-            statement.expressions = _transfer(NSMutableArray *) $3;
-            $$ = _vretained statement;
-        }
-        ;
-
-forin_statement: _for LP value_declare _in primary_expression RP LC function_implementation RC
-        {
-            ForInStatement * statement = makeForInStatement(_transfer(FunctionImp *)$8);
-            statement.declare = _transfer(id) $3;
-            statement.value = _transfer(id)$5;
-            $$ = _vretained statement;
-        }
-        ;
-
-
-control_statement: 
-        if_statement
-        | switch_statement
-        | while_statement
-        | dowhile_statement
-        | for_statement
-        | forin_statement
-        ;
-
-
-function_implementation:
-        {
-            $$ = _vretained makeFuncImp();
-        }
-        | function_implementation expression 
-        {
-            FunctionImp *imp = _transfer(FunctionImp *)$1;
-            [imp.statements addObject:_transfer(id) $2];
-            $$ = _vretained imp;
-        }
-        | function_implementation control_statement
-        {
-            FunctionImp *imp = _transfer(FunctionImp *)$1;
-            [imp.statements addObject:_transfer(id) $2];
-            $$ = _vretained imp;
-        }
-        ;
-        
-
-expression_list: ternary_expressoin
-        | expression_list COMMA ternary_expressoin
-;
-
 // = /= %= /= *=  -= += <<= >>= &= ^= |= 
 assign_expression: ternary_expression
-            | primary_expression assignment_operator ternary_operator_expression
+    | primary_expression assign_operator ternary_expression
+    {
+        AssignExpression *expression = makeAssignExpression($2);
+        expression.expression = _transfer(id) $1;
+        expression.value = _transfer(OCValue *)$3;
+        $$ = _vretained expression;
+    }
 ;
 
 // ?:
-ternary_expressoin: logic_or_expression
-            | logic_or_expression  QUESTION ternary_operator_expression  COLON ternary_operator_expression
-			| logic_or_expression  QUESTION COLON ternary_operator_expression
-            ;
+ternary_expression: logic_or_expression
+    | logic_or_expression QUESTION ternary_expression COLON ternary_expression
+    {
+        TernaryExpression *expression = makeTernaryExpression();
+        expression.expression = _transfer(id)$1;
+        [expression.values addObject:_transfer(id)$3];
+        [expression.values addObject:_transfer(id)$5];
+        $$ = _vretained expression;
+    }
+    | logic_or_expression QUESTION COLON ternary_expression
+    {
+        TernaryExpression *expression = makeTernaryExpression();
+        expression.expression = _transfer(id)$1;
+        [expression.values addObject:_transfer(id)$4];
+        $$ = _vretained expression;
+    }
+    ;
 
 
 // ||
 logic_or_expression: logic_and_expression
-            | logic_or_expression LOGIC_OR logic_and_expression
-            ;
+    | logic_or_expression LOGIC_OR logic_or_expression
+    {
+        JudgementExpression *expression = makeJudgementExpression(JudgementOperatorOR);
+        expression.left = _transfer(id) $1;
+        expression.right = _transfer(id) $3;
+        $$ = _vretained expression;
+    }
+    ;
 
 // &&
 logic_and_expression: bite_or_expression
-            | logic_and_expression LOGIC_AND bite_or_expression
-            ;
+    | logic_and_expression LOGIC_AND bite_or_expression
+    {
+        JudgementExpression *exp = makeJudgementExpression(JudgementOperatorAND);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    ;
 // |
 bite_or_expression: bite_xor_expression
-            | bite_or_expression OR bite_xor_expression
-            ;
+    | bite_or_expression OR bite_xor_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorOr);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    ;
 // ^
 bite_xor_expression: bite_and_expression
-            | bite_xor_expression POWER bite_and_expression
-            ;
+    | bite_xor_expression POWER bite_and_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorXor);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    ;
 
 // &
 bite_and_expression: equality_expression
-            | bite_and_expression AND equality_expression
-            ;
+    | bite_and_expression AND equality_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorAnd);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    ;
 
 // == !=
 equality_expression: relational_expression
-			| equality_expression EQ relational_expression
-			| equality_expression NE relational_expression
+    | equality_expression EQ relational_expression
+    {
+        JudgementExpression *expression = makeJudgementExpression(JudgementOperatorEQ);
+        expression.left = _transfer(id) $1;
+        expression.right = _transfer(id) $3;
+        $$ = _vretained expression;
+    }
+    | equality_expression NE relational_expression
+    {
+        JudgementExpression *expression = makeJudgementExpression(JudgementOperatorNE);
+        expression.left = _transfer(id) $1;
+        expression.right = _transfer(id) $3;
+        $$ = _vretained expression;
+    }
 ;
 // < <= > >=
 relational_expression: bite_shift_expression
-			| relational_expression LT bite_shift_expression
-			| relational_expression LE bite_shift_expression
-			| relational_expression GT bite_shift_expression
-			| relational_expression GE bite_shift_expression
-            ;
+    | relational_expression LT bite_shift_expression
+    {
+        JudgementExpression *expression = makeJudgementExpression(JudgementOperatorLT);
+        expression.left = _transfer(id) $1;
+        expression.right = _transfer(id) $3;
+        $$ = _vretained expression;
+    }
+    | relational_expression LE bite_shift_expression
+    {
+        JudgementExpression *expression = makeJudgementExpression(JudgementOperatorLE);
+        expression.left = _transfer(id) $1;
+        expression.right = _transfer(id) $3;
+        $$ = _vretained expression;
+    }
+    | relational_expression GT bite_shift_expression
+    {
+        JudgementExpression *expression = makeJudgementExpression(JudgementOperatorGT);
+        expression.left = _transfer(id) $1;
+        expression.right = _transfer(id) $3;
+        $$ = _vretained expression;
+    }
+    | relational_expression GE bite_shift_expression
+    {
+        JudgementExpression *expression = makeJudgementExpression(JudgementOperatorGE);
+        expression.left = _transfer(id) $1;
+        expression.right = _transfer(id) $3;
+        $$ = _vretained expression;
+    }
+    ;
 // >> <<
 bite_shift_expression: additive_expression
-            | bite_shift_expression SHIFTLEFT additive_expression
-            | bite_shift_expression SHIFTRIGHT additive_expression
-            ;
+    | bite_shift_expression SHIFTLEFT additive_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorShiftLeft);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    | bite_shift_expression SHIFTRIGHT additive_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorShiftRight);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    ;
 // + -
 additive_expression: multiplication_expression
-			| additive_expression ADD multiplication_expression
-			| additive_expression SUB multiplication_expression
-            ;
+    | additive_expression ADD multiplication_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorAdd);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    | additive_expression SUB multiplication_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorSub);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    ;
 
 // * / %
 multiplication_expression: unary_expression
-			| multiplication_expression ASTERISK unary_expression
-			| multiplication_expression DIV unary_expression
-			| multiplication_expression MOD unary_expression
-            ;
+    | multiplication_expression ASTERISK unary_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorMulti);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    | multiplication_expression DIV unary_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorDiv);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    | multiplication_expression MOD unary_expression
+    {
+        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorMod);
+        exp.left = _transfer(id) $1;
+        exp.right = _transfer(id) $3;
+        $$ = _vretained exp;
+    }
+    ;
 
 // !x -x *x &x ~x sizof(x) (type)x x++ x-- ++x --x
 unary_expression: primary_expression
-            | NOT unary_expression
-			| SUB unary_expression
-            | ASTERISK unary_expression
-            | AND unary_expression
-            | TILDE unary_expression
-            | sizeof unary_expression
-            | LP value_declare_type RP unary_expression
-            | unary_expression INCREMENT
-            | unary_expression DECREMENT
-            | INCREMENT unary_expression
-            | DECREMENT unary_expression
-            ;
+    | NOT unary_expression
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorNot);
+        exp.value = _transfer(id)$2;
+        $$ = _vretained exp;
+    }
+    | SUB unary_expression
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorNegative);
+        exp.value = _transfer(id)$2;
+        $$ = _vretained exp;
+    }
+    | ASTERISK unary_expression
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorPointValue);
+        exp.value = _transfer(id)$2;
+        $$ = _vretained exp;
+    }
+    | AND unary_expression
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorAdressPoint);
+        exp.value = _transfer(id)$2;
+        $$ = _vretained exp;
+    }
+    | TILDE unary_expression
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorBiteNot);
+        exp.value = _transfer(id)$2;
+        $$ = _vretained exp;
+    }
+    | _sizeof unary_expression
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorSizeOf);
+        exp.value = _transfer(id)$2;
+        $$ = _vretained exp;
+    }
+    | LP type_specified RP unary_expression
+    {
+        $$ = $4;
+    }
+    | unary_expression INCREMENT
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorIncrementSuffix);
+        exp.value = _transfer(id)$1;
+        $$ = _vretained exp;
+    }
+    | unary_expression DECREMENT
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementSuffix);
+        exp.value = _transfer(id)$1;
+        $$ = _vretained exp;
+    }
+    | INCREMENT unary_expression
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorIncrementPrefix);
+        exp.value = _transfer(id)$2;
+        $$ = _vretained exp;
+    }
+    | DECREMENT unary_expression
+    {
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementPrefix);
+        exp.value = _transfer(id)$2;
+        $$ = _vretained exp;
+    }
+    ;
 
+numerical_value_type:
+        INTETER_LITERAL
+        | DOUBLE_LITERAL
+    ;
+dict_entry:
+        assign_expression COLON assign_expression
+        |dict_entry COMMA assign_expression COLON assign_expression
+        ;
+primary_expression:
+        IDENTIFIER
+        {
+            OCValue *value = makeValue(OCValueIdentifier,_transfer(id) $1);
+            $$ = _vretained value;
+        }
+        | _self
+        {
+            OCValue *value = makeValue(OCValueSelf);
+            $$ = _vretained value;
+        }
+        | _super
+        {
+            OCValue *value = makeValue(OCValueSuper);
+            $$ = _vretained value;
+        }
+        | objc_method_call
+        | primary_expression DOT IDENTIFIER
+        {
+            OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+            methodcall.caller =  _transfer(OCValue *)$1;
+            OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
+            element.name = _transfer(NSString *)$3;
+            methodcall.element = element;
+            $$ = _vretained methodcall;
 
+        }
+        | primary_expression POINT IDENTIFIER
+        {
+            OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+            methodcall.caller =  _transfer(OCValue *)$1;
+            OCMethodCallGetElement *element = makeMethodCallElement(OCMethodCallDotGet);
+            element.name = _transfer(NSString *)$3;
+            methodcall.element = element;
+            $$ = _vretained methodcall;
+        }
+        | primary_expression LP expression_list RP
+        {
+            id object = _transfer(id) $1;
+            if([object isKindOfClass:[NSString class]]){
+                CFuncCall *call = (CFuncCall *)makeValue(OCValueFuncCall);
+                call.name = _transfer(id) $1;
+                call.expressions = _transfer(id) $3;
+                $$ = _vretained call;
+            }else if([object isKindOfClass:[OCMethodCall class]]){
+                OCMethodCall *methodcall = _transfer(OCMethodCall *) $1;
+                OCMethodCallGetElement *element = methodcall.element;
+                [element.values addObjectsFromArray:_transfer(id) $3];
+                $$ = _vretained methodcall;
+            }
+        }
+        | LP expression RP
+        {
+            $$ = $2;
+        }
+        | AT LC dict_entry RC
+        | AT LB expression_list RP
+        | AT LP ternary_expression RP 
+        {
+            $$ = _vretained makeValue(OCValueNSNumber,_transfer(id)$3);
+        }
+        | AT numerical_value_type
+        {
+            $$ = _vretained makeValue(OCValueNSNumber,_transfer(id)$2);
+        }
+        | AT STRING_LITERAL
+        {
+            $$ = _vretained makeValue(OCValueString);
+        }
+        | SELECTOR
+        {
+            $$ = _vretained makeValue(OCValueSelector,_transfer(id)$1);
+        }
+        | PROTOCOL LP IDENTIFIER RP
+        {
+            $$ = _vretained makeValue(OCValueProtocol,_transfer(id)$3);
+        }
+        | STRING_LITERAL
+        {
+            $$ = _vretained makeValue(OCValueCString,_transfer(id)$1);
+        }
+        | block_implementation
+        | numerical_value_type
+        | _nil
+        | _NULL
+        ;
 
 %%
 void yyerror(const char *s){
@@ -1079,5 +1081,6 @@ void yyerror(const char *s){
     NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\n%@\n%@\n error: %s\n-------------------\n",line,str,s];
     OCParser.error = errorInfo;
     log(OCParser.error);
+    log(LibAst.globalStatements);
 
 }

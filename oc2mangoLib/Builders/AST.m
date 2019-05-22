@@ -22,6 +22,7 @@
     self.privateVariables = [NSMutableArray array];
     self.properties = [NSMutableArray array];
     self.methods = [NSMutableArray array];
+    
     return self;
 }
 @end
@@ -48,10 +49,6 @@
     self.classCache = [NSMutableDictionary dictionary];
     self.globalStatements = [NSMutableArray array];
     return self;
-}
-- (void)clear{
-    self.classCache = [NSMutableDictionary dictionary];
-    self.globalStatements = [NSMutableArray array];
 }
 @end
 

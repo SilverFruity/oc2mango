@@ -17,19 +17,20 @@ typedef enum {
     AssignOperatorAssignSub,
     AssignOperatorAssignDiv,
     AssignOperatorAssignMuti,
-    AssignOperatorAssignMod
+    AssignOperatorAssignMod,
+    AssignOperatorAssignShiftLeft,
+    AssignOperatorAssignShiftRight,
 }AssignOperatorType;
 
 // MARK: - Assign
 @interface AssignExpression : NSObject <Expression>
+@property (nonatomic,strong)OCValue *value;
+@property (nonatomic,assign)AssignOperatorType assignType;
 @property (nonatomic,strong)id <ValueExpression> expression;
 @end
 
-@interface DeclareAssignExpression: AssignExpression
-@property (nonatomic,strong)VariableDeclare *declare;
-@end
 
-@interface VariableAssignExpression: AssignExpression
-@property (nonatomic,strong)OCValue *value;
-@property (nonatomic,assign)AssignOperatorType assignType;
+@interface DeclareExpression: NSObject <Expression>
+@property (nonatomic,strong)VariableDeclare *declare;
+@property (nonatomic,strong)id <ValueExpression> expression;
 @end

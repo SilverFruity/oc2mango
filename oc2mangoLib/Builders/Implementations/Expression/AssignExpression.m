@@ -13,9 +13,7 @@
 @end
 
 
-@implementation VariableAssignExpression
+@implementation DeclareExpression
 
-@end
 
-@implementation DeclareAssignExpression
 @end

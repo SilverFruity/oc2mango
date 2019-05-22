@@ -74,6 +74,7 @@ OCValue *makeValue(OC_VALUE_TYPE type, id value){
         case OCValueNULL:
         case OCValuePointValue:
         case OCValueVarPoint:
+        case OCValueIdentifier:
         case OCValueSelector:
             ocvalue = [OCValue new];
             break;
@@ -120,15 +121,14 @@ TernaryExpression *makeTernaryExpression(){
     return [TernaryExpression  new];
 }
 
-DeclareAssignExpression *makeDeaclareAssignExpression(VariableDeclare *declare)
-{
-    DeclareAssignExpression *expression = [DeclareAssignExpression new];
-    expression.declare = declare;
+AssignExpression *makeAssignExpression(AssignOperatorType type){
+    AssignExpression *expression = [AssignExpression new];
+    expression.assignType = type;
     return expression;
 }
-VariableAssignExpression *makeVarAssignExpression(AssignOperatorType type){
-    VariableAssignExpression *expression = [VariableAssignExpression new];
-    expression.assignType = type;
+DeclareExpression *makeDeclareExpression(VariableDeclare *declare){
+    DeclareExpression *expression = [DeclareExpression new];
+    expression.declare = declare;
     return expression;
 }
 

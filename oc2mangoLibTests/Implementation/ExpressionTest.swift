@@ -35,49 +35,49 @@ class ExpressionTest: XCTestCase {
         NSUInteger a;
         size_t a;
         void (^block)(NSString *,NSString *);
-        id <protocol> a;
+        // id <protocol> a;
         """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let assign = ocparser.ast.globalStatements[0] as? DeclareAssignExpression;
+        let assign = ocparser.ast.globalStatements[0] as? DeclareExpression;
         XCTAssert(assign?.declare.type.type == SpecialTypeInt)
         XCTAssert(assign?.declare.name == "a")
         
-        let assign1 = ocparser.ast.globalStatements[1] as? DeclareAssignExpression;
+        let assign1 = ocparser.ast.globalStatements[1] as? DeclareExpression;
         XCTAssert(assign1?.declare.type.type == SpecialTypeInt)
         XCTAssert(assign1?.declare.type.isPointer == true)
-        
-        let assign2 = ocparser.ast.globalStatements[2] as? DeclareAssignExpression;
+
+        let assign2 = ocparser.ast.globalStatements[2] as? DeclareExpression;
         XCTAssert(assign2?.declare.type.type == SpecialTypeUInt)
         
-        let assign3 = ocparser.ast.globalStatements[3] as? DeclareAssignExpression;
+        let assign3 = ocparser.ast.globalStatements[3] as? DeclareExpression;
         XCTAssert(assign3?.declare.type.type == SpecialTypeChar)
         
-        let assign4 = ocparser.ast.globalStatements[4] as? DeclareAssignExpression;
+        let assign4 = ocparser.ast.globalStatements[4] as? DeclareExpression;
         XCTAssert(assign4?.declare.type.type == SpecialTypeUChar)
         
-        let assign5 = ocparser.ast.globalStatements[5] as? DeclareAssignExpression;
+        let assign5 = ocparser.ast.globalStatements[5] as? DeclareExpression;
         XCTAssert(assign5?.declare.type.type == SpecialTypeLong)
         
-        let assign6 = ocparser.ast.globalStatements[6] as? DeclareAssignExpression;
+        let assign6 = ocparser.ast.globalStatements[6] as? DeclareExpression;
         XCTAssert(assign6?.declare.type.type == SpecialTypeULong)
         
-        let assign7 = ocparser.ast.globalStatements[7] as? DeclareAssignExpression;
+        let assign7 = ocparser.ast.globalStatements[7] as? DeclareExpression;
         XCTAssert(assign7?.declare.type.type == SpecialTypeLongLong)
         
-        let assign8 = ocparser.ast.globalStatements[8] as? DeclareAssignExpression;
+        let assign8 = ocparser.ast.globalStatements[8] as? DeclareExpression;
         XCTAssert(assign8?.declare.type.type == SpecialTypeULongLong)
         
-        let assign9 = ocparser.ast.globalStatements[9] as? DeclareAssignExpression;
+        let assign9 = ocparser.ast.globalStatements[9] as? DeclareExpression;
         XCTAssert(assign9?.declare.type.type == SpecialTypeLong)
         
-        let assign10 = ocparser.ast.globalStatements[10] as? DeclareAssignExpression;
+        let assign10 = ocparser.ast.globalStatements[10] as? DeclareExpression;
         XCTAssert(assign10?.declare.type.type == SpecialTypeULong)
         
-        let assign11 = ocparser.ast.globalStatements[11] as? DeclareAssignExpression;
+        let assign11 = ocparser.ast.globalStatements[11] as? DeclareExpression;
         XCTAssert(assign11?.declare.type.type == SpecialTypeUInt)
         
-        let assign12 = ocparser.ast.globalStatements[12] as? DeclareAssignExpression;
+        let assign12 = ocparser.ast.globalStatements[12] as? DeclareExpression;
         XCTAssert(assign12?.declare.type.type == SpecialTypeBlock)
         XCTAssert(assign12?.declare.name == "block")
     }
@@ -92,11 +92,10 @@ class ExpressionTest: XCTestCase {
         """
         ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
-        let cal1 = ocparser.ast.globalStatements[0] as? BinaryExpression;
-        let left1 = cal1?.left as? BinaryExpression
-        let righ1 = cal1?.right as? OCValue
-        XCTAssert(cal1?.operatorType == BinaryOperatorMulti)
-        XCTAssert(left1?.operatorType == BinaryOperatorAdd)
+        let call1 = ocparser.ast.globalStatements[0] as? BinaryExpression;
+        let righ1 = call1?.right as? BinaryExpression
+        XCTAssert(call1?.operatorType == BinaryOperatorSub)
+        XCTAssert(righ1?.operatorType == BinaryOperatorMulti)
         XCTAssert(righ1 != nil)
         
     }

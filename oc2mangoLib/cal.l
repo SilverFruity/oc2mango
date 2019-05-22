@@ -53,6 +53,7 @@
 <INITIAL>"{" { return LC; }
 <INITIAL>"}" { return RC; }
 <INITIAL>"." { return DOT; }
+<INITIAL>"->" { return POINT; }
 <INITIAL>"@" { return AT; }
 <INITIAL>"#" {return PS; }
 
@@ -167,6 +168,7 @@
 <INITIAL>"unsigned long long" { TypeReturn(ULLONG); }
 <INITIAL>"NSUInteger" { TypeReturn(ULONG); }
 
+<INITIAL>"sizeof" { TypeReturn(sizeof); }
 <INITIAL>"typeof" { TypeReturn(typeof); }
 <INITIAL>"enum" { TypeReturn(enum); }
 <INITIAL>"struct" { TypeReturn(struct); }
