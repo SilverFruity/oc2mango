@@ -7,7 +7,6 @@
 //
 
 #import "MakeDeclare.h"
-#import "JudgementExpression.h"
 
 
 TypeSpecial *makeTypeSpecial(SpecialType type ,NSString *name){
@@ -60,24 +59,6 @@ extern id <OCMethodElement> makeMethodCallElement(OCMethodCallType type){
 OCValue *makeValue(OC_VALUE_TYPE type, id value){
     OCValue *ocvalue;
     switch (type){
-        case OCValueObject:
-        case OCValueSelf:
-        case OCValueSuper:
-        case OCValueDictionary:
-        case OCValueArray:
-        case OCValueNSNumber:
-        case OCValueString:
-        case OCValueCString:
-        case OCValueNumber:
-        case OCValueConvert:
-        case OCValueNil:
-        case OCValueNULL:
-        case OCValuePointValue:
-        case OCValueVarPoint:
-        case OCValueIdentifier:
-        case OCValueSelector:
-            ocvalue = [OCValue new];
-            break;
         case OCValueMethodCall:
             ocvalue = [OCMethodCall new];
             break;
@@ -87,6 +68,9 @@ OCValue *makeValue(OC_VALUE_TYPE type, id value){
         case OCValueBlock:
             ocvalue = [BlockImp new];
             break;
+        default:
+            ocvalue = [OCValue new];
+            break;
     }
     ocvalue.value_type = type;
     ocvalue.value = value;
@@ -94,17 +78,6 @@ OCValue *makeValue(OC_VALUE_TYPE type, id value){
 }
 OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
     return makeValue(type, nil);
-}
-JudgementExpression *makeJudgementExpression(JudgementOperatorType type)
-{
-    JudgementExpression *expression = [JudgementExpression new];
-    expression.operatorType = type;
-    return expression;
-}
-ControlExpression *makeControlExpression(ControlExpressionType type){
-    ControlExpression *expression = [ControlExpression new];
-    expression.controlType = type;
-    return expression;
 }
 UnaryExpression *makeUnaryExpression(UnaryOperatorType type){
     UnaryExpression *expression = [UnaryExpression  new];
@@ -169,4 +142,17 @@ ForInStatement *makeForInStatement(FunctionImp *imp){
     ForInStatement *statement = [ForInStatement new];
     statement.funcImp = imp;
     return statement;
+}
+
+ReturnStatement *makeReturnStatement(id <ValueExpression> expression){
+    ReturnStatement *statement = [ReturnStatement new];
+    statement.expression = expression;
+    return statement;
+}
+BreakStatement *makeBreakStatement(void){
+    return [BreakStatement new];
+}
+
+ContinueStatement *makeContinueStatement(void){
+    return [ContinueStatement new];
 }

@@ -40,12 +40,6 @@
         return [self convertDeclareExp:exp];
     }else if ([exp isKindOfClass:[AssignExpression class]]) {
         return [self convertAssginExp:exp];
-    }else if ([exp isKindOfClass:[CalculateExpression class]]){
-        return [self convertCalculateExp:exp];
-    }else if ([exp isKindOfClass:[ControlExpression class]]){
-        return [self convertControlExp:exp];
-    }else if ([exp isKindOfClass:[JudgementExpression class]]){
-        return [self convertJudgementExp:exp];
     }else if ([exp isKindOfClass:[OCValue class]]){
         return [self convertOCValue:exp];
     }
@@ -161,24 +155,17 @@
     NSString *operator = @"=";
     return [NSString stringWithFormat:@"%@ %@ %@",[self convertOCValue:exp.value],operator,[self convertExpression:exp.expression]];
 }
-- (NSString *)convertCalculateExp:(CalculateExpression *)exp{
-    return @"";
-}
-- (NSString *)convertControlExp:(ControlExpression *)exp{
-    return @"";
-}
-- (NSString *)convertJudgementExp:(JudgementExpression *)exp{
-    return @"";
-}
+
 - (NSString *)convertOCValue:(OCValue *)value{
     switch (value.value_type){
-
         case OCValueObject:
         case OCValueSelf:
         case OCValueSuper:
         case OCValueSelector:
-        case OCValueNumber:
+        case OCValueInt:
+        case OCValueDouble:
         case OCValueConvert:
+        case OCValueIdentifier:
             return value.value;
 
         case OCValueString:

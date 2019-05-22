@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "VariableDeclare.h"
 
 @class OCValue;
 
@@ -19,9 +20,86 @@
 @end
 
 
+typedef enum {
+    AssignOperatorAssign,
+    AssignOperatorAssignAnd,
+    AssignOperatorAssignOr,
+    AssignOperatorAssignXor,
+    AssignOperatorAssignAdd,
+    AssignOperatorAssignSub,
+    AssignOperatorAssignDiv,
+    AssignOperatorAssignMuti,
+    AssignOperatorAssignMod,
+    AssignOperatorAssignShiftLeft,
+    AssignOperatorAssignShiftRight,
+}AssignOperatorType;
+
+// MARK: - Assign
+@interface AssignExpression : NSObject <Expression>
+@property (nonatomic,strong)OCValue *value;
+@property (nonatomic,assign)AssignOperatorType assignType;
+@property (nonatomic,strong)id <ValueExpression> expression;
+@end
+
+
+@interface DeclareExpression: NSObject <Expression>
+@property (nonatomic,strong)VariableDeclare *declare;
+@property (nonatomic,strong)id <ValueExpression> expression;
+@end
 
 
 
+
+typedef enum {
+    UnaryOperatorIncrementSuffix,
+    UnaryOperatorDecrementSuffix,
+    UnaryOperatorIncrementPrefix,
+    UnaryOperatorDecrementPrefix,
+    UnaryOperatorNot,
+    UnaryOperatorNegative,
+    UnaryOperatorBiteNot,
+    UnaryOperatorSizeOf,
+    UnaryOperatorAdressPoint,
+    UnaryOperatorPointValue
+}UnaryOperatorType;
+
+@interface UnaryExpression: NSObject <ValueExpression>
+@property (nonatomic,strong)id <ValueExpression> value;
+@property (nonatomic,assign)UnaryOperatorType operatorType;
+@end
+
+typedef enum {
+    BinaryOperatorAdd,
+    BinaryOperatorSub,
+    BinaryOperatorDiv,
+    BinaryOperatorMulti,
+    BinaryOperatorMod,
+    BinaryOperatorShiftLeft,
+    BinaryOperatorShiftRight,
+    BinaryOperatorAnd,
+    BinaryOperatorOr,
+    BinaryOperatorXor,
+    BinaryOperatorLT,
+    BinaryOperatorGT,
+    BinaryOperatorLE,
+    BinaryOperatorGE,
+    BinaryOperatorNotEqual,
+    BinaryOperatorEqual,
+    BinaryOperatorLOGIC_AND,
+    BinaryOperatorLOGIC_OR
+}BinaryOperatorType;
+
+@interface BinaryExpression: NSObject <ValueExpression>
+@property (nonatomic,strong)id <ValueExpression> left;
+@property (nonatomic,assign) BinaryOperatorType operatorType;
+@property (nonatomic,strong)id <ValueExpression> right;
+@end
+
+@interface TernaryExpression : NSObject <ValueExpression>
+@property (nonatomic,strong)id <ValueExpression> expression;
+@property (nonatomic,strong)NSMutableArray <id <ValueExpression>>*values;
+
+@end
 
 
 

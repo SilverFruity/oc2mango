@@ -24,9 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)convertFuncImp:(FunctionImp *)imp;
 
 - (NSString *)convertAssginExp:(AssignExpression *)exp;
-- (NSString *)convertCalculateExp:(CalculateExpression *)exp;
-- (NSString *)convertControlExp:(ControlExpression *)exp;
-- (NSString *)convertJudgementExp:(JudgementExpression *)exp;
 - (NSString *)convertOCValue:(OCValue *)value;
 
 - (NSString *)convertIfStatement:(IfStatement *)statement;

@@ -21,17 +21,13 @@ class StatementTest: XCTestCase {
     func testIfStatement(){
         let source =
 """
-@implementation Demo
-- (Demo *)objectMethod{
-    if (x >= 0 ){
-        [[self.x method].y method];
-    }else if ( x == 0 ){
-        [[self.x method].y method];
-    }else{
-        [[self.x method].y method];
-    }
+if (x >= 0 ){
+    
+}else if ( x == 0 ){
+    
+}else{
+    
 }
-@end
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -40,13 +36,9 @@ class StatementTest: XCTestCase {
     func testDoWhileStatement(){
         let source =
 """
-@implementation Demo
-- (Demo *)objectMethod{
-    do{
+do{
         
-    }while((x > 0) && (x < 0))
-}
-@end
+}while((x > 0) && (x < 0))
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -56,13 +48,9 @@ class StatementTest: XCTestCase {
     func testWhileStatement(){
         let source =
 """
-@implementation Demo
-- (Demo *)objectMethod{
-    while((x > 0) && (x < 0)){
+while((x > 0) && (x < 0)){
 
-    }
 }
-@end
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -72,26 +60,22 @@ class StatementTest: XCTestCase {
     func testSwitchStatement(){
         let source =
 """
-@implementation Demo
-- (Demo *)objectMethod{
-    int x = 0;
-    switch (x) {
-        case 1:
-        {
-            NSString *name;
-            break;
-        }
-        case 2:
-        {
-            NSString *name;
-            break;
-        }
-            
-        default:
-        {
-            NSString *name;
-            break;
-        }
+switch (x) {
+    case 1:
+    {
+        NSString *name;
+        break;
+    }
+    case 2:
+    {
+        NSString *name;
+        break;
+    }
+        
+    default:
+    {
+        NSString *name;
+        break;
     }
 }
 @end
@@ -102,15 +86,10 @@ class StatementTest: XCTestCase {
     }
     func testForStatement(){
         let source =
-        """
-@implementation Demo
-- (Demo *)objectMethod{
-    NSMutableArray *array = [NSMutableArray array];
-    for (int x = 0; x++; x < 10) {
-        [array addObject:[NSObject new]];
-    }
+"""
+for (int x = 0; x++; x < 10) {
+    
 }
-@end
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess());
@@ -119,14 +98,10 @@ class StatementTest: XCTestCase {
     
     func testForInStatement(){
         let source =
- """
-@implementation Demo
-- (Demo *)objectMethod{
-    for (UIView *view in self.view.subviews) {
-        [view addSubview:[UIView new]];
-    }
+"""
+for (UIView *view in self.view.subviews) {
+    
 }
-@end
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess());

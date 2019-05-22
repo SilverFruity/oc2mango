@@ -19,7 +19,7 @@ class ExpressionTest: XCTestCase {
         ocparser.clear()
     }
 
-    func testDeclareAssignExpression(){
+    func testDeclareExpression(){
         source =
         """
         int a;
@@ -36,6 +36,8 @@ class ExpressionTest: XCTestCase {
         size_t a;
         void (^block)(NSString *,NSString *);
         // id <protocol> a;
+        int x = 0;
+        int x = [NSObject new];
         """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -86,9 +88,7 @@ class ExpressionTest: XCTestCase {
     func testCalculateExpression() {
         source =
         """
-        x - 1 * 2;
-        (y - 1) * 2;
-        x->a - 1 + 2;
+
         """
         ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
@@ -139,17 +139,64 @@ class ExpressionTest: XCTestCase {
         @(10);
         @(10.00);
         @10;
-        @10.01
+        @10.01;
         [NSObject new];
+        [NSObject value1:1 value2:2 value3:3 value4:4];
+        [[NSObject.x new].y test];
         (NSObject *)[NSObject new];
         (__bridge id)object;
-        """
+        @{@"key": @"value", x.z : [Object new]};
+        @[value1,value2];
+        """ 
         ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
     }
-    func testExpressionPriority(){
+    func testAssignExpression(){
         
         
     }
-
+    func testUnaryExpression(){
+        
+    }
+    func testBinaryExpession(){
+        source =
+        """
+        x < 1;
+        x < 1 && b > 0;
+        x.y && y->z || [Object new].x && [self.x isTrue];
+        x == 1;
+        x != 0;
+        x - 1 * 2;
+        (y - 1) * 2;
+        x->a - 1 + 2;
+        """
+        ocparser.parseSource(source);
+        XCTAssert(ocparser.isSuccess())
+        let exps = ocparser.ast.globalStatements as! [BinaryExpression]
+        XCTAssert(exps[0].operatorType == BinaryOperatorLT)
+        let exp2 = exps[1]
+        XCTAssert(exp2.operatorType == BinaryOperatorLOGIC_AND)
+        let exp2Left = exp2.left as? BinaryExpression
+        let exp2Rigth = exp2.right as? BinaryExpression
+        XCTAssert(exp2Left?.operatorType == BinaryOperatorLT)
+        XCTAssert(exp2Rigth?.operatorType == BinaryOperatorGT)
+        
+        let exp3 = exps[2]
+        XCTAssert(exp3.operatorType == BinaryOperatorLOGIC_OR)
+        
+        let exp3l = exp3.left as? BinaryExpression
+        let exp3r = exp3.right as? BinaryExpression
+        
+        XCTAssert(exp3l?.operatorType == BinaryOperatorLOGIC_AND)
+        XCTAssert(exp3r?.operatorType == BinaryOperatorLOGIC_AND)
+        XCTAssert(exps[3].operatorType == BinaryOperatorEqual)
+        XCTAssert(exps[4].operatorType == BinaryOperatorNotEqual)
+        
+    }
+    func testTernaryExpression(){
+        
+        
+        
+        
+    }
 }

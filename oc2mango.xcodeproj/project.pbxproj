@@ -7,37 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		606F0033CF95FC5CD811C346 /* ControlExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0B5A60BB2B2397BAFC09 /* ControlExpression.m */; };
 		606F0207B162A6162D433799 /* OCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* OCValue.m */; };
-		606F04C9061EDFA1537A0326 /* JudgementExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F05170E1D12991EF44F2E /* JudgementExpression.m */; };
-		606F0CFF2C3466DF8008ED43 /* CalculateExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */; };
-		606F0D79DBF761E8157171FB /* AssignExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F4E67BF3B652ED16B8C /* AssignExpression.m */; };
 		6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
-		EE127792228084260065B1E4 /* AssignExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F5861A2716E15003E7D /* AssignExpression.h */; };
-		EE127793228084260065B1E4 /* AssignExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0F4E67BF3B652ED16B8C /* AssignExpression.m */; };
-		EE127794228084260065B1E4 /* CalculateExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0644932CF15853A6BAA9 /* CalculateExpression.h */; };
-		EE127795228084260065B1E4 /* CalculateExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */; };
-		EE127796228084260065B1E4 /* ControlExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F03882206B1C511825ECE /* ControlExpression.h */; };
-		EE127797228084260065B1E4 /* ControlExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0B5A60BB2B2397BAFC09 /* ControlExpression.m */; };
 		EE127798228084260065B1E4 /* Expression.h in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC888226E0FBA003AD212 /* Expression.h */; };
-		EE127799228084260065B1E4 /* JudgementExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0DBE32BE70D24628C9E6 /* JudgementExpression.h */; };
-		EE12779A228084260065B1E4 /* JudgementExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F05170E1D12991EF44F2E /* JudgementExpression.m */; };
 		EE12779B228084260065B1E4 /* OCValue.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* OCValue.h */; };
 		EE12779C228084260065B1E4 /* OCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* OCValue.m */; };
 		EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE147260227F054300566B3F /* ClassDeclareTest.swift */; };
-		EE1C71E622880AED0077A71E /* AssignExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71E522880AED0077A71E /* AssignExpressionTest.swift */; };
-		EE1C71E7228829E90077A71E /* AssignExpression.h in Headers */ = {isa = PBXBuildFile; fileRef = 606F0F5861A2716E15003E7D /* AssignExpression.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE1C71E8228829E90077A71E /* CalculateExpression.h in Headers */ = {isa = PBXBuildFile; fileRef = 606F0644932CF15853A6BAA9 /* CalculateExpression.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE1C71E9228829E90077A71E /* ControlExpression.h in Headers */ = {isa = PBXBuildFile; fileRef = 606F03882206B1C511825ECE /* ControlExpression.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE1C71EA228829E90077A71E /* JudgementExpression.h in Headers */ = {isa = PBXBuildFile; fileRef = 606F0DBE32BE70D24628C9E6 /* JudgementExpression.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE1C71EB228829E90077A71E /* OCValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* OCValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE1C71F122882F750077A71E /* TestSource.imp in Resources */ = {isa = PBXBuildFile; fileRef = EE1C71EE22882DBF0077A71E /* TestSource.imp */; };
 		EE1C71F42288314C0077A71E /* FileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71F32288314C0077A71E /* FileTest.swift */; };
-		EE2EF4312291400D0019A768 /* AssignExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2EF4302291400D0019A768 /* AssignExpressionTest.swift */; };
-		EE2EF43722914EEE0019A768 /* JudgementExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2EF43622914EEE0019A768 /* JudgementExpressionTest.swift */; };
-		EE2EF43922914EFF0019A768 /* CalculateExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2EF43822914EFF0019A768 /* CalculateExpressionTest.swift */; };
 		EE5534CF2290032700A4B32E /* AST.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534CD2290032700A4B32E /* AST.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE5534D02290032700A4B32E /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE5534D32290053800A4B32E /* Convert.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534D12290053800A4B32E /* Convert.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -105,26 +85,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		606F03882206B1C511825ECE /* ControlExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlExpression.h; sourceTree = "<group>"; };
-		606F05170E1D12991EF44F2E /* JudgementExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JudgementExpression.m; sourceTree = "<group>"; };
-		606F0644932CF15853A6BAA9 /* CalculateExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalculateExpression.h; sourceTree = "<group>"; };
-		606F0B5A60BB2B2397BAFC09 /* ControlExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControlExpression.m; sourceTree = "<group>"; };
 		606F0BB1839E29D74A0630F6 /* OCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCValue.m; sourceTree = "<group>"; };
 		606F0D12A0E0AD5D65BAF937 /* OCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCValue.h; sourceTree = "<group>"; };
-		606F0DBE32BE70D24628C9E6 /* JudgementExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JudgementExpression.h; sourceTree = "<group>"; };
-		606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalculateExpression.m; sourceTree = "<group>"; };
-		606F0F4E67BF3B652ED16B8C /* AssignExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssignExpression.m; sourceTree = "<group>"; };
-		606F0F5861A2716E15003E7D /* AssignExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssignExpression.h; sourceTree = "<group>"; };
 		6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FuncDeclare.h; sourceTree = "<group>"; };
 		6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FuncDeclare.m; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
-		EE1C71E522880AED0077A71E /* AssignExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignExpressionTest.swift; sourceTree = "<group>"; };
 		EE1C71EE22882DBF0077A71E /* TestSource.imp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestSource.imp; sourceTree = "<group>"; };
 		EE1C71F32288314C0077A71E /* FileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTest.swift; sourceTree = "<group>"; };
-		EE2EF4302291400D0019A768 /* AssignExpressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssignExpressionTest.swift; sourceTree = "<group>"; };
-		EE2EF43622914EEE0019A768 /* JudgementExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JudgementExpressionTest.swift; sourceTree = "<group>"; };
-		EE2EF43822914EFF0019A768 /* CalculateExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculateExpressionTest.swift; sourceTree = "<group>"; };
 		EE5534CD2290032700A4B32E /* AST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AST.h; sourceTree = "<group>"; };
 		EE5534CE2290032700A4B32E /* AST.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AST.m; sourceTree = "<group>"; };
 		EE5534D12290053800A4B32E /* Convert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
@@ -197,16 +165,8 @@
 		EE12779122807CE40065B1E4 /* Expression */ = {
 			isa = PBXGroup;
 			children = (
-				606F0F5861A2716E15003E7D /* AssignExpression.h */,
-				606F0F4E67BF3B652ED16B8C /* AssignExpression.m */,
-				606F0644932CF15853A6BAA9 /* CalculateExpression.h */,
-				606F0EDD4AE7A8A6EB517BD6 /* CalculateExpression.m */,
-				606F03882206B1C511825ECE /* ControlExpression.h */,
-				606F0B5A60BB2B2397BAFC09 /* ControlExpression.m */,
 				EE5CC888226E0FBA003AD212 /* Expression.h */,
 				EE5CC889226E0FBA003AD212 /* Expression.m */,
-				606F0DBE32BE70D24628C9E6 /* JudgementExpression.h */,
-				606F05170E1D12991EF44F2E /* JudgementExpression.m */,
 				606F0D12A0E0AD5D65BAF937 /* OCValue.h */,
 				606F0BB1839E29D74A0630F6 /* OCValue.m */,
 			);
@@ -224,13 +184,9 @@
 		EE147263227F1D6B00566B3F /* Implementation */ = {
 			isa = PBXGroup;
 			children = (
-				EE2EF4302291400D0019A768 /* AssignExpressionTest.swift */,
 				639D738322939E89005C6577 /* ExpressionTest.swift */,
 				EED67ABB2270B5A30015AC02 /* StatementTest.swift */,
 				EEB17FFA22849273003D5C36 /* MethodCallTest.swift */,
-				EE1C71E522880AED0077A71E /* AssignExpressionTest.swift */,
-				EE2EF43622914EEE0019A768 /* JudgementExpressionTest.swift */,
-				EE2EF43822914EFF0019A768 /* CalculateExpressionTest.swift */,
 			);
 			path = Implementation;
 			sourceTree = "<group>";
@@ -339,9 +295,9 @@
 			isa = PBXGroup;
 			children = (
 				EE1C71EE22882DBF0077A71E /* TestSource.imp */,
-				EE1C71F32288314C0077A71E /* FileTest.swift */,
 				EED67A7D2270AE0F0015AC02 /* Info.plist */,
 				EED67AB62270B55D0015AC02 /* oc2mangoLibTests-Bridging-Header.h */,
+				EE1C71F32288314C0077A71E /* FileTest.swift */,
 				EE5534D822900DD700A4B32E /* Convert */,
 				EE147263227F1D6B00566B3F /* Implementation */,
 				EE147262227F0A4E00566B3F /* Declare */,
@@ -374,11 +330,7 @@
 				EED67AB12270B51B0015AC02 /* MethodDeclare.h in Headers */,
 				EED67AB32270B51B0015AC02 /* Statement.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
-				EE1C71E7228829E90077A71E /* AssignExpression.h in Headers */,
-				EE1C71E8228829E90077A71E /* CalculateExpression.h in Headers */,
 				6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */,
-				EE1C71E9228829E90077A71E /* ControlExpression.h in Headers */,
-				EE1C71EA228829E90077A71E /* JudgementExpression.h in Headers */,
 				EE1C71EB228829E90077A71E /* OCValue.h in Headers */,
 				EE5534D32290053800A4B32E /* Convert.h in Headers */,
 				EED67AAE2270B51B0015AC02 /* TypeSpecial.h in Headers */,
@@ -530,10 +482,6 @@
 				EE982F11226CC24D008712C2 /* TestFile.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
 				606F0207B162A6162D433799 /* OCValue.m in Sources */,
-				606F0D79DBF761E8157171FB /* AssignExpression.m in Sources */,
-				606F04C9061EDFA1537A0326 /* JudgementExpression.m in Sources */,
-				606F0033CF95FC5CD811C346 /* ControlExpression.m in Sources */,
-				606F0CFF2C3466DF8008ED43 /* CalculateExpression.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -542,15 +490,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
-				EE127792228084260065B1E4 /* AssignExpression.h in Sources */,
-				EE127793228084260065B1E4 /* AssignExpression.m in Sources */,
-				EE127794228084260065B1E4 /* CalculateExpression.h in Sources */,
-				EE127795228084260065B1E4 /* CalculateExpression.m in Sources */,
-				EE127796228084260065B1E4 /* ControlExpression.h in Sources */,
-				EE127797228084260065B1E4 /* ControlExpression.m in Sources */,
 				EE127798228084260065B1E4 /* Expression.h in Sources */,
-				EE127799228084260065B1E4 /* JudgementExpression.h in Sources */,
-				EE12779A228084260065B1E4 /* JudgementExpression.m in Sources */,
 				EE12779B228084260065B1E4 /* OCValue.h in Sources */,
 				6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */,
 				EE12779C228084260065B1E4 /* OCValue.m in Sources */,
@@ -577,14 +517,10 @@
 			files = (
 				EE1C71F42288314C0077A71E /* FileTest.swift in Sources */,
 				EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */,
-				EE2EF43922914EFF0019A768 /* CalculateExpressionTest.swift in Sources */,
 				639D738422939E89005C6577 /* ExpressionTest.swift in Sources */,
 				EED67ABC2270B5A30015AC02 /* StatementTest.swift in Sources */,
-				EE2EF43722914EEE0019A768 /* JudgementExpressionTest.swift in Sources */,
 				EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */,
 				EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */,
-				EE1C71E622880AED0077A71E /* AssignExpressionTest.swift in Sources */,
-				EE2EF4312291400D0019A768 /* AssignExpressionTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

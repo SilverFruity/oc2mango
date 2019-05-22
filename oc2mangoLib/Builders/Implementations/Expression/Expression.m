@@ -7,3 +7,31 @@
 //
 
 #import "Expression.h"
+
+
+@implementation AssignExpression {
+    
+}
+@end
+
+
+@implementation DeclareExpression
+
+
+@end
+
+@implementation UnaryExpression
+
+@end
+
+@implementation BinaryExpression
+@end
+
+@implementation TernaryExpression
+- (instancetype)init
+{
+    self = [super init];
+    self.values = [NSMutableArray array];
+    return self;
+}
+@end

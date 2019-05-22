@@ -9,10 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "AST.h"
 #import "OCValue.h"
-#import "JudgementExpression.h"
-#import "ControlExpression.h"
-#import "CalculateExpression.h"
-#import "AssignExpression.h"
 #import "Statement.h"
 
 
@@ -34,10 +30,8 @@ extern OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
 extern UnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern BinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern TernaryExpression *makeTernaryExpression(void);
-extern JudgementExpression *makeJudgementExpression(JudgementOperatorType type);
 extern AssignExpression *makeAssignExpression(AssignOperatorType type);
 extern DeclareExpression *makeDeclareExpression(VariableDeclare *declare);
-extern ControlExpression *makeControlExpression(ControlExpressionType type);
 
 
 extern IfStatement *makeIfStatement(id <Expression>judgement, FunctionImp *imp);
@@ -47,3 +41,7 @@ extern CaseStatement *makeCaseStatement(OCValue *value);
 extern SwitchStatement *makeSwitchStatement(OCValue *value);
 extern ForStatement *makeForStatement(FunctionImp *imp);
 extern ForInStatement *makeForInStatement(FunctionImp *imp);
+
+extern ReturnStatement *makeReturnStatement(id <ValueExpression> expression);
+extern BreakStatement *makeBreakStatement(void);
+extern ContinueStatement *makeContinueStatement(void);

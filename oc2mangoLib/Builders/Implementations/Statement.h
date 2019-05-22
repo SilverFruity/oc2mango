@@ -48,6 +48,18 @@
 @property (nonatomic,strong)OCValue *value;
 @end
 
+@interface ReturnStatement: Statement
+@property (nonatomic,strong)id <ValueExpression> expression;
+@end
+
+@interface BreakStatement: Statement
+
+@end
+
+@interface ContinueStatement: Statement
+
+@end
+
 
 
 

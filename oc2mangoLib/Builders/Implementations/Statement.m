@@ -44,3 +44,16 @@
 @implementation ForInStatement
 
 @end
+
+@implementation ReturnStatement
+
+
+@end
+
+@implementation BreakStatement
+
+@end
+
+@implementation ContinueStatement
+
+@end

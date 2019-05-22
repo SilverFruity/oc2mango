@@ -130,6 +130,7 @@
 <INITIAL>"__strong" { yylval.identifier =(__bridge_retained void *)@"__strong"; return _STRONG; }
 <INITIAL>"__weak"  { yylval.identifier =(__bridge_retained void *)@"__weak"; return _WEAK; }
 <INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
+<INITIAL>"__bridge" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE; }
 
 <INITIAL>"@selector\("[^()]*"\)" {yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];  return SELECTOR; }
 <INITIAL>"SEL" { TypeReturn(SEL); }

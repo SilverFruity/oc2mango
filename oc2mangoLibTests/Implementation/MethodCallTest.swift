@@ -21,34 +21,30 @@ class MethodCallTest: XCTestCase {
     
     func testMethodCall() {
         let source =
-        """
-@implementation Demo
-- (Demo *)objectMethods{
-    [[NSObject new] test];
-    [self setValue:self forKey:value forKey:value forKey:value];
-    
-    [[object valueForKey:@"key"] object];
-    [[object setValue:self forKey:@"name"] test:@"string"];
-    [object setValue:[NSObject new]];
-    [object setValue:[NSObject new].x];
-    
-    [[self.x method].y method1];
-    [[self.x method].y method1].x;
+"""
+[[NSObject new] test];
+[self setValue:self forKey:value forKey:value forKey:value];
 
-    [object setCallBack:^(NSString *name){ }];
+[[object valueForKey:@"key"] object];
+[[object setValue:self forKey:@"name"] test:@"string"];
+[object setValue:[NSObject new]];
+[object setValue:[NSObject new].x];
 
-    self.callback(self,@(20),@"123");
-    [self.chartView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(back.mas_bottom);
-        make.left.right.equalTo(self.view);
-        make.height.equalTo(@(240));
-    }];
+[[self.x method].y method1];
+[[self.x method].y method1].x;
+
+[object setCallBack:^(NSString *name){ }];
+
+self.callback(self,@(20),@"123");
+[self.chartView mas_makeConstraints:^(MASConstraintMaker *make) {
     make.top.equalTo(back.mas_bottom);
     make.left.right.equalTo(self.view);
     make.height.equalTo(@(240));
-
-}
-@end
+}];
+make.top.equalTo(back.mas_bottom);
+make.left.right.equalTo(self.view);
+make.height.equalTo(@(240));
+completion(httpReponse,result,error);
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.error == nil)
