@@ -36,6 +36,9 @@ MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnType){
 FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars){
     FuncDeclare *decl = [FuncDeclare new];
     decl.returnType = returnType;
+    if (vars) {
+        assert([vars isKindOfClass:[NSMutableArray class]]);
+    }
     decl.variables = vars;
     return decl;
 }
@@ -155,4 +158,24 @@ BreakStatement *makeBreakStatement(void){
 
 ContinueStatement *makeContinueStatement(void){
     return [ContinueStatement new];
+}
+
+
+void pushFuncSymbolTable(void){
+    [OCParser.stack push:[FuncSymbolTable new]];
+}
+void popFuncSymbolTable(void){
+    [OCParser.stack pop];
+}
+Symbol *lookupSymbol(NSString *name){
+    return [OCParser.stack lookup:name];
+}
+void addVariableSymbol(NSString *name){
+    VariableSymbol *sym = [VariableSymbol symbolWithName:name];
+    [OCParser.stack addSymbolToLast:sym forKey:name];
+}
+
+void addTypeSymbol(NSString *name){
+    TypeSymbol *sym = [TypeSymbol symbolWithName:name];
+    [OCParser.stack addSymbolToLast:sym forKey:name];
 }

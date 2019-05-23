@@ -78,7 +78,6 @@ switch (x) {
         break;
     }
 }
-@end
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess());

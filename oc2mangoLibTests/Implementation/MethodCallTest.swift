@@ -36,7 +36,7 @@ class MethodCallTest: XCTestCase {
 [object setCallBack:^(NSString *name){ }];
 
 self.callback(self,@(20),@"123");
-[self.chartView mas_makeConstraints:^(MASConstraintMaker *make) {
+[self.chartView mas_makeConstraints:^(NSConstraintMaker *make) {
     make.top.equalTo(back.mas_bottom);
     make.left.right.equalTo(self.view);
     make.height.equalTo(@(240));
@@ -47,8 +47,7 @@ make.height.equalTo(@(240));
 completion(httpReponse,result,error);
 """
         ocparser.parseSource(source)
-        XCTAssert(ocparser.error == nil)
-        ocparser.clear()
+        XCTAssert(ocparser.isSuccess())
     }
 
 

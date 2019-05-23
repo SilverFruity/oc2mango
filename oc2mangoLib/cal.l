@@ -3,7 +3,8 @@
 %{
     #include <Foundation/Foundation.h>
     #include "y.tab.h"
-    
+    #import "MakeDeclare.h"
+    #import "Log.h"
     unsigned long yycolumn = 1;
     unsigned long yylen = 0;
     #define YY_USER_ACTION yycolumn += yyleng; yylen = yyleng;
@@ -50,8 +51,8 @@
 <INITIAL>")" { return RP; }
 <INITIAL>"[" { return LB; }
 <INITIAL>"]" { return RB; }
-<INITIAL>"{" { return LC; }
-<INITIAL>"}" { return RC; }
+<INITIAL>"{" { pushFuncSymbolTable(); return LC; }
+<INITIAL>"}" { popFuncSymbolTable(); return RC; }
 <INITIAL>"." { return DOT; }
 <INITIAL>"->" { return POINT; }
 <INITIAL>"@" { return AT; }
@@ -132,6 +133,12 @@
 <INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
 <INITIAL>"__bridge" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE; }
 
+<INITIAL>"@required" ;
+<INITIAL>"@optional" ;
+<INITIAL>"@public" ;
+<INITIAL>"@private" ;
+<INITIAL>"@protected" ;
+
 <INITIAL>"@selector\("[^()]*"\)" {yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];  return SELECTOR; }
 <INITIAL>"SEL" { TypeReturn(SEL); }
 <INITIAL>"Class" { TypeReturn(Class);}
@@ -153,7 +160,7 @@
 <INITIAL>"switch" { TypeReturn(switch); }
 <INITIAL>"case" { TypeReturn(case); }
 <INITIAL>"default" { TypeReturn(default); }
-
+<INITIAL>"typedef" { return TYPEDEF;}
 
 <INITIAL>"self" { TypeReturn(self); }
 <INITIAL>"super" { TypeReturn(super); }
@@ -202,7 +209,19 @@
 <INITIAL>"CGFloat" { return _DOUBLE; }
 
 <INITIAL>[A-Za-z_$][A-Za-z_$0-9]* {
-    yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];
+    NSString *name = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)name;
+    if([name hasPrefix:@"NS"] || [name hasPrefix:@"UI"] || [name hasPrefix:@"CG"] || [name hasPrefix:@"CA"])
+    {
+        return TYPE;
+    }
+    Symbol *symbol = lookupSymbol(name);
+    if (symbol){
+        if ([symbol isKindOfClass:[TypeSymbol class]])
+            return TYPE;
+        else if([symbol isKindOfClass:[VariableSymbol class]])
+            return VARIABLE;
+    }
     return IDENTIFIER;
 }
 

@@ -158,15 +158,18 @@
 
 - (NSString *)convertOCValue:(OCValue *)value{
     switch (value.value_type){
-        case OCValueObject:
-        case OCValueSelf:
-        case OCValueSuper:
+        case OCValueClassType:
         case OCValueSelector:
         case OCValueInt:
         case OCValueDouble:
         case OCValueConvert:
-        case OCValueIdentifier:
+        case OCValueVariable:
             return value.value;
+            
+        case OCValueSelf:
+            return @"self";
+        case OCValueSuper:
+            return @"super";
 
         case OCValueString:
             return [NSString stringWithFormat:@"@\"%@\"",value.value];

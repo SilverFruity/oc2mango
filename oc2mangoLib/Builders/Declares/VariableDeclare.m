@@ -15,13 +15,6 @@
     
     return self;
 }
-
-- (id)copy{
-    VariableDeclare *var = [VariableDeclare new];
-    var.type = self.type;
-    var.name = self.name;
-    return var;
-}
 @end
 
 

@@ -10,8 +10,8 @@
 
 // MARK: - ValueType
 typedef enum {
-    OCValueIdentifier,
-    OCValueObject,
+    OCValueVariable,
+    OCValueClassType,
     OCValueSelf,
     OCValueSuper,
     OCValueBlock,

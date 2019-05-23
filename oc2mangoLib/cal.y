@@ -8,6 +8,7 @@
 #define _retained(type) (__bridge_retained type)
 #define _vretained _retained(void *)
 #define _transfer(type) (__bridge_transfer type)
+#define _typeId _transfer(id)
 extern int yylex (void);
 extern void yyerror(const char *s);
 %}
@@ -21,16 +22,12 @@ extern void yyerror(const char *s);
     void *expression;
     int Operator;
 }
-%left level3
-%left level2
-%left level1
-
+%token <identifier> TYPE VARIABLE IDENTIFIER STRING_LITERAL TYPEDEF
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE 
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof _struct _sizeof
-%token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE
+%token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE 
 %token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE 
 %token <identifier> EXTERN STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK _BRIDGE
-%token <identifier> IDENTIFIER STRING_LITERAL
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS POINT
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR NOT
 %token <identifier> AND OR POWER SUB ADD DIV ASTERISK AND_ASSIGN OR_ASSIGN POWER_ASSIGN SUB_ASSIGN ADD_ASSIGN DIV_ASSIGN ASTERISK_ASSIGN INCREMENT DECREMENT
@@ -39,11 +36,12 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %token <identifier>  _Class _id _void _BOOL _SEL _CHAR _SHORT _INT _LONG _LLONG  _UCHAR _USHORT _UINT _ULONG  _ULLONG _DOUBLE _FLOAT _instancetype
 %token <identifier> INTETER_LITERAL DOUBLE_LITERAL SELECTOR 
 %type  <identifier> class_property_type declare_left_attribute declare_right_attribute
-%type  <include> PS_Define includeHeader
-%type  <declare>  class_declare protocol_list class_private_varibale_declare
+%type  <identifier> whole_identifier
+%type  <include> PS_Define includeHeader struct_declare enum_declare enum_identifier_list typedef_declare
+%type  <declare>  protocol_declare class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare
 %type  <declare>  declare_variable func_declare_parameters 
-%type  <expression>  type_specified block_parametere_type block_type  objc_method_call 
+%type  <expression>  type_specified block_parametere_type  objc_method_call 
 %type  <implementation> class_implementation  
 %type  <expression> primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list for_parameter_list unary_expression
 %type <Operator>  assign_operator 
@@ -60,6 +58,7 @@ definition_list: definition
 definition:
             PS_Define
             | class_declare
+            | protocol_declare
             | class_implementation
             | expression_statement
             {
@@ -70,8 +69,12 @@ definition:
                 [LibAst.globalStatements addObject:_transfer(id) $1];
             }
             | type_specified IDENTIFIER LP func_declare_parameters RP  SEMICOLON
+            {
+                addVariableSymbol(_typeId $2);
+            }
             | type_specified IDENTIFIER LP func_declare_parameters RP  LC function_implementation RC
             {
+                addVariableSymbol(_typeId $2);
                 BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
                 imp.declare = makeFuncDeclare(_transfer(id)$2,_transfer(id)$4);
                 imp.funcImp = _transfer(id)$7;
@@ -79,16 +82,90 @@ definition:
             }
 	    ;
 PS_Define: PS includeHeader
-            ;
+          | typedef_declare
+          | CLASS_DECLARE IDENTIFIER
+          {
+              addTypeSymbol(_typeId $2);
+          }
+          | CLASS_DECLARE TYPE
+          ;
 includeHeader:
             IMPORT 
             | INCLUDE 
             | includeHeader LT IDENTIFIER DIV IDENTIFIER DOT IDENTIFIER GT
             | includeHeader STRING_LITERAL
             ;
+
+struct_declare:
+            _struct IDENTIFIER LC class_private_varibale_declare RC
+            {
+                addTypeSymbol(_typeId $2);
+            }
+            | _struct LC class_private_varibale_declare RC IDENTIFIER
+            {
+                addTypeSymbol(_typeId $5);
+            }
+            ;
+enum_declare:
+            _enum IDENTIFIER LC enum_identifier_list RC
+            {
+                addTypeSymbol(_typeId $2);
+            }
+            | _enum LC enum_identifier_list RC IDENTIFIER
+            {
+                addTypeSymbol(_typeId $5);
+                NSMutableArray *list  = _typeId $3;
+                for (NSString *element in list){
+                    addVariableSymbol(element);
+                }
+            }
+            ;
+enum_identifier_list:
+            IDENTIFIER
+            {
+                $$ = _vretained [@[_typeId $1] mutableCopy];
+            }
+            | IDENTIFIER ASSIGN INTETER_LITERAL
+            {
+                $$ = _vretained [@[_typeId $1] mutableCopy];
+            }
+            | enum_identifier_list COMMA IDENTIFIER
+            {
+                NSMutableArray *list  = _typeId $1;
+                [list addObject:_typeId $3];
+                $$ = _vretained list;
+            }
+            | enum_identifier_list COMMA IDENTIFIER ASSIGN INTETER_LITERAL
+            {
+                NSMutableArray *list  = _typeId $1;
+                [list addObject:_typeId $3];
+                $$ = _vretained list;
+            }
+            ;
+
+            
+typedef_declare:
+            TYPEDEF type_specified LP POWER IDENTIFIER RP LP func_declare_parameters RP SEMICOLON
+            {
+                addTypeSymbol(_typeId $5);
+            } 
+            | enum_declare SEMICOLON
+            | struct_declare SEMICOLON
+            | TYPEDEF typedef_declare
+            ;
+
+protocol_declare:
+            PROTOCOL IDENTIFIER LT TYPE GT
+            {
+                addTypeSymbol(_typeId $2);
+            }
+            | protocol_declare PROPERTY class_property_declare declare_variable SEMICOLON
+            | protocol_declare method_declare SEMICOLON
+            | protocol_declare END
+            ;
 class_declare:
             //
-            INTERFACE IDENTIFIER COLON IDENTIFIER
+            INTERFACE IDENTIFIER COLON TYPE
             {
                 OCClass *occlass = [LibAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
@@ -130,6 +207,7 @@ class_declare:
             | class_declare method_declare SEMICOLON
             | class_declare END
             ;
+
 class_implementation:
             IMPLEMENTATION IDENTIFIER
             {
@@ -223,119 +301,16 @@ class_property_declare:
             ;
 
 declare_variable:
-             type_specified IDENTIFIER
+             type_specified whole_identifier
             {
                 $$ = _vretained makeVariableDeclare((__bridge TypeSpecial *)$1,(__bridge NSString *)$2);
             }
-            | type_specified LP POWER IDENTIFIER RP LP func_declare_parameters RP
+            | type_specified LP POWER whole_identifier RP LP func_declare_parameters RP
             {
                 $$ = _vretained makeVariableDeclare(makeTypeSpecial(SpecialTypeBlock),(__bridge NSString *)$4);
             }
             ;
 
-// FIXME: (id <identifier>object) conflict (x < identifier)
-//            | LT type_specified GT
-type_specified:
-            declare_left_attribute type_specified
-            {
-                $$ = $2;
-            }
-            | type_specified LT type_specified GT
-            | type_specified declare_right_attribute
-            // FIXME: implementation typeof type
-            | _typeof LP expression RP
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeObject,@"typeof");
-            }
-            | _UCHAR
-            {
-                 $$ = _vretained makeTypeSpecial(SpecialTypeUChar);
-            }
-            | _USHORT
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeUShort);
-            }
-            | _UINT
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeUInt);
-            }
-            | _ULONG
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeULong);
-            }
-            | _ULLONG
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeULongLong);
-            }
-            | _CHAR
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeChar);
-            }
-            | _SHORT
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeShort);
-            }
-            | _INT
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeInt);
-            }
-            | _LONG
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeLong);
-            }
-            | _LLONG
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeLongLong);
-            }
-            | _DOUBLE
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeDouble);
-            }
-            | _FLOAT
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeFloat);
-            }
-            | _Class
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeClass);
-            }
-            | _BOOL
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeBOOL);
-            }
-            | _void
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeVoid);
-            }
-            | _instancetype
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeId);
-            }
-            /* 
-            FIXME:  // Bison reduce/reduce : State 24
-                (id <identifier>object) conflict (x < identifier) reason: IDENTIFIER LT ...
-                completion(httpReponse,result,error):
-                completion(^x)(x,y,z) confict CFuncCall | Blockcall reason: IDENTIFIER LP ...
-            */
-            | IDENTIFIER
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
-            }
-            | _id
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeId);
-            }
-            | block_type
-            {
-                $$ = _vretained makeTypeSpecial(SpecialTypeBlock);
-            }
-            | type_specified ASTERISK
-            {
-                TypeSpecial *type = _transfer(id) $1;
-                type.isPointer = YES;
-                $$ = _vretained type;
-            }
-;
 
 declare_left_attribute:
             EXTERN
@@ -352,10 +327,6 @@ declare_right_attribute:
             _NONNULL
             | _NULLABLE
             | CONST
-            ;
-block_type: 
-             type_specified LP POWER RP
-            | block_type LP func_declare_parameters RP
             ;
 
 block_parametere_type: 
@@ -406,20 +377,20 @@ method_declare:
             ;
 
 objc_method_call_pramameters:
-        IDENTIFIER
+        whole_identifier
         {
             OCMethodCallNormalElement *element = makeMethodCallElement(OCMethodCallNormalCall);
             [element.names addObject:_transfer(NSString *)$1];
             $$ = _vretained element;
         }
-        | IDENTIFIER COLON expression_list
+        | whole_identifier COLON expression_list
         {
             OCMethodCallNormalElement *element = makeMethodCallElement(OCMethodCallNormalCall);
             [element.names addObject:_transfer(NSString *)$1];
             [element.values addObjectsFromArray:_transfer(id)$3];
             $$ = _vretained element;
         }
-        | objc_method_call_pramameters IDENTIFIER COLON expression_list
+        | objc_method_call_pramameters whole_identifier COLON expression_list
         {
             OCMethodCallNormalElement *element = _transfer(OCMethodCallNormalElement *)$1;
             [element.names addObject:_transfer(NSString *)$2];
@@ -428,7 +399,22 @@ objc_method_call_pramameters:
         }
         ;
 
-objc_method_call: LB primary_expression objc_method_call_pramameters RB
+objc_method_call:
+         LB IDENTIFIER objc_method_call_pramameters RB
+        {
+             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+             methodcall.caller =  makeValue(OCValueClassType,_typeId $2);
+             methodcall.element = _transfer(id <OCMethodElement>)$3;
+             $$ = _vretained methodcall;
+        }
+        | LB TYPE objc_method_call_pramameters RB
+        {
+             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+             methodcall.caller =  makeValue(OCValueClassType,_typeId $2);
+             methodcall.element = _transfer(id <OCMethodElement>)$3;
+             $$ = _vretained methodcall;
+        }
+        | LB primary_expression objc_method_call_pramameters RB
         {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
              OCValue *caller = _transfer(OCValue *)$2;
@@ -450,8 +436,12 @@ block_implementation:
         //^returnType(int x, int y, int z){  }
         | POWER type_specified LP func_declare_parameters RP LC function_implementation RC
         {
+            NSMutableArray *list = _typeId $4;
+            for (VariableDeclare *decalre in list){
+               addVariableSymbol(decalre.name);
+            }
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-            imp.declare = makeFuncDeclare(_transfer(id)$2,_transfer(id)$4);
+            imp.declare = makeFuncDeclare(_transfer(id)$2,list);
             imp.funcImp = _transfer(id)$7;
             $$ = _vretained imp; 
         }
@@ -466,8 +456,12 @@ block_implementation:
         //^(int x, int y){    }
         | POWER LP func_declare_parameters RP LC function_implementation RC
         {
+            NSMutableArray *list = _typeId $3;
+            for (VariableDeclare *decalre in list){
+               addVariableSymbol(decalre.name);
+            }
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-            imp.declare = makeFuncDeclare(makeTypeSpecial(SpecialTypeVoid),_transfer(id) $3);
+            imp.declare = makeFuncDeclare(makeTypeSpecial(SpecialTypeVoid),list);
             imp.funcImp = _transfer(id)$6;
             $$ = _vretained imp; 
         }
@@ -477,11 +471,15 @@ block_implementation:
 declare_expression:
          declare_variable 
          {
-             $$ = _vretained makeDeclareExpression(_transfer(id) $1);
+             VariableDeclare *declare = _typeId $1;
+             addVariableSymbol(declare.name);
+             $$ = _vretained makeDeclareExpression(declare);
          }
          | declare_variable ASSIGN expression
          {
-             DeclareExpression *exp = makeDeclareExpression(_transfer(id) $1);
+             VariableDeclare *declare = _typeId $1;
+             addVariableSymbol(declare.name);
+             DeclareExpression *exp = makeDeclareExpression(declare);
              exp.expression = _transfer(id) $3;
              $$ = _vretained exp;
          }
@@ -603,10 +601,12 @@ for_parameter_list:
             $$ = _vretained expressions;
         }
         ;
-for_statement: _for LP for_parameter_list RP LC function_implementation RC
+for_statement: _for LP declare_expression SEMICOLON for_parameter_list RP LC function_implementation RC
         {
-            ForStatement* statement = makeForStatement(_transfer(FunctionImp *) $6);
-            statement.expressions = _transfer(NSMutableArray *) $3;
+            ForStatement* statement = makeForStatement(_transfer(FunctionImp *) $8);
+            NSMutableArray *list = _typeId $5;
+            [list insertObject:_typeId $3 atIndex:0];
+            statement.expressions = list;
             $$ = _vretained statement;
         }
         ;
@@ -650,7 +650,8 @@ function_implementation:
         ;
         
 
-expression_list: expression
+expression_list:
+        | expression
         {
             NSMutableArray *list = [NSMutableArray array];
             [list addObject:_transfer(id)$1];
@@ -987,10 +988,16 @@ dict_entry:
             $$ = _vretained array;
         }
         ;
+
+whole_identifier:
+        VARIABLE
+        | IDENTIFIER
+        ;
+
 primary_expression:
-        IDENTIFIER
+         whole_identifier
         {
-            $$ = _vretained makeValue(OCValueIdentifier,_transfer(id) $1);
+            $$ = _vretained makeValue(OCValueVariable,_transfer(id) $1);
         }
         | _self
         {
@@ -1001,7 +1008,7 @@ primary_expression:
             $$ = _vretained makeValue(OCValueSuper);
         }
         | objc_method_call
-        | primary_expression DOT IDENTIFIER
+        | primary_expression DOT whole_identifier
         {
             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
             methodcall.caller =  _transfer(OCValue *)$1;
@@ -1011,7 +1018,7 @@ primary_expression:
             $$ = _vretained methodcall;
 
         }
-        | primary_expression POINT IDENTIFIER
+        | primary_expression POINT whole_identifier
         {
             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
             methodcall.caller =  _transfer(OCValue *)$1;
@@ -1021,18 +1028,18 @@ primary_expression:
             $$ = _vretained methodcall;
         }
         | primary_expression LP expression_list RP
-        {
-            id object = _transfer(id) $1;
-            if([object isKindOfClass:[NSString class]]){
-                CFuncCall *call = (CFuncCall *)makeValue(OCValueFuncCall);
-                call.name = _transfer(id) $1;
-                call.expressions = _transfer(id) $3;
-                $$ = _vretained call;
-            }else if([object isKindOfClass:[OCMethodCall class]]){
-                OCMethodCall *methodcall = _transfer(OCMethodCall *) $1;
+        {   
+            OCValue *object = _transfer(id) $1;
+            if([object isKindOfClass:[OCMethodCall class]]){
+                OCMethodCall *methodcall = object;
                 OCMethodCallGetElement *element = methodcall.element;
                 [element.values addObjectsFromArray:_transfer(id) $3];
                 $$ = _vretained methodcall;
+            }else if([object isKindOfClass:[OCValue class]]){
+                CFuncCall *call = (CFuncCall *)makeValue(OCValueFuncCall);
+                call.name = object.value;
+                call.expressions = _transfer(id) $3;
+                $$ = _vretained call;
             }
         }
         | LP expression RP
@@ -1063,7 +1070,7 @@ primary_expression:
         {
             $$ = _vretained makeValue(OCValueSelector,_transfer(id)$1);
         }
-        | PROTOCOL LP IDENTIFIER RP
+        | PROTOCOL LP TYPE RP
         {
             $$ = _vretained makeValue(OCValueProtocol,_transfer(id)$3);
         }
@@ -1082,6 +1089,110 @@ primary_expression:
             $$ = _vretained makeValue(OCValueNULL);
         }
         ;
+
+// 放在primary_expression之后是为了解决reduce/reduce冲突
+type_specified:
+            declare_left_attribute type_specified
+            {
+                $$ = $2;
+            }
+            | type_specified LT type_specified GT
+            | type_specified declare_right_attribute
+            | _typeof LP expression RP
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeObject,@"typeof");
+            }
+            | _UCHAR
+            {
+                 $$ = _vretained makeTypeSpecial(SpecialTypeUChar);
+            }
+            | _USHORT
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeUShort);
+            }
+            | _UINT
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeUInt);
+            }
+            | _ULONG
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeULong);
+            }
+            | _ULLONG
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeULongLong);
+            }
+            | _CHAR
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeChar);
+            }
+            | _SHORT
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeShort);
+            }
+            | _INT
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeInt);
+            }
+            | _LONG
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeLong);
+            }
+            | _LLONG
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeLongLong);
+            }
+            | _DOUBLE
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeDouble);
+            }
+            | _FLOAT
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeFloat);
+            }
+            | _Class
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeClass);
+            }
+            | _BOOL
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeBOOL);
+            }
+            | _void
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeVoid);
+            }
+            | _instancetype
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeId);
+            }
+            /* 
+            FIXME:  // Bison reduce/reduce : State 24
+                (id <identifier>object) conflict (x < identifier) reason: IDENTIFIER LT ...
+                completion(httpReponse,result,error):
+                completion(^x)(x,y,z) confict CFuncCall | Blockcall reason: IDENTIFIER LP ...
+            */
+            | TYPE
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
+            }
+            | _id
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeId);
+            }
+            // void (^)(int a, int b)
+            | type_specified LP POWER RP LP func_declare_parameters RP
+            {
+                $$ = _vretained makeTypeSpecial(SpecialTypeBlock);
+            }
+            | type_specified ASTERISK
+            {
+                TypeSpecial *type = _transfer(id) $1;
+                type.isPointer = YES;
+                $$ = _vretained type;
+            }
+;
+
 
 %%
 void yyerror(const char *s){
@@ -1103,5 +1214,4 @@ void yyerror(const char *s){
     OCParser.error = errorInfo;
     log(OCParser.error);
     log(LibAst.globalStatements);
-
 }

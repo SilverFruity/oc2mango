@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AST.h"
+#import "Parser.h"
 #import "OCValue.h"
 #import "Statement.h"
 
@@ -45,3 +45,11 @@ extern ForInStatement *makeForInStatement(FunctionImp *imp);
 extern ReturnStatement *makeReturnStatement(id <ValueExpression> expression);
 extern BreakStatement *makeBreakStatement(void);
 extern ContinueStatement *makeContinueStatement(void);
+
+
+
+extern void pushFuncSymbolTable(void);
+extern void popFuncSymbolTable(void);
+extern Symbol *lookupSymbol(NSString *name);
+extern void addVariableSymbol(NSString *name);
+extern void addTypeSymbol(NSString *name);

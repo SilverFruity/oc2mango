@@ -24,5 +24,4 @@
 @property(nonatomic,nonnull,strong)NSMutableArray *globalStatements;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *classCache;
 - (nonnull OCClass *)classForName:(NSString *)className;
-+ (instancetype)shared;
 @end

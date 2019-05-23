@@ -35,12 +35,17 @@ class ExpressionTest: XCTestCase {
         NSUInteger a;
         size_t a;
         void (^block)(NSString *,NSString *);
-        // id <protocol> a;
+        id <NSObject> a;
+        NSObject <NSObject> *a;
+        NSMutableArray <NSObject *> *array;
         int x = 0;
         int x = [NSObject new];
         """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
+        guard ocparser.isSuccess() else {
+            return;
+        }
         let assign = ocparser.ast.globalStatements[0] as? DeclareExpression;
         XCTAssert(assign?.declare.type.type == SpecialTypeInt)
         XCTAssert(assign?.declare.name == "a")
@@ -79,24 +84,24 @@ class ExpressionTest: XCTestCase {
         let assign11 = ocparser.ast.globalStatements[11] as? DeclareExpression;
         XCTAssert(assign11?.declare.type.type == SpecialTypeUInt)
         
-        let assign12 = ocparser.ast.globalStatements[12] as? DeclareExpression;
+        let assign12 = ocparser.ast.globalStatements[12] as? DeclareExpression
         XCTAssert(assign12?.declare.type.type == SpecialTypeBlock)
         XCTAssert(assign12?.declare.name == "block")
+        
+        let assign13 = ocparser.ast.globalStatements[13] as? DeclareExpression
+        XCTAssert(assign13?.declare.type.type == SpecialTypeId)
+        
+        let assign14 = ocparser.ast.globalStatements[14] as? DeclareExpression
+        XCTAssert(assign14?.declare.type.type == SpecialTypeObject)
+        XCTAssert(assign14?.declare.type.name == "NSObject")
+        
+        let assign15 = ocparser.ast.globalStatements[15] as? DeclareExpression
+        XCTAssert(assign15?.declare.type.type == SpecialTypeObject)
+        XCTAssert(assign15?.declare.type.name == "NSMutableArray")
     }
     
     
     func testCalculateExpression() {
-        source =
-        """
-
-        """
-        ocparser.parseSource(source);
-        XCTAssert(ocparser.isSuccess())
-        let call1 = ocparser.ast.globalStatements[0] as? BinaryExpression;
-        let righ1 = call1?.right as? BinaryExpression
-        XCTAssert(call1?.operatorType == BinaryOperatorSub)
-        XCTAssert(righ1?.operatorType == BinaryOperatorMulti)
-        XCTAssert(righ1 != nil)
         
     }
     
@@ -104,7 +109,7 @@ class ExpressionTest: XCTestCase {
         source =
         """
         x < 1;
-        id <protoocl> a;
+        id <NSObject> a;
         
         a->x;
         a - 1;
@@ -142,7 +147,7 @@ class ExpressionTest: XCTestCase {
         @10.01;
         [NSObject new];
         [NSObject value1:1 value2:2 value3:3 value4:4];
-        [[NSObject.x new].y test];
+        [[self.x new].y test];
         (NSObject *)[NSObject new];
         (__bridge id)object;
         @{@"key": @"value", x.z : [Object new]};
@@ -163,7 +168,7 @@ class ExpressionTest: XCTestCase {
         """
         x < 1;
         x < 1 && b > 0;
-        x.y && y->z || [Object new].x && [self.x isTrue];
+        x.y && y->z || [NSObject new].x && [self.x isTrue];
         x == 1;
         x != 0;
         x - 1 * 2;

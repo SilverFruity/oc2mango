@@ -2,6 +2,33 @@
 #import "SFHTTPClient.h"
 #import "SFHTTPPlugin.h"
 
+@protocol HTTPPlugins <NSObject>
+
+@end
+
+@protocol SFPlugin <HTTPPlugins>
+@required
+@property (nonatomic, strong)id <SFPlugin> next;
+@property (nonatomic, strong, readonly) id <SFPlugin> (^addNext)(id <SFPlugin> plugin);
+@property (nonatomic, assign)BOOL canRetry;
+@property (nonatomic, copy)NSURLSessionTask *(^retryClosure)(void);
+@optional
+- (id)cachedDataForRequest:(NSURLRequest *)reqest;
+- (void)willStart:(NSURLRequest *)request;
+- (id)handleWithRequest:(NSURLRequest *)request Reponse:(NSHTTPURLResponse *)response data:(id)data error:(NSError **)error;
+- (void)testDataForRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSError *error))completionHandler;
+@end
+
+
+typedef void(^HTTPHandler)(NSHTTPURLResponse *response, id _Nullable data ,NSError *_Nullable error);
+
+typedef enum{
+    GET = 0,
+    POST
+}SFNHTTPMethod;
+
+
+
 static NSString *queryPramameters(NSDictionary *param){
     NSMutableArray *pairs = [NSMutableArray array];
     [param enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
@@ -9,7 +36,6 @@ static NSString *queryPramameters(NSDictionary *param){
     }];
     return [pairs componentsJoinedByString:@"&"];
 }
-static NSString *name = @"";
 
 @interface SFHTTPClient : NSObject
 @property (nonatomic,readonly) NSURL *baseUrl;
@@ -52,7 +78,7 @@ static NSString *name = @"";
     
     if (method == POST){
         request.HTTPMethod = @"POST";
-        request.HTTPBody = [queryPramameters(signedParam) dataUsingEncoding:NSUTF8StringEncoding];
+        request.HTTPBody = [queryPramameters(signedParam) dataUsingEncoding:0];
     }else{
         request.HTTPMethod = @"GET";
     }
@@ -65,7 +91,7 @@ static NSString *name = @"";
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
     NSData *originalData = [NSJSONSerialization dataWithJSONObject:param options:0 error:nil];
-    NSString *jsonStr = [[NSString alloc] initWithData:originalData encoding:NSUTF8StringEncoding];
+    NSString *jsonStr = [[NSString alloc] initWithData:originalData encoding:0];
 
     NSDictionary *container = [NSDictionary dictionary];
     request.HTTPBody = [NSJSONSerialization dataWithJSONObject:container options:0 error:nil];

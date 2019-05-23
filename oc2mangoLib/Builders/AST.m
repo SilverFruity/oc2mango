@@ -27,14 +27,6 @@
 }
 @end
 @implementation AST
-+ (instancetype)shared{
-    static dispatch_once_t onceToken;
-    static AST * _instance = nil;
-    dispatch_once(&onceToken, ^{
-        _instance = [AST new];
-    });
-    return _instance;
-}
 - (OCClass *)classForName:(NSString *)className{
     OCClass *class = self.classCache[className];
     if (!class) {
@@ -50,5 +42,6 @@
     self.globalStatements = [NSMutableArray array];
     return self;
 }
+
 @end
 

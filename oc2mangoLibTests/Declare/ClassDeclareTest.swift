@@ -52,7 +52,6 @@ class ClassDeclareTest: XCTestCase {
 @end
 """
         ocparser.parseSource(source)
-        ocparser.clear()
     }
     func testPropertyDeclare(){
         let source =
@@ -68,8 +67,6 @@ class ClassDeclareTest: XCTestCase {
         XCTAssert(prop.var.name == "className")
         XCTAssert(prop.var.type.type == SpecialTypeObject)
         XCTAssert(prop.keywords == ["nonatomic","atomic"])
-        
-        ocparser.clear()
     }
 
 }

@@ -23,7 +23,7 @@ class ConvertTest: XCTestCase {
         let source =
 """
 int x;
-Object *x;
+NSObject *x;
 BOOL x;
 """
         ocparser.parseSource(source)
@@ -33,8 +33,9 @@ BOOL x;
         let result2 = convert.convert(ocparser.ast.globalStatements[2] as Any)
         XCTAssert(ocparser.error == nil)
         XCTAssert(result == "int x")
-        XCTAssert(result1 == "Object *x")
+        XCTAssert(result1 == "NSObject *x")
         XCTAssert(result2 == "BOOL x")
+        
     }
     
     func testAssignExpressoin(){
@@ -46,7 +47,6 @@ int x = 0;
         let result = convert.convert(ocparser.ast.globalStatements.firstObject as Any)
         XCTAssert(ocparser.error == nil)
         XCTAssert(result == "int x = 0",result)
-        ocparser.clear()
     }
     
     func testConvertMethodCall(){
@@ -61,12 +61,13 @@ self.block(value,[NSObject new].x);
 }];
 """
         ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
         let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
         let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
         let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
         let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
         let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
-        XCTAssert(ocparser.error == nil)
+        
         XCTAssert(result1 == "NSObject.new().x",result1)
         XCTAssert(result2 == "x.get",result2)
         XCTAssert(result3 == "self.request:plugin:completion:(request,plugin,completion)",result3)

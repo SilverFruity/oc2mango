@@ -8,11 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "AST.h"
+#import "SymbolStack.h"
 #define OCParser [Parser shared]
 #define LibAst OCParser.ast
 
 @interface Parser : NSObject
 @property(nonatomic,nonnull,strong)AST *ast;
+@property(nonatomic,nonnull,strong)FuncSymbolStack *stack;
+@property(nonatomic,nonnull,strong)NSLock *lock;
 @property(nonatomic,nullable,copy)NSString *error;
 @property(nonatomic,nullable,copy)NSString *source;
 + (nonnull instancetype)shared;

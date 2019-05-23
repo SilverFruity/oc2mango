@@ -26,7 +26,8 @@ void UncaughtExceptionHandler(NSException *exception) {
 - (instancetype)init
 {
     self = [super init];
-    self.ast = [AST shared];
+    self.ast = [AST new];
+    self.stack = [FuncSymbolStack new];
     NSSetUncaughtExceptionHandler(&UncaughtExceptionHandler);
     return self;
 }
@@ -41,11 +42,13 @@ void UncaughtExceptionHandler(NSException *exception) {
     yy_set_source_string([source UTF8String]);
     if (yyparse()) {
         yyrestart(NULL);
-        NSLog(@"ERROR!!!");
+        self.error = @"ERROR !!!";
     }
 }
 - (void)clear{
+    [self.lock lock];
     self.ast = [AST new];
     self.error = nil;
+    [self.lock unlock];
 }
 @end
