@@ -1,1 +1,3 @@
 .idea/*
+/oc2mangoLib/*.tab.c
+/oc2mangoLib/*.output
