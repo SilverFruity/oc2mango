@@ -22,7 +22,6 @@ extern MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnT
 extern MethodImplementation *makeMethodImplementation(MethodDeclare *declare);
 extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars);
 extern FunctionImp *makeFuncImp(void);
-extern id <OCMethodElement> makeMethodCallElement(OCMethodCallType type);
 
 extern OCValue *makeValue(OC_VALUE_TYPE type, id value);
 extern OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
@@ -31,7 +30,7 @@ extern UnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern BinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern TernaryExpression *makeTernaryExpression(void);
 extern AssignExpression *makeAssignExpression(AssignOperatorType type);
-extern DeclareExpression *makeDeclareExpression(VariableDeclare *declare);
+extern DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Expression> exp);
 
 
 extern IfStatement *makeIfStatement(id <Expression>judgement, FunctionImp *imp);

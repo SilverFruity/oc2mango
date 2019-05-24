@@ -23,12 +23,8 @@ class ClassDeclareTest: XCTestCase {
         let source =
 """
 @implementation Demo
-- (instancetype)initWithBaseUrl:(NSURL *)baseUrl{
-
-}
-- (NSString *)method2:(void(^)(NSString *name))callback{
-
-}
+- (instancetype)initWithBaseUrl:(NSURL *)baseUrl{ }
+- (NSString *)method2:(void(^)(NSString *name))callback{ }
 @end
 """
         ocparser.parseSource(source)

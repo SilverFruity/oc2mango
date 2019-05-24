@@ -42,28 +42,16 @@ typedef enum{
     OCMethodCallDotGet
 }OCMethodCallType;
 
-@protocol OCMethodElement <NSObject>
-@property (nonatomic, strong)NSMutableArray <id <ValueExpression>> *values;
-@end
 
-@interface OCMethodCallNormalElement: NSObject <OCMethodElement>
+@interface OCMethodCall : OCValue
+@property (nonatomic, strong)OCValue *caller;
+@property (nonatomic, assign)BOOL isDot;
 @property (nonatomic, strong)NSMutableArray *names;
 @property (nonatomic, strong)NSMutableArray <id <ValueExpression>> *values;
 @end
 
-@interface OCMethodCallGetElement: NSObject <OCMethodElement>
-@property (nonatomic, strong)NSString *name;
-@property (nonatomic, strong)NSMutableArray <id <ValueExpression>> *values;
-@end
-
-
-@interface OCMethodCall : OCValue
-@property (nonatomic, strong)OCValue *caller;
-@property (nonatomic, strong)id <OCMethodElement> element;
-@end
-
 @interface CFuncCall: OCValue
-@property (nonatomic, copy)NSString *name;
+@property (nonatomic, strong)OCValue *caller;
 @property (nonatomic, strong)NSMutableArray <id <ValueExpression>>*expressions;
 @end
 

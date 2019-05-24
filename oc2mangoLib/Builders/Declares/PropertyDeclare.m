@@ -10,11 +10,4 @@
 
 @implementation PropertyDeclare
 
-- (VariableDeclare *)privateVar{
-    if (!_privateVar) {
-        _privateVar = [self.var copy];
-        _privateVar.name = [NSString stringWithFormat:@"_%@",self.var.name];
-    }
-    return _privateVar;
-}
 @end

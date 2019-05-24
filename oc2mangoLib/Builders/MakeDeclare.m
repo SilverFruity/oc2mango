@@ -40,6 +40,10 @@ FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars){
         assert([vars isKindOfClass:[NSMutableArray class]]);
     }
     decl.variables = vars;
+    for (VariableDeclare *decalre in vars){
+        addVariableSymbol(decalre.name);
+    }
+    NSLog(@"%@",OCParser.stack.topTable);
     return decl;
 }
 MethodImplementation *makeMethodImplementation(MethodDeclare *declare){
@@ -47,18 +51,11 @@ MethodImplementation *makeMethodImplementation(MethodDeclare *declare){
     imp.declare = declare;
     return imp;
 }
-extern FunctionImp *makeFuncImp(){
+FunctionImp *makeFuncImp(){
     return [FunctionImp new];
 }
 
-extern id <OCMethodElement> makeMethodCallElement(OCMethodCallType type){
-    switch (type){
-        case OCMethodCallNormalCall:
-            return [OCMethodCallNormalElement  new];
-        case OCMethodCallDotGet:
-            return [OCMethodCallGetElement  new];
-    }
-}
+
 OCValue *makeValue(OC_VALUE_TYPE type, id value){
     OCValue *ocvalue;
     switch (type){
@@ -102,10 +99,37 @@ AssignExpression *makeAssignExpression(AssignOperatorType type){
     expression.assignType = type;
     return expression;
 }
-DeclareExpression *makeDeclareExpression(VariableDeclare *declare){
-    DeclareExpression *expression = [DeclareExpression new];
-    expression.declare = declare;
-    return expression;
+DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Expression> exp){
+    DeclareExpression *declare = [DeclareExpression new];
+    declare.type = type;
+    declare.expression = exp;
+    OCValue *variable = value;
+    if (value == nil) {
+        if([exp isKindOfClass:[UnaryExpression class]]){
+            UnaryExpression *unary = (UnaryExpression *)exp;
+            while ([unary isKindOfClass:[UnaryExpression class]] && unary.operatorType == UnaryOperatorPointValue) {
+                unary = unary.value;
+            }
+            variable = (OCValue *)unary;
+        }else if([exp isKindOfClass:[AssignExpression class]]){
+            id <Expression> assignValue = ((AssignExpression *)exp).value;
+            if ([assignValue isKindOfClass:[UnaryExpression class]]) {
+                UnaryExpression *unary = (UnaryExpression *)exp;
+                while ([unary isKindOfClass:[UnaryExpression class]] && unary.operatorType == UnaryOperatorPointValue) {
+                    unary = unary.value;
+                }
+                variable = (OCValue *)unary;
+            }else if ([assignValue isKindOfClass:[OCValue class]]){
+                variable = (OCValue *)assignValue;
+            }
+            declare.expression = ((AssignExpression *)exp).expression;
+        }
+    }
+    if ([variable.value isKindOfClass:[NSString class]]) {
+        addVariableSymbol(variable.value);
+    }
+    declare.name = variable.value;
+    return declare;
 }
 
 
@@ -119,16 +143,19 @@ IfStatement *makeIfStatement(id <Expression> judgement, FunctionImp *imp){
 WhileStatement *makeWhileStatement(id <Expression>judgement, FunctionImp *imp){
     WhileStatement *statement = [WhileStatement new];
     statement.funcImp = imp;
+    statement.condition = judgement;
     return statement;
 }
 DoWhileStatement *makeDoWhileStatement(id <Expression>judgement, FunctionImp *imp){
     DoWhileStatement *statement = [DoWhileStatement new];
+    statement.condition = judgement;
     statement.funcImp = imp;
     return statement;
 }
-extern CaseStatement *makeCaseStatement(OCValue *value){
+CaseStatement *makeCaseStatement(OCValue *value){
     CaseStatement *statement = [CaseStatement new];
     statement.value = value;
+    statement.funcImp = [FunctionImp new];
     return statement;
 }
 SwitchStatement *makeSwitchStatement(OCValue *value){

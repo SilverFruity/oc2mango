@@ -48,7 +48,7 @@ typedef enum : NSUInteger {
 
 @interface TypeSpecial : NSObject
 @property (nonatomic, assign) SpecialType type;
-@property (nonatomic, assign) BOOL isPointer;
+@property (nonatomic, assign) NSUInteger ptCount;
 @property (nonatomic, nullable, copy) NSString * name;
 
 + (instancetype)specialWithType:(SpecialType )type name:(NSString *)name;

@@ -14,7 +14,13 @@
     self.statements = [NSMutableArray array];
     return self;
 }
-
+- (void)addStatements:(id)statements{
+    if ([statements isKindOfClass:[NSArray class]]) {
+        [self.statements addObjectsFromArray:statements];
+    }else{
+        [self.statements addObject:statements];
+    }
+}
 @end
 
 

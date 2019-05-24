@@ -32,21 +32,25 @@ BOOL x;
         let result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
         let result2 = convert.convert(ocparser.ast.globalStatements[2] as Any)
         XCTAssert(ocparser.error == nil)
-        XCTAssert(result == "int x")
-        XCTAssert(result1 == "NSObject *x")
-        XCTAssert(result2 == "BOOL x")
+        XCTAssert(result == "int x",result)
+        XCTAssert(result1 == "NSObject *x",result1)
+        XCTAssert(result2 == "BOOL x",result2)
         
     }
     
     func testAssignExpressoin(){
         let source =
 """
-int x = 0;
+int x = 0, b = 0;
 """
         ocparser.parseSource(source)
-        let result = convert.convert(ocparser.ast.globalStatements.firstObject as Any)
-        XCTAssert(ocparser.error == nil)
+        XCTAssert(ocparser.isSuccess())
+        
+        let result = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        let result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+
         XCTAssert(result == "int x = 0",result)
+        XCTAssert(result1 == "int b = 0",result1)
     }
     
     func testConvertMethodCall(){

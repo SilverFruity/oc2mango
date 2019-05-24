@@ -42,6 +42,12 @@
     self.globalStatements = [NSMutableArray array];
     return self;
 }
-
+- (void)addGlobalStatements:(id)objects{
+    if ([objects isKindOfClass:[NSArray class]]) {
+        [self.globalStatements addObjectsFromArray:objects];
+    }else{
+        [self.globalStatements addObject:objects];
+    }
+}
 @end
 

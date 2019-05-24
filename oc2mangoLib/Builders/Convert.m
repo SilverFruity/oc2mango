@@ -41,7 +41,7 @@
     }else if ([exp isKindOfClass:[AssignExpression class]]) {
         return [self convertAssginExp:exp];
     }else if ([exp isKindOfClass:[OCValue class]]){
-        return [self convertOCValue:exp];
+        return [self convertOCValue:(OCValue *)exp];
     }
     return @"";
 }
@@ -97,10 +97,9 @@
         default:
             [result appendString:@"UnknownType"]; break;
     }
-    if (typeSpecial.isPointer) {
-        [result appendString:@" *"];
-    }else{
-        [result appendString:@" "];
+    [result appendString:@" "];
+    for (int i = 0; i < typeSpecial.ptCount; i++) {
+        [result appendString:@"*"];
     }
     return result;
 }
@@ -146,10 +145,11 @@
 
 - (NSString *)convertDeclareExp:(DeclareExpression *)exp{
     if (exp.expression) {
-        return [NSString stringWithFormat:@"%@ = %@",[self convertVariableDeclare:exp.declare],[self convertExpression:exp.expression]];
+        return [NSString stringWithFormat:@"%@%@ = %@",[self convertTypeSpecial:exp.type],exp.name,[self convertExpression:exp.expression]];
     }else{
-        return [NSString stringWithFormat:@"%@",[self convertVariableDeclare:exp.declare]];
+        return [NSString stringWithFormat:@"%@%@",[self convertTypeSpecial:exp.type],exp.name];
     }
+    return @"";
 }
 - (NSString *)convertAssginExp:(AssignExpression *)exp{
     NSString *operator = @"=";
@@ -198,36 +198,31 @@
         case OCValueMethodCall:
             return [self convertOCMethodCall:(OCMethodCall *) value];
         case OCValueFuncCall:{
-            CFuncCall *call = (CFuncCall *)value;
-            return [NSString stringWithFormat:@"%@(%@)",call.name,[self convertExpressionList:call.expressions]];
+            return [self convertFunCall:(CFuncCall *)value];
         }
 
     }
     return @"";
 }
+- (NSString *)convertFunCall:(CFuncCall *)call{
+    return [NSString stringWithFormat:@"%@(%@)",[self convertExpression:call.caller],[self convertExpressionList:call.expressions]];
+}
 - (NSString *)convertOCMethodCall:(OCMethodCall *)call{
-    if ([call.element isKindOfClass:[OCMethodCallGetElement class]]) {
-        return [NSString stringWithFormat:@"%@%@",[self convertExpression:call.caller],[self convertOCMethodGetElement:call.element]];
+    NSMutableString *methodName = [[call.names componentsJoinedByString:@":"] mutableCopy];
+    NSString *sel;
+    if (call.values.count == 0) {
+        if (call.isDot) {
+            sel = [NSString stringWithFormat:@".%@",methodName];
+        }else{
+            sel = [NSString stringWithFormat:@".%@()",methodName];
+        }
     }else{
-        return [NSString stringWithFormat:@"%@%@",[self convertExpression:call.caller],[self convertOCMethodNormalElement:call.element]];
+        sel = [NSString stringWithFormat:@".%@:(%@)",methodName,[self convertExpressionList:call.values]];
     }
+    return [NSString stringWithFormat:@"%@%@",[self convertExpression:call.caller],sel];
 }
-- (NSString *)convertOCMethodGetElement:(OCMethodCallGetElement *)element{
-    if (element.values.count == 0) {
-        return [NSString stringWithFormat:@".%@",element.name];
-    }else{
-        return [NSString stringWithFormat:@".%@(%@)",element.name,[self convertExpressionList:element.values]];
-    }
-    
-}
-- (NSString *)convertOCMethodNormalElement:(OCMethodCallNormalElement *)element{
-    NSMutableString *methodName = [[element.names componentsJoinedByString:@":"] mutableCopy];
-    if (element.values.count > 0)
-        [methodName appendString:@":"];
-    return [NSString stringWithFormat:@".%@(%@)",methodName,[self convertExpressionList:element.values]];;
-}
-
 - (NSString *)convertIfStatement:(IfStatement *)statement{
+    
     return @"";
 }
 - (NSString *)convertWhileStatement:(WhileStatement *)statement{

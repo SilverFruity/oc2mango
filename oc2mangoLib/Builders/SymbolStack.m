@@ -29,6 +29,9 @@
 
 @end
 
+@interface FuncSymbolTable ()
+@property (nonatomic,strong)NSMutableDictionary <NSString *,Symbol *> *symbolTable;
+@end
 @implementation FuncSymbolTable
 - (instancetype)init
 {
@@ -42,6 +45,13 @@
 - (void)addSymbol:(Symbol *)symbol forKey:(NSString *)key{
     self.symbolTable[key] = symbol;
 }
+- (NSString *)description{
+    return [self.symbolTable description];
+}
+@end
+
+@interface FuncSymbolStack()
+@property (nonatomic,strong)NSMutableArray <FuncSymbolTable *> *stack;
 @end
 
 @implementation FuncSymbolStack
@@ -68,5 +78,8 @@
 }
 - (void)pop{
     [self.stack removeLastObject];
+}
+- (FuncSymbolTable *)topTable{
+    return self.stack.lastObject;
 }
 @end

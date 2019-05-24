@@ -6,26 +6,9 @@
 #import "OCValue.h"
 
 
-@implementation OCValue {
-
-}
-@end
-@implementation OCMethodCallNormalElement
-- (instancetype)init {
-    self = [super init];
-    self.names = [NSMutableArray array];
-    self.values = [NSMutableArray array];
-    return self;
-}
-@end
+@implementation OCValue
 
 
-@implementation OCMethodCallGetElement
-- (instancetype)init {
-    self = [super init];
-    self.values = [NSMutableArray array];
-    return self;
-}
 @end
 
 @implementation OCMethodCall

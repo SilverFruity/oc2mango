@@ -39,8 +39,9 @@
 @end
 
 @interface ForStatement : Statement
+@property (nonatomic,strong)NSMutableArray <DeclareExpression *>*declareExpressions;
+@property (nonatomic,strong)id <Expression> condition;
 @property (nonatomic,strong)NSMutableArray <id <Expression>>* expressions;
-
 @end
 
 @interface ForInStatement : Statement

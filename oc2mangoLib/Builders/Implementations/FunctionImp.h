@@ -10,4 +10,5 @@
 #import "Statement.h"
 @interface FunctionImp : NSObject
 @property(nonatomic,strong)NSMutableArray * statements;
+- (void)addStatements:(id)statements;
 @end

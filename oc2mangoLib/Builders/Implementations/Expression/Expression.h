@@ -43,8 +43,9 @@ typedef enum {
 
 
 @interface DeclareExpression: NSObject <Expression>
-@property (nonatomic,strong)VariableDeclare *declare;
-@property (nonatomic,strong)id <ValueExpression> expression;
+@property (nonatomic,strong)TypeSpecial *type;
+@property (nonatomic,copy)NSString *name;
+@property (nonatomic,strong)id <Expression> expression;
 @end
 
 

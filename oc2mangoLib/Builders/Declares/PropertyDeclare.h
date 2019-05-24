@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PropertyDeclare : NSObject
 @property(nonatomic,strong) NSMutableArray *keywords;
 @property(nonatomic,strong) VariableDeclare *var;
-@property(nonatomic,strong) VariableDeclare *privateVar;
 @end
 
 NS_ASSUME_NONNULL_END
