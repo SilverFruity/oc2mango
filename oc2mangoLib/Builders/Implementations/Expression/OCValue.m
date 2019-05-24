@@ -27,3 +27,7 @@
     return self;
 }
 @end
+@implementation OCCollectionGetValue
+
+
+@end

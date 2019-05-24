@@ -19,14 +19,13 @@ class FileTest: XCTestCase {
         ocparser.clear()
     }
 
-    func testExample() {
+    func testFile1() {
         let bundle = Bundle.init(for: FileTest.classForCoder())
         let path = bundle.path(forResource: "TestSource", ofType: "imp")
         let data = try? Data.init(contentsOf:URL.init(fileURLWithPath: path!))
         let source = String.init(data: data ?? Data.init(), encoding: .utf8)
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        print(ocparser.ast.classCache)
     }
 
 

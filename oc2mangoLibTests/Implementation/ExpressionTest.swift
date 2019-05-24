@@ -38,14 +38,11 @@ class ExpressionTest: XCTestCase {
         id <NSObject> a;
         NSObject <NSObject> *a;
         NSMutableArray <NSObject *> *array;
-        int x = 0;
-        int x = [NSObject new];
+        NSString *x = @"123";
         """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        guard ocparser.isSuccess() else {
-            return;
-        }
+
         let assign = ocparser.ast.globalStatements[0] as? DeclareExpression;
         XCTAssert(assign?.type.type == SpecialTypeInt)
         XCTAssert(assign?.name == "a")
@@ -98,6 +95,12 @@ class ExpressionTest: XCTestCase {
         let assign15 = ocparser.ast.globalStatements[15] as? DeclareExpression
         XCTAssert(assign15?.type.type == SpecialTypeObject)
         XCTAssert(assign15?.type.name == "NSMutableArray")
+        
+        let assign16 = ocparser.ast.globalStatements[16] as? DeclareExpression
+        XCTAssert(assign16?.type.type == SpecialTypeObject)
+        let expresssion16 = assign16?.expression as? OCValue
+        XCTAssert(expresssion16?.value_type == OCValueString)
+        XCTAssert(expresssion16?.value as? String == "123")
     }
     
     
@@ -196,6 +199,9 @@ class ExpressionTest: XCTestCase {
         XCTAssert(exp3r?.operatorType == BinaryOperatorLOGIC_AND)
         XCTAssert(exps[3].operatorType == BinaryOperatorEqual)
         XCTAssert(exps[4].operatorType == BinaryOperatorNotEqual)
+        XCTAssert(exps[5].operatorType == BinaryOperatorSub)
+        XCTAssert(exps[6].operatorType == BinaryOperatorMulti)
+        XCTAssert(exps[7].operatorType == BinaryOperatorAdd)
         
     }
     func testTernaryExpression(){

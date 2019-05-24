@@ -84,5 +84,35 @@ self.block(value,[NSObject new].x);
             ""","\n"+result5)
         
     }
+    
+    func testCollectionValue(){
+        let source =
+"""
+@[self.x,[NSObject new]];
+@{@"key":@"value",@"key1":@"value1"};
+a[@"key"];
+b[0];
+"""
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        XCTAssert(result1 == "@[self.x,NSObject.new()]")
+        XCTAssert(result2 ==
+            """
+            @{@"key":@"value",@"key1":@"value1"}
+            """)
+        XCTAssert(result3 ==
+            """
+            a[@"key"]
+            """)
+        XCTAssert(result4 ==
+            """
+            b[0]
+            """)
+        
+    }
 
 }

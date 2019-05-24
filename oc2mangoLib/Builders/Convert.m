@@ -177,8 +177,23 @@
             return [NSString stringWithFormat:@"\"%@\"",value.value];
         case OCValueProtocol:
             return [NSString stringWithFormat:@"@protocol(%@)",value.value];
-        case OCValueDictionary:break;
-        case OCValueArray:break;
+        case OCValueDictionary:
+        {
+            NSMutableArray <NSMutableArray *>*keyValuePairs = value.value;
+            NSMutableArray *pairs = [NSMutableArray array];
+            for (NSMutableArray *keyValue in keyValuePairs) {
+                [pairs addObject:[NSString stringWithFormat:@"%@:%@",[self convertExpression:keyValue[0]],[self convertExpression:keyValue[1]]]];
+            }
+            return [NSString stringWithFormat:@"@{%@}",[pairs componentsJoinedByString:@","]];
+        }
+        case OCValueArray:{
+            NSMutableArray *exps = value.value;
+            NSMutableArray *elements = [NSMutableArray array];
+            for (id <Expression> exp in exps) {
+                [elements addObject:[self convertExpression:exp]];
+            }
+            return [NSString stringWithFormat:@"@[%@]",[elements componentsJoinedByString:@","]];
+        }
         case OCValueNSNumber:
             return [NSString stringWithFormat:@"@(%@)",value.value];
 
@@ -200,7 +215,11 @@
         case OCValueFuncCall:{
             return [self convertFunCall:(CFuncCall *)value];
         }
-
+        case OCValueCollectionGetValue:
+        {
+            OCCollectionGetValue *collection = (OCCollectionGetValue *)value;
+            return [NSString stringWithFormat:@"%@[%@]",[self convertExpression:collection.caller],[self convertExpression:collection.keyExp]];
+        }
     }
     return @"";
 }

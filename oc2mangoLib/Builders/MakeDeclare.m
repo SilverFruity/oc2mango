@@ -43,7 +43,6 @@ FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars){
     for (VariableDeclare *decalre in vars){
         addVariableSymbol(decalre.name);
     }
-    NSLog(@"%@",OCParser.stack.topTable);
     return decl;
 }
 MethodImplementation *makeMethodImplementation(MethodDeclare *declare){
@@ -67,6 +66,9 @@ OCValue *makeValue(OC_VALUE_TYPE type, id value){
             break;
         case OCValueBlock:
             ocvalue = [BlockImp new];
+            break;
+        case OCValueCollectionGetValue:
+            ocvalue = [OCCollectionGetValue new];
             break;
         default:
             ocvalue = [OCValue new];
@@ -205,4 +207,20 @@ void addVariableSymbol(NSString *name){
 void addTypeSymbol(NSString *name){
     TypeSymbol *sym = [TypeSymbol symbolWithName:name];
     [OCParser.stack addSymbolToLast:sym forKey:name];
+}
+
+static NSMutableString *buffer = nil;
+void appendCharacter(char chr){
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        buffer = [NSMutableString string];
+    });
+    [buffer appendFormat:@"%c",chr];
+}
+
+
+NSString * getString(void){
+    NSString *string = [buffer copy];
+    buffer = [NSMutableString string];
+    return string;
 }

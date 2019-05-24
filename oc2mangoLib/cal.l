@@ -276,16 +276,19 @@ BEGIN STRING_LITERAL_STATE;
 
 <STRING_LITERAL_STATE>\" {
     BEGIN  INITIAL;
-    yylval.identifier = (void *)yytext;
+    yylval.identifier = (__bridge_retained void *)getString();
     return STRING_LITERAL;
 }
 
-<STRING_LITERAL_STATE>. ;
+<STRING_LITERAL_STATE>. { appendCharacter(yytext[0]); };
 
 
-<STRING_LITERAL_STATE>\\\";
-<STRING_LITERAL_STATE>\\n;
-<STRING_LITERAL_STATE>\\t;
-<STRING_LITERAL_STATE>\\\\;
-<STRING_LITERAL_STATE>[\x81-\x9f\xe0-\xef][\x40-\x7e\x80-\xfc];
+<STRING_LITERAL_STATE>\\\"  { appendCharacter('\"'); }
+<STRING_LITERAL_STATE>\\n	{ appendCharacter('\n'); }
+<STRING_LITERAL_STATE>\\t	{ appendCharacter('\t'); }
+<STRING_LITERAL_STATE>\\\\	{ appendCharacter('\\'); }
+<STRING_LITERAL_STATE>[\x81-\x9f\xe0-\xef][\x40-\x7e\x80-\xfc] {
+	appendCharacter(yytext[0]);
+	appendCharacter(yytext[1]);
+}
 %%

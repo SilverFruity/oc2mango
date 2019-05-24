@@ -17,8 +17,8 @@ typedef enum {
     OCValueBlock,
     OCValueSelector,
     OCValueProtocol,
-    OCValueDictionary,
-    OCValueArray,
+    OCValueDictionary, // value -> [[exp,exp]..]
+    OCValueArray, // value -> [exp..]
     OCValueNSNumber,
     OCValueString,
     OCValueCString,
@@ -30,7 +30,8 @@ typedef enum {
     OCValuePointValue,
     OCValueVarPoint,
     OCValueMethodCall,
-    OCValueFuncCall
+    OCValueFuncCall,
+    OCValueCollectionGetValue // array[0] , dict[@"key"]
 }OC_VALUE_TYPE;
 
 @interface OCValue: NSObject <ValueExpression>
@@ -58,4 +59,9 @@ typedef enum{
 @interface BlockImp : OCValue
 @property(nonatomic,strong) FuncDeclare *declare;
 @property(nonatomic,strong) FunctionImp *funcImp;
+@end
+
+@interface OCCollectionGetValue: OCValue
+@property (nonatomic, strong)OCValue *caller;
+@property (nonatomic, strong)id <Expression> keyExp;
 @end

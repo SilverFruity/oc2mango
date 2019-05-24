@@ -52,3 +52,7 @@ extern void popFuncSymbolTable(void);
 extern Symbol *lookupSymbol(NSString *name);
 extern void addVariableSymbol(NSString *name);
 extern void addTypeSymbol(NSString *name);
+
+
+extern void appendCharacter(char chr);
+NSString * getString(void);

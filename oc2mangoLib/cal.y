@@ -46,7 +46,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <expression> primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression declare_expression_list
 %type <Operator>  assign_operator 
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
-%type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entry
+%type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys
 %%
 
 compile_util: /*empty*/
@@ -986,14 +986,14 @@ numerical_value_type:
             $$ = _vretained makeValue(OCValueInt,_transfer(id)$1);
         }
     ;
-dict_entry:
-        assign_expression COLON assign_expression
+dict_entrys:
+        expression COLON expression
         {
             NSMutableArray *array = [NSMutableArray array];
             [array addObject:@[_transfer(id)$1,_transfer(id)$3]];
             $$ = _vretained array;
         }
-        |dict_entry COMMA assign_expression COLON assign_expression
+        |dict_entrys COMMA expression COLON expression
         {
             NSMutableArray *array = _transfer(id)$1;
             [array addObject:@[_transfer(id)$3,_transfer(id)$5]];
@@ -1046,7 +1046,7 @@ primary_expression:
         {
             $$ = $2;
         }
-        | AT LC dict_entry RC
+        | AT LC dict_entrys RC
         {
             $$ = _vretained makeValue(OCValueDictionary,_transfer(id)$3);
         }
@@ -1064,7 +1064,7 @@ primary_expression:
         }
         | AT STRING_LITERAL
         {
-            $$ = _vretained makeValue(OCValueString);
+            $$ = _vretained makeValue(OCValueString,_typeId $2);
         }
         | SELECTOR
         {
@@ -1078,10 +1078,13 @@ primary_expression:
         {
             $$ = _vretained makeValue(OCValueCString,_transfer(id)$1);
         }
-        // FIXME: array[0]
-        | LB INTETER_LITERAL RB
-        // FIXME: dict[@"key"]
-        | LB AT STRING_LITERAL RB
+        | primary_expression LB primary_expression RB
+        {
+           OCCollectionGetValue *value = (OCCollectionGetValue *)makeValue(OCValueCollectionGetValue);
+           value.caller = _typeId $1;
+           value.keyExp = _typeId $3;
+            $$ = _vretained value;
+        }
         | block_implementation
         | numerical_value_type
         | _nil
@@ -1094,7 +1097,6 @@ primary_expression:
         }
         ;
 
-// 放在primary_expression之后是为了解决reduce/reduce冲突
 type_specified:
             declare_left_attribute type_specified
             {
@@ -1170,12 +1172,6 @@ type_specified:
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeId);
             }
-            /* 
-            FIXME:  // Bison reduce/reduce : State 24
-                (id <identifier>object) conflict (x < identifier) reason: IDENTIFIER LT ...
-                completion(httpReponse,result,error):
-                completion(^x)(x,y,z) confict CFuncCall | Blockcall reason: IDENTIFIER LP ...
-            */
             | TYPE
             {
                 $$ = _vretained makeTypeSpecial(SpecialTypeObject,(__bridge NSString *)$1);
