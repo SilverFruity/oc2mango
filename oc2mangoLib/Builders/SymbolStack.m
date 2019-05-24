@@ -63,8 +63,8 @@
     return self;
 }
 - (Symbol *)lookup:(NSString *)name{
-    for (unsigned long i = self.stack.count - 1; i <= 0; i--) {
-        FuncSymbolTable *func = self.stack[i];
+    for (NSUInteger i = self.stack.count; i > 0; i--) {
+        FuncSymbolTable *func = self.stack[i - 1];
         if ([func lookup:name]) {
             return [func lookup:name];
         }
