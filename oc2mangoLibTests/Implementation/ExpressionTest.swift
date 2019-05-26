@@ -104,15 +104,10 @@ class ExpressionTest: XCTestCase {
     }
     
     
-    func testCalculateExpression() {
-        
-    }
-    
-    func testJudgmentExpression(){
+    func testBinaryExpression(){
         source =
         """
         x < 1;
-        id <NSObject> a;
         
         a->x;
         a - 1;

@@ -109,7 +109,7 @@ DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Ex
     if (value == nil) {
         if([exp isKindOfClass:[UnaryExpression class]]){
             UnaryExpression *unary = (UnaryExpression *)exp;
-            while ([unary isKindOfClass:[UnaryExpression class]] && unary.operatorType == UnaryOperatorPointValue) {
+            while ([unary isKindOfClass:[UnaryExpression class]] && unary.operatorType == UnaryOperatorAdressValue) {
                 unary = unary.value;
             }
             variable = (OCValue *)unary;
@@ -117,7 +117,7 @@ DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Ex
             id <Expression> assignValue = ((AssignExpression *)exp).value;
             if ([assignValue isKindOfClass:[UnaryExpression class]]) {
                 UnaryExpression *unary = (UnaryExpression *)exp;
-                while ([unary isKindOfClass:[UnaryExpression class]] && unary.operatorType == UnaryOperatorPointValue) {
+                while ([unary isKindOfClass:[UnaryExpression class]] && unary.operatorType == UnaryOperatorAdressValue) {
                     unary = unary.value;
                 }
                 variable = (OCValue *)unary;

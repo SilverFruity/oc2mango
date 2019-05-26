@@ -114,5 +114,155 @@ b[0];
             """)
         
     }
+    
+    func testConvertCalculateExp(){
+        let source =
+"""
+x + 1;
+x + b + 1;
+x++;
+++x;
+!x;
+x == nil ? 1 : 2;
+x?:y;
+"""
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
+        let result6 = convert.convert(ocparser.ast.globalStatements[5] as Any)
+        let result7 = convert.convert(ocparser.ast.globalStatements[6] as Any)
+        XCTAssert(result1 == "x + 1",result1);
+        XCTAssert(result2 == "x + b + 1",result2);
+        XCTAssert(result3 == "x++",result3);
+        XCTAssert(result4 == "++x",result4);
+        XCTAssert(result5 == "!x",result5);
+        XCTAssert(result6 == "x == nil ? 1 : 2",result6);
+        XCTAssert(result7 == "x ?: y",result7);
+    }
+    
+    func testConvertStatement(){
+        let source =
+"""
+if([x isSuccess] == 1){
+
+}else if (!value){
+
+}else{
+
+}
+
+do{
+
+}while(x > 0)
+
+switch(x){
+    case 0:
+        break;
+    case 1:
+        break;
+    default:
+        break;
+}
+for (int x = 0; x < 10; x++){
+
+}
+for (UIView *view in subviews){
+
+}
+"""
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
+        XCTAssert(result1 ==
+        """
+        if(x.isSuccess() == 1){
+        }else if(!value){
+        }else{
+        }
+        """,result1)
+        XCTAssert(result2 ==
+        """
+        do{
+        }while(x > 0)
+        """,result2)
+        XCTAssert(result3 ==
+        """
+        switch(x){
+        case 0:{
+        break;
+        }
+        case 1:{
+        break;
+        }
+        default:{
+        break;
+        }
+        }
+        """,result3)
+        XCTAssert(result4 ==
+        """
+        for (int x = 0; x < 10; x++){
+        }
+        """,result4)
+        XCTAssert(result5 ==
+        """
+        for (UIView *view in subviews){
+        }
+        """,result5)
+    }
+    
+    func testConvertClass(){
+let source =
+"""
+@interface SFHTTPClient: NSObject
+@property (nonatomic,readonly) NSURL *baseUrl;
+@end
+@implementation SFHTTPClient
+- (instancetype)initWithBaseUrl:(NSURL *)baseUrl{
+
+}
+- (NSURLSessionDataTask *)requestWithMethod:(int)method uri:(NSString *)uri parameters:(NSDictionary *)param plugin:(id)plugin completion:(int)completion{
+
+}
+- (NSMutableURLRequest *)createRequestWithMethod:(int)method uri:(NSString *)URLString parameters:(nullable NSDictionary *)param{
+
+}
+- (NSMutableURLRequest *)createEncryptedRequestWithMethod:(int)method uri:(NSString *)URLString parameters:(NSDictionary *)param{
+
+}
+- (NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id)plugin completion:(int)completion{
+
+}
+@end
+"""
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let result1 = convert.convert(ocparser.ast.class(forName: "SFHTTPClient") as Any)
+        XCTAssert(result1 ==
+            """
+            class SFHTTPClient : NSObject{
+            @property (nonatomic,readonly) NSURL *baseUrl;
+            - (instancetype)initWithBaseUrl:(NSURL *)baseUrl{
+            }
+            - (NSURLSessionDataTask *)requestWithMethod:(int)method uri:(NSString *)uri parameters:(NSDictionary *)param plugin:(id)plugin completion:(int)completion{
+            }
+            - (NSMutableURLRequest *)createRequestWithMethod:(int)method uri:(NSString *)URLString parameters:(NSDictionary *)param{
+            }
+            - (NSMutableURLRequest *)createEncryptedRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)URLString parameters:(NSDictionary *)param{
+            }
+            - (NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id)plugin completion:(int)completion{
+            }
+            }
+            """,result1)
+        
+    }
 
 }

@@ -42,11 +42,17 @@
         return [self convertAssginExp:exp];
     }else if ([exp isKindOfClass:[OCValue class]]){
         return [self convertOCValue:(OCValue *)exp];
+    }else if ([exp isKindOfClass:[BinaryExpression class]]){
+        return [self convertBinaryExp:(BinaryExpression *)exp];
+    }else if ([exp isKindOfClass:[UnaryExpression class]]){
+        return [self convertUnaryExp:(UnaryExpression *)exp];
+    }else if ([exp isKindOfClass:[TernaryExpression class]]){
+        return [self convertTernaryExp:(TernaryExpression *)exp];
     }
     return @"";
 }
 - (NSString *)convertStatement:(Statement *)statement{
-    if ([Statement isKindOfClass:[IfStatement class]]) {
+    if ([statement isKindOfClass:[IfStatement class]]) {
         return [self convertIfStatement:(IfStatement *) statement];
     }else if([statement isKindOfClass:[WhileStatement class]]){
         return [self convertWhileStatement:(WhileStatement *) statement];
@@ -58,6 +64,12 @@
         return [self convertForStatement:(ForStatement *) statement];
     } else if ([statement isKindOfClass:[ForInStatement class]]) {
         return [self convertForInStatement:(ForInStatement *) statement];
+    } else if ([statement isKindOfClass:[ReturnStatement class]]) {
+        return [self convertReturnStatement:(ReturnStatement *) statement];
+    } else if ([statement isKindOfClass:[BreakStatement class]]) {
+        return [self convertBreakStatement:(BreakStatement *) statement];
+    } else if ([statement isKindOfClass:[ContinueStatement class]]) {
+        return [self convertContinueStatement:(ContinueStatement *) statement];
     }
     return @"";
 }
@@ -107,20 +119,20 @@
     return [NSString stringWithFormat:@"%@%@",[self convertTypeSpecial:varDecl.type],varDecl.name];;
 }
 - (NSString *)convertPropertyDeclare:(PropertyDeclare *)propertyDecl{
-    return @"";
+    return [NSString stringWithFormat:@"@property(%@)%@;",[propertyDecl.keywords componentsJoinedByString:@","],[self convertVariableDeclare:propertyDecl.var]];
 }
 - (NSString *)convertMethoDeclare:(MethodDeclare *)methodDecl{
     return @"";
 }
 - (NSString *)convertMethodImp:(MethodImplementation *)methodImp{
-    return @"";
+    return [NSString stringWithFormat:@"%@%@",[self convertMethoDeclare:methodImp.declare],[self convertFuncImp:methodImp.imp]];
 }
 - (NSString *)convertFuncDeclare:(FuncDeclare *)funcDecl{
     if (funcDecl.variables.count > 0){
         if ([funcDecl.variables.firstObject isKindOfClass:[VariableDeclare class]]){
-            return [NSString stringWithFormat:@"%@(%@)",[self convertTypeSpecial:funcDecl.returnType],[self convertVariableDeclares:funcDecl.variables]];
+            return [NSString stringWithFormat:@"%@(%@)",[self convertTypeSpecial:funcDecl.returnType],[self convertVariableDeclareList:funcDecl.variables]];
         }else if([funcDecl.variables.firstObject isKindOfClass:[TypeSpecial class]]){
-            return [NSString stringWithFormat:@"%@(%@)",[self convertTypeSpecial:funcDecl.returnType],[self convertTypeSpecails:funcDecl.variables]];
+            return [NSString stringWithFormat:@"%@(%@)",[self convertTypeSpecial:funcDecl.returnType],[self convertTypeSpecailList:funcDecl.variables]];
         }
     } else{
         return [NSString stringWithFormat:@"%@()",[self convertTypeSpecial:funcDecl.returnType]];
@@ -142,7 +154,110 @@
     [content appendString:@"}"];
     return content;
 }
-
+- (NSString *)convertBinaryExp:(BinaryExpression *)exp{
+    NSString *operator = @"";
+    switch (exp.operatorType) {
+        case BinaryOperatorAdd:
+            operator = @"+";
+            break;
+        case BinaryOperatorSub:
+            operator = @"-";
+            break;
+        case BinaryOperatorDiv:
+            operator = @"/";
+            break;
+        case BinaryOperatorMulti:
+            operator = @"*";
+            break;
+        case BinaryOperatorMod:
+            operator = @"%";
+            break;
+        case BinaryOperatorShiftLeft:
+            operator = @"<<";
+            break;
+        case BinaryOperatorShiftRight:
+            operator = @">>";
+            break;
+        case BinaryOperatorAnd:
+            operator = @"&";
+            break;
+        case BinaryOperatorOr:
+            operator = @"|";
+            break;
+        case BinaryOperatorXor:
+            operator = @"^";
+            break;
+        case BinaryOperatorLT:
+            operator = @"<";
+            break;
+        case BinaryOperatorGT:
+            operator = @">";
+            break;
+        case BinaryOperatorLE:
+            operator = @"<=";
+            break;
+        case BinaryOperatorGE:
+            operator = @">=";
+            break;
+        case BinaryOperatorNotEqual:
+            operator = @"!=";
+            break;
+        case BinaryOperatorEqual:
+            operator = @"==";
+            break;
+        case BinaryOperatorLOGIC_AND:
+            operator = @"||";
+            break;
+        case BinaryOperatorLOGIC_OR:
+            operator = @"&&";
+            break;
+    }
+    return [NSString stringWithFormat:@"%@ %@ %@",[self convertExpression:exp.left],operator,[self convertExpression:exp.right]];
+}
+- (NSString *)convertUnaryExp:(UnaryExpression *)exp{
+    NSString *format = @"%@";
+    switch (exp.operatorType) {
+        
+        case UnaryOperatorIncrementSuffix:
+            format = @"%@++";
+            break;
+        case UnaryOperatorDecrementSuffix:
+            format = @"%@--";
+            break;
+        case UnaryOperatorIncrementPrefix:
+            format = @"++%@";
+            break;
+        case UnaryOperatorDecrementPrefix:
+            format = @"--%@";
+            break;
+        case UnaryOperatorNot:
+            format = @"!%@";
+            break;
+        case UnaryOperatorNegative:
+            format = @"-%@";
+            break;
+        case UnaryOperatorBiteNot:
+            format = @"-%@";
+            break;
+        case UnaryOperatorSizeOf:
+            format = @"~%@";
+            break;
+        case UnaryOperatorAdressPoint:
+            format = @"&%@";
+            break;
+        case UnaryOperatorAdressValue:
+            format = @"*%@";
+            break;
+    }
+    return [NSString stringWithFormat:format,[self convertExpression:exp.value]];
+}
+- (NSString *)convertTernaryExp:(TernaryExpression *)exp{
+    if (exp.values.count == 1) {
+        return [NSString stringWithFormat:@"%@ ?: %@",[self convertExpression:exp.expression],[self convertExpression:exp.values.firstObject]];
+    }else{
+        return [NSString stringWithFormat:@"%@ ? %@ : %@",[self convertExpression:exp.expression],[self convertExpression:exp.values.firstObject],[self convertExpression:exp.values.lastObject]];
+    }
+}
 - (NSString *)convertDeclareExp:(DeclareExpression *)exp{
     if (exp.expression) {
         return [NSString stringWithFormat:@"%@%@ = %@",[self convertTypeSpecial:exp.type],exp.name,[self convertExpression:exp.expression]];
@@ -241,8 +356,17 @@
     return [NSString stringWithFormat:@"%@%@",[self convertExpression:call.caller],sel];
 }
 - (NSString *)convertIfStatement:(IfStatement *)statement{
-    
-    return @"";
+    NSString *content = @"";
+    while (statement.last) {
+        if (!statement.condition) {
+           content = [NSString stringWithFormat:@"%@else%@",content,[self convertFuncImp:statement.funcImp]];
+        }else{
+           content = [NSString stringWithFormat:@"else if(%@)%@%@",[self convertExpression:statement.condition],[self convertFuncImp:statement.funcImp],content];
+        }
+        statement = statement.last;
+    }
+    content = [NSString stringWithFormat:@"if(%@)%@%@",[self convertExpression:statement.condition],[self convertFuncImp:statement.funcImp],content];
+    return content;
 }
 - (NSString *)convertWhileStatement:(WhileStatement *)statement{
     NSMutableString *content = [NSMutableString string];
@@ -251,16 +375,41 @@
     return content;
 }
 - (NSString *)convertDoWhileStatement:(DoWhileStatement *)statement{
-    return @"";
+    return [NSString stringWithFormat:@"do%@while(%@)",[self convertFuncImp:statement.funcImp],[self convertExpression:statement.condition]];
 }
 - (NSString *)convertSwitchStatement:(SwitchStatement *)statement{
-    return @"";
+    return [NSString stringWithFormat:@"switch(%@){\n%@}",[self convertExpression:statement.value],[self convertCaseStatements:statement.cases]];
+}
+- (NSString *)convertCaseStatements:(NSArray *)cases{
+    NSMutableString *content = [NSMutableString string];
+    for (CaseStatement *statement in cases) {
+        if (statement.value) {
+            [content appendFormat:@"case %@:%@\n",[self convertExpression:statement.value],[self convertFuncImp:statement.funcImp]];
+        }else{
+            [content appendFormat:@"default:%@\n",[self convertFuncImp:statement.funcImp]];
+        }
+    }
+    return content;
 }
 - (NSString *)convertForStatement:(ForStatement *)statement{
-    return @"";
+    NSMutableString *content = [@"for (" mutableCopy];
+    [content appendFormat:@"%@; ",[self convertExpressionList:statement.declareExpressions]];
+    [content appendFormat:@"%@; ",[self convertExpression:statement.condition]];
+    [content appendFormat:@"%@)",[self convertExpressionList:statement.expressions]];
+    [content appendFormat:@"%@",[self convertFuncImp:statement.funcImp]];
+    return content;
 }
 - (NSString *)convertForInStatement:(ForInStatement *)statement{
-    return @"";
+    return [NSString stringWithFormat:@"for (%@ in %@)%@",[self convertVariableDeclare:statement.declare],[self convertExpression:statement.value],[self convertFuncImp:statement.funcImp]];
+}
+- (NSString *) convertReturnStatement:(ReturnStatement *)statement{
+    return [NSString stringWithFormat:@"return %@;",[self convertExpression:statement.expression]];
+}
+- (NSString *)convertBreakStatement:(BreakStatement *) statement{
+    return @"break;";
+}
+- (NSString *)convertContinueStatement:(ContinueStatement *) statement{
+    return @"continue;";
 }
 - (NSString * )convertExpressionList:(NSArray *)list{    
     NSMutableArray *array = [NSMutableArray array];
@@ -269,18 +418,19 @@
     }
     return [array componentsJoinedByString:@","];
 }
-- (NSString * )convertVariableDeclares:(NSArray *)list{
+- (NSString * )convertVariableDeclareList:(NSArray *)list{
     NSMutableArray *array = [NSMutableArray array];
     for (VariableDeclare * declare in list){
         [array addObject:[self convertVariableDeclare:declare]];
     }
     return [array componentsJoinedByString:@","];
 }
-- (NSString * )convertTypeSpecails:(NSArray *)list{
+- (NSString * )convertTypeSpecailList:(NSArray *)list{
     NSMutableArray *array = [NSMutableArray array];
     for (TypeSpecial * special in list){
         [array addObject:[self convertTypeSpecial:special]];
     }
     return [array componentsJoinedByString:@","];
 }
+
 @end

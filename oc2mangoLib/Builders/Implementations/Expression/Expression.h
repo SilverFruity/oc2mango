@@ -61,7 +61,7 @@ typedef enum {
     UnaryOperatorBiteNot,
     UnaryOperatorSizeOf,
     UnaryOperatorAdressPoint,
-    UnaryOperatorPointValue
+    UnaryOperatorAdressValue
 }UnaryOperatorType;
 
 @interface UnaryExpression: NSObject <ValueExpression>

@@ -536,7 +536,7 @@ expression_statement:
 if_statement:
          IF LP expression RP LC function_implementation RC
          {
-            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(FunctionImp *)$5);
+            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(FunctionImp *)$6);
             $$ = _vretained statement;
          }
         | if_statement _else IF LP expression RP LC function_implementation RC
@@ -924,7 +924,7 @@ unary_expression: primary_expression
     }
     | ASTERISK unary_expression
     {
-        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorPointValue);
+        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorAdressValue);
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
     }
