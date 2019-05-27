@@ -76,7 +76,8 @@ definition:
             {
                 addVariableSymbol(_typeId $2);
                 BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-                imp.declare = makeFuncDeclare(_typeId $2,_typeId $4);
+                imp.declare = makeFuncDeclare(_typeId $1,_typeId $4);
+                imp.declare.name = _typeId $2;
                 imp.funcImp = _typeId $7;
                 [LibAst addGlobalStatements:imp];
             }
@@ -663,6 +664,9 @@ function_implementation:
         
 
 expression_list:
+        {
+            $$ = _vretained [NSMutableArray array];
+        }
         | expression
         {
             NSMutableArray *list = [NSMutableArray array];
@@ -1032,6 +1036,7 @@ primary_expression:
         {
             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
             methodcall.caller =  _transfer(OCValue *)$1;
+            methodcall.isDot = YES;
             methodcall.names = [@[_typeId $3] mutableCopy];
             $$ = _vretained methodcall;
         }

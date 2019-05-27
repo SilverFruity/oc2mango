@@ -25,7 +25,7 @@ class FileTest: XCTestCase {
         let data = try? Data.init(contentsOf:URL.init(fileURLWithPath: path!))
         let source = String.init(data: data ?? Data.init(), encoding: .utf8)
         ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        XCTAssert(ocparser.isSuccess(),ocparser.error!)
     }
 
 

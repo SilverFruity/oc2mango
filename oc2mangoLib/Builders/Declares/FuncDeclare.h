@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FuncDeclare : NSObject
 @property(nonatomic,strong) TypeSpecial *returnType;
+@property(nonatomic,copy) NSString *name;
 @property(nonatomic,strong) NSMutableArray  *variables;
 @end
 

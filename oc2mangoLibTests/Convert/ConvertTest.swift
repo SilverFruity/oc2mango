@@ -63,6 +63,9 @@ self.block(value,[NSObject new].x);
 [self request:^(NSString *name, NSURL *URL){
     [NSObject new];
 }];
+@"123";
+"123";
+@protocol(NSObject);
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -71,6 +74,9 @@ self.block(value,[NSObject new].x);
         let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
         let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
         let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
+        let result6 = convert.convert(ocparser.ast.globalStatements[5] as Any)
+        let result7 = convert.convert(ocparser.ast.globalStatements[6] as Any)
+        let result8 = convert.convert(ocparser.ast.globalStatements[7] as Any)
         
         XCTAssert(result1 == "NSObject.new().x",result1)
         XCTAssert(result2 == "x.get",result2)
@@ -79,9 +85,12 @@ self.block(value,[NSObject new].x);
         XCTAssert(result5 ==
             """
             self.request:(^void (NSString *name,NSURL *URL){
-            NSObject.new();
+                NSObject.new();
             })
             ""","\n"+result5)
+        XCTAssert(result6 == "@\"123\"",result6)
+        XCTAssert(result7 == "\"123\"",result7)
+        XCTAssert(result8 == "@protocol(NSObject)",result8)
         
     }
     
@@ -173,6 +182,9 @@ for (int x = 0; x < 10; x++){
 for (UIView *view in subviews){
 
 }
+while(x != nil){
+}
+return self.x;
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -181,6 +193,7 @@ for (UIView *view in subviews){
         let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
         let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
         let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
+        let result6 = convert.convert(ocparser.ast.globalStatements[5] as Any)
         XCTAssert(result1 ==
         """
         if(x.isSuccess() == 1){
@@ -197,13 +210,13 @@ for (UIView *view in subviews){
         """
         switch(x){
         case 0:{
-        break;
+            break;
         }
         case 1:{
-        break;
+            break;
         }
         default:{
-        break;
+            break;
         }
         }
         """,result3)
@@ -217,6 +230,16 @@ for (UIView *view in subviews){
         for (UIView *view in subviews){
         }
         """,result5)
+        XCTAssert(result6 ==
+        """
+        while(x != nil){
+        }
+        """,result6)
+        let result7 = convert.convert(ocparser.ast.globalStatements[6] as Any)
+        XCTAssert(result7 ==
+        """
+        return self.x;
+        """,result7)
     }
     
     func testConvertClass(){
@@ -248,21 +271,39 @@ let source =
         let result1 = convert.convert(ocparser.ast.class(forName: "SFHTTPClient") as Any)
         XCTAssert(result1 ==
             """
-            class SFHTTPClient : NSObject{
-            @property (nonatomic,readonly) NSURL *baseUrl;
-            - (instancetype)initWithBaseUrl:(NSURL *)baseUrl{
+            class SFHTTPClient:NSObject{
+            @property(nonatomic,readonly)NSURL *baseUrl;
+            -(id )baseUrl:(NSURL *)baseUrl{
             }
-            - (NSURLSessionDataTask *)requestWithMethod:(int)method uri:(NSString *)uri parameters:(NSDictionary *)param plugin:(id)plugin completion:(int)completion{
+            -(NSURLSessionDataTask *)method:(int )method uri:(NSString *)uri param:(NSDictionary *)param plugin:(id )plugin completion:(int )completion{
             }
-            - (NSMutableURLRequest *)createRequestWithMethod:(int)method uri:(NSString *)URLString parameters:(NSDictionary *)param{
+            -(NSMutableURLRequest *)method:(int )method URLString:(NSString *)URLString param:(NSDictionary *)param{
             }
-            - (NSMutableURLRequest *)createEncryptedRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)URLString parameters:(NSDictionary *)param{
+            -(NSMutableURLRequest *)method:(int )method URLString:(NSString *)URLString param:(NSDictionary *)param{
             }
-            - (NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id)plugin completion:(int)completion{
+            -(NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id )plugin completion:(int )completion{
             }
             }
             """,result1)
         
     }
-
+    
+    func testConvertFile(){
+        let bundle = Bundle.init(for: FileTest.classForCoder())
+        let path = bundle.path(forResource: "TestSource", ofType: "imp")
+        let data = try? Data.init(contentsOf:URL.init(fileURLWithPath: path!))
+        let source = String.init(data: data ?? Data.init(), encoding: .utf8)
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        var result = ""
+        for statement in ocparser.ast.globalStatements {
+            result.append(convert.convert(statement)+"\n")
+        }
+        for occlas in ocparser.ast.classCache.allValues{
+            result.append(convert.convert(occlas))
+        }
+        let resultData = try? Data.init(contentsOf:URL.init(fileURLWithPath: bundle.path(forResource: "ConvertOuput", ofType: "txt")!))
+        let resultStr = String.init(data: resultData ?? Data.init(), encoding: .utf8)!
+        XCTAssert(result == resultStr,result)
+    }
 }

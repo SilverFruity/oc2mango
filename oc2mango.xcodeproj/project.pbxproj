@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		606F0207B162A6162D433799 /* OCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* OCValue.m */; };
+		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */; };
 		638C80FC229643B000E79EA8 /* SymbolStack.h in Headers */ = {isa = PBXBuildFile; fileRef = 638C80FA229643B000E79EA8 /* SymbolStack.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -89,6 +90,7 @@
 /* Begin PBXFileReference section */
 		606F0BB1839E29D74A0630F6 /* OCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCValue.m; sourceTree = "<group>"; };
 		606F0D12A0E0AD5D65BAF937 /* OCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCValue.h; sourceTree = "<group>"; };
+		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FuncDeclare.h; sourceTree = "<group>"; };
 		6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FuncDeclare.m; sourceTree = "<group>"; };
 		638C80FA229643B000E79EA8 /* SymbolStack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SymbolStack.h; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 		EE5534D822900DD700A4B32E /* Convert */ = {
 			isa = PBXGroup;
 			children = (
+				6354B701229B894800C0FDED /* ConvertOuput.txt */,
 				EE5534DB22900DFF00A4B32E /* ConvertTest.swift */,
 			);
 			path = Convert;
@@ -454,6 +457,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */,
 				EE1C71F122882F750077A71E /* TestSource.imp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

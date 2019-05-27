@@ -39,16 +39,6 @@ static NSString *queryPramameters(NSDictionary *param){
 
 @interface SFHTTPClient : NSObject
 @property (nonatomic,readonly) NSURL *baseUrl;
-- (instancetype)initWithBaseUrl:(NSURL *)baseUrl;
-
-- (NSURLSessionDataTask *)requestWithMethod:(SFNHTTPMethod)method uri:(NSString *)uri parameters:(NSDictionary *)param plugin:(id <SFPlugin>)plugin completion:(HTTPHandler)completion;
-
-- (NSMutableURLRequest *)createRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)URLString parameters:(nullable NSDictionary *)param;
-
-- (NSMutableURLRequest *)createEncryptedRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)URLString parameters:(NSDictionary *)param;
-
-
-- (NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id <SFPlugin>)plugin completion:(HTTPHandler)completion;
 @end
 
 
