@@ -9,10 +9,16 @@
 #import "MakeDeclare.h"
 
 
-TypeSpecial *makeTypeSpecial(SpecialType type ,NSString *name){
+TypeSpecial *makeTypeSpecial(TypeKind type ,NSString *name){
+    if (name) {
+        Symbol *symbol = lookupSymbol(name);
+        if (symbol.kind == SymbolKindTypeDef) {
+            return symbol.type;
+        }
+    }
     return [TypeSpecial specialWithType:type name:name];
 }
-TypeSpecial *makeTypeSpecial(SpecialType type) __attribute__((overloadable)){
+TypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)){
     return makeTypeSpecial(type, nil);
 }
 
@@ -20,7 +26,12 @@ VariableDeclare *makeVariableDeclare(TypeSpecial *type, NSString *name){
     VariableDeclare *var = [VariableDeclare new];
     var.type = type;
     var.name = name;
+    addVariableSymbol(type, name);
     return var;
+}
+OCClass *makeOCClass(NSString *className){
+    addTypeSymbol(makeTypeSpecial(TypeClass), className);
+    return [OCClass classWithClassName:className];
 }
 
 MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnType){
@@ -32,18 +43,24 @@ MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnType){
     method.returnType = returnType;
     return method;
 }
-
-FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars){
+FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars,NSString *name){
     FuncDeclare *decl = [FuncDeclare new];
     decl.returnType = returnType;
+    decl.name = name;
     if (vars) {
         assert([vars isKindOfClass:[NSMutableArray class]]);
     }
     decl.variables = vars;
     for (VariableDeclare *decalre in vars){
-        addVariableSymbol(decalre.name);
+        addVariableSymbol(decalre.type,decalre.name);
+    }
+    if (name) {
+        addVariableSymbol(makeTypeSpecial(TypeFunction), name);
     }
     return decl;
+}
+FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars) __attribute__((overloadable)){
+    return makeFuncDeclare(returnType, vars, nil);
 }
 MethodImplementation *makeMethodImplementation(MethodDeclare *declare){
     MethodImplementation *imp = [MethodImplementation new];
@@ -128,7 +145,7 @@ DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Ex
         }
     }
     if ([variable.value isKindOfClass:[NSString class]]) {
-        addVariableSymbol(variable.value);
+        addVariableSymbol(type,variable.value);
     }
     declare.name = variable.value;
     return declare;
@@ -196,19 +213,29 @@ void pushFuncSymbolTable(void){
 void popFuncSymbolTable(void){
     [OCParser.stack pop];
 }
+Symbol *addSymbol(TypeSpecial *type,NSString *name,SymbolKind kind){
+    Symbol *sym = [Symbol symbolWithName:name kind:kind];
+    sym.type = type;
+    [OCParser.stack addSymbol:sym forKey:name];
+    return sym;
+}
+
 Symbol *lookupSymbol(NSString *name){
     return [OCParser.stack lookup:name];
 }
-void addVariableSymbol(NSString *name){
-    VariableSymbol *sym = [VariableSymbol symbolWithName:name];
-    [OCParser.stack addSymbolToLast:sym forKey:name];
+void addVariableSymbol(TypeSpecial *type, NSString *name){
+    addSymbol(type, name, SymbolKindVariable);
 }
 
-void addTypeSymbol(NSString *name){
-    TypeSymbol *sym = [TypeSymbol symbolWithName:name];
-    [OCParser.stack addSymbolToLast:sym forKey:name];
+void addTypeSymbol(TypeSpecial *type,NSString *name){
+    addSymbol(type, name, SymbolKindTypeDeclare);
 }
-
+void addTypeDefSymbol(TypeSpecial *type,NSString *name){
+    addSymbol(type, name, SymbolKindTypeDef);
+}
+void addEnumConstantSybol(NSString *name){
+    addSymbol(makeTypeSpecial(TypeInt), name, SymbolKindEnumConstant);
+}
 static NSMutableString *buffer = nil;
 void appendCharacter(char chr){
     static dispatch_once_t onceToken;

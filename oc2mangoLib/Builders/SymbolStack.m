@@ -9,25 +9,17 @@
 #import "SymbolStack.h"
 
 @implementation Symbol
-- (instancetype)initWithName:(NSString *)name{
+- (instancetype)initWithName:(NSString *)name kind:(SymbolKind)kind{
     self = [super init];
     self.name = name;
+    self.kind = kind;
     return self;
 }
-+ (instancetype)symbolWithName:(NSString *)name{
-    return [[[self class] alloc] initWithName:name];
++ (instancetype)symbolWithName:(NSString *)name kind:(SymbolKind)kind{
+    return [[[self class] alloc] initWithName:name kind:kind];
 }
 @end
 
-@implementation TypeSymbol
-
-
-@end
-
-@implementation VariableSymbol
-
-
-@end
 
 @interface FuncSymbolTable ()
 @property (nonatomic,strong)NSMutableDictionary <NSString *,Symbol *> *symbolTable;
@@ -71,7 +63,7 @@
     }
     return nil;
 }
-- (void)addSymbolToLast:(Symbol *)symbol forKey:(NSString *)key{
+- (void)addSymbol:(Symbol *)symbol forKey:(NSString *)key{
     [self.stack.lastObject addSymbol:symbol forKey:key];
 }
 - (void)push:(FuncSymbolTable *)funcSymbol{

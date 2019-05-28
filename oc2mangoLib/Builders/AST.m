@@ -7,7 +7,7 @@
 //
 
 #import "AST.h"
-
+#import "MakeDeclare.h"
 
 @implementation OCClass
 + (instancetype)classWithClassName:(NSString *)className{
@@ -30,7 +30,7 @@
 - (OCClass *)classForName:(NSString *)className{
     OCClass *class = self.classCache[className];
     if (!class) {
-        class = [OCClass classWithClassName:className];
+        class = makeOCClass(className);
         self.classCache[className] = class;
     }
     return class;

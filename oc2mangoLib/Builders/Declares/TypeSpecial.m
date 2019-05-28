@@ -9,7 +9,7 @@
 #import "TypeSpecial.h"
 
 @implementation TypeSpecial
-+ (instancetype)specialWithType:(SpecialType)type name:(NSString *)name{
++ (instancetype)specialWithType:(TypeKind)type name:(NSString *)name{
     TypeSpecial *s = [TypeSpecial new];
     s.type = type;
     s.name = name;

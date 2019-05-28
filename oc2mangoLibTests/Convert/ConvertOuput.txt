@@ -33,7 +33,7 @@ class SFHTTPClient:NSObject{
     NSURL *url = self.baseUrl.URLByAppendingPathComponent:(uri);
     NSMutableURLRequest *request = NSMutableURLRequest.requestWithURL:(url);
     request.timeoutInterval = 15;
-    request.setValue:forHTTPHeaderField:(@"application/json",@"Content-Type");
+    request.setValue:forHTTPHeaderField:(@"application/json",@"Content-OMType");
     request.HTTPMethod = @"POST";
     NSData *originalData = NSJSONSerialization.dataWithJSONObject:options:error:(param,0,nil);
     NSString *jsonStr = NSString.alloc().initWithData:encoding:(originalData,0);

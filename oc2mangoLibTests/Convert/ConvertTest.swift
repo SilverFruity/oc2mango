@@ -302,6 +302,8 @@ let source =
         for occlas in ocparser.ast.classCache.allValues{
             result.append(convert.convert(occlas))
         }
+        print("---------")
+        print(ocparser.stack.topTable())
         let resultData = try? Data.init(contentsOf:URL.init(fileURLWithPath: bundle.path(forResource: "ConvertOuput", ofType: "txt")!))
         let resultStr = String.init(data: resultData ?? Data.init(), encoding: .utf8)!
         XCTAssert(result == resultStr,result)

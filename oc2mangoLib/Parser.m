@@ -49,6 +49,7 @@ void UncaughtExceptionHandler(NSException *exception) {
     [self.lock lock];
     self.ast = [AST new];
     self.error = nil;
+    self.stack = [FuncSymbolStack new];
     [self.lock unlock];
 }
 @end

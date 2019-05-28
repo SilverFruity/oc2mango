@@ -80,37 +80,51 @@
 - (NSString *)convertTypeSpecial:(TypeSpecial *)typeSpecial{
     NSMutableString *result = [NSMutableString string];
     switch (typeSpecial.type){
-        case SpecialTypeUChar:
-        case SpecialTypeUShort:
-        case SpecialTypeUInt:
-        case SpecialTypeULong:
-        case SpecialTypeULongLong:
+        case TypeUChar:
+        case TypeUShort:
+        case TypeUInt:
+        case TypeULong:
+        case TypeULongLong:
             [result appendString:@"uint"]; break;
-        case SpecialTypeChar:
-        case SpecialTypeShort:
-        case SpecialTypeInt:
-        case SpecialTypeLong:
-        case SpecialTypeLongLong:
+        case TypeChar:
+        case TypeShort:
+        case TypeInt:
+        case TypeLong:
+        case TypeLongLong:
             [result appendString:@"int"]; break;
-        case SpecialTypeDouble:
-        case SpecialTypeFloat:
+        case TypeDouble:
+        case TypeFloat:
             [result appendString:@"double"]; break;
-        case SpecialTypeVoid:
+        case TypeVoid:
             [result appendString:@"void"]; break;
-        case SpecialTypeSEL:
+        case TypeSEL:
             [result appendString:@"SEL"]; break;
-        case SpecialTypeClass:
+        case TypeClass:
             [result appendString:@"Class"]; break;
-        case SpecialTypeBOOL:
+        case TypeBOOL:
             [result appendString:@"BOOL"]; break;
-        case SpecialTypeId:
+        case TypeId:
             [result appendString:@"id"]; break;
-        case SpecialTypeObject:
+        case TypeObject:
             [result appendString:typeSpecial.name]; break;
-        case SpecialTypeBlock:
+        case TypeBlock:
             [result appendString:@"Block"]; break;
+        
+        case TypeEnum:
+            [result appendString:@"int"]; break;
+            break;
+        case TypeLongDouble:
+            [result appendString:@"double"]; break;
+            break;
+        case TypeStruct:
+            [result appendString:typeSpecial.name]; break;
+            break;
+        case TypeFunction:
+            [result appendString:typeSpecial.name]; break;
+            break;
         default:
-            [result appendString:@"UnknownType"]; break;
+            [result appendString:@"UnKnownType"];
+            break;
     }
     [result appendString:@" "];
     for (int i = 0; i < typeSpecial.ptCount; i++) {

@@ -44,60 +44,60 @@ class ExpressionTest: XCTestCase {
         XCTAssert(ocparser.isSuccess())
 
         let assign = ocparser.ast.globalStatements[0] as? DeclareExpression;
-        XCTAssert(assign?.type.type == SpecialTypeInt)
+        XCTAssert(assign?.type.type == TypeInt)
         XCTAssert(assign?.name == "a")
         
         let assign1 = ocparser.ast.globalStatements[1] as? DeclareExpression;
-        XCTAssert(assign1?.type.type == SpecialTypeInt)
+        XCTAssert(assign1?.type.type == TypeInt)
 
 
         let assign2 = ocparser.ast.globalStatements[2] as? DeclareExpression;
-        XCTAssert(assign2?.type.type == SpecialTypeUInt)
+        XCTAssert(assign2?.type.type == TypeUInt)
         
         let assign3 = ocparser.ast.globalStatements[3] as? DeclareExpression;
-        XCTAssert(assign3?.type.type == SpecialTypeChar)
+        XCTAssert(assign3?.type.type == TypeChar)
         
         let assign4 = ocparser.ast.globalStatements[4] as? DeclareExpression;
-        XCTAssert(assign4?.type.type == SpecialTypeUChar)
+        XCTAssert(assign4?.type.type == TypeUChar)
         
         let assign5 = ocparser.ast.globalStatements[5] as? DeclareExpression;
-        XCTAssert(assign5?.type.type == SpecialTypeLong)
+        XCTAssert(assign5?.type.type == TypeLong)
         
         let assign6 = ocparser.ast.globalStatements[6] as? DeclareExpression;
-        XCTAssert(assign6?.type.type == SpecialTypeULong)
+        XCTAssert(assign6?.type.type == TypeULong)
         
         let assign7 = ocparser.ast.globalStatements[7] as? DeclareExpression;
-        XCTAssert(assign7?.type.type == SpecialTypeLongLong)
+        XCTAssert(assign7?.type.type == TypeLongLong)
         
         let assign8 = ocparser.ast.globalStatements[8] as? DeclareExpression;
-        XCTAssert(assign8?.type.type == SpecialTypeULongLong)
+        XCTAssert(assign8?.type.type == TypeULongLong)
         
         let assign9 = ocparser.ast.globalStatements[9] as? DeclareExpression;
-        XCTAssert(assign9?.type.type == SpecialTypeLong)
+        XCTAssert(assign9?.type.type == TypeLong)
         
         let assign10 = ocparser.ast.globalStatements[10] as? DeclareExpression;
-        XCTAssert(assign10?.type.type == SpecialTypeULong)
+        XCTAssert(assign10?.type.type == TypeULong)
         
         let assign11 = ocparser.ast.globalStatements[11] as? DeclareExpression;
-        XCTAssert(assign11?.type.type == SpecialTypeUInt)
+        XCTAssert(assign11?.type.type == TypeUInt)
         
         let assign12 = ocparser.ast.globalStatements[12] as? DeclareExpression
-        XCTAssert(assign12?.type.type == SpecialTypeBlock)
+        XCTAssert(assign12?.type.type == TypeBlock)
         XCTAssert(assign12?.name == "block")
         
         let assign13 = ocparser.ast.globalStatements[13] as? DeclareExpression
-        XCTAssert(assign13?.type.type == SpecialTypeId)
+        XCTAssert(assign13?.type.type == TypeId)
         
         let assign14 = ocparser.ast.globalStatements[14] as? DeclareExpression
-        XCTAssert(assign14?.type.type == SpecialTypeObject)
+        XCTAssert(assign14?.type.type == TypeObject)
         XCTAssert(assign14?.type.name == "NSObject")
         
         let assign15 = ocparser.ast.globalStatements[15] as? DeclareExpression
-        XCTAssert(assign15?.type.type == SpecialTypeObject)
+        XCTAssert(assign15?.type.type == TypeObject)
         XCTAssert(assign15?.type.name == "NSMutableArray")
         
         let assign16 = ocparser.ast.globalStatements[16] as? DeclareExpression
-        XCTAssert(assign16?.type.type == SpecialTypeObject)
+        XCTAssert(assign16?.type.type == TypeObject)
         let expresssion16 = assign16?.expression as? OCValue
         XCTAssert(expresssion16?.value_type == OCValueString)
         XCTAssert(expresssion16?.value as? String == "123")

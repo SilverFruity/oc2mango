@@ -13,7 +13,7 @@
     // 替换宏定义 YY_INPUT DriveData->项目名/*/*.yy.c 修改文件输入流
     #undef YY_INPUT
     #define YY_INPUT(buf, result, max_size) (result = string_input(buf, result,max_size))
-    #define TypeReturn(Type) yylval.identifier =(__bridge_retained void *)[NSString stringWithFormat:@"%@",@#Type]; return _##Type;
+    #define TypeReturn(OMType) yylval.identifier =(__bridge_retained void *)[NSString stringWithFormat:@"%@",@#OMType]; return _##OMType;
     #define smaller(a, b) ((a) < (b) ? (a) : (b))
     #define larger(a, b) ((a) > (b) ? (a) : (b))
     char const *st_source_string;
@@ -51,13 +51,12 @@
 <INITIAL>")" { return RP; }
 <INITIAL>"[" { return LB; }
 <INITIAL>"]" { return RB; }
-<INITIAL>"{" { pushFuncSymbolTable(); return LC; }
-<INITIAL>"}" { popFuncSymbolTable(); return RC; }
+<INITIAL>"{" { return LC; }
+<INITIAL>"}" { return RC; }
 <INITIAL>"." { return DOT; }
 <INITIAL>"->" { return POINT; }
 <INITIAL>"@" { return AT; }
-<INITIAL>"#" {return PS; }
-
+<INITIAL>^#.* ;
 <INITIAL>"?" {return QUESTION; }
 <INITIAL>":" { return COLON; }
 
@@ -217,10 +216,12 @@
     }
     Symbol *symbol = lookupSymbol(name);
     if (symbol){
-        if ([symbol isKindOfClass:[TypeSymbol class]])
+        if (symbol.kind == SymbolKindTypeDeclare || symbol.kind == SymbolKindTypeDef){
             return TYPE;
-        else if([symbol isKindOfClass:[VariableSymbol class]])
+        }else if(symbol.kind == SymbolKindVariable){
             return VARIABLE;
+        }
+            
     }
     return IDENTIFIER;
 }

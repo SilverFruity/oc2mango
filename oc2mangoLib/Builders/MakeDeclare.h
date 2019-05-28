@@ -13,14 +13,15 @@
 
 
 
-extern TypeSpecial *makeTypeSpecial(SpecialType type, NSString *name);
-extern TypeSpecial *makeTypeSpecial(SpecialType type) __attribute__((overloadable)) ;
+extern TypeSpecial *makeTypeSpecial(TypeKind type, NSString *name);
+extern TypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)) ;
 
 extern VariableDeclare *makeVariableDeclare(TypeSpecial *type, NSString *name);
-
+extern OCClass *makeOCClass(NSString *className);
 extern MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnType);
 extern MethodImplementation *makeMethodImplementation(MethodDeclare *declare);
-extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars);
+extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars, NSString *name);
+extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars) __attribute__((overloadable));
 extern FunctionImp *makeFuncImp(void);
 
 extern OCValue *makeValue(OC_VALUE_TYPE type, id value);
@@ -50,8 +51,10 @@ extern ContinueStatement *makeContinueStatement(void);
 extern void pushFuncSymbolTable(void);
 extern void popFuncSymbolTable(void);
 extern Symbol *lookupSymbol(NSString *name);
-extern void addVariableSymbol(NSString *name);
-extern void addTypeSymbol(NSString *name);
+extern void addVariableSymbol(TypeSpecial *type,NSString *name);
+extern void addTypeSymbol(TypeSpecial *type,NSString *name);
+extern void addTypeDefSymbol(TypeSpecial *type,NSString *name);
+extern void addEnumConstantSybol(NSString *name);
 
 
 extern void appendCharacter(char chr);

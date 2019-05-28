@@ -7,17 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TypeSpecial.h"
+typedef enum{
+    SymbolKindVariable,
+    SymbolKindTypeDeclare,
+    SymbolKindFunction,
+    SymbolKindTypeDef,
+    SymbolKindEnumConstant
+}SymbolKind;
 
 @interface Symbol:NSObject
 @property (nonatomic,copy)NSString *name;
-+ (instancetype)symbolWithName:(NSString *)name;
-@end
-
-@interface TypeSymbol:Symbol
-@end
-
-@interface VariableSymbol:Symbol
-@property (nonatomic,strong)TypeSymbol *type;
+@property (nonatomic,assign)SymbolKind kind;
+@property (nonatomic,strong)TypeSpecial *type;
++ (instancetype)symbolWithName:(NSString *)name kind:(SymbolKind)kind;
 @end
 
 @interface FuncSymbolTable: NSObject
@@ -27,7 +30,7 @@
 
 @interface FuncSymbolStack : NSObject
 - (Symbol *)lookup:(NSString *)key;
-- (void)addSymbolToLast:(Symbol *)symbol forKey:(NSString *)key;
+- (void)addSymbol:(Symbol *)symbol forKey:(NSString *)key;
 - (void)push:(FuncSymbolTable *)funcSymbol;
 - (void)pop;
 - (FuncSymbolTable *)topTable;

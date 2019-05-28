@@ -32,13 +32,13 @@ class ClassDeclareTest: XCTestCase {
         let methodImp = ocparser.ast.class(forName: "Demo").methods[0] as? MethodImplementation
         XCTAssert(methodImp?.declare.methodNames == ["initWithBaseUrl"])
         XCTAssert(methodImp?.declare.isClassMethod == false)
-        XCTAssert(methodImp?.declare.returnType.type == SpecialTypeId)
+        XCTAssert(methodImp?.declare.returnType.type == TypeId)
         
         let methodImp1 = ocparser.ast.class(forName: "Demo").methods[1] as? MethodImplementation
         XCTAssert(methodImp1?.declare.methodNames == ["method2"])
         XCTAssert(methodImp1?.declare.isClassMethod == false)
-        XCTAssert(methodImp1?.declare.returnType.type == SpecialTypeObject)
-        XCTAssert((methodImp1?.declare.parameterTypes.firstObject as! TypeSpecial).type == SpecialTypeBlock)
+        XCTAssert(methodImp1?.declare.returnType.type == TypeObject)
+        XCTAssert((methodImp1?.declare.parameterTypes.firstObject as! TypeSpecial).type == TypeBlock)
     }
     
     func testCategoryDeclare(){
@@ -61,7 +61,7 @@ class ClassDeclareTest: XCTestCase {
         let prop = occlass.properties.firstObject as! PropertyDeclare
         XCTAssert(ocparser.isSuccess())
         XCTAssert(prop.var.name == "className")
-        XCTAssert(prop.var.type.type == SpecialTypeObject)
+        XCTAssert(prop.var.type.type == TypeObject)
         XCTAssert(prop.keywords == ["nonatomic","atomic"])
     }
 
