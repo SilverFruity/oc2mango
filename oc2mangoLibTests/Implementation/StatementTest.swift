@@ -48,7 +48,7 @@ if (x >= 0 ){
         let ifS = elseif1?.last;
         XCTAssert(ifS?.condition != nil)
         XCTAssert(ifS?.funcImp != nil)
-        XCTAssert(ifS?.funcImp.isKind(of: FunctionImp.classForCoder()) ?? false)
+        XCTAssert(ifS?.funcImp.isKind(of: BlockImp.classForCoder()) ?? false)
         
         
         // if ()

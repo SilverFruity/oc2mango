@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "MethodDeclare.h"
-#import "FunctionImp.h"
+#import "OCValue.h"
 @interface MethodImplementation : NSObject
 @property (nonatomic,strong) MethodDeclare *declare;
-@property (nonatomic,strong) FunctionImp *imp;
+@property (nonatomic,strong) BlockImp *imp;
 @end
 

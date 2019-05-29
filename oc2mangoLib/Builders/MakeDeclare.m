@@ -26,7 +26,6 @@ VariableDeclare *makeVariableDeclare(TypeSpecial *type, NSString *name){
     VariableDeclare *var = [VariableDeclare new];
     var.type = type;
     var.name = name;
-    addVariableSymbol(type, name);
     return var;
 }
 OCClass *makeOCClass(NSString *className){
@@ -67,9 +66,7 @@ MethodImplementation *makeMethodImplementation(MethodDeclare *declare){
     imp.declare = declare;
     return imp;
 }
-FunctionImp *makeFuncImp(){
-    return [FunctionImp new];
-}
+
 
 
 OCValue *makeValue(OC_VALUE_TYPE type, id value){
@@ -153,19 +150,19 @@ DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Ex
 
 
 
-IfStatement *makeIfStatement(id <Expression> judgement, FunctionImp *imp){
+IfStatement *makeIfStatement(id <Expression> judgement, BlockImp *imp){
     IfStatement *statement = [IfStatement new];
     statement.funcImp = imp;
     statement.condition = judgement;
     return statement;
 }
-WhileStatement *makeWhileStatement(id <Expression>judgement, FunctionImp *imp){
+WhileStatement *makeWhileStatement(id <Expression>judgement, BlockImp *imp){
     WhileStatement *statement = [WhileStatement new];
     statement.funcImp = imp;
     statement.condition = judgement;
     return statement;
 }
-DoWhileStatement *makeDoWhileStatement(id <Expression>judgement, FunctionImp *imp){
+DoWhileStatement *makeDoWhileStatement(id <Expression>judgement, BlockImp *imp){
     DoWhileStatement *statement = [DoWhileStatement new];
     statement.condition = judgement;
     statement.funcImp = imp;
@@ -174,7 +171,7 @@ DoWhileStatement *makeDoWhileStatement(id <Expression>judgement, FunctionImp *im
 CaseStatement *makeCaseStatement(OCValue *value){
     CaseStatement *statement = [CaseStatement new];
     statement.value = value;
-    statement.funcImp = [FunctionImp new];
+    statement.funcImp = [BlockImp new];
     return statement;
 }
 SwitchStatement *makeSwitchStatement(OCValue *value){
@@ -182,12 +179,12 @@ SwitchStatement *makeSwitchStatement(OCValue *value){
     statement.value = value;
     return statement;
 }
-ForStatement *makeForStatement(FunctionImp *imp){
+ForStatement *makeForStatement(BlockImp *imp){
     ForStatement *statement = [ForStatement new];
     statement.funcImp = imp;
     return statement;
 }
-ForInStatement *makeForInStatement(FunctionImp *imp){
+ForInStatement *makeForInStatement(BlockImp *imp){
     ForInStatement *statement = [ForInStatement new];
     statement.funcImp = imp;
     return statement;

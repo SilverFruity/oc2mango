@@ -9,10 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "VariableDeclare.h"
 #import "Expression.h"
-@class FunctionImp;
+@class BlockImp;
 
 @interface Statement : NSObject
-@property (nonatomic, strong)FunctionImp *funcImp;
+@property (nonatomic, strong)BlockImp *funcImp;
 @end
 
 
@@ -45,7 +45,7 @@
 @end
 
 @interface ForInStatement : Statement
-@property (nonatomic,strong)VariableDeclare *declare;
+@property (nonatomic,strong)DeclareExpression *expression;
 @property (nonatomic,strong)OCValue *value;
 @end
 

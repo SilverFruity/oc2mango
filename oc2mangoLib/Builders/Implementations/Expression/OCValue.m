@@ -23,8 +23,18 @@
 - (instancetype)init
 {
     self = [super init];
-    self.declare  = [FuncDeclare new];
+    self.statements = [NSMutableArray array];
     return self;
+}
+- (void)addStatements:(id)statements{
+    if ([statements isKindOfClass:[NSArray class]]) {
+        [self.statements addObjectsFromArray:statements];
+    }else{
+        [self.statements addObject:statements];
+    }
+}
+- (void)copyFromImp:(BlockImp *)imp{
+    self.statements = imp.statements;
 }
 @end
 @implementation OCCollectionGetValue

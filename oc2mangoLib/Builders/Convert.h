@@ -21,7 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)convertMethoDeclare:(MethodDeclare *)methodDecl;
 - (NSString *)convertMethodImp:(MethodImplementation *)methodImp;
 - (NSString *)convertFuncDeclare:(FuncDeclare *)funcDecl;
-- (NSString *)convertFuncImp:(FunctionImp *)imp;
 
 - (NSString *)convertAssginExp:(AssignExpression *)exp;
 - (NSString *)convertOCValue:(OCValue *)value;

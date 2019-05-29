@@ -58,7 +58,9 @@ typedef enum{
 
 @interface BlockImp : OCValue
 @property(nonatomic,strong) FuncDeclare *declare;
-@property(nonatomic,strong) FunctionImp *funcImp;
+@property(nonatomic,strong) NSMutableArray * statements;
+- (void)addStatements:(id)statements;
+- (void)copyFromImp:(BlockImp *)imp;
 @end
 
 @interface OCCollectionGetValue: OCValue

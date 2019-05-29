@@ -22,7 +22,6 @@ extern MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnT
 extern MethodImplementation *makeMethodImplementation(MethodDeclare *declare);
 extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars, NSString *name);
 extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars) __attribute__((overloadable));
-extern FunctionImp *makeFuncImp(void);
 
 extern OCValue *makeValue(OC_VALUE_TYPE type, id value);
 extern OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
@@ -34,13 +33,13 @@ extern AssignExpression *makeAssignExpression(AssignOperatorType type);
 extern DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Expression> exp);
 
 
-extern IfStatement *makeIfStatement(id <Expression>judgement, FunctionImp *imp);
-extern WhileStatement *makeWhileStatement(id <Expression>judgement, FunctionImp *imp);
-extern DoWhileStatement *makeDoWhileStatement(id <Expression>judgement, FunctionImp *imp);
+extern IfStatement *makeIfStatement(id <Expression>judgement, BlockImp *imp);
+extern WhileStatement *makeWhileStatement(id <Expression>judgement, BlockImp *imp);
+extern DoWhileStatement *makeDoWhileStatement(id <Expression>judgement, BlockImp *imp);
 extern CaseStatement *makeCaseStatement(OCValue *value);
 extern SwitchStatement *makeSwitchStatement(OCValue *value);
-extern ForStatement *makeForStatement(FunctionImp *imp);
-extern ForInStatement *makeForInStatement(FunctionImp *imp);
+extern ForStatement *makeForStatement(BlockImp *imp);
+extern ForInStatement *makeForInStatement(BlockImp *imp);
 
 extern ReturnStatement *makeReturnStatement(id <ValueExpression> expression);
 extern BreakStatement *makeBreakStatement(void);

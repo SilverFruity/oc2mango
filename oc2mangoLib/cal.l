@@ -51,8 +51,8 @@
 <INITIAL>")" { return RP; }
 <INITIAL>"[" { return LB; }
 <INITIAL>"]" { return RB; }
-<INITIAL>"{" { return LC; }
-<INITIAL>"}" { return RC; }
+<INITIAL>"{" { pushFuncSymbolTable(); return LC; }
+<INITIAL>"}" { popFuncSymbolTable(); return RC; }
 <INITIAL>"." { return DOT; }
 <INITIAL>"->" { return POINT; }
 <INITIAL>"@" { return AT; }

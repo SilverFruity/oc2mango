@@ -43,7 +43,6 @@
 		EED67A9F2270B0CA0015AC02 /* MethodImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F0F226CBD28008712C2 /* MethodImplementation.m */; };
 		EED67AA02270B0CA0015AC02 /* Statement.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC886226E0DAC003AD212 /* Statement.m */; };
 		EED67AA12270B0CA0015AC02 /* Expression.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC889226E0FBA003AD212 /* Expression.m */; };
-		EED67AA22270B0CA0015AC02 /* FunctionImp.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC883226DFECA003AD212 /* FunctionImp.m */; };
 		EED67AA62270B1170015AC02 /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EED67AAA2270B1C70015AC02 /* Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67AA82270B1C70015AC02 /* Parser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AAB2270B1C70015AC02 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
@@ -54,7 +53,6 @@
 		EED67AB22270B51B0015AC02 /* MethodImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F0E226CBD28008712C2 /* MethodImplementation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AB32270B51B0015AC02 /* Statement.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5CC885226E0DAC003AD212 /* Statement.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AB42270B51B0015AC02 /* Expression.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5CC888226E0FBA003AD212 /* Expression.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EED67AB52270B51B0015AC02 /* FunctionImp.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5CC882226DFECA003AD212 /* FunctionImp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67ABC2270B5A30015AC02 /* StatementTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED67ABB2270B5A30015AC02 /* StatementTest.swift */; };
 /* End PBXBuildFile section */
 
@@ -104,8 +102,6 @@
 		EE5534D12290053800A4B32E /* Convert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		EE5534D22290053800A4B32E /* Convert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert.m; sourceTree = "<group>"; };
 		EE5534DB22900DFF00A4B32E /* ConvertTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertTest.swift; sourceTree = "<group>"; };
-		EE5CC882226DFECA003AD212 /* FunctionImp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FunctionImp.h; sourceTree = "<group>"; };
-		EE5CC883226DFECA003AD212 /* FunctionImp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FunctionImp.m; sourceTree = "<group>"; };
 		EE5CC885226E0DAC003AD212 /* Statement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Statement.h; sourceTree = "<group>"; };
 		EE5CC886226E0DAC003AD212 /* Statement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Statement.m; sourceTree = "<group>"; };
 		EE5CC888226E0FBA003AD212 /* Expression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Expression.h; sourceTree = "<group>"; };
@@ -275,8 +271,6 @@
 			children = (
 				EE982F0E226CBD28008712C2 /* MethodImplementation.h */,
 				EE982F0F226CBD28008712C2 /* MethodImplementation.m */,
-				EE5CC882226DFECA003AD212 /* FunctionImp.h */,
-				EE5CC883226DFECA003AD212 /* FunctionImp.m */,
 				EE5CC885226E0DAC003AD212 /* Statement.h */,
 				EE5CC886226E0DAC003AD212 /* Statement.m */,
 				EE12779122807CE40065B1E4 /* Expression */,
@@ -330,7 +324,6 @@
 			files = (
 				EED67AB22270B51B0015AC02 /* MethodImplementation.h in Headers */,
 				EED67AAF2270B51B0015AC02 /* VariableDeclare.h in Headers */,
-				EED67AB52270B51B0015AC02 /* FunctionImp.h in Headers */,
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
@@ -518,7 +511,6 @@
 				EED67A912270AE2B0015AC02 /* cal.l in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
 				EED67A922270AE2B0015AC02 /* cal.y in Sources */,
-				EED67AA22270B0CA0015AC02 /* FunctionImp.m in Sources */,
 				EED67AA02270B0CA0015AC02 /* Statement.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -152,7 +152,7 @@
     return [NSString stringWithFormat:@"%@(%@)%@",methodDecl.isClassMethod?@"+":@"-",[self convertTypeSpecial:methodDecl.returnType],methodName];
 }
 - (NSString *)convertMethodImp:(MethodImplementation *)methodImp{
-    return [NSString stringWithFormat:@"\n%@%@",[self convertMethoDeclare:methodImp.declare],[self convertFuncImp:methodImp.imp]];
+    return [NSString stringWithFormat:@"\n%@%@",[self convertMethoDeclare:methodImp.declare],[self convertBlockImp:methodImp.imp]];
 }
 - (NSString *)convertFuncDeclare:(FuncDeclare *)funcDecl{
     if (funcDecl.variables.count > 0){
@@ -173,8 +173,17 @@
 }
 
 int indentationCont = 0;
-- (NSString *)convertFuncImp:(FunctionImp *)imp{
+- (NSString *)convertBlockImp:(BlockImp *)imp{
     NSMutableString *content = [NSMutableString string];
+    if (imp.declare) {
+        if (imp.declare.name) {
+            // void x(int y){ }
+            [content appendFormat:@"%@", [self convertFuncDeclare:imp.declare]];
+        }else{
+            // ^void (int x){ }
+            [content appendFormat:@"^%@", [self convertFuncDeclare:imp.declare]];
+        }
+    }
     indentationCont++;
     [content appendString:@"{\n"];
     NSMutableString *tabs = [@"" mutableCopy];
@@ -351,13 +360,7 @@ int indentationCont = 0;
 
         case OCValueBlock:
         {
-            BlockImp *imp = (BlockImp *)value;
-            if (imp.declare.name) {
-               return [NSString stringWithFormat:@"%@%@", [self convertFuncDeclare:imp.declare],[self convertFuncImp:imp.funcImp]];
-            }else{
-                return [NSString stringWithFormat:@"^%@%@", [self convertFuncDeclare:imp.declare],[self convertFuncImp:imp.funcImp]];
-            }
-            
+            return [self convertBlockImp:value];
         }
         case OCValueNil:
             return @"nil";
@@ -401,23 +404,23 @@ int indentationCont = 0;
     NSString *content = @"";
     while (statement.last) {
         if (!statement.condition) {
-           content = [NSString stringWithFormat:@"%@else%@",content,[self convertFuncImp:statement.funcImp]];
+           content = [NSString stringWithFormat:@"%@else%@",content,[self convertBlockImp:statement.funcImp]];
         }else{
-           content = [NSString stringWithFormat:@"else if(%@)%@%@",[self convertExpression:statement.condition],[self convertFuncImp:statement.funcImp],content];
+           content = [NSString stringWithFormat:@"else if(%@)%@%@",[self convertExpression:statement.condition],[self convertBlockImp:statement.funcImp],content];
         }
         statement = statement.last;
     }
-    content = [NSString stringWithFormat:@"if(%@)%@%@",[self convertExpression:statement.condition],[self convertFuncImp:statement.funcImp],content];
+    content = [NSString stringWithFormat:@"if(%@)%@%@",[self convertExpression:statement.condition],[self convertBlockImp:statement.funcImp],content];
     return content;
 }
 - (NSString *)convertWhileStatement:(WhileStatement *)statement{
     NSMutableString *content = [NSMutableString string];
     [content appendFormat:@"while(%@)",[self convertExpression:statement.condition]];
-    [content appendString:[self convertFuncImp:statement.funcImp]];
+    [content appendString:[self convertBlockImp:statement.funcImp]];
     return content;
 }
 - (NSString *)convertDoWhileStatement:(DoWhileStatement *)statement{
-    return [NSString stringWithFormat:@"do%@while(%@)",[self convertFuncImp:statement.funcImp],[self convertExpression:statement.condition]];
+    return [NSString stringWithFormat:@"do%@while(%@)",[self convertBlockImp:statement.funcImp],[self convertExpression:statement.condition]];
 }
 - (NSString *)convertSwitchStatement:(SwitchStatement *)statement{
     return [NSString stringWithFormat:@"switch(%@){\n%@}",[self convertExpression:statement.value],[self convertCaseStatements:statement.cases]];
@@ -426,9 +429,9 @@ int indentationCont = 0;
     NSMutableString *content = [NSMutableString string];
     for (CaseStatement *statement in cases) {
         if (statement.value) {
-            [content appendFormat:@"case %@:%@\n",[self convertExpression:statement.value],[self convertFuncImp:statement.funcImp]];
+            [content appendFormat:@"case %@:%@\n",[self convertExpression:statement.value],[self convertBlockImp:statement.funcImp]];
         }else{
-            [content appendFormat:@"default:%@\n",[self convertFuncImp:statement.funcImp]];
+            [content appendFormat:@"default:%@\n",[self convertBlockImp:statement.funcImp]];
         }
     }
     return content;
@@ -438,11 +441,11 @@ int indentationCont = 0;
     [content appendFormat:@"%@; ",[self convertExpressionList:statement.declareExpressions]];
     [content appendFormat:@"%@; ",[self convertExpression:statement.condition]];
     [content appendFormat:@"%@)",[self convertExpressionList:statement.expressions]];
-    [content appendFormat:@"%@",[self convertFuncImp:statement.funcImp]];
+    [content appendFormat:@"%@",[self convertBlockImp:statement.funcImp]];
     return content;
 }
 - (NSString *)convertForInStatement:(ForInStatement *)statement{
-    return [NSString stringWithFormat:@"for (%@ in %@)%@",[self convertVariableDeclare:statement.declare],[self convertExpression:statement.value],[self convertFuncImp:statement.funcImp]];
+    return [NSString stringWithFormat:@"for (%@ in %@)%@",[self convertDeclareExp:statement.expression],[self convertExpression:statement.value],[self convertBlockImp:statement.funcImp]];
 }
 - (NSString *)convertReturnStatement:(ReturnStatement *)statement{
     return [NSString stringWithFormat:@"return %@;",[self convertExpression:statement.expression]];

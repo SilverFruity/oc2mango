@@ -36,14 +36,13 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %token <identifier>  _Class _id _void _BOOL _SEL _CHAR _SHORT _INT _LONG _LLONG  _UCHAR _USHORT _UINT _ULONG  _ULLONG _DOUBLE _FLOAT _instancetype
 %token <identifier> INTETER_LITERAL DOUBLE_LITERAL SELECTOR 
 %type  <identifier> class_property_type declare_left_attribute declare_right_attribute
-%type  <identifier> whole_identifier
-%type  <include> global_define  struct_declare enum_declare enum_identifier_list typedef_declare
+%type  <identifier> whole_identifier TYPE_IDENTIFER
+%type  <identifier> global_define  struct_declare enum_declare enum_identifier_list typedef_declare
 %type  <declare>  protocol_declare class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare
-%type  <declare>  declare_variable func_declare_parameters 
-%type  <expression>  type_specified block_parametere_type  objc_method_call 
-%type  <implementation> class_implementation  TYPE_IDENTIFER
-%type  <expression> primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression declare_expression_list
+%type  <declare>  type_specified declare_variable func_declare_parameter func_declare_parameter_list
+%type  <implementation> class_implementation
+%type  <expression> objc_method_call primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression declare_expression_list
 %type <Operator>  assign_operator 
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
 %type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys
@@ -68,16 +67,6 @@ definition:
             {
                 [LibAst addGlobalStatements:_typeId $1];
             }
-            | type_specified IDENTIFIER LP func_declare_parameters RP SEMICOLON
-            | type_specified IDENTIFIER LP func_declare_parameters RP  LC function_implementation RC
-            {
-                NSString *name = _typeId $2;
-                addVariableSymbol(makeTypeSpecial(TypeFunction), name);
-                BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-                imp.declare = makeFuncDeclare(_typeId $1,_typeId $4,name);
-                imp.funcImp = _typeId $7;
-                [LibAst addGlobalStatements:imp];
-            }
 	    ;
 global_define:
             struct_declare
@@ -85,6 +74,16 @@ global_define:
           | typedef_declare
           | CLASS_DECLARE IDENTIFIER
           | CLASS_DECLARE TYPE
+          | type_specified IDENTIFIER LP func_declare_parameter_list RP SEMICOLON
+          | type_specified IDENTIFIER LP func_declare_parameter_list RP LC function_implementation RC
+          {
+              NSString *name = _typeId $2;
+              addVariableSymbol(makeTypeSpecial(TypeFunction), name);
+              BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+              imp.declare = makeFuncDeclare(_typeId $1,_typeId $4,name);
+              [imp copyFromImp:_typeId $7];
+              [LibAst addGlobalStatements:imp];
+          }
           ;
 
 struct_declare:
@@ -123,7 +122,7 @@ enum_identifier_list:
 
             
 typedef_declare:
-            TYPEDEF type_specified LP POWER IDENTIFIER RP LP func_declare_parameters RP SEMICOLON
+            TYPEDEF type_specified LP POWER IDENTIFIER RP LP func_declare_parameter_list RP SEMICOLON
             {
                 addTypeDefSymbol(makeTypeSpecial(TypeBlock),_typeId $5);
             }
@@ -230,7 +229,7 @@ class_implementation:
             | class_implementation method_declare LC function_implementation RC
             {
                 MethodImplementation *imp = makeMethodImplementation(_transfer(MethodDeclare *) $2);
-                imp.imp = _transfer(FunctionImp *) $4;
+                imp.imp = _transfer(BlockImp *) $4;
                 OCClass *occlass = _transfer(OCClass *) $1;
                 [occlass.methods addObject:imp];
                 $$ = _vretained occlass;
@@ -311,7 +310,7 @@ declare_variable:
             {
                 $$ = _vretained makeVariableDeclare((__bridge TypeSpecial *)$1,(__bridge NSString *)$2);
             }
-            | type_specified LP POWER whole_identifier RP LP func_declare_parameters RP
+            | type_specified LP POWER whole_identifier RP LP func_declare_parameter_list RP
             {
                 $$ = _vretained makeVariableDeclare(makeTypeSpecial(TypeBlock),(__bridge NSString *)$4);
             }
@@ -335,21 +334,21 @@ declare_right_attribute:
             | CONST
             ;
 
-block_parametere_type: 
+func_declare_parameter: 
             declare_variable
             | type_specified
             ;
-func_declare_parameters: /* empty */
+func_declare_parameter_list: /* empty */
             {
                 $$ = _vretained [NSMutableArray array];
             }
-            | block_parametere_type
+            | func_declare_parameter
             {
                 NSMutableArray *array = [NSMutableArray array];
                 [array addObject:_transfer(id)$1];
                 $$ = _vretained array;
             }
-            | func_declare_parameters COMMA block_parametere_type 
+            | func_declare_parameter_list COMMA func_declare_parameter 
             {
                 NSMutableArray *array = _transfer(NSMutableArray *)$1;
                 [array addObject:_transfer(id) $3];
@@ -441,16 +440,16 @@ block_implementation:
         POWER type_specified LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-            imp.funcImp = _transfer(id)$4;
             imp.declare = makeFuncDeclare(_transfer(id)$2,nil);
+            [imp copyFromImp:_typeId $4];
             $$ = _vretained imp; 
         }
         //^returnType(int x, int y, int z){  }
-        | POWER type_specified LP func_declare_parameters RP LC function_implementation RC
+        | POWER type_specified LP func_declare_parameter_list RP LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
             imp.declare = makeFuncDeclare(_transfer(id)$2,_typeId $4);
-            imp.funcImp = _transfer(id)$7;
+            [imp copyFromImp:_typeId $7];
             $$ = _vretained imp; 
         }
         //^{   }
@@ -458,15 +457,15 @@ block_implementation:
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
             imp.declare = makeFuncDeclare(makeTypeSpecial(TypeVoid),nil);
-            imp.funcImp = _transfer(id)$3;
+            [imp copyFromImp:_typeId $3];
             $$ = _vretained imp; 
         }
         //^(int x, int y){    }
-        | POWER LP func_declare_parameters RP LC function_implementation RC
+        | POWER LP func_declare_parameter_list RP LC function_implementation RC
         {
             BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
             imp.declare = makeFuncDeclare(makeTypeSpecial(TypeVoid),_typeId $3);
-            imp.funcImp = _transfer(id)$6;
+            [imp copyFromImp:_typeId $6];
             $$ = _vretained imp; 
         }
         ;
@@ -496,13 +495,13 @@ declare_expression_list:
             [array addObject:exp];
             $$ = _vretained array;
         }
-        | type_specified LP POWER whole_identifier RP LP func_declare_parameters RP
+        | type_specified LP POWER whole_identifier RP LP func_declare_parameter_list RP
         {
             OCValue *value = makeValue(OCValueVariable,_typeId $4);
             DeclareExpression *exp = makeDeclareExpression(makeTypeSpecial(TypeBlock),value,nil);
             $$ = _vretained [@[exp] mutableCopy];
         }
-        | type_specified LP POWER whole_identifier RP LP func_declare_parameters RP ASSIGN ternary_expression
+        | type_specified LP POWER whole_identifier RP LP func_declare_parameter_list RP ASSIGN ternary_expression
         {
             OCValue *value = makeValue(OCValueVariable,_typeId $4);
             DeclareExpression *exp = makeDeclareExpression(makeTypeSpecial(TypeBlock),value,_typeId $10);
@@ -538,20 +537,20 @@ expression_statement:
 if_statement:
          IF LP expression RP LC function_implementation RC
          {
-            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(FunctionImp *)$6);
+            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(BlockImp *)$6);
             $$ = _vretained statement;
          }
         | if_statement _else IF LP expression RP LC function_implementation RC
         {
             IfStatement *statement = _transfer(IfStatement *)$1;
-            IfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(FunctionImp *)$8);
+            IfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(BlockImp *)$8);
             elseIfStatement.last = statement;
             $$  = _vretained elseIfStatement;
         }
         | if_statement _else LC function_implementation RC
         {
             IfStatement *statement = _transfer(IfStatement *)$1;
-            IfStatement *elseStatement = makeIfStatement(nil,_transfer(FunctionImp *)$4);
+            IfStatement *elseStatement = makeIfStatement(nil,_transfer(BlockImp *)$4);
             elseStatement.last = statement;
             $$  = _vretained elseStatement;
         }
@@ -560,14 +559,14 @@ if_statement:
 dowhile_statement: 
         _do LC function_implementation RC _while LP expression RP
         {
-            DoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(FunctionImp *)$3);
+            DoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(BlockImp *)$3);
             $$ = _vretained statement;
         }
         ;
 while_statement:
         _while LP expression RP LC function_implementation RC
         {
-            WhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(FunctionImp *)$6);
+            WhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(BlockImp *)$6);
             $$ = _vretained statement;
         }
         ;
@@ -592,7 +591,7 @@ case_statement:
         | case_statement LC function_implementation RC
         {
             CaseStatement *statement =  _transfer(CaseStatement *)$1;
-            statement.funcImp = _transfer(FunctionImp *) $3;
+            statement.funcImp = _transfer(BlockImp *) $3;
             $$ = _vretained statement;
         }
         ;
@@ -617,7 +616,7 @@ switch_statement:
         ;
 for_statement: _for LP declare_expression_list SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
         {
-            ForStatement* statement = makeForStatement(_transfer(FunctionImp *) $10);
+            ForStatement* statement = makeForStatement(_transfer(BlockImp *) $10);
             statement.declareExpressions = _typeId $3;
             statement.condition = _typeId $5;
             statement.expressions = _typeId $7;
@@ -625,10 +624,11 @@ for_statement: _for LP declare_expression_list SEMICOLON expression SEMICOLON ex
         }
         ;
 
-forin_statement: _for LP declare_variable _in expression RP LC function_implementation RC
+forin_statement: _for LP declare_expression_list _in expression RP LC function_implementation RC
         {
-            ForInStatement * statement = makeForInStatement(_transfer(FunctionImp *)$8);
-            statement.declare = _transfer(id) $3;
+            ForInStatement * statement = makeForInStatement(_transfer(BlockImp *)$8);
+            NSArray *exps = _typeId $3;
+            statement.expression = exps[0];
             statement.value = _transfer(id)$5;
             $$ = _vretained statement;
         }
@@ -647,18 +647,18 @@ control_statement:
 
 function_implementation:
         {
-            $$ = _vretained makeFuncImp();
+            $$ = _vretained makeValue(OCValueBlock);
         }
         | function_implementation expression_statement 
         {
-            FunctionImp *imp = _transfer(FunctionImp *)$1;
+            BlockImp *imp = _transfer(BlockImp *)$1;
             [imp addStatements:_transfer(id) $2];
             $$ = _vretained imp;
         }
         | function_implementation control_statement
         {
-            FunctionImp *imp = _transfer(FunctionImp *)$1;
-            [imp.statements addObject:_transfer(id) $2];
+            BlockImp *imp = _transfer(BlockImp *)$1;
+            [imp addStatements:_transfer(id) $2];
             $$ = _vretained imp;
         }
         ;
@@ -1187,7 +1187,7 @@ type_specified:
                 $$ = _vretained makeTypeSpecial(TypeId);
             }
             // void (^)(int a, int b)
-            | type_specified LP POWER RP LP func_declare_parameters RP
+            | type_specified LP POWER RP LP func_declare_parameter_list RP
             {
                 $$ = _vretained makeTypeSpecial(TypeBlock);
             }
@@ -1204,6 +1204,7 @@ type_specified:
 void yyerror(const char *s){
     extern unsigned long yylineno , yycolumn , yylen;
     extern char const *st_source_string;
+    extern char *yytext;
     NSArray *lines = [[NSString stringWithUTF8String:st_source_string] componentsSeparatedByString:@"\n"];
     if(lines.count < yylineno) return;
     NSString *line = lines[yylineno - 1];
