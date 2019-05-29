@@ -35,6 +35,7 @@ void UncaughtExceptionHandler(NSException *exception) {
     return self.source && self.error == nil;
 }
 - (void)parseSource:(NSString *)source{
+    self.error = nil;
     extern void yy_set_source_string(char const *source);
     extern void yyrestart (FILE * input_file );
     extern int yyparse(void);

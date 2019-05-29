@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/jiang/Desktop/oc2mango/TestFile.m"
+            argument = "$SRCROOT/$PROJECT_NAME/TestFiles"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

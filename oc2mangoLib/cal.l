@@ -7,6 +7,7 @@
     #import "Log.h"
     unsigned long yycolumn = 1;
     unsigned long yylen = 0;
+    char linebuf[500];
     #define YY_USER_ACTION yycolumn += yyleng; yylen = yyleng;
 
     // 自定义输入源
@@ -19,13 +20,11 @@
     char const *st_source_string;
     static unsigned long st_current_char_index;
     static unsigned long st_source_len;
-    unsigned long lex_read_column = 1;
     void yy_set_source_string(char const *source)
     {
         st_source_string = source;
         st_current_char_index = 0;
         st_source_len = strlen(source);
-        lex_read_column = 1;
     }
     static int string_input(char *buf, int need_len,int max_size)
     {
@@ -41,9 +40,11 @@
 
 %}
 
-%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE
+%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY
 %%
-
+<INITIAL>"#" { BEGIN POUNDKEY; }
+<POUNDKEY>.* ;
+<POUNDKEY>\n { BEGIN INITIAL; }
 
 <INITIAL>"," { return COMMA ;}
 <INITIAL>";" { return SEMICOLON; }
@@ -56,7 +57,6 @@
 <INITIAL>"." { return DOT; }
 <INITIAL>"->" { return POINT; }
 <INITIAL>"@" { return AT; }
-<INITIAL>^#.* ;
 <INITIAL>"?" {return QUESTION; }
 <INITIAL>":" { return COLON; }
 
@@ -95,15 +95,6 @@
 <INITIAL>"++" { return INCREMENT; }
 <INITIAL>"--" { return DECREMENT; }
 
-
-<INITIAL>"if" { return IF; }
-<INITIAL>"endif" { return ENDIF; }
-<INITIAL>"ifdef" { return IFDEF; }
-<INITIAL>"ifndef" { return IFNDEF; }
-<INITIAL>"undef" { return UNDEF; }
-<INITIAL>"include" { return INCLUDE; }
-<INITIAL>"import" { return IMPORT; }
-
 <INITIAL>"@interface" { return INTERFACE; }
 <INITIAL>"@implementation" { return IMPLEMENTATION; }
 <INITIAL>"@protocol" { return PROTOCOL; }
@@ -111,6 +102,7 @@
 <INITIAL>"@class" { return CLASS_DECLARE; }
 
 <INITIAL>"@property" {  return PROPERTY; }
+<INITIAL>"@dynamic" {  return DYNAMIC; }
 <INITIAL>"weak" { yylval.identifier =(__bridge_retained void *)@"weak"; return WEAK; }
 <INITIAL>"strong" { yylval.identifier =(__bridge_retained void *)@"strong"; return STRONG; }
 <INITIAL>"copy" { yylval.identifier =(__bridge_retained void *)@"copy"; return COPY; }
@@ -127,10 +119,15 @@
 <INITIAL>"const" { yylval.identifier =(__bridge_retained void *)@"const"; return CONST; }
 <INITIAL>"_Nonnull" { yylval.identifier =(__bridge_retained void *)@"_Nonnull"; return _NONNULL; }
 <INITIAL>"_Nullable" { yylval.identifier =(__bridge_retained void *)@"_Nullable"; return _NULLABLE; }
+<INITIAL>"__autoreleasing" { yylval.identifier =(__bridge_retained void *)@"__autoreleasing"; return _AUTORELEASE; }
+
 <INITIAL>"__strong" { yylval.identifier =(__bridge_retained void *)@"__strong"; return _STRONG; }
 <INITIAL>"__weak"  { yylval.identifier =(__bridge_retained void *)@"__weak"; return _WEAK; }
 <INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
 <INITIAL>"__bridge" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE; }
+<INITIAL>"__bridge_transfer" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE_TRANSFER; }
+<INITIAL>"__bridge_retained" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE_RETAINED; }
+<INITIAL>"__unused" { yylval.identifier =(__bridge_retained void *)@"__unused"; return _UNUSED; }
 
 <INITIAL>"@required" ;
 <INITIAL>"@optional" ;
@@ -153,6 +150,7 @@
 <INITIAL>"break" { TypeReturn(break); }
 <INITIAL>"continue" { TypeReturn(continue); }
 <INITIAL>"goto" { TypeReturn(goto); }
+<INITIAL>"if" { return IF; }
 <INITIAL>"else" { TypeReturn(else); }
 <INITIAL>"do" { TypeReturn(do); }
 <INITIAL>"while" { TypeReturn(while); }
@@ -176,7 +174,8 @@
 <INITIAL>"NSUInteger" { TypeReturn(ULONG); }
 
 <INITIAL>"sizeof" { TypeReturn(sizeof); }
-<INITIAL>"typeof" { TypeReturn(typeof); }
+<INITIAL>"typeof" { return TYPEOF; }
+<INITIAL>"__typeof__" { return __TYPEOF; }
 <INITIAL>"enum" { TypeReturn(enum); }
 <INITIAL>"struct" { TypeReturn(struct); }
 <INITIAL>"char" { TypeReturn(CHAR); }
@@ -207,13 +206,14 @@
 <INITIAL>"float" { TypeReturn(FLOAT); }
 <INITIAL>"CGFloat" { return _DOUBLE; }
 
+<INITIAL>__attribute__[ ]*\(.*?\){2,} ;
+<INITIAL>__attribute__[ ]*\(.*?\){2,} ;
+
+
 <INITIAL>[A-Za-z_$][A-Za-z_$0-9]* {
     NSString *name = [NSString stringWithUTF8String:yytext];
     yylval.identifier =(__bridge_retained void *)name;
-    if([name hasPrefix:@"NS"] || [name hasPrefix:@"UI"] || [name hasPrefix:@"CG"] || [name hasPrefix:@"CA"])
-    {
-        return TYPE;
-    }
+
     Symbol *symbol = lookupSymbol(name);
     if (symbol){
         if (symbol.kind == SymbolKindTypeDeclare || symbol.kind == SymbolKindTypeDef){
@@ -221,8 +221,18 @@
         }else if(symbol.kind == SymbolKindVariable){
             return VARIABLE;
         }
-            
     }
+    if([name hasPrefix:@"NS"]
+    || [name hasPrefix:@"UI"]
+    || [name hasPrefix:@"CG"]
+    || [name hasPrefix:@"CA"]
+    || [name hasSuffix:@"Ref"]
+    || [name hasPrefix:@"dispatch"]
+    )
+    {
+        return TYPE;
+    }
+
     return IDENTIFIER;
 }
 
@@ -291,5 +301,10 @@ BEGIN STRING_LITERAL_STATE;
 <STRING_LITERAL_STATE>[\x81-\x9f\xe0-\xef][\x40-\x7e\x80-\xfc] {
 	appendCharacter(yytext[0]);
 	appendCharacter(yytext[1]);
+}
+
+<INITIAL>\n.* {
+    strncpy(linebuf,yytext + 1,sizeof(linebuf));
+    yyless(1);
 }
 %%

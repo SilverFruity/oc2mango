@@ -27,6 +27,7 @@ typedef enum {
     OCValueConvert,
     OCValueNil,
     OCValueNULL,
+    OCValueBOOL,
     OCValuePointValue,
     OCValueVarPoint,
     OCValueMethodCall,

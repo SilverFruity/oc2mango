@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		606F0207B162A6162D433799 /* OCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* OCValue.m */; };
+		63239F0A229E623600428A17 /* NSArray+Functional.m in Sources */ = {isa = PBXBuildFile; fileRef = 63239F09229E623600428A17 /* NSArray+Functional.m */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */; };
@@ -28,7 +28,6 @@
 		EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5534DB22900DFF00A4B32E /* ConvertTest.swift */; };
 		EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F05226CB443008712C2 /* MakeDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
-		EE982F11226CC24D008712C2 /* TestFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EE0226B1C78008712C2 /* TestFile.m */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
 		EED67A772270AE0F0015AC02 /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67A702270AE0E0015AC02 /* oc2mangoLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -88,6 +87,8 @@
 /* Begin PBXFileReference section */
 		606F0BB1839E29D74A0630F6 /* OCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCValue.m; sourceTree = "<group>"; };
 		606F0D12A0E0AD5D65BAF937 /* OCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCValue.h; sourceTree = "<group>"; };
+		63239F08229E623600428A17 /* NSArray+Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Functional.h"; sourceTree = "<group>"; };
+		63239F09229E623600428A17 /* NSArray+Functional.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Functional.m"; sourceTree = "<group>"; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FuncDeclare.h; sourceTree = "<group>"; };
 		6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FuncDeclare.m; sourceTree = "<group>"; };
@@ -110,7 +111,6 @@
 		EE6E6CD2225E488000616C7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EE6E6CDA225E496600616C7E /* cal.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = cal.y; sourceTree = "<group>"; };
 		EE6E6CDB225E496600616C7E /* cal.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = cal.l; sourceTree = "<group>"; };
-		EE982EE0226B1C78008712C2 /* TestFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestFile.m; sourceTree = SOURCE_ROOT; };
 		EE982EF6226C45CF008712C2 /* TypeSpecial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeSpecial.h; sourceTree = "<group>"; };
 		EE982EF7226C45CF008712C2 /* TypeSpecial.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeSpecial.m; sourceTree = "<group>"; };
 		EE982EF9226C7F7B008712C2 /* VariableDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VariableDeclare.h; sourceTree = "<group>"; };
@@ -226,8 +226,9 @@
 		EE6E6CD1225E488000616C7E /* oc2mango */ = {
 			isa = PBXGroup;
 			children = (
-				EE982EE0226B1C78008712C2 /* TestFile.m */,
 				EE6E6CD2225E488000616C7E /* main.m */,
+				63239F08229E623600428A17 /* NSArray+Functional.h */,
+				63239F09229E623600428A17 /* NSArray+Functional.m */,
 			);
 			path = oc2mango;
 			sourceTree = "<group>";
@@ -483,9 +484,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE982F11226CC24D008712C2 /* TestFile.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
-				606F0207B162A6162D433799 /* OCValue.m in Sources */,
+				63239F0A229E623600428A17 /* NSArray+Functional.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

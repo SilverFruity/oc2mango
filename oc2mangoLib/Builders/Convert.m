@@ -16,8 +16,6 @@
         return [self convertExpression:content];
     }else if ([content isKindOfClass:[Statement class]]){
         return [self convertStatement:content];
-    }else if ([content isKindOfClass:[MethodImplementation class]]){
-        return [self convertMethodImp:content];
     }
     NSAssert(NO, @"%s %d ",__FILE__,__LINE__);
     return @"";
@@ -360,7 +358,7 @@ int indentationCont = 0;
 
         case OCValueBlock:
         {
-            return [self convertBlockImp:value];
+            return [self convertBlockImp:(BlockImp *)value];
         }
         case OCValueNil:
             return @"nil";

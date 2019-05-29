@@ -24,10 +24,10 @@ extern void yyerror(const char *s);
 }
 %token <identifier> TYPE VARIABLE IDENTIFIER STRING_LITERAL TYPEDEF
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE 
-%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum _typeof _struct _sizeof
-%token <identifier> INTERFACE IMPLEMENTATION PROTOCOL END CLASS_DECLARE 
+%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default _enum TYPEOF __TYPEOF _struct _sizeof
+%token <identifier> INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE 
 %token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE 
-%token <identifier> EXTERN STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK _BRIDGE
+%token <identifier> EXTERN STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK _BRIDGE _AUTORELEASE _BRIDGE_TRANSFER _BRIDGE_RETAINED _UNUSED
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS POINT
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR NOT
 %token <identifier> AND OR POWER SUB ADD DIV ASTERISK AND_ASSIGN OR_ASSIGN POWER_ASSIGN SUB_ASSIGN ADD_ASSIGN DIV_ASSIGN ASTERISK_ASSIGN INCREMENT DECREMENT
@@ -72,10 +72,10 @@ global_define:
             struct_declare
           | enum_declare
           | typedef_declare
-          | CLASS_DECLARE IDENTIFIER
-          | CLASS_DECLARE TYPE
-          | type_specified IDENTIFIER LP func_declare_parameter_list RP SEMICOLON
-          | type_specified IDENTIFIER LP func_declare_parameter_list RP LC function_implementation RC
+          | CLASS_DECLARE TYPE_IDENTIFER SEMICOLON
+          | PROTOCOL TYPE_IDENTIFER SEMICOLON
+          | type_specified whole_identifier LP func_declare_parameter_list RP SEMICOLON
+          | type_specified whole_identifier LP func_declare_parameter_list RP LC function_implementation RC
           {
               NSString *name = _typeId $2;
               addVariableSymbol(makeTypeSpecial(TypeFunction), name);
@@ -99,7 +99,7 @@ enum_identifier_list:
                 addEnumConstantSybol(_typeId $1);
                 $$ = _vretained [@[_typeId $1] mutableCopy];
             }
-            | IDENTIFIER ASSIGN INTETER_LITERAL
+            | IDENTIFIER ASSIGN expression
             {
                 addEnumConstantSybol(_typeId $1);
                 $$ = _vretained [@[_typeId $1] mutableCopy];
@@ -111,7 +111,7 @@ enum_identifier_list:
                 [list addObject:_typeId $3];
                 $$ = _vretained list;
             }
-            | enum_identifier_list COMMA IDENTIFIER ASSIGN INTETER_LITERAL
+            | enum_identifier_list COMMA IDENTIFIER ASSIGN expression
             {
                 addEnumConstantSybol(_typeId $3);
                 NSMutableArray *list  = _typeId $1;
@@ -122,25 +122,25 @@ enum_identifier_list:
 
             
 typedef_declare:
-            TYPEDEF type_specified LP POWER IDENTIFIER RP LP func_declare_parameter_list RP SEMICOLON
+            TYPEDEF type_specified LP POWER TYPE_IDENTIFER RP LP func_declare_parameter_list RP SEMICOLON
             {
                 addTypeDefSymbol(makeTypeSpecial(TypeBlock),_typeId $5);
             }
-            | TYPEDEF type_specified IDENTIFIER SEMICOLON
+            | TYPEDEF type_specified TYPE_IDENTIFER SEMICOLON
             {
                 addTypeDefSymbol(_typeId $2,_typeId $3);
             }
-            | TYPEDEF _enum LC enum_identifier_list RC IDENTIFIER SEMICOLON
+            | TYPEDEF _enum LC enum_identifier_list RC TYPE_IDENTIFER SEMICOLON
             {
                 addTypeDefSymbol(makeTypeSpecial(TypeEnum,_typeId $6),_typeId $6);
             }
-            | TYPEDEF _struct LC class_private_varibale_declare RC IDENTIFIER SEMICOLON{
+            | TYPEDEF _struct LC class_private_varibale_declare RC TYPE_IDENTIFER SEMICOLON{
                 addTypeDefSymbol(makeTypeSpecial(TypeStruct,_typeId $6),_typeId $6);
             }
             ;
 
 protocol_declare:
-            PROTOCOL IDENTIFIER LT TYPE_IDENTIFER GT
+            PROTOCOL TYPE_IDENTIFER LT protocol_list GT
             {
                 addTypeSymbol(makeTypeSpecial(TypeProtocol),_typeId $2);
                 pushFuncSymbolTable();
@@ -154,7 +154,7 @@ protocol_declare:
             ;
 class_declare:
             //
-            INTERFACE IDENTIFIER COLON TYPE
+            INTERFACE TYPE_IDENTIFER COLON TYPE
             {
                 OCClass *occlass = [LibAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
@@ -162,12 +162,12 @@ class_declare:
                 pushFuncSymbolTable();
             }
             // category 
-            | INTERFACE IDENTIFIER LP IDENTIFIER RP
+            | INTERFACE TYPE_IDENTIFER LP TYPE_IDENTIFER RP
             {
                 $$ = _vretained [LibAst classForName:_transfer(id)$2];
                 pushFuncSymbolTable();
             }
-            | INTERFACE IDENTIFIER LP RP
+            | INTERFACE TYPE_IDENTIFER LP RP
             {
                 $$ = _vretained [LibAst classForName:_transfer(id)$2];
                 pushFuncSymbolTable();
@@ -327,11 +327,15 @@ declare_left_attribute:
             | _WEAK
             | _BLOCK
             | _BRIDGE
+            | _BRIDGE_RETAINED
+            | _BRIDGE_TRANSFER
             ;
 declare_right_attribute:
             _NONNULL
             | _NULLABLE
             | CONST
+            | _AUTORELEASE
+            | _UNUSED
             ;
 
 func_declare_parameter: 
@@ -1076,7 +1080,7 @@ primary_expression:
         {
             $$ = _vretained makeValue(OCValueSelector,_typeId $1);
         }
-        | PROTOCOL LP TYPE RP
+        | PROTOCOL LP TYPE_IDENTIFER RP
         {
             $$ = _vretained makeValue(OCValueProtocol,_transfer(id)$3);
         }
@@ -1101,6 +1105,14 @@ primary_expression:
         {
             $$ = _vretained makeValue(OCValueNULL);
         }
+        | _YES
+        {
+            $$ = _vretained makeValue(OCValueBOOL);
+        }
+        | _NO
+        {
+            $$ = _vretained makeValue(OCValueBOOL);
+        }
         ;
 
 type_specified:
@@ -1110,7 +1122,11 @@ type_specified:
             }
             | type_specified LT type_specified GT
             | type_specified declare_right_attribute
-            | _typeof LP expression RP
+            | TYPEOF LP expression RP
+            {
+                $$ = _vretained makeTypeSpecial(TypeObject,@"typeof");
+            }
+            | __TYPEOF LP expression RP
             {
                 $$ = _vretained makeTypeSpecial(TypeObject,@"typeof");
             }
@@ -1178,6 +1194,7 @@ type_specified:
             {
                 $$ = _vretained makeTypeSpecial(TypeId);
             }
+            | error ";"
             | TYPE
             {
                 $$ = _vretained makeTypeSpecial(TypeObject,(__bridge NSString *)$1);
@@ -1191,6 +1208,14 @@ type_specified:
             {
                 $$ = _vretained makeTypeSpecial(TypeBlock);
             }
+            | _struct TYPE
+            {
+                $$ = _vretained makeTypeSpecial(TypeStruct,_typeId $2);
+            }
+            | _enum TYPE
+            {
+                $$ = _vretained makeTypeSpecial(TypeEnum,_typeId $2);
+            }
             | type_specified ASTERISK
             {
                 TypeSpecial *type = _transfer(id) $1;
@@ -1203,22 +1228,23 @@ type_specified:
 %%
 void yyerror(const char *s){
     extern unsigned long yylineno , yycolumn , yylen;
-    extern char const *st_source_string;
+    extern char linebuf[500];
     extern char *yytext;
-    NSArray *lines = [[NSString stringWithUTF8String:st_source_string] componentsSeparatedByString:@"\n"];
-    if(lines.count < yylineno) return;
-    NSString *line = lines[yylineno - 1];
-    unsigned long location = yycolumn - yylen - 1;
-    unsigned long len = yylen;
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    NSString *line = [NSString stringWithUTF8String:linebuf];
+    NSRange range = [line rangeOfString:text];
     NSMutableString *str = [NSMutableString string];
-    for (unsigned i = 0; i < location; i++){
-        [str appendString:@" "];
-    }
-    for (unsigned i = 0; i < len; i++){
-        [str appendString:@"^"];
+    if(range.location != NSNotFound){
+        for (int i = 0; i < range.location; i++){
+            [str appendString:@" "];
+        }
+        for (int i = 0; i < range.length; i++){
+            [str appendString:@"^"];
+        }
+    }else{
+        str = text;
     }
     NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\n%@\n%@\n error: %s\n-------------------\n",line,str,s];
     OCParser.error = errorInfo;
     log(OCParser.error);
-    log(LibAst.globalStatements);
 }
