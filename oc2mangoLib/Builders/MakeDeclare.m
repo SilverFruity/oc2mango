@@ -10,12 +10,6 @@
 
 
 TypeSpecial *makeTypeSpecial(TypeKind type ,NSString *name){
-    if (name) {
-        Symbol *symbol = lookupSymbol(name);
-        if (symbol.kind == SymbolKindTypeDef) {
-            return symbol.type;
-        }
-    }
     return [TypeSpecial specialWithType:type name:name];
 }
 TypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)){
@@ -29,7 +23,6 @@ VariableDeclare *makeVariableDeclare(TypeSpecial *type, NSString *name){
     return var;
 }
 OCClass *makeOCClass(NSString *className){
-    addTypeSymbol(makeTypeSpecial(TypeClass), className);
     return [OCClass classWithClassName:className];
 }
 
@@ -50,12 +43,6 @@ FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars,NSStri
         assert([vars isKindOfClass:[NSMutableArray class]]);
     }
     decl.variables = vars;
-    for (VariableDeclare *decalre in vars){
-        addVariableSymbol(decalre.type,decalre.name);
-    }
-    if (name) {
-        addVariableSymbol(makeTypeSpecial(TypeFunction), name);
-    }
     return decl;
 }
 FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars) __attribute__((overloadable)){
@@ -141,9 +128,6 @@ DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Ex
             declare.expression = ((AssignExpression *)exp).expression;
         }
     }
-    if ([variable.value isKindOfClass:[NSString class]]) {
-        addVariableSymbol(type,variable.value);
-    }
     declare.name = variable.value;
     return declare;
 }
@@ -217,22 +201,6 @@ Symbol *addSymbol(TypeSpecial *type,NSString *name,SymbolKind kind){
     return sym;
 }
 
-Symbol *lookupSymbol(NSString *name){
-    return [OCParser.stack lookup:name];
-}
-void addVariableSymbol(TypeSpecial *type, NSString *name){
-    addSymbol(type, name, SymbolKindVariable);
-}
-
-void addTypeSymbol(TypeSpecial *type,NSString *name){
-    addSymbol(type, name, SymbolKindTypeDeclare);
-}
-void addTypeDefSymbol(TypeSpecial *type,NSString *name){
-    addSymbol(type, name, SymbolKindTypeDef);
-}
-void addEnumConstantSybol(NSString *name){
-    addSymbol(makeTypeSpecial(TypeInt), name, SymbolKindEnumConstant);
-}
 static NSMutableString *buffer = nil;
 void appendCharacter(char chr){
     static dispatch_once_t onceToken;

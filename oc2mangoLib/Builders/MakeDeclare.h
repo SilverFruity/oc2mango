@@ -47,14 +47,6 @@ extern ContinueStatement *makeContinueStatement(void);
 
 
 
-extern void pushFuncSymbolTable(void);
-extern void popFuncSymbolTable(void);
-extern Symbol *lookupSymbol(NSString *name);
-extern void addVariableSymbol(TypeSpecial *type,NSString *name);
-extern void addTypeSymbol(TypeSpecial *type,NSString *name);
-extern void addTypeDefSymbol(TypeSpecial *type,NSString *name);
-extern void addEnumConstantSybol(NSString *name);
-
 
 extern void appendCharacter(char chr);
 NSString * getString(void);

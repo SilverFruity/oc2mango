@@ -201,7 +201,13 @@ class ExpressionTest: XCTestCase {
     }
     func testTernaryExpression(){
         
-        
+        source =
+        """
+        int x = y == nil ? 0 : 1;
+        x = y?:1;
+        """
+        ocparser.parseSource(source);
+        XCTAssert(ocparser.isSuccess())
         
         
     }

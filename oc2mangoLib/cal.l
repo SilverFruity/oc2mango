@@ -213,26 +213,6 @@
 <INITIAL>[A-Za-z_$][A-Za-z_$0-9]* {
     NSString *name = [NSString stringWithUTF8String:yytext];
     yylval.identifier =(__bridge_retained void *)name;
-
-    Symbol *symbol = lookupSymbol(name);
-    if (symbol){
-        if (symbol.kind == SymbolKindTypeDeclare || symbol.kind == SymbolKindTypeDef){
-            return TYPE;
-        }else if(symbol.kind == SymbolKindVariable){
-            return VARIABLE;
-        }
-    }
-    if([name hasPrefix:@"NS"]
-    || [name hasPrefix:@"UI"]
-    || [name hasPrefix:@"CG"]
-    || [name hasPrefix:@"CA"]
-    || [name hasSuffix:@"Ref"]
-    || [name hasPrefix:@"dispatch"]
-    )
-    {
-        return TYPE;
-    }
-
     return IDENTIFIER;
 }
 
