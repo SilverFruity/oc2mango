@@ -55,7 +55,7 @@
 <INITIAL>"{" { pushFuncSymbolTable(); return LC; }
 <INITIAL>"}" { popFuncSymbolTable(); return RC; }
 <INITIAL>"." { return DOT; }
-<INITIAL>"->" { return POINT; }
+<INITIAL>"->" { return ARROW; }
 <INITIAL>"@" { return AT; }
 <INITIAL>"?" {return QUESTION; }
 <INITIAL>":" { return COLON; }
@@ -176,9 +176,8 @@
 <INITIAL>"sizeof" { TypeReturn(sizeof); }
 <INITIAL>"typeof" { return TYPEOF; }
 <INITIAL>"__typeof__" { return __TYPEOF; }
-<INITIAL>"enum" { TypeReturn(enum); }
-<INITIAL>"struct" { TypeReturn(struct); }
 <INITIAL>"char" { TypeReturn(CHAR); }
+<INITIAL>"..."  {return ELLIPSIS;}
 <INITIAL>"short" { TypeReturn(SHORT); }
 <INITIAL>"int" { TypeReturn(INT); }
 <INITIAL>"long" { TypeReturn(LONG); }

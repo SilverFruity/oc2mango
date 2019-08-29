@@ -134,9 +134,9 @@ class ExpressionTest: XCTestCase {
         @selector(new);
         @protocol(NSObject);
         ^{};
-        ^(NSString *name,NSObject *object){};
         ^void {};
         ^void (NSString *name,NSObject *object){};
+        ^(NSString *name,NSObject *object){};
         *a;
         &b;
         @(10);
