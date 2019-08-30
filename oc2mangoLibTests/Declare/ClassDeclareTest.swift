@@ -18,7 +18,18 @@ class ClassDeclareTest: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         ocparser.clear()
     }
+    func testFunction(){
+        let source =
+"""
+void *func(NSString a, int b);
+void *func(NSString *a, int *b){
 
+}
+"""
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        
+    }
     func testNormalDeclare(){
         let source =
 """

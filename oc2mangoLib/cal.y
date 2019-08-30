@@ -71,15 +71,8 @@ definition:
 global_define:
             CLASS_DECLARE IDENTIFIER SEMICOLON
           | PROTOCOL IDENTIFIER SEMICOLON
-          | parameter_declaration IDENTIFIER LP parameter_list RP SEMICOLON
-          | parameter_declaration IDENTIFIER LP parameter_list RP LC function_implementation RC
-          {
-              NSString *name = _typeId $2;
-              BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-              imp.declare = makeFuncDeclare(_typeId $1,_typeId $4,name);
-              [imp copyFromImp:_typeId $7];
-              [LibAst addGlobalStatements:imp];
-          }
+          | type_specifier declarator SEMICOLON
+          | type_specifier declarator LC function_implementation RC
           ;
 
 protocol_declare:
@@ -319,39 +312,14 @@ objc_method_call:
              $$ = _vretained methodcall;
         }
         ;
-
+block_parameters_optinal:
+    | LP parameter_list RP
+    ;
 block_implementation:
-        //^returnType{ }
-        POWER parameter_declaration LC function_implementation RC
+        //^returnType(optional) parameters(optional){ }
+        POWER parameter_declaration_optional  block_parameters_optinal LC function_implementation RC
         {
-            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-            imp.declare = makeFuncDeclare(_transfer(id)$2,nil);
-            [imp copyFromImp:_typeId $4];
-            $$ = _vretained imp; 
-        }
-        //^returnType(int x, int y, int z){  }
-        | POWER parameter_declaration LP parameter_list RP LC function_implementation RC
-        {
-            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-            imp.declare = makeFuncDeclare(_transfer(id)$2,_typeId $4);
-            [imp copyFromImp:_typeId $7];
-            $$ = _vretained imp; 
-        }
-        //^{   }
-        | POWER LC function_implementation RC
-        {
-            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-            imp.declare = makeFuncDeclare(makeTypeSpecial(TypeVoid),nil);
-            [imp copyFromImp:_typeId $3];
-            $$ = _vretained imp; 
-        }
-        //^(int x, int y){    }
-        | POWER LP parameter_list RP LC function_implementation RC
-        {
-            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-            imp.declare = makeFuncDeclare(makeTypeSpecial(TypeVoid),_typeId $3);
-            [imp copyFromImp:_typeId $6];
-            $$ = _vretained imp; 
+
         }
         ;
 
@@ -1017,19 +985,27 @@ declarator:
             // block void(^identifier)(int , int)
         }
         ;
-direct_declarator_optional:
-        | direct_declarator;
+declarator_optional:
+        | declarator
+        ;
+
 direct_declarator:
         IDENTIFIER
         |LP declarator RP
         |direct_declarator LP parameter_type_list RP
         |direct_declarator LP RP
         ;
+direct_declarator_optional:
+        | direct_declarator
+        ;
 
 pointer:
         ASTERISK
 	   | ASTERISK pointer  
 	   ;
+pointer_optional:
+        | pointer;
+
 parameter_type_list:
 				   parameter_list {}
 				   |parameter_list COMMA ELLIPSIS{}
@@ -1053,8 +1029,11 @@ parameter_list: /* empty */
             }
             ;
 
-parameter_declaration: type_specifier direct_declarator_optional
+parameter_declaration: type_specifier declarator_optional
 					 ;
+parameter_declaration_optional:
+        | parameter_declaration
+        ;
 
 
 type_specifier:

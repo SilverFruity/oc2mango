@@ -135,8 +135,8 @@ class ExpressionTest: XCTestCase {
         @protocol(NSObject);
         ^{};
         ^void {};
-        ^void (NSString *name,NSObject *object){};
         ^(NSString *name,NSObject *object){};
+        ^int (NSString *name,NSObject *object){};
         *a;
         &b;
         @(10);
@@ -151,7 +151,7 @@ class ExpressionTest: XCTestCase {
         @{@"key": @"value", x.z : [Object new]};
         @[value1,value2];
         """ 
-        ocparser.parseSource(source);
+        ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
     }
     func testAssignExpression(){
@@ -164,6 +164,7 @@ class ExpressionTest: XCTestCase {
     func testBinaryExpession(){
         source =
         """
+        x^b;
         x < 1;
         x < 1 && b > 0;
         x.y && y->z || [NSObject new].x && [self.x isTrue];
