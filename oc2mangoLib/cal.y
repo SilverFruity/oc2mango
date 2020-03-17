@@ -21,9 +21,10 @@ extern void yyerror(const char *s);
     void *statement;
     void *expression;
     int Operator;
+    unsigned int IntValue;
 }
 
-%token <identifier> IDENTIFIER  STRING_LITERAL TYPEDEF ELLIPSIS
+%token <identifier> IDENTIFIER  STRING_LITERAL TYPEDEF ELLIPSIS CHILD_COLLECTION POINT
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE 
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default TYPEOF __TYPEOF  _sizeof
 %token <identifier> INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE 
@@ -40,12 +41,14 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <identifier> global_define 
 %type  <declare>  protocol_declare class_declare protocol_list class_private_varibale_declare
 %type  <declare>  class_property_declare method_declare
-%type  <declare>  parameter_declaration  type_specifier  parameter_list
+%type  <declare>  parameter_declaration  type_specifier  parameter_list CHILD_COLLECTION_OPTIONAL
 %type  <implementation> class_implementation
 %type  <expression> objc_method_call primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression postfix_expression declare_expression_list
 %type <Operator>  assign_operator unary_operator
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
 %type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys
+%type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal type_specifier_point_optinal
+%type <IntValue> pointer pointer_optional
 %%
 
 compile_util: /*empty*/
@@ -55,8 +58,7 @@ definition_list: definition
             | definition_list definition
             ;
 definition:
-            global_define
-            | class_declare
+              class_declare
             | protocol_declare
             | class_implementation
             | expression_statement
@@ -76,7 +78,7 @@ global_define:
           ;
 
 protocol_declare:
-            PROTOCOL IDENTIFIER LT protocol_list GT
+            PROTOCOL IDENTIFIER CHILD_COLLECTION
             | protocol_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
             | protocol_declare method_declare SEMICOLON
             | protocol_declare END
@@ -246,11 +248,13 @@ declare_right_attribute:
 method_declare:
             SUB LP parameter_declaration RP
             {   
-                $$ = _vretained makeMethodDeclare(NO,_transfer(TypeSpecial *) $3);
+                VariableDeclare *declare = _transfer(VariableDeclare *)$3;
+                $$ = _vretained makeMethodDeclare(NO,declare.type);
             }
             | ADD LP parameter_declaration RP
             {
-                $$ = _vretained makeMethodDeclare(YES,_transfer(TypeSpecial *) $3);
+                VariableDeclare *declare = _transfer(VariableDeclare *)$3;
+                $$ = _vretained makeMethodDeclare(YES,declare.type);
             }
             | method_declare IDENTIFIER
             {
@@ -260,9 +264,10 @@ method_declare:
             }
             | method_declare IDENTIFIER COLON LP parameter_declaration RP IDENTIFIER
             {
+                VariableDeclare *declare = _transfer(VariableDeclare *)$5;
                 MethodDeclare *method = _transfer(MethodDeclare *)$$;
                 [method.methodNames addObject:_transfer(NSString *) $2];
-                [method.parameterTypes addObject:_transfer(TypeSpecial *) $5];
+                [method.parameterTypes addObject:declare.type];
                 [method.parameterNames addObject:_transfer(NSString *) $7];
                 $$ = _vretained method;
             }
@@ -313,13 +318,33 @@ objc_method_call:
         }
         ;
 block_parameters_optinal:
+    {
+        $$ = _vretained [NSMutableArray array];
+    }
     | LP parameter_list RP
+    {
+        $$ = _vretained (__bridge NSMutableArray *)$2;
+    }
+    ;
+type_specifier_point_optinal:
+    {
+        $$ = _vretained makeTypeSpecial(TypeVoid);
+    }
+    | type_specifier pointer_optional
+    {
+        TypeSpecial *special = _transfer(TypeSpecial *) $1;
+        special.ptCount = (NSUInteger) $2;
+        $$ = _vretained special;
+    }
     ;
 block_implementation:
         //^returnType(optional) parameters(optional){ }
-        POWER parameter_declaration_optional  block_parameters_optinal LC function_implementation RC
+        POWER type_specifier_point_optinal block_parameters_optinal LC function_implementation RC
         {
-
+            FuncDeclare *declare = makeFuncDeclare( _typeId $2,_typeId $3);
+            BlockImp *imp = _transfer(BlockImp *) $5;
+            imp.declare = declare;
+            $$ = _vretained imp;
         }
         ;
 
@@ -467,7 +492,7 @@ switch_statement:
              $$ = _vretained statement;
          }
         ;
-for_statement: _for LP declare_expression_list SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
+for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
         {
             ForStatement* statement = makeForStatement(_transfer(BlockImp *) $10);
             statement.declareExpressions = _typeId $3;
@@ -477,7 +502,7 @@ for_statement: _for LP declare_expression_list SEMICOLON expression SEMICOLON ex
         }
         ;
 
-forin_statement: _for LP declare_expression_list _in expression RP LC function_implementation RC
+forin_statement: _for LP declaration _in expression RP LC function_implementation RC
         {
             ForInStatement * statement = makeForInStatement(_transfer(BlockImp *)$8);
             NSArray *exps = _typeId $3;
@@ -803,6 +828,10 @@ unary_operator:
     {
         $$ = UnaryOperatorAdressPoint;
     }
+    | POINT
+    {
+        $$ = UnaryOperatorAdressValue;
+    }
     | ASTERISK
     {
         $$ = UnaryOperatorAdressValue;
@@ -965,51 +994,114 @@ primary_expression:
 ;
 
 declaration:
-	type_specifier init_declarator_list
+	type_specifier_point_optinal init_declarator_list
+    {
+        NSMutableArray *array = _transfer(NSMutableArray *)$2;
+        for (DeclareExpression *declare in array){
+            // log(@(declare.type.type));
+            if (declare.type.type == TypeBlock || declare.type.type == TypeFunction){
+                continue;
+            }
+            _vretained declare;
+            declare.type = _typeId $1;
+        }
+        $$ = _vretained array;
+    }
 	;
 init_declarator_list:
      init_declarator
+     {
+         $$ = _vretained [@[_typeId $1] mutableCopy];
+     }
 	| init_declarator_list COMMA init_declarator
+    {
+        NSMutableArray *array = _transfer(NSMutableArray *)$1;
+        [array addObject:_transfer(id) $3];
+        $$ = _vretained array;
+    }
 	;
 
 init_declarator:
      declarator
 	| declarator ASSIGN assign_expression
+    {
+        DeclareExpression *declare = _transfer(DeclareExpression *) $1;
+        declare.expression = _typeId $3;
+        $$ = _vretained declare;
+    }
 	;
 
 declarator:
-          direct_declarator
-        | POWER direct_declarator_optional 
-        | pointer direct_declarator_optional 
+        direct_declarator
         {
-            // block void(^identifier)(int , int)
+            id result = _typeId $1;
+            if ([result isKindOfClass:[DeclareExpression class]]) {
+                $$ = _vretained result;
+            }else{
+                $$ = _vretained makeDeclareExpression(nil,makeValue(OCValueVariable,_typeId $1),nil);
+            }
+        }
+        | POWER direct_declarator_optional 
+        {
+            TypeSpecial *sepcial = makeTypeSpecial(TypeBlock);
+            $$ = _vretained makeDeclareExpression(sepcial,makeValue(OCValueVariable,_typeId $2),nil);
+        }
+        | pointer direct_declarator_optional
+        {
+            TypeSpecial *special = makeTypeSpecial(TypeFunction);
+            special.ptCount = $1;
+            $$ = _vretained makeDeclareExpression(special,makeValue(OCValueVariable,_typeId $2),nil);
         }
         ;
 declarator_optional:
+        {
+            $$ = nil;
+        }
         | declarator
         ;
 
 direct_declarator:
         IDENTIFIER
+        {
+            $$ = _vretained (__bridge NSString *)$1;
+        }
         |LP declarator RP
+        {
+            $$ = _vretained _typeId $2;
+        }
+        // ***(int *,value *,id) 这种情况不处理
         |direct_declarator LP parameter_type_list RP
-        |direct_declarator LP RP
+        {
+            $$ = _vretained _typeId $1;
+        }
         ;
 direct_declarator_optional:
+        {
+            $$ = nil;
+        }
         | direct_declarator
         ;
 
 pointer:
-        ASTERISK
-	   | ASTERISK pointer  
+        POINT
+        {
+            $$ = 1;
+        }
+	   | POINT pointer 
+       {
+           $$ = $2 + 1;
+       }
 	   ;
 pointer_optional:
+        {
+            $$ = 0;
+        }
         | pointer;
 
 parameter_type_list:
-				   parameter_list {}
-				   |parameter_list COMMA ELLIPSIS{}
-				   ;
+         parameter_list
+        | parameter_list COMMA ELLIPSIS
+        ;
 
 parameter_list: /* empty */
             {
@@ -1029,15 +1121,27 @@ parameter_list: /* empty */
             }
             ;
 
-parameter_declaration: type_specifier declarator_optional
-					 ;
+parameter_declaration: 
+    type_specifier_point_optinal declarator_optional
+    {
+        
+        id result = _typeId $2;
+        if ([result isKindOfClass:[DeclareExpression class]]) {
+            DeclareExpression *exp = result;
+            $$ = _vretained makeVariableDeclare(_typeId $1, exp.name);;
+        }else{
+            $$ = _vretained makeVariableDeclare(_typeId $1, result);
+        }
+        
+    };
 parameter_declaration_optional:
         | parameter_declaration
         ;
 
-
+CHILD_COLLECTION_OPTIONAL:
+        | CHILD_COLLECTION;
 type_specifier:
-            IDENTIFIER
+            IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
                 $$ = _vretained makeTypeSpecial(TypeObject,(__bridge NSString *)$1);
             }
@@ -1113,10 +1217,6 @@ type_specifier:
             {
                 $$ = _vretained makeTypeSpecial(TypeId);
             }
-            | _id
-            {
-                $$ = _vretained makeTypeSpecial(TypeId);
-            }
             ;
 
 %%
@@ -1136,9 +1236,9 @@ void yyerror(const char *s){
             [str appendString:@"^"];
         }
     }else{
-        str = text;
+        str = [text mutableCopy];
     }
-    NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\n%@\n%@\n error: %s\n-------------------\n",line,str,s];
+    NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\n%@\n%@\nerror: %s\n-------------------\n",line,str,s];
     OCParser.error = errorInfo;
     log(OCParser.error);
 }

@@ -20,22 +20,6 @@
 @end
 
 
-typedef void(^HTTPHandler)(NSHTTPURLResponse *response, id _Nullable data ,NSError *_Nullable error);
-
-typedef enum{
-    GET = 0,
-    POST
-}SFNHTTPMethod;
-
-
-
-static NSString *queryPramameters(NSDictionary *param){
-    NSMutableArray *pairs = [NSMutableArray array];
-    [param enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        [pairs addObject:[NSString stringWithFormat:@"%@=%@",key,obj]];
-    }];
-    return [pairs componentsJoinedByString:@"&"];
-}
 
 @interface SFHTTPClient : NSObject
 @property (nonatomic,readonly) NSURL *baseUrl;
@@ -52,15 +36,15 @@ static NSString *queryPramameters(NSDictionary *param){
 }
 - (NSURLSessionDataTask *)requestWithMethod:(SFNHTTPMethod)method
                                         uri:(NSString *)URLString
-                                 parameters:(nullable NSDictionary *)param
-                                    plugin:(nullable id <SFPlugin>)plugin
+                                 parameters:(NSDictionary *)param
+                                    plugin:(id <SFPlugin>)plugin
                                  completion:(HTTPHandler)completion{
     
     NSMutableURLRequest *request = [self createRequestWithMethod:method uri:URLString parameters:param];
     return [self request:request plugin:plugin completion:completion];
 }
 
-- (NSMutableURLRequest *)createRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)uri parameters:(nullable NSDictionary *)param{
+- (NSMutableURLRequest *)createRequestWithMethod:(SFNHTTPMethod)method uri:(NSString *)uri parameters:(NSDictionary *)param{
     NSURL *url = [self.baseUrl URLByAppendingPathComponent:uri];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.timeoutInterval = 15;
@@ -90,7 +74,7 @@ static NSString *queryPramameters(NSDictionary *param){
 }
 
 - (NSURLSessionDataTask *)request:(NSURLRequest *)request
-                          plugin:(nullable id <SFPlugin>)plugin
+                          plugin:(id <SFPlugin>)plugin
                        completion:(HTTPHandler)completion{
     NSMutableArray *plugins = [NSMutableArray array];
     while (plugin) {
@@ -121,8 +105,8 @@ static NSString *queryPramameters(NSDictionary *param){
             return nil;
         }
     }
-    __weak typeof(plugins) weakPlugins  = plugins;
-    NSURLSessionDataTask* (^resumeTask)(void) = ^NSURLSessionDataTask *{
+    typeof(plugins) weakPlugins  = plugins;
+    NSURLSessionDataTask* (^resumeTask)(void) = ^NSURLSessionDataTask *(){
         for (id <SFPlugin>plugin in weakPlugins) {
             if ([plugin respondsToSelector:@selector(willStart:)]) {
                 [plugin willStart:request];

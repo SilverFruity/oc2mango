@@ -70,9 +70,11 @@ if (x >= 0 ){
     func testDoWhileStatement(){
         let source =
 """
+
 do{
         
 }while(x > 0 && x < 0)
+
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -143,10 +145,13 @@ switch (x) {
     func testForStatement(){
         let source =
 """
+
 for (int x = 0; x < 1; x++) {
 }
+
 for (int x = 0, b = 0; x < 1 && b < 20; x++, b++) {
-    
+ 
+
 }
 """
         ocparser.parseSource(source)
@@ -157,9 +162,11 @@ for (int x = 0, b = 0; x < 1 && b < 20; x++, b++) {
     func testForInStatement(){
         let source =
 """
+
 for (UIView *view in self.view.subviews) {
     
 }
+
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess());

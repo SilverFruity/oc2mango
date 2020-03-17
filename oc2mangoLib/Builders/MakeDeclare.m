@@ -128,6 +128,10 @@ DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Ex
             declare.expression = ((AssignExpression *)exp).expression;
         }
     }
+    if ([value.value isKindOfClass:[BlockImp class]]) {
+        BlockImp *exp = value.value;
+        NSLog(@"%@",@(exp.statements.count));
+    }
     declare.name = variable.value;
     return declare;
 }
@@ -187,20 +191,6 @@ ContinueStatement *makeContinueStatement(void){
     return [ContinueStatement new];
 }
 
-
-void pushFuncSymbolTable(void){
-    [OCParser.stack push:[FuncSymbolTable new]];
-}
-void popFuncSymbolTable(void){
-    [OCParser.stack pop];
-}
-Symbol *addSymbol(TypeSpecial *type,NSString *name,SymbolKind kind){
-    Symbol *sym = [Symbol symbolWithName:name kind:kind];
-    sym.type = type;
-    [OCParser.stack addSymbol:sym forKey:name];
-    return sym;
-}
-
 static NSMutableString *buffer = nil;
 void appendCharacter(char chr){
     static dispatch_once_t onceToken;
@@ -208,6 +198,13 @@ void appendCharacter(char chr){
         buffer = [NSMutableString string];
     });
     [buffer appendFormat:@"%c",chr];
+}
+void appendText(char *text){
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        buffer = [NSMutableString string];
+    });
+    [buffer appendFormat:@"%s",text];
 }
 
 

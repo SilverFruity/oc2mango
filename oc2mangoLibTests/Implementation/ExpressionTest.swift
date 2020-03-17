@@ -39,6 +39,22 @@ class ExpressionTest: XCTestCase {
         NSObject <NSObject> *a;
         NSMutableArray <NSObject *> *array;
         NSString *x = @"123";
+        int* (*a)(int a, int b);
+        NSURLSessionDataTask* (^resumeTask)(void);
+        a = *x * b * 1;
+        int ***a;
+        NSURLSessionDataTask* (^resumeTask)(int a) = ^NSURLSessionDataTask *(int a){
+            return task;
+        };
+        NSURLSessionDataTask* (^resumeTask)(void) = ^{
+        
+        };
+        NSURLSessionDataTask* (^resumeTask)(void) = ^NSURLSessionDataTask *(){
+        
+        };
+        NSURLSessionDataTask* (^resumeTask)(void) = ^NSURLSessionDataTask *{
+        
+        };
         """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -82,11 +98,11 @@ class ExpressionTest: XCTestCase {
         XCTAssert(assign11?.type.type == TypeUInt)
         
         let assign12 = ocparser.ast.globalStatements[12] as? DeclareExpression
-        XCTAssert(assign12?.type.type == TypeBlock)
+        XCTAssert(assign12?.type.type == TypeBlock, "\(assign12?.type.type)")
         XCTAssert(assign12?.name == "block")
         
         let assign13 = ocparser.ast.globalStatements[13] as? DeclareExpression
-        XCTAssert(assign13?.type.type == TypeId)
+        XCTAssert(assign13?.type.type == TypeObject,"\(assign13?.type.type)")
         
         let assign14 = ocparser.ast.globalStatements[14] as? DeclareExpression
         XCTAssert(assign14?.type.type == TypeObject)
@@ -101,6 +117,10 @@ class ExpressionTest: XCTestCase {
         let expresssion16 = assign16?.expression as? OCValue
         XCTAssert(expresssion16?.value_type == OCValueString)
         XCTAssert(expresssion16?.value as? String == "123")
+        
+        let assign17 = ocparser.ast.globalStatements[17] as? DeclareExpression
+        XCTAssert(assign17?.type.type == TypeFunction, "\(assign17?.type.type)")
+        XCTAssert(assign17?.name == "a",assign17?.name ?? "")
     }
     
     
@@ -118,7 +138,7 @@ class ExpressionTest: XCTestCase {
         XCTAssert(ocparser.isSuccess())
     }
     
-    func testPrimaryExpression(){
+      func testPrimaryExpression(){
         source =
         """
         object;
@@ -135,8 +155,8 @@ class ExpressionTest: XCTestCase {
         @protocol(NSObject);
         ^{};
         ^void {};
+        ^int* (NSString *name,NSObject *object){};
         ^(NSString *name,NSObject *object){};
-        ^int (NSString *name,NSObject *object){};
         *a;
         &b;
         @(10);
@@ -147,7 +167,6 @@ class ExpressionTest: XCTestCase {
         [NSObject value1:1 value2:2 value3:3 value4:4];
         [[self.x new].y test];
         (NSObject *)[NSObject new];
-        (__bridge id)object;
         @{@"key": @"value", x.z : [Object new]};
         @[value1,value2];
         """ 
@@ -164,7 +183,7 @@ class ExpressionTest: XCTestCase {
     func testBinaryExpession(){
         source =
         """
-        x^b;
+        
         x < 1;
         x < 1 && b > 0;
         x.y && y->z || [NSObject new].x && [self.x isTrue];

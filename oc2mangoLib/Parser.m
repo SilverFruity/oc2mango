@@ -27,7 +27,6 @@ void UncaughtExceptionHandler(NSException *exception) {
 {
     self = [super init];
     self.ast = [AST new];
-    self.stack = [FuncSymbolStack new];
     NSSetUncaughtExceptionHandler(&UncaughtExceptionHandler);
     return self;
 }
@@ -50,7 +49,6 @@ void UncaughtExceptionHandler(NSException *exception) {
     [self.lock lock];
     self.ast = [AST new];
     self.error = nil;
-    self.stack = [FuncSymbolStack new];
     [self.lock unlock];
 }
 @end

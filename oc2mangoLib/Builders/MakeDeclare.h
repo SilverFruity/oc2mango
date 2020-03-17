@@ -49,4 +49,5 @@ extern ContinueStatement *makeContinueStatement(void);
 
 
 extern void appendCharacter(char chr);
+void appendText(char *text);
 NSString * getString(void);

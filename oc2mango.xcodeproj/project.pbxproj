@@ -11,8 +11,6 @@
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */; };
-		638C80FC229643B000E79EA8 /* SymbolStack.h in Headers */ = {isa = PBXBuildFile; fileRef = 638C80FA229643B000E79EA8 /* SymbolStack.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		638C80FD229643B000E79EA8 /* SymbolStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 638C80FB229643B000E79EA8 /* SymbolStack.m */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
 		EE127798228084260065B1E4 /* Expression.h in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC888226E0FBA003AD212 /* Expression.h */; };
 		EE12779B228084260065B1E4 /* OCValue.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* OCValue.h */; };
@@ -92,8 +90,6 @@
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FuncDeclare.h; sourceTree = "<group>"; };
 		6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FuncDeclare.m; sourceTree = "<group>"; };
-		638C80FA229643B000E79EA8 /* SymbolStack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SymbolStack.h; sourceTree = "<group>"; };
-		638C80FB229643B000E79EA8 /* SymbolStack.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolStack.m; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
 		EE1C71EE22882DBF0077A71E /* TestSource.imp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestSource.imp; sourceTree = "<group>"; };
@@ -238,8 +234,6 @@
 			children = (
 				EE5534D12290053800A4B32E /* Convert.h */,
 				EE5534D22290053800A4B32E /* Convert.m */,
-				638C80FA229643B000E79EA8 /* SymbolStack.h */,
-				638C80FB229643B000E79EA8 /* SymbolStack.m */,
 				EE5534CD2290032700A4B32E /* AST.h */,
 				EE5534CE2290032700A4B32E /* AST.m */,
 				EE982F05226CB443008712C2 /* MakeDeclare.h */,
@@ -337,7 +331,6 @@
 				EE1C71EB228829E90077A71E /* OCValue.h in Headers */,
 				EE5534D32290053800A4B32E /* Convert.h in Headers */,
 				EED67AAE2270B51B0015AC02 /* TypeSpecial.h in Headers */,
-				638C80FC229643B000E79EA8 /* SymbolStack.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -501,7 +494,6 @@
 				EED67A9B2270B0CA0015AC02 /* VariableDeclare.m in Sources */,
 				EED67A9C2270B0CA0015AC02 /* PropertyDeclare.m in Sources */,
 				EED67AA12270B0CA0015AC02 /* Expression.m in Sources */,
-				638C80FD229643B000E79EA8 /* SymbolStack.m in Sources */,
 				EE5534D42290053800A4B32E /* Convert.m in Sources */,
 				EED67A9F2270B0CA0015AC02 /* MethodImplementation.m in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
