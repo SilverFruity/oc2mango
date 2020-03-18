@@ -19,12 +19,10 @@ extern Variable *makeVar(NSString *name, NSUInteger ptCount);
 extern Variable *makeVar(NSString *name) __attribute__((overloadable)) ;
 extern TypeVarPair *makeTypeVarPair(TypeSpecial *type, Variable *var);
 
-extern VariableDeclare *makeVariableDeclare(TypeSpecial *type, NSString *name);
 extern OCClass *makeOCClass(NSString *className);
-extern MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnType);
+extern MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeVarPair *returnType);
 extern MethodImplementation *makeMethodImplementation(MethodDeclare *declare);
-extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars, NSString *name);
-extern FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars) __attribute__((overloadable));
+extern FuncDeclare *makeFuncDeclare(TypeVarPair *returnType, FuncVariable *var);
 
 extern OCValue *makeValue(OC_VALUE_TYPE type, id value);
 extern OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
@@ -33,7 +31,7 @@ extern UnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern BinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern TernaryExpression *makeTernaryExpression(void);
 extern AssignExpression *makeAssignExpression(AssignOperatorType type);
-extern DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Expression> exp);
+extern DeclareExpression *makeDeclareExpression(TypeSpecial *type,Variable *var,id <Expression> exp);
 
 
 extern IfStatement *makeIfStatement(id <Expression>judgement, BlockImp *imp);

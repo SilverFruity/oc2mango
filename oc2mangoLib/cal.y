@@ -47,8 +47,8 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type <Operator>  assign_operator unary_operator
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
 %type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys
-%type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list
-%type <IntValue> pointer pointer_optional
+%type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional
+%type <IntValue> pointer pointer_optional 
 %%
 
 compile_util: /*empty*/
@@ -72,18 +72,17 @@ definition:
             }
 	    ;
 global_define:
-            CLASS_DECLARE IDENTIFIER SEMICOLON
-          | PROTOCOL IDENTIFIER SEMICOLON
-          | type_specifier declarator SEMICOLON
-          | type_specifier declarator LC function_implementation RC
-        //   {
-        //       NSString *name = _typeId $2;
-        //       BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
-        //       imp.declare = makeFuncDeclare(_typeId $1,_typeId $4,name);
-        //       [imp copyFromImp:_typeId $7];
-        //       [LibAst addGlobalStatements:imp];
-        //   }
-          ;
+    CLASS_DECLARE IDENTIFIER SEMICOLON
+    | PROTOCOL IDENTIFIER SEMICOLON
+    | type_specifier declarator LC function_implementation RC
+    {
+        TypeVarPair *returnType = makeTypeVarPair(_typeId $1, nil);
+        FuncDeclare *declare = makeFuncDeclare(returnType, _typeId $2);
+        BlockImp *imp = _transfer(BlockImp *) $4;
+        imp.declare = declare;
+        [LibAst addGlobalStatements:imp];
+    }
+    ;
 
 protocol_declare:
             PROTOCOL IDENTIFIER CHILD_COLLECTION
@@ -126,7 +125,7 @@ class_declare:
 
                 PropertyDeclare *property = [PropertyDeclare new];
                 property.keywords = _transfer(NSMutableArray *) $3;
-                property.var = _transfer(VariableDeclare *) $4;
+                property.var = _transfer(TypeVarPair *) $4;
                 
                 [occlass.properties addObject:property];
                 $$ = _vretained occlass;
@@ -187,7 +186,7 @@ class_private_varibale_declare: // empty
             | class_private_varibale_declare parameter_declaration SEMICOLON
             {
                 NSMutableArray *list = _transfer(NSMutableArray *) $1;
-				[list addObject:_transfer(VariableDeclare *) $2];
+				[list addObject:_transfer(TypeVarPair *) $2];
 				$$ = (__bridge_retained void *)list;
             }
             ;
@@ -256,13 +255,13 @@ declare_right_attribute:
 method_declare:
             SUB LP parameter_declaration RP
             {   
-                VariableDeclare *declare = _transfer(VariableDeclare *)$3;
-                $$ = _vretained makeMethodDeclare(NO,declare.type);
+                TypeVarPair *declare = _transfer(TypeVarPair *)$3;
+                $$ = _vretained makeMethodDeclare(NO,declare);
             }
             | ADD LP parameter_declaration RP
             {
-                VariableDeclare *declare = _transfer(VariableDeclare *)$3;
-                $$ = _vretained makeMethodDeclare(YES,declare.type);
+                TypeVarPair *declare = _transfer(TypeVarPair *)$3;
+                $$ = _vretained makeMethodDeclare(YES,declare);
             }
             | method_declare IDENTIFIER
             {
@@ -272,10 +271,10 @@ method_declare:
             }
             | method_declare IDENTIFIER COLON LP parameter_declaration RP IDENTIFIER
             {
-                VariableDeclare *declare = _transfer(VariableDeclare *)$5;
+                TypeVarPair *pair = _transfer(TypeVarPair *)$5;
                 MethodDeclare *method = _transfer(MethodDeclare *)$$;
                 [method.methodNames addObject:_transfer(NSString *) $2];
-                [method.parameterTypes addObject:declare.type];
+                [method.parameterTypes addObject:pair];
                 [method.parameterNames addObject:_transfer(NSString *) $7];
                 $$ = _vretained method;
             }
@@ -333,13 +332,23 @@ block_parameters_optinal:
     {
         $$ = _vretained (__bridge NSMutableArray *)$2;
     }
-    ;
+    ;   
+type_specifier_optional:
+        {
+            $$ = nil;
+        }
+        | type_specifier
+        
 block_implementation:
         //^returnType(optional) parameters(optional){ }
-        POWER type_specifier declarator block_parameters_optinal LC function_implementation RC
+        POWER type_specifier_optional pointer_optional block_parameters_optinal LC function_implementation RC
         {
-            FuncDeclare *declare = makeFuncDeclare( _typeId $2,_typeId $3);
-            BlockImp *imp = _transfer(BlockImp *) $5;
+            TypeVarPair *var = makeTypeVarPair(_typeId $2, makeVar(nil,$3));
+            FuncVariable *funVar = [FuncVariable new];
+            funVar.pairs = _transfer(NSMutableArray *)$4;
+            funVar.ptCount = -1;
+            FuncDeclare *declare = makeFuncDeclare(var, funVar);
+            BlockImp *imp = _transfer(BlockImp *) $6;
             imp.declare = declare;
             $$ = _vretained imp;
         }
@@ -956,6 +965,7 @@ declaration:
         NSMutableArray *array = _transfer(NSMutableArray *)$2;
         for (DeclareExpression *declare in array){
             declare.type = _typeId $1;
+            _vretained declare;
         }
         $$ = _vretained array;
     }
@@ -974,14 +984,23 @@ init_declarator_list:
 	;
 
 init_declarator:
-     declarator
-	| declarator ASSIGN assign_expression
+    declarator
     {
-        DeclareExpression *declare = _transfer(DeclareExpression *) $1;
-        declare.expression = _typeId $3;
-        $$ = _vretained declare;
+        $$ = _vretained makeDeclareExpression(nil, _typeId $1, nil);
+    }
+    | declarator ASSIGN assign_expression
+    {
+        $$ = _vretained makeDeclareExpression(nil, _typeId $1, _typeId $3);
     }
 	;
+
+
+declarator_optional:
+        {
+            $$ = _vretained makeVar(nil);
+        }
+        | declarator
+        ;
 
 declarator:
         direct_declarator
@@ -997,12 +1016,14 @@ declarator:
             var.ptCount = $1;
             $$ = _vretained var;
         }
+
         ;
-declarator_optional:
+
+direct_declarator_optional:
         {
             $$ = _vretained makeVar(nil);
         }
-        | declarator
+        | direct_declarator
         ;
 
 direct_declarator:
@@ -1014,20 +1035,14 @@ direct_declarator:
         {
             $$ = _vretained _typeId $2;
         }
-        // ***(int *,value *,id) 这种情况不处理
-        |direct_declarator LP parameter_type_list RP
+        | direct_declarator LP parameter_type_list RP
         {
             FuncVariable *funVar = [FuncVariable copyFromVar:_transfer(Variable *)$1];
             funVar.pairs = _transfer(NSMutableArray *)$3;
             $$ = _vretained funVar;
         }
         ;
-direct_declarator_optional:
-        {
-            $$ = nil;
-        }
-        | direct_declarator
-        ;
+
 
 pointer:
         POINT

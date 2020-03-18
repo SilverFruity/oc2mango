@@ -30,17 +30,12 @@ extern TypeVarPair *makeTypeVarPair(TypeSpecial *type, Variable *var){
     pair.var = var;
     return pair;
 }
-VariableDeclare *makeVariableDeclare(TypeSpecial *type, NSString *name){
-    VariableDeclare *var = [VariableDeclare new];
-    var.type = type;
-    var.name = name;
-    return var;
-}
+
 OCClass *makeOCClass(NSString *className){
     return [OCClass classWithClassName:className];
 }
 
-MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnType){
+MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeVarPair *returnType){
     MethodDeclare *method = [MethodDeclare new];
     method.methodNames = [NSMutableArray array];
     method.parameterNames  = [NSMutableArray array];
@@ -49,19 +44,13 @@ MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeSpecial *returnType){
     method.returnType = returnType;
     return method;
 }
-FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars,NSString *name){
+FuncDeclare *makeFuncDeclare(TypeVarPair *returnType,FuncVariable *var){
     FuncDeclare *decl = [FuncDeclare new];
     decl.returnType = returnType;
-    decl.name = name;
-    if (vars) {
-        assert([vars isKindOfClass:[NSMutableArray class]]);
-    }
-    decl.variables = vars;
+    decl.var = var;
     return decl;
 }
-FuncDeclare *makeFuncDeclare(TypeSpecial *returnType,NSMutableArray *vars) __attribute__((overloadable)){
-    return makeFuncDeclare(returnType, vars, nil);
-}
+
 MethodImplementation *makeMethodImplementation(MethodDeclare *declare){
     MethodImplementation *imp = [MethodImplementation new];
     imp.declare = declare;
@@ -116,37 +105,11 @@ AssignExpression *makeAssignExpression(AssignOperatorType type){
     expression.assignType = type;
     return expression;
 }
-DeclareExpression *makeDeclareExpression(TypeSpecial *type,OCValue *value,id <Expression> exp){
+extern DeclareExpression *makeDeclareExpression(TypeSpecial *type,Variable *var,id <Expression> exp){
     DeclareExpression *declare = [DeclareExpression new];
     declare.type = type;
     declare.expression = exp;
-    OCValue *variable = value;
-    if (value == nil) {
-        if([exp isKindOfClass:[UnaryExpression class]]){
-            UnaryExpression *unary = (UnaryExpression *)exp;
-            while ([unary isKindOfClass:[UnaryExpression class]] && unary.operatorType == UnaryOperatorAdressValue) {
-                unary = unary.value;
-            }
-            variable = (OCValue *)unary;
-        }else if([exp isKindOfClass:[AssignExpression class]]){
-            id <Expression> assignValue = ((AssignExpression *)exp).value;
-            if ([assignValue isKindOfClass:[UnaryExpression class]]) {
-                UnaryExpression *unary = (UnaryExpression *)exp;
-                while ([unary isKindOfClass:[UnaryExpression class]] && unary.operatorType == UnaryOperatorAdressValue) {
-                    unary = unary.value;
-                }
-                variable = (OCValue *)unary;
-            }else if ([assignValue isKindOfClass:[OCValue class]]){
-                variable = (OCValue *)assignValue;
-            }
-            declare.expression = ((AssignExpression *)exp).expression;
-        }
-    }
-    if ([value.value isKindOfClass:[BlockImp class]]) {
-        BlockImp *exp = value.value;
-        NSLog(@"%@",@(exp.statements.count));
-    }
-    declare.name = variable.value;
+    declare.var = var;
     return declare;
 }
 

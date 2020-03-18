@@ -55,7 +55,6 @@ enum{
 
 @interface TypeSpecial : NSObject
 @property (nonatomic, assign) TypeKind type;
-@property (nonatomic, assign) NSInteger ptCount;
 @property (nonatomic, nullable, copy) NSString * name;
 + (instancetype)specialWithType:(TypeKind)type name:(NSString *)name;
 @end

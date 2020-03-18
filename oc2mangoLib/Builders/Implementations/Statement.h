@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "VariableDeclare.h"
 #import "Expression.h"
 @class BlockImp;
 

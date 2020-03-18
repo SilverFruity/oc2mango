@@ -40,18 +40,19 @@ class ExpressionTest: XCTestCase {
         NSMutableArray <NSObject *> *array;
         NSString *x = @"123";
         int* (*a)(int a, int b);
-        NSURLSessionDataTask* (^resumeTask)(void);
+        NSURLSessionDataTask* (^resumeTask)(int *a);
         a = *x * b * 1;
         int ***a;
+        int a=0,b=0,c=0;
+        int a,b,c=0;
+        NSURLSessionDataTask* (^resumeTask)(int *a) = ^{
+        
+        };
+        
         NSURLSessionDataTask* (^resumeTask)(int a) = ^NSURLSessionDataTask *(int a){
             return task;
         };
-        NSURLSessionDataTask* (^resumeTask)(void) = ^{
-        
-        };
-        NSURLSessionDataTask* (^resumeTask)(void) = ^NSURLSessionDataTask *(){
-        
-        };
+
         NSURLSessionDataTask* (^resumeTask)(void) = ^NSURLSessionDataTask *{
         
         };
@@ -61,7 +62,7 @@ class ExpressionTest: XCTestCase {
 
         let assign = ocparser.ast.globalStatements[0] as? DeclareExpression;
         XCTAssert(assign?.type.type == TypeInt)
-        XCTAssert(assign?.name == "a")
+        XCTAssert(assign?.var.varname == "a")
         
         let assign1 = ocparser.ast.globalStatements[1] as? DeclareExpression;
         XCTAssert(assign1?.type.type == TypeInt)
@@ -98,8 +99,8 @@ class ExpressionTest: XCTestCase {
         XCTAssert(assign11?.type.type == TypeUInt)
         
         let assign12 = ocparser.ast.globalStatements[12] as? DeclareExpression
-        XCTAssert(assign12?.type.type == TypeBlock, "\(assign12?.type.type)")
-        XCTAssert(assign12?.name == "block")
+        XCTAssert(assign12?.var.ptCount == -1)
+        XCTAssert(assign12?.var.varname == "block")
         
         let assign13 = ocparser.ast.globalStatements[13] as? DeclareExpression
         XCTAssert(assign13?.type.type == TypeObject,"\(assign13?.type.type)")
@@ -119,8 +120,8 @@ class ExpressionTest: XCTestCase {
         XCTAssert(expresssion16?.value as? String == "123")
         
         let assign17 = ocparser.ast.globalStatements[17] as? DeclareExpression
-        XCTAssert(assign17?.type.type == TypeFunction, "\(assign17?.type.type)")
-        XCTAssert(assign17?.name == "a",assign17?.name ?? "")
+        XCTAssert(assign17?.var.ptCount == 1)
+        XCTAssert(assign17?.var.varname == "a",assign17?.var.varname ?? "")
     }
     
     
@@ -153,6 +154,7 @@ class ExpressionTest: XCTestCase {
         super;
         @selector(new);
         @protocol(NSObject);
+        ^void *{};
         ^{};
         ^void {};
         ^int* (NSString *name,NSObject *object){};
@@ -169,6 +171,7 @@ class ExpressionTest: XCTestCase {
         (NSObject *)[NSObject new];
         @{@"key": @"value", x.z : [Object new]};
         @[value1,value2];
+        
         """ 
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())

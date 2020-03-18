@@ -16,7 +16,7 @@
 @property (nonatomic,copy)NSString *superClassName;
 @property (nonatomic,strong)NSMutableArray <NSString *>*protocols;
 @property (nonatomic,strong)NSMutableArray <PropertyDeclare *>*properties;
-@property (nonatomic,strong)NSMutableArray <VariableDeclare *>*privateVariables;
+@property (nonatomic,strong)NSMutableArray <TypeVarPair *>*privateVariables;
 @property (nonatomic,strong)NSMutableArray <MethodImplementation *>*methods;
 @end
 

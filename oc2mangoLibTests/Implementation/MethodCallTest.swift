@@ -32,19 +32,19 @@ class MethodCallTest: XCTestCase {
 
 [[self.x method].y method1];
 [[self.x method].y method1].x;
+self.callback(self,@(20),@"123");
+
+make.top.equalTo(back.mas_bottom);
+make.left.right.equalTo(self.view);
+make.height.equalTo(@(240));
+completion(httpReponse,result,error);
 
 [object setCallBack:^(NSString *name){ }];
-
-self.callback(self,@(20),@"123");
 [self.chartView mas_makeConstraints:^(NSConstraintMaker *make) {
     make.top.equalTo(back.mas_bottom);
     make.left.right.equalTo(self.view);
     make.height.equalTo(@(240));
 }];
-make.top.equalTo(back.mas_bottom);
-make.left.right.equalTo(self.view);
-make.height.equalTo(@(240));
-completion(httpReponse,result,error);
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())

@@ -6,12 +6,12 @@
 //  Copyright © 2019年 SilverFruity. All rights reserved.
 //
 
-#import "VariableDeclare.h"
+#import "TypeSpecial.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface PropertyDeclare : NSObject
 @property(nonatomic,strong) NSMutableArray *keywords;
-@property(nonatomic,strong) VariableDeclare *var;
+@property(nonatomic,strong) TypeVarPair *var;
 @end
 
 NS_ASSUME_NONNULL_END

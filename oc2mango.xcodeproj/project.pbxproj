@@ -34,7 +34,6 @@
 		EED67A972270B0CA0015AC02 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
 		EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
 		EED67A9A2270B0CA0015AC02 /* TypeSpecial.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EF7226C45CF008712C2 /* TypeSpecial.m */; };
-		EED67A9B2270B0CA0015AC02 /* VariableDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EFA226C7F7B008712C2 /* VariableDeclare.m */; };
 		EED67A9C2270B0CA0015AC02 /* PropertyDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F00226CA69B008712C2 /* PropertyDeclare.m */; };
 		EED67A9D2270B0CA0015AC02 /* MethodDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F03226CB3C7008712C2 /* MethodDeclare.m */; };
 		EED67A9F2270B0CA0015AC02 /* MethodImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F0F226CBD28008712C2 /* MethodImplementation.m */; };
@@ -44,7 +43,6 @@
 		EED67AAA2270B1C70015AC02 /* Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67AA82270B1C70015AC02 /* Parser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AAB2270B1C70015AC02 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
 		EED67AAE2270B51B0015AC02 /* TypeSpecial.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982EF6226C45CF008712C2 /* TypeSpecial.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EED67AAF2270B51B0015AC02 /* VariableDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982EF9226C7F7B008712C2 /* VariableDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AB02270B51B0015AC02 /* PropertyDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982EFF226CA69B008712C2 /* PropertyDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AB12270B51B0015AC02 /* MethodDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F02226CB3C7008712C2 /* MethodDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AB22270B51B0015AC02 /* MethodImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F0E226CBD28008712C2 /* MethodImplementation.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -109,8 +107,6 @@
 		EE6E6CDB225E496600616C7E /* cal.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = cal.l; sourceTree = "<group>"; };
 		EE982EF6226C45CF008712C2 /* TypeSpecial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeSpecial.h; sourceTree = "<group>"; };
 		EE982EF7226C45CF008712C2 /* TypeSpecial.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeSpecial.m; sourceTree = "<group>"; };
-		EE982EF9226C7F7B008712C2 /* VariableDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VariableDeclare.h; sourceTree = "<group>"; };
-		EE982EFA226C7F7B008712C2 /* VariableDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VariableDeclare.m; sourceTree = "<group>"; };
 		EE982EFF226CA69B008712C2 /* PropertyDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PropertyDeclare.h; sourceTree = "<group>"; };
 		EE982F00226CA69B008712C2 /* PropertyDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PropertyDeclare.m; sourceTree = "<group>"; };
 		EE982F02226CB3C7008712C2 /* MethodDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MethodDeclare.h; sourceTree = "<group>"; };
@@ -249,8 +245,6 @@
 			children = (
 				EE982EF6226C45CF008712C2 /* TypeSpecial.h */,
 				EE982EF7226C45CF008712C2 /* TypeSpecial.m */,
-				EE982EF9226C7F7B008712C2 /* VariableDeclare.h */,
-				EE982EFA226C7F7B008712C2 /* VariableDeclare.m */,
 				EE982EFF226CA69B008712C2 /* PropertyDeclare.h */,
 				EE982F00226CA69B008712C2 /* PropertyDeclare.m */,
 				EE982F02226CB3C7008712C2 /* MethodDeclare.h */,
@@ -318,7 +312,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EED67AB22270B51B0015AC02 /* MethodImplementation.h in Headers */,
-				EED67AAF2270B51B0015AC02 /* VariableDeclare.h in Headers */,
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
@@ -491,7 +484,6 @@
 				EE12779B228084260065B1E4 /* OCValue.h in Sources */,
 				6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */,
 				EE12779C228084260065B1E4 /* OCValue.m in Sources */,
-				EED67A9B2270B0CA0015AC02 /* VariableDeclare.m in Sources */,
 				EED67A9C2270B0CA0015AC02 /* PropertyDeclare.m in Sources */,
 				EED67AA12270B0CA0015AC02 /* Expression.m in Sources */,
 				EE5534D42290053800A4B32E /* Convert.m in Sources */,

@@ -245,7 +245,7 @@
 <INITIAL>"*" {
     return ASTERISK;
 }
-<INITIAL>\*+[ ]*[A-Za-z_$0-9]*[ ]*[,()] {
+<INITIAL>\*+[ ]*[A-Za-z_$0-9]*[ ]*[,(){}] {
     yyless(1);
     return POINT;
 }

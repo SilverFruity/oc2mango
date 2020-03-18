@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "VariableDeclare.h"
-
+#import "TypeSpecial.h"
 @class OCValue;
 
 
@@ -44,7 +43,7 @@ typedef enum {
 
 @interface DeclareExpression: NSObject <Expression>
 @property (nonatomic,strong)TypeSpecial *type;
-@property (nonatomic,copy)NSString *name;
+@property (nonatomic,strong)Variable *var;
 @property (nonatomic,strong)id <Expression> expression;
 @end
 

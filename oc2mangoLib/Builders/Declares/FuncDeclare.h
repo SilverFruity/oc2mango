@@ -7,13 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "VariableDeclare.h"
+#import "TypeSpecial.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FuncDeclare : NSObject
-@property(nonatomic,strong) TypeSpecial *returnType;
-@property(nonatomic,copy) NSString *name;
-@property(nonatomic,strong) NSMutableArray  *variables;
+@property(nonatomic,strong) TypeVarPair *returnType;
+@property(nonatomic,strong) FuncVariable *var;
 @end
 
 NS_ASSUME_NONNULL_END
