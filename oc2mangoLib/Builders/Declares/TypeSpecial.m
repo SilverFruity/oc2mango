@@ -16,3 +16,21 @@
     return s;
 }
 @end
+
+@implementation Variable
+
++ (instancetype)copyFromVar:(Variable *)var{
+    Variable *new = [[self class] new];
+    new.ptCount = var.ptCount;
+    new.varname = var.varname;
+    return new;
+}
+@end
+
+@implementation TypeVarPair
+
+@end
+
+@implementation FuncVariable
+
+@end

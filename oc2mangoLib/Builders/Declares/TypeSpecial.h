@@ -55,8 +55,24 @@ enum{
 
 @interface TypeSpecial : NSObject
 @property (nonatomic, assign) TypeKind type;
-@property (nonatomic, assign) NSUInteger ptCount;
+@property (nonatomic, assign) NSInteger ptCount;
 @property (nonatomic, nullable, copy) NSString * name;
-
 + (instancetype)specialWithType:(TypeKind)type name:(NSString *)name;
+@end
+
+
+@interface Variable: NSObject
+@property (nonatomic, assign) NSInteger ptCount;
+@property (nonatomic, nullable, copy) NSString * varname;
++ (instancetype)copyFromVar:(Variable *)var;
+@end
+
+@interface TypeVarPair : NSObject
+@property (nonatomic, strong)TypeSpecial *type;
+@property (nonatomic, strong)Variable *var;
+@end
+
+@interface FuncVariable: Variable
+@property(nonatomic,strong) NSMutableArray <TypeVarPair *>*pairs;
+
 @end

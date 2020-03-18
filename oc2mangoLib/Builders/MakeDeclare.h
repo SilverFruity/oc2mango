@@ -15,6 +15,9 @@
 
 extern TypeSpecial *makeTypeSpecial(TypeKind type, NSString *name);
 extern TypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)) ;
+extern Variable *makeVar(NSString *name, NSUInteger ptCount);
+extern Variable *makeVar(NSString *name) __attribute__((overloadable)) ;
+extern TypeVarPair *makeTypeVarPair(TypeSpecial *type, Variable *var);
 
 extern VariableDeclare *makeVariableDeclare(TypeSpecial *type, NSString *name);
 extern OCClass *makeOCClass(NSString *className);

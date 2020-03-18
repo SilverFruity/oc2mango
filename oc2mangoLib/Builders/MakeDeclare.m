@@ -15,7 +15,21 @@ TypeSpecial *makeTypeSpecial(TypeKind type ,NSString *name){
 TypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)){
     return makeTypeSpecial(type, nil);
 }
-
+Variable *makeVar(NSString *name, NSUInteger ptCount){
+    Variable *var = [Variable new];
+    var.ptCount = ptCount;
+    var.varname = name;
+    return var;
+}
+Variable *makeVar(NSString *name) __attribute__((overloadable)){
+    return makeVar(name, 0);
+}
+extern TypeVarPair *makeTypeVarPair(TypeSpecial *type, Variable *var){
+    TypeVarPair *pair = [TypeVarPair new];
+    pair.type = type;
+    pair.var = var;
+    return pair;
+}
 VariableDeclare *makeVariableDeclare(TypeSpecial *type, NSString *name){
     VariableDeclare *var = [VariableDeclare new];
     var.type = type;

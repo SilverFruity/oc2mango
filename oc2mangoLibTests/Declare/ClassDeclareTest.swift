@@ -21,8 +21,8 @@ class ClassDeclareTest: XCTestCase {
     func testFunction(){
         let source =
 """
-void *func(NSString a, int b);
-void *func(NSString *a, int *b){
+void (*func)(NSString a, int b);
+void func(NSString *a, int *b){
 
 }
 """
