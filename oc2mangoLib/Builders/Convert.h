@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)convertStatement:(Statement *)statement;
 
 - (NSString *)convertTypeSpecial:(TypeSpecial *)type;
-- (NSString *)convertVariableDeclare:(VariableDeclare *)varDecl;
 - (NSString *)convertPropertyDeclare:(PropertyDeclare *)propertyDecl;
 - (NSString *)convertMethoDeclare:(MethodDeclare *)methodDecl;
 - (NSString *)convertMethodImp:(MethodImplementation *)methodImp;

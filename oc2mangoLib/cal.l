@@ -40,7 +40,7 @@
 
 %}
 
-%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY
+%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE
 %%
 <INITIAL>"#" { BEGIN POUNDKEY; }
 <POUNDKEY>.* ;
@@ -52,17 +52,17 @@
 <INITIAL>")" { return RP; }
 <INITIAL>"[" { return LB; }
 <INITIAL>"]" { return RB; }
-<INITIAL>"{" { pushFuncSymbolTable(); return LC; }
-<INITIAL>"}" { popFuncSymbolTable(); return RC; }
+<INITIAL>"{" { return LC; }
+<INITIAL>"}" { return RC; }
 <INITIAL>"." { return DOT; }
-<INITIAL>"->" { return POINT; }
+<INITIAL>"->" { return ARROW; }
 <INITIAL>"@" { return AT; }
 <INITIAL>"?" {return QUESTION; }
 <INITIAL>":" { return COLON; }
 
 <INITIAL>"==" {return EQ; }
 <INITIAL>"!=" {return NE; }
-<INITIAL>"<" {return LT; }
+
 <INITIAL>"<=" {return LE; }
 <INITIAL>">" {return GT; }
 <INITIAL>">=" {return GE; }   
@@ -79,7 +79,6 @@
 <INITIAL>"-" {return SUB; }
 <INITIAL>"+" {return ADD; }
 <INITIAL>"/" {return DIV; }
-<INITIAL>"*" {return ASTERISK; }
 <INITIAL>"%" {return MOD; }
 
 <INITIAL>"=" {return ASSIGN; }
@@ -140,7 +139,6 @@
 <INITIAL>"Class" { TypeReturn(Class);}
 <INITIAL>"BOOL" { TypeReturn(BOOL); }
 <INITIAL>"void" { TypeReturn(void); }
-<INITIAL>"id" { TypeReturn(id); }
 <INITIAL>"instancetype" { TypeReturn(instancetype); }
 
 
@@ -176,9 +174,8 @@
 <INITIAL>"sizeof" { TypeReturn(sizeof); }
 <INITIAL>"typeof" { return TYPEOF; }
 <INITIAL>"__typeof__" { return __TYPEOF; }
-<INITIAL>"enum" { TypeReturn(enum); }
-<INITIAL>"struct" { TypeReturn(struct); }
 <INITIAL>"char" { TypeReturn(CHAR); }
+<INITIAL>"..."  {return ELLIPSIS;}
 <INITIAL>"short" { TypeReturn(SHORT); }
 <INITIAL>"int" { TypeReturn(INT); }
 <INITIAL>"long" { TypeReturn(LONG); }
@@ -213,26 +210,6 @@
 <INITIAL>[A-Za-z_$][A-Za-z_$0-9]* {
     NSString *name = [NSString stringWithUTF8String:yytext];
     yylval.identifier =(__bridge_retained void *)name;
-
-    Symbol *symbol = lookupSymbol(name);
-    if (symbol){
-        if (symbol.kind == SymbolKindTypeDeclare || symbol.kind == SymbolKindTypeDef){
-            return TYPE;
-        }else if(symbol.kind == SymbolKindVariable){
-            return VARIABLE;
-        }
-    }
-    if([name hasPrefix:@"NS"]
-    || [name hasPrefix:@"UI"]
-    || [name hasPrefix:@"CG"]
-    || [name hasPrefix:@"CA"]
-    || [name hasSuffix:@"Ref"]
-    || [name hasPrefix:@"dispatch"]
-    )
-    {
-        return TYPE;
-    }
-
     return IDENTIFIER;
 }
 
@@ -258,6 +235,26 @@
 <INITIAL>[0-9]+\.[0-9]+ { 
     yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];
     return DOUBLE_LITERAL; 
+}
+<INITIAL>"<" {
+    return LT;
+}
+<INITIAL><[A-Za-z_$][A-Za-z_$0-9]*[ ]*\**[ ]*> {
+    return CHILD_COLLECTION;
+}
+<INITIAL>"*" {
+    return ASTERISK;
+}
+<INITIAL>\*+[ ]*[A-Za-z_$0-9]*[ ]*[,(){}] {
+    yyless(1);
+    return POINT;
+}
+
+<INITIAL>\*+[ ]*[A-Za-z_$][A-Za-z_$0-9]*[ ]*[;="in"] {
+    // FIXME: a = x * b; error    a = x * b * 1; true
+    // FIXME: a = *x;
+    yyless(1);
+    return POINT;
 }
 
 

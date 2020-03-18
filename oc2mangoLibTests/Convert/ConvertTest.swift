@@ -255,7 +255,7 @@ let source =
 - (NSURLSessionDataTask *)requestWithMethod:(int)method uri:(NSString *)uri parameters:(NSDictionary *)param plugin:(id)plugin completion:(int)completion{
 
 }
-- (NSMutableURLRequest *)createRequestWithMethod:(int)method uri:(NSString *)URLString parameters:(nullable NSDictionary *)param{
+- (NSMutableURLRequest *)createRequestWithMethod:(int)method uri:(NSString *)URLString parameters:(NSDictionary *)param{
 
 }
 - (NSMutableURLRequest *)createEncryptedRequestWithMethod:(int)method uri:(NSString *)URLString parameters:(NSDictionary *)param{
@@ -302,10 +302,35 @@ let source =
         for occlas in ocparser.ast.classCache.allValues{
             result.append(convert.convert(occlas))
         }
-        print("---------")
-        print(ocparser.stack.topTable())
         let resultData = try? Data.init(contentsOf:URL.init(fileURLWithPath: bundle.path(forResource: "ConvertOuput", ofType: "txt")!))
         let resultStr = String.init(data: resultData ?? Data.init(), encoding: .utf8)!
-        XCTAssert(result == resultStr,result)
+        XCTAssert(result == resultStr,"\n"+result)
+    }
+    
+    func testConvertGloablFunction(){
+        let source =
+        """
+    NSString *queryPramameters(NSDictionary *param){
+        NSMutableArray *pairs = [NSMutableArray array];
+        [param enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            [pairs addObject:[NSString stringWithFormat:@"%@=%@",key,obj]];
+        }];
+        return [pairs componentsJoinedByString:@"&"];
+    }
+    """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let result1 = convert.convert(ocparser.ast.globalStatements[0])
+        XCTAssert(result1 ==
+            """
+            NSString *queryPramameters(NSDictionary *param){
+                NSMutableArray *pairs = NSMutableArray.array();
+                param.enumerateKeysAndObjectsUsingBlock:(^void (id key,id obj,BOOL *stop){
+                    pairs.addObject:(NSString.stringWithFormat:(@"%@=%@",key,obj));
+                });
+                return pairs.componentsJoinedByString:(@"&");
+            }
+            ""","\n"+result1)
+        
     }
 }

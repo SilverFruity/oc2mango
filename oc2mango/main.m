@@ -65,10 +65,7 @@ int main(int argc, const char * argv[]) {
     NSMutableArray *files = [NSMutableArray array];
     recursiveLookupCompileFiles(path, dirs, files);
     compileFiles(files);
-    NSLog(@"%@",OCParser.stack.topTable);
-    if (!OCParser.isSuccess) {
-        return 0;
-    }
+
     return 1;
 }
 

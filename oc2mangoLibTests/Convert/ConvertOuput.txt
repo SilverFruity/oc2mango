@@ -12,11 +12,11 @@ class SFHTTPClient:NSObject{
     self._baseUrl = baseUrl;
     return self;
 }
--(NSURLSessionDataTask *)method:(SFNHTTPMethod )method URLString:(NSString *)URLString param:(NSDictionary *)param plugin:(id )plugin completion:(HTTPHandler )completion{
+-(NSURLSessionDataTask *)method:(int )method URLString:(NSString *)URLString param:(NSDictionary *)param plugin:(id )plugin completion:(Block )completion{
     NSMutableURLRequest *request = self.createRequestWithMethod:uri:parameters:(method,URLString,param);
     return self.request:plugin:completion:(request,plugin,completion);
 }
--(NSMutableURLRequest *)method:(SFNHTTPMethod )method uri:(NSString *)uri param:(NSDictionary *)param{
+-(NSMutableURLRequest *)method:(int )method uri:(NSString *)uri param:(NSDictionary *)param{
     NSURL *url = self.baseUrl.URLByAppendingPathComponent:(uri);
     NSMutableURLRequest *request = NSMutableURLRequest.requestWithURL:(url);
     request.timeoutInterval = 15;
@@ -29,7 +29,7 @@ class SFHTTPClient:NSObject{
     }
     return request;
 }
--(NSMutableURLRequest *)method:(SFNHTTPMethod )method uri:(NSString *)uri param:(NSDictionary *)param{
+-(NSMutableURLRequest *)method:(int )method uri:(NSString *)uri param:(NSDictionary *)param{
     NSURL *url = self.baseUrl.URLByAppendingPathComponent:(uri);
     NSMutableURLRequest *request = NSMutableURLRequest.requestWithURL:(url);
     request.timeoutInterval = 15;
@@ -41,7 +41,7 @@ class SFHTTPClient:NSObject{
     request.HTTPBody = NSJSONSerialization.dataWithJSONObject:options:error:(container,0,nil);
     return request;
 }
--(NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id )plugin completion:(HTTPHandler )completion{
+-(NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id )plugin completion:(Block )completion{
     NSMutableArray *plugins = NSMutableArray.array();
     while(plugin){
         plugins.addObject:(plugin);
