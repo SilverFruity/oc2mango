@@ -13,7 +13,11 @@
     if ([content isKindOfClass:[OCClass class]]) {
         return [self convertOCClass:content];
     }else if ([content conformsToProtocol:@protocol(Expression)]){
-        return [self convertExpression:content];
+        NSMutableString *result = [[self convertExpression:content] mutableCopy];
+        if ([content isKindOfClass:[AssignExpression class]] || [content isKindOfClass:[DeclareExpression class]]) {
+            [result appendString:@";"];
+        }
+        return result;
     }else if ([content isKindOfClass:[Statement class]]){
         return [self convertStatement:content];
     }
@@ -33,7 +37,7 @@
     for (MethodImplementation *imp in occlass.methods) {
         [content appendString:[self convertMethodImp:imp]];
     }
-    [content appendString:@"\n}"];
+    [content appendString:@"\n}\n"];
     return content;
 }
 - (NSString *)convertExpression:(id <Expression>)exp{
@@ -131,7 +135,7 @@
 
 - (NSString *)convertPropertyDeclare:(PropertyDeclare *)propertyDecl{
     
-    return [NSString stringWithFormat:@"@property(%@)%@;",[propertyDecl.keywords componentsJoinedByString:@","],[self convertTypeVarPair:propertyDecl.var]];
+    return [NSString stringWithFormat:@"@property(%@)%@;\n",[propertyDecl.keywords componentsJoinedByString:@","],[self convertTypeVarPair:propertyDecl.var]];
     return @"";
 }
 - (NSString *)convertMethoDeclare:(MethodDeclare *)methodDecl{
@@ -308,6 +312,7 @@ int indentationCont = 0;
         case OCValueInt:
         case OCValueDouble:
         case OCValueConvert:
+        case OCValueBOOL:
         case OCValueVariable:
             return value.value;
             
@@ -317,9 +322,9 @@ int indentationCont = 0;
             return @"super";
 
         case OCValueString:
-            return [NSString stringWithFormat:@"@\"%@\"",value.value];
+            return [NSString stringWithFormat:@"@\"%@\"",value.value?:@""];
         case OCValueCString:
-            return [NSString stringWithFormat:@"\"%@\"",value.value];
+            return [NSString stringWithFormat:@"\"%@\"",value.value?:@""];
         case OCValueProtocol:
             return [NSString stringWithFormat:@"@protocol(%@)",value.value];
         case OCValueDictionary:

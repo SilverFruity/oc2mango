@@ -868,7 +868,7 @@ numerical_value_type:
         }
         | DOUBLE_LITERAL
         {
-            $$ = _vretained makeValue(OCValueInt,_transfer(id)$1);
+            $$ = _vretained makeValue(OCValueDouble,_transfer(id)$1);
         }
     ;
 dict_entrys:
@@ -949,11 +949,11 @@ primary_expression:
         }
         | _YES
         {
-            $$ = _vretained makeValue(OCValueBOOL);
+            $$ = _vretained makeValue(OCValueBOOL, @"YES");
         }
         | _NO
         {
-            $$ = _vretained makeValue(OCValueBOOL);
+            $$ = _vretained makeValue(OCValueBOOL, @"NO");
         }
         ;
 
@@ -1162,6 +1162,10 @@ type_specifier:
             | _BOOL
             {
                 $$ = _vretained makeTypeSpecial(TypeBOOL);
+            }
+            | _SEL
+            {
+                $$ = _vretained makeTypeSpecial(TypeSEL);
             }
             | _void
             {
