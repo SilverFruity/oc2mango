@@ -273,6 +273,7 @@ let source =
             """
             class SFHTTPClient:NSObject{
             @property(nonatomic,readonly)NSURL *baseUrl;
+
             -(id )baseUrl:(NSURL *)baseUrl{
             }
             -(NSURLSessionDataTask *)method:(int )method uri:(NSString *)uri param:(NSDictionary *)param plugin:(id )plugin completion:(int )completion{
@@ -284,6 +285,7 @@ let source =
             -(NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id )plugin completion:(int )completion{
             }
             }
+
             """,result1)
         
     }

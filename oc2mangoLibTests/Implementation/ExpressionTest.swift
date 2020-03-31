@@ -41,7 +41,6 @@ class ExpressionTest: XCTestCase {
         NSString *x = @"123";
         int* (*a)(int a, int b);
         NSURLSessionDataTask* (^resumeTask)(int *a);
-        a = *x * b * 1;
         int ***a;
         int a=0,b=0,c=0;
         int a,b,c=0;
@@ -124,7 +123,46 @@ class ExpressionTest: XCTestCase {
         XCTAssert(assign17?.var.varname == "a",assign17?.var.varname ?? "")
     }
     
-    
+    func testIgnoreTypePropertyKeyworkd(){
+        source =
+        """
+        extern int a;
+        static int a;
+        const int a;
+        int * const a;
+        
+        __strong id a;
+        __weak id a;
+        __block id a;
+        __unused id a;
+        id a = (id)b;
+        id a = (__bridge_transfer id)b;
+        id a = (__bridge_retained id)b;
+        int * _Nonnull a;
+        int * __autoreleasing a;
+        int * _Nullable a;
+        CFString a = (CFString)b;
+        """
+        ocparser.parseSource(source);
+        XCTAssert(ocparser.isSuccess())
+    }
+    func testPointExpression(){
+        source = """
+        **a = c;
+        a = *x;
+        *a = b;
+        a *= b;
+        a = x * 0.11;
+        a = x * 1;
+        void (*test)(void) = b;
+        a = x * c * 1;
+        a = x * 1 * c;
+        a = x * b;
+        a = (*x) * (*b);
+        """
+        ocparser.parseSource(source);
+        XCTAssert(ocparser.isSuccess())
+    }
     func testBinaryExpression(){
         source =
         """

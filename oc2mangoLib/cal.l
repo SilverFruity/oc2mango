@@ -40,7 +40,7 @@
 
 %}
 
-%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE
+%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE POINT_STATE
 %%
 <INITIAL>"#" { BEGIN POUNDKEY; }
 <POUNDKEY>.* ;
@@ -113,20 +113,20 @@
 <INITIAL>"nonnull" { yylval.identifier =(__bridge_retained void *)@"nonnull"; return NONNULL; }
 <INITIAL>"nullable" { yylval.identifier =(__bridge_retained void *)@"nullable"; return NULLABLE; }
 
-<INITIAL>"extern" { yylval.identifier =(__bridge_retained void *)@"extern"; return EXTERN; }
-<INITIAL>"static" { yylval.identifier =(__bridge_retained void *)@"static"; return STATIC; }
-<INITIAL>"const" { yylval.identifier =(__bridge_retained void *)@"const"; return CONST; }
-<INITIAL>"_Nonnull" { yylval.identifier =(__bridge_retained void *)@"_Nonnull"; return _NONNULL; }
-<INITIAL>"_Nullable" { yylval.identifier =(__bridge_retained void *)@"_Nullable"; return _NULLABLE; }
-<INITIAL>"__autoreleasing" { yylval.identifier =(__bridge_retained void *)@"__autoreleasing"; return _AUTORELEASE; }
+<INITIAL>"extern" ;
+<INITIAL>"static" ;
+<INITIAL>"const" ;
+<INITIAL>"_Nonnull" ;
+<INITIAL>"_Nullable" ;
+<INITIAL>"__autoreleasing" ;
 
-<INITIAL>"__strong" { yylval.identifier =(__bridge_retained void *)@"__strong"; return _STRONG; }
-<INITIAL>"__weak"  { yylval.identifier =(__bridge_retained void *)@"__weak"; return _WEAK; }
-<INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
-<INITIAL>"__bridge" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE; }
-<INITIAL>"__bridge_transfer" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE_TRANSFER; }
-<INITIAL>"__bridge_retained" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE_RETAINED; }
-<INITIAL>"__unused" { yylval.identifier =(__bridge_retained void *)@"__unused"; return _UNUSED; }
+<INITIAL>"__strong" ;
+<INITIAL>"__weak"  ;
+<INITIAL>"__block" ;
+<INITIAL>"__bridge" {} ;
+<INITIAL>"__bridge_transfer" ;
+<INITIAL>"__bridge_retained" ;
+<INITIAL>"__unused" ;
 
 <INITIAL>"@required" ;
 <INITIAL>"@optional" ;
@@ -175,6 +175,7 @@
 <INITIAL>"typeof" { return TYPEOF; }
 <INITIAL>"__typeof__" { return __TYPEOF; }
 <INITIAL>"char" { TypeReturn(CHAR); }
+<INITIAL>"id" { TypeReturn(id); }
 <INITIAL>"..."  {return ELLIPSIS;}
 <INITIAL>"short" { TypeReturn(SHORT); }
 <INITIAL>"int" { TypeReturn(INT); }
@@ -245,14 +246,39 @@
 <INITIAL>"*" {
     return ASTERISK;
 }
+
+<INITIAL>\*[ ]*[0-9] {
+    //FIX: x * 1, x * 0x10, x * 0.11
+    yyless(1);
+    return ASTERISK;
+}
 <INITIAL>\*+[ ]*[A-Za-z_$0-9]*[ ]*[,(){}] {
+    /*
+    FIX: 
+    * 
+    * a
+    int * ,
+    int * a ,
+    int * (
+    int * a (
+    int * {
+    int * a{
+    */
     yyless(1);
     return POINT;
 }
 
 <INITIAL>\*+[ ]*[A-Za-z_$][A-Za-z_$0-9]*[ ]*[;="in"] {
-    // FIXME: a = x * b; error    a = x * b * 1; true
+    // FIXME: a = x * b; error  
+    // FIXME: a = x * 1 * c; error  
+    // FIXME: a = x * b * 1; true
     // FIXME: a = *x;
+    /*
+    FIX:
+    int *_a = 
+    int *_a;
+    int *_a in
+    */
     yyless(1);
     return POINT;
 }

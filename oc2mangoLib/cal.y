@@ -798,10 +798,6 @@ unary_operator:
     {
         $$ = UnaryOperatorAdressValue;
     }
-    | ASTERISK
-    {
-        $$ = UnaryOperatorAdressValue;
-    }
     | SUB
     {
         $$ = UnaryOperatorNegative;
@@ -1099,6 +1095,10 @@ type_specifier:
             {
                 $$ = _vretained makeTypeSpecial(TypeObject,(__bridge NSString *)$1);
             }
+            | _id CHILD_COLLECTION_OPTIONAL
+            {
+                $$ = _vretained makeTypeSpecial(TypeObject,@"id");
+            }
             | TYPEOF LP expression RP
             {
                 $$ = _vretained makeTypeSpecial(TypeObject,@"typeof");
@@ -1110,6 +1110,10 @@ type_specifier:
             | _UCHAR
             {
                  $$ = _vretained makeTypeSpecial(TypeUChar);
+            }
+            | _id
+            {
+                 $$ = _vretained makeTypeSpecial(TypeObject, @"id");
             }
             | _USHORT
             {
