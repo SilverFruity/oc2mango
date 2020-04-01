@@ -140,8 +140,8 @@ class ExpressionTest: XCTestCase {
         id a = (__bridge_retained id)b;
         int * _Nonnull a;
         int * __autoreleasing a;
-        int * _Nullable a;
         CFString a = (CFString)b;
+        int * _Nullable a;
         """
         ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
@@ -206,7 +206,7 @@ class ExpressionTest: XCTestCase {
         [NSObject new];
         [NSObject value1:1 value2:2 value3:3 value4:4];
         [[self.x new].y test];
-        (NSObject *)[NSObject new];
+        a = (NSObject *)a;
         @{@"key": @"value", x.z : [Object new]};
         @[value1,value2];
         

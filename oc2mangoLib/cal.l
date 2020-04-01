@@ -20,6 +20,8 @@
     char const *st_source_string;
     static unsigned long st_current_char_index;
     static unsigned long st_source_len;
+    static unsigned long protocol_left;
+    static unsigned long protocol_right;
     void yy_set_source_string(char const *source)
     {
         st_source_string = source;
@@ -40,12 +42,13 @@
 
 %}
 
-%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE POINT_STATE
+%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE POINT_STATE PROTOCOL_CHECK
 %%
 <INITIAL>"#" { BEGIN POUNDKEY; }
 <POUNDKEY>.* ;
 <POUNDKEY>\n { BEGIN INITIAL; }
-
+<INITIAL>"NS_ASSUME_NONNULL_BEGIN" ;
+<INITIAL>"NS_ASSUME_NONNULL_END" ;
 <INITIAL>"," { return COMMA ;}
 <INITIAL>";" { return SEMICOLON; }
 <INITIAL>"(" { return LP; }
@@ -113,6 +116,9 @@
 <INITIAL>"nonnull" { yylval.identifier =(__bridge_retained void *)@"nonnull"; return NONNULL; }
 <INITIAL>"nullable" { yylval.identifier =(__bridge_retained void *)@"nullable"; return NULLABLE; }
 
+
+<INITIAL>"UI_APPEARANCE_SELECTOR" ;
+<INITIAL>"IBInspectable" ;
 <INITIAL>"extern" ;
 <INITIAL>"static" ;
 <INITIAL>"const" ;
@@ -240,8 +246,26 @@
 <INITIAL>"<" {
     return LT;
 }
-<INITIAL><[A-Za-z_$][A-Za-z_$0-9]*[ ]*\**[ ]*> {
-    return CHILD_COLLECTION;
+<INITIAL><[A-Za-z_$][A-Za-z_$0-9]*[ ]*\**[ ]*[,<>] {
+    // return CHILD_COLLECTION;
+    yyless(0);
+    BEGIN PROTOCOL_CHECK;
+}
+<PROTOCOL_CHECK>[A-Za-z_$][A-Za-z_$0-9]* ;
+<PROTOCOL_CHECK>"*" ;
+<PROTOCOL_CHECK>"," ;
+<PROTOCOL_CHECK>" " ;
+<PROTOCOL_CHECK>"<" {
+    protocol_left += 1;
+}
+<PROTOCOL_CHECK>">" {
+    protocol_right += 1;
+    if (protocol_left == protocol_right){
+        protocol_left = 0;
+        protocol_right = 0;
+        BEGIN INITIAL;
+        return CHILD_COLLECTION;
+    }
 }
 <INITIAL>"*" {
     return ASTERISK;
@@ -252,7 +276,11 @@
     yyless(1);
     return ASTERISK;
 }
-<INITIAL>\*+[ ]*[A-Za-z_$0-9]*[ ]*[,(){}] {
+<INITIAL>\*+[ ]*[,(){] {
+    yyless(1);
+    return POINT;
+}
+<INITIAL>\*+[ ]*[A-Za-z_$]+[A-Za-z_$0-9]*[ ]*[,(){] {
     /*
     FIX: 
     * 
@@ -267,7 +295,6 @@
     yyless(1);
     return POINT;
 }
-
 <INITIAL>\*+[ ]*[A-Za-z_$][A-Za-z_$0-9]*[ ]*[;="in"] {
     // FIXME: a = x * b; error  
     // FIXME: a = x * 1 * c; error  

@@ -92,14 +92,14 @@ protocol_declare:
             ;
 class_declare:
             //
-            INTERFACE IDENTIFIER COLON IDENTIFIER
+            INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
                 OCClass *occlass = [LibAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
                 $$ = _vretained occlass;
             }
             // category 
-            | INTERFACE IDENTIFIER LP IDENTIFIER RP
+            | INTERFACE IDENTIFIER LP IDENTIFIER RP CHILD_COLLECTION_OPTIONAL
             {
                 $$ = _vretained [LibAst classForName:_transfer(id)$2];
             }
@@ -228,20 +228,9 @@ class_property_declare:
             }
             ;
 
-
-
 declare_left_attribute:
-            EXTERN
-            | STATIC
-            | CONST
             | NONNULL
             | NULLABLE
-            | _STRONG
-            | _WEAK
-            | _BLOCK
-            | _BRIDGE
-            | _BRIDGE_RETAINED
-            | _BRIDGE_TRANSFER
             ;
 declare_right_attribute:
             _NONNULL
@@ -379,11 +368,18 @@ expression_statement:
         ;
 
 if_statement:
-         IF LP expression RP LC function_implementation RC
-         {
+        IF LP expression RP expression_statement
+        {
+            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            [imp addStatements:_transfer(id) $5];
+            IfStatement *statement = makeIfStatement(_transfer(id) $3,imp);
+            $$ = _vretained statement;
+        }
+        | IF LP expression RP LC function_implementation RC
+        {
             IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(BlockImp *)$6);
             $$ = _vretained statement;
-         }
+        }
         | if_statement _else IF LP expression RP LC function_implementation RC
         {
             IfStatement *statement = _transfer(IfStatement *)$1;
@@ -757,7 +753,7 @@ multiplication_expression: unary_expression
     }
     ;
 
-// !x -x *x &x ~x sizof(x) (IDENTIFIER)x x++ x-- ++x --x
+// !x -x *x &x ~x sizof(x) (IDENTIFIER *)x x++ x-- ++x --x
 unary_expression: postfix_expression
     | unary_operator unary_expression
     {
@@ -770,10 +766,6 @@ unary_expression: postfix_expression
         UnaryExpression *exp = makeUnaryExpression(UnaryOperatorSizeOf);
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
-    }
-    | LP parameter_declaration RP unary_expression
-    {
-        $$ = $4;
     }
     | INCREMENT unary_expression
     {
@@ -897,6 +889,10 @@ primary_expression:
             $$ = _vretained makeValue(OCValueSuper);
         }
         | objc_method_call
+        | LP type_specifier pointer_optional RP expression
+        {
+            $$ = $4;
+        }
         | LP expression RP
         {
             $$ = $2;
@@ -1080,9 +1076,9 @@ parameter_list: /* empty */
             ;
 
 parameter_declaration: 
-    type_specifier declarator_optional
+    declare_left_attribute type_specifier declarator_optional
     {
-        $$ = _vretained makeTypeVarPair(_typeId $1, _typeId $2);
+        $$ = _vretained makeTypeVarPair(_typeId $2, _typeId $3);
     };
 parameter_declaration_optional:
         | parameter_declaration
@@ -1110,10 +1106,6 @@ type_specifier:
             | _UCHAR
             {
                  $$ = _vretained makeTypeSpecial(TypeUChar);
-            }
-            | _id
-            {
-                 $$ = _vretained makeTypeSpecial(TypeObject, @"id");
             }
             | _USHORT
             {
@@ -1177,7 +1169,7 @@ type_specifier:
             }
             | _instancetype
             {
-                $$ = _vretained makeTypeSpecial(TypeId);
+                $$ = _vretained makeTypeSpecial(TypeObject,@"id");
             }
             ;
 
