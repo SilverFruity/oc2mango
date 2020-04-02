@@ -465,7 +465,7 @@ int indentationCont = 0;
             }else{
                 [result appendFormat:@"(%@)",[self convertTypeVarPairs:funVar.pairs]];
             }
-        } else{
+        } else if (funVar.ptCount > 0){
             [result appendFormat:@"%@()",funVar.varname];
         }
     }else if (var.varname){

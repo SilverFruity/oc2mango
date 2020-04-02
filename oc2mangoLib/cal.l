@@ -22,6 +22,8 @@
     static unsigned long st_source_len;
     static unsigned long protocol_left;
     static unsigned long protocol_right;
+    static unsigned long must_ASTERISK = 0;
+    static unsigned long has_assign = 0;
     void yy_set_source_string(char const *source)
     {
         st_source_string = source;
@@ -42,7 +44,7 @@
 
 %}
 
-%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE POINT_STATE PROTOCOL_CHECK
+%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE POINT_STATE PROTOCOL_CHECK POINT_CHECK ASSING_POINT_CHECK
 %%
 <INITIAL>"#" { BEGIN POUNDKEY; }
 <POUNDKEY>.* ;
@@ -50,12 +52,12 @@
 <INITIAL>"NS_ASSUME_NONNULL_BEGIN" ;
 <INITIAL>"NS_ASSUME_NONNULL_END" ;
 <INITIAL>"," { return COMMA ;}
-<INITIAL>";" { return SEMICOLON; }
+<INITIAL>";" { has_assign = 0; return SEMICOLON; }
 <INITIAL>"(" { return LP; }
 <INITIAL>")" { return RP; }
 <INITIAL>"[" { return LB; }
 <INITIAL>"]" { return RB; }
-<INITIAL>"{" { return LC; }
+<INITIAL>"{" { has_assign = 0; return LC; }
 <INITIAL>"}" { return RC; }
 <INITIAL>"." { return DOT; }
 <INITIAL>"->" { return ARROW; }
@@ -84,7 +86,7 @@
 <INITIAL>"/" {return DIV; }
 <INITIAL>"%" {return MOD; }
 
-<INITIAL>"=" {return ASSIGN; }
+<INITIAL>"=" { has_assign = 1; return ASSIGN; }
 <INITIAL>"&=" {return AND_ASSIGN; }
 <INITIAL>"|=" {return OR_ASSIGN; }
 <INITIAL>"^=" {return POWER_ASSIGN; }
@@ -267,46 +269,74 @@
         return CHILD_COLLECTION;
     }
 }
-<INITIAL>"*" {
-    return ASTERISK;
-}
 
-<INITIAL>\*[ ]*[0-9] {
-    //FIX: x * 1, x * 0x10, x * 0.11
+<INITIAL>\)[ ]*\* {
+    yyless(1);
+    must_ASTERISK = 1;
+    return RP;
+}
+<INITIAL>=[ ]*\* {
+    yyless(1);
+    has_assign = 0;
+    return ASSIGN;
+}
+<INITIAL>\*[ ]*[1-9][0-9]* {
     yyless(1);
     return ASTERISK;
 }
-<INITIAL>\*+[ ]*[,(){] {
+<INITIAL>\*[ ]*"0"[xX][0-9a-fA-F]+ {
     yyless(1);
+    return ASTERISK;
+}
+<INITIAL>\*[ ]*"0" {
+    yyless(1);
+    return ASTERISK;
+}
+<INITIAL>\*[ ]*[0-9]+\.[0-9]+ {
+    yyless(1);
+    return ASTERISK;
+}
+<INITIAL>"*" {
+    if (must_ASTERISK == 1) {
+        must_ASTERISK = 0;
+        return ASTERISK;
+    }
+    if (has_assign == 1){
+        BEGIN ASSING_POINT_CHECK;
+    }else{
+        BEGIN POINT_CHECK;
+    }
+}
+<ASSING_POINT_CHECK>[ ]* ;
+<ASSING_POINT_CHECK>[,(){] {
+    yyless(0);
+    BEGIN INITIAL;
     return POINT;
 }
-<INITIAL>\*+[ ]*[A-Za-z_$]+[A-Za-z_$0-9]*[ ]*[,(){] {
-    /*
-    FIX: 
-    * 
-    * a
-    int * ,
-    int * a ,
-    int * (
-    int * a (
-    int * {
-    int * a{
-    */
-    yyless(1);
+<ASSING_POINT_CHECK>[A-Za-z_$][A-Za-z_$0-9]*[ ]*[,(){] {
+    yyless(0);
+    BEGIN INITIAL;
     return POINT;
 }
-<INITIAL>\*+[ ]*[A-Za-z_$][A-Za-z_$0-9]*[ ]*[;="in"] {
-    // FIXME: a = x * b; error  
-    // FIXME: a = x * 1 * c; error  
-    // FIXME: a = x * b * 1; true
-    // FIXME: a = *x;
-    /*
-    FIX:
-    int *_a = 
-    int *_a;
-    int *_a in
-    */
-    yyless(1);
+<ASSING_POINT_CHECK>. {
+    yyless(0);
+    BEGIN INITIAL;
+    return ASTERISK;
+}
+<POINT_CHECK>[ ]* ;
+<POINT_CHECK>[,(){] {
+    yyless(0);
+    BEGIN INITIAL;
+    return POINT;
+}
+<POINT_CHECK>[A-Za-z_$][A-Za-z_$0-9]*[ ]*[,(){] {
+    yyless(0);
+    BEGIN INITIAL;
+    return POINT;
+}
+<POINT_CHECK>[A-Za-z_$]+[A-Za-z_$0-9]*[ ]*[;="in"] {
+    yyless(0);
+    BEGIN INITIAL;
     return POINT;
 }
 

@@ -61,7 +61,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "$SRCROOT/$PROJECT_NAME/TestFiles"
+            argument = "$SRCROOT/$PROJECT_NAME/TestFiles $SRCROOT/$PROJECT_NAME/Output"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

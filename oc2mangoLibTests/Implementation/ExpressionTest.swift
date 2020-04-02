@@ -162,6 +162,11 @@ class ExpressionTest: XCTestCase {
         """
         ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
+        let convert = Convert()
+        let result = convert.convert(ocparser.ast.globalStatements[7] as Any)
+        XCTAssert(result == "a = x * c * 1;",result)
+        let result1 = convert.convert(ocparser.ast.globalStatements[8] as Any)
+        XCTAssert(result1 == "a = x * 1 * c;",result)
     }
     func testBinaryExpression(){
         source =
