@@ -956,7 +956,7 @@ declaration:
     {
         NSMutableArray *array = _transfer(NSMutableArray *)$2;
         for (DeclareExpression *declare in array){
-            declare.type = _typeId $1;
+            declare.pair.type = _typeId $1;
             _vretained declare;
         }
         $$ = _vretained array;

@@ -327,12 +327,90 @@ let source =
             """
             NSString *queryPramameters(NSDictionary *param){
                 NSMutableArray *pairs = NSMutableArray.array();
-                param.enumerateKeysAndObjectsUsingBlock:(^void (id key,id obj,BOOL *stop){
+                param.enumerateKeysAndObjectsUsingBlock:(^void (id key,id obj,Point stop){
                     pairs.addObject:(NSString.stringWithFormat:(@"%@=%@",key,obj));
                 });
                 return pairs.componentsJoinedByString:(@"&");
             }
             ""","\n"+result1)
+        
+    }
+    func testMangoPointerTypeAdapt(){
+                let source =
+        """
+        char *a;
+        float *a;
+        int *a;
+        short *a;
+        long *a;
+        long long *a;
+        NSInteger *a;
+        unsigned char *a;
+        unsigned int *a;
+        unsigned short *a;
+        unsigned long *a;
+        unsigned long long *a;
+        NSUInteger *a;
+        BOOL *a;
+        double *a;
+        float *a;
+        CGFloat *a;
+        """
+                
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[0]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[1]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[2]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[3]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[4]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[5]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[6]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[7]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[8]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[9]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[10]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[11]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[12]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[13]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[14]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[15]) == "Point a;")
+        XCTAssert(convert.convert(ocparser.ast.globalStatements[16]) == "Point a;")
+        
+    }
+    func testMangoBlockTypeAdapt(){
+        let source =
+        """
+        @interface SFHTTPClient: NSObject
+        @property (nonatomic,readonly) void(^a)(NSString *name);
+        @end
+        @implementation SFHTTPClient
+        + (instancetype)imageMakerWithProcessHandler:(UIImage * (^)(UIImage *image))processHandler isEnableHandler:(BOOL (^)(void))isEnableHandler identifierHandler:(NSString *(^)(void))identifierHandler{
+
+        }
+        @end
+        void(^a)(NSString *name) = nil;
+        void(*a)(NSString *name) = nil;
+        """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        
+        let result = convert.convert(ocparser.ast.class(forName: "SFHTTPClient") as Any)
+        XCTAssert(result ==
+            """
+            class SFHTTPClient:NSObject{
+            @property(nonatomic,readonly)Block a;
+
+            +(id )processHandler:(Block)processHandler isEnableHandler:(Block)isEnableHandler identifierHandler:(Block)identifierHandler{
+            }
+            }
+
+            ""","\n"+result)
+        
+        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        XCTAssert(result1 == "Block a = nil;","\n"+result1)
+        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        XCTAssert(result2 == "Point a = nil;","\n"+result2)
         
     }
 }

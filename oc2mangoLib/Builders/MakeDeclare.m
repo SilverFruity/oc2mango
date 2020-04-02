@@ -107,9 +107,8 @@ AssignExpression *makeAssignExpression(AssignOperatorType type){
 }
 extern DeclareExpression *makeDeclareExpression(TypeSpecial *type,Variable *var,id <Expression> exp){
     DeclareExpression *declare = [DeclareExpression new];
-    declare.type = type;
+    declare.pair = makeTypeVarPair(type, var);
     declare.expression = exp;
-    declare.var = var;
     return declare;
 }
 

@@ -45,11 +45,10 @@ void func(NSString *a, int *b){
         XCTAssert(methodImp?.declare.isClassMethod == false)
         XCTAssert(methodImp?.declare.returnType.type.type == TypeObject)
         
-        let methodImp1 = ocparser.ast.class(forName: "Demo").methods[1] as? MethodImplementation
+        var methodImp1 = ocparser.ast.class(forName: "Demo").methods[1] as? MethodImplementation
         XCTAssert(methodImp1?.declare.methodNames == ["method2"])
         XCTAssert(methodImp1?.declare.isClassMethod == false)
         XCTAssert(methodImp1?.declare.returnType.type.type == TypeObject)
-//        XCTAssert((methodImp1?.declare.parameterTypes.firstObject as! TypeSpecial).type == TypeBlock)
     }
     
     func testCategoryDeclare(){

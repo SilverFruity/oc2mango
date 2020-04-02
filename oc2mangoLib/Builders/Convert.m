@@ -135,7 +135,7 @@
 
 - (NSString *)convertPropertyDeclare:(PropertyDeclare *)propertyDecl{
     
-    return [NSString stringWithFormat:@"@property(%@)%@;\n",[propertyDecl.keywords componentsJoinedByString:@","],[self convertTypeVarPair:propertyDecl.var]];
+    return [NSString stringWithFormat:@"@property(%@)%@;\n",[propertyDecl.keywords componentsJoinedByString:@","],[self convertDeclareTypeVarPair:propertyDecl.var]];
     return @"";
 }
 - (NSString *)convertMethoDeclare:(MethodDeclare *)methodDecl{
@@ -145,17 +145,20 @@
     }else{
         NSMutableArray *list = [NSMutableArray array];
         for (int i = 0; i < methodDecl.parameterNames.count; i++) {
-            [list addObject:[NSString stringWithFormat:@"%@:(%@)%@",methodDecl.parameterNames[i],[self convertTypeVarPair:methodDecl.parameterTypes[i]],methodDecl.parameterNames[i]]];
+            [list addObject:[NSString stringWithFormat:@"%@:(%@)%@",
+                             methodDecl.parameterNames[i],
+                             [self convertDeclareTypeVarPair:methodDecl.parameterTypes[i]],
+                             methodDecl.parameterNames[i]]];
         }
         methodName = [list componentsJoinedByString:@" "];
     }
-    return [NSString stringWithFormat:@"%@(%@)%@",methodDecl.isClassMethod?@"+":@"-",[self convertTypeVarPair:methodDecl.returnType],methodName];
+    return [NSString stringWithFormat:@"%@(%@)%@",methodDecl.isClassMethod?@"+":@"-",[self convertDeclareTypeVarPair:methodDecl.returnType],methodName];
 }
 - (NSString *)convertMethodImp:(MethodImplementation *)methodImp{
     return [NSString stringWithFormat:@"\n%@%@",[self convertMethoDeclare:methodImp.declare],[self convertBlockImp:methodImp.imp]];
 }
 - (NSString *)convertFuncDeclare:(FuncDeclare *)funcDecl{
-    return [NSString stringWithFormat:@"%@%@",[self convertTypeVarPair:funcDecl.returnType],[self convertVariable:funcDecl.var]];;
+    return [NSString stringWithFormat:@"%@%@",[self convertDeclareTypeVarPair:funcDecl.returnType],[self convertVariable:funcDecl.var]];;
 }
 
 int indentationCont = 0;
@@ -294,9 +297,9 @@ int indentationCont = 0;
 }
 - (NSString *)convertDeclareExp:(DeclareExpression *)exp{
     if (exp.expression) {
-        return [NSString stringWithFormat:@"%@%@ = %@",[self convertTypeSpecial:exp.type],[self convertVariable:exp.var],[self convertExpression:exp.expression]];
+        return [NSString stringWithFormat:@"%@ = %@",[self convertDeclareTypeVarPair:exp.pair],[self convertExpression:exp.expression]];
     }else{
-        return [NSString stringWithFormat:@"%@%@",[self convertTypeSpecial:exp.type],[self convertVariable:exp.var]];
+        return [NSString stringWithFormat:@"%@",[self convertDeclareTypeVarPair:exp.pair]];
     }
     return @"";
 }
@@ -461,9 +464,9 @@ int indentationCont = 0;
         FuncVariable *funVar = (FuncVariable *)var;
         if (funVar.pairs.count > 0){
             if (funVar.varname) {
-                [result appendFormat:@"%@(%@)",funVar.varname,[self convertTypeVarPairs:funVar.pairs]];
+                [result appendFormat:@"%@(%@)",funVar.varname,[self convertDeclareTypeVarPairs:funVar.pairs]];
             }else{
-                [result appendFormat:@"(%@)",[self convertTypeVarPairs:funVar.pairs]];
+                [result appendFormat:@"(%@)",[self convertDeclareTypeVarPairs:funVar.pairs]];
             }
         } else if (funVar.ptCount > 0){
             [result appendFormat:@"%@()",funVar.varname];
@@ -471,26 +474,56 @@ int indentationCont = 0;
     }else if (var.varname){
         [result appendString:var.varname];
     }
-
     return result;
 }
 - (NSString *)convertTypeVarPair:(TypeVarPair *)pair{
     NSString *type = pair.type ? [self convertTypeSpecial:pair.type] : @"void ";
-    return [NSString stringWithFormat:@"%@%@",type,[self convertVariable:pair.var]];;
+    return [NSString stringWithFormat:@"%@%@",type,[self convertVariable:pair.var]];
 }
-- (NSString *)convertTypeVarPairs:(NSArray *)list{
+- (NSString *)convertDeclareTypeVarPair:(TypeVarPair *)pair{
+    if ([pair.var isKindOfClass:[FuncVariable class]]){
+        if (pair.var.varname == nil){
+            return [NSString stringWithFormat:@"Block"];
+        }
+        if (pair.var.ptCount > 0) {
+            return [NSString stringWithFormat:@"Point %@", pair.var.varname];
+        }
+        if (pair.var.ptCount < 0) {
+            return [NSString stringWithFormat:@"Block %@", pair.var.varname];
+        }
+    }else{
+        switch (pair.type.type){
+            case TypeUChar:
+            case TypeUShort:
+            case TypeUInt:
+            case TypeULong:
+            case TypeULongLong:
+            case TypeChar:
+            case TypeShort:
+            case TypeInt:
+            case TypeLong:
+            case TypeFloat:
+            case TypeDouble:
+            case TypeLongDouble:
+            case TypeBOOL:
+            case TypeLongLong:{
+                if (pair.var.ptCount > 0){
+                    return [NSString stringWithFormat:@"Point %@",pair.var.varname];
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+        
+    return [self convertTypeVarPair:pair];
+}
+- (NSString *)convertDeclareTypeVarPairs:(NSArray *)list{
     NSMutableArray *array = [NSMutableArray array];
     for (TypeVarPair * pair in list){
-        [array addObject:[self convertTypeVarPair:pair]];
+        [array addObject:[self convertDeclareTypeVarPair:pair]];
     }
     return [array componentsJoinedByString:@","];
 }
-- (NSString * )convertTypeSpecailList:(NSArray *)list{
-    NSMutableArray *array = [NSMutableArray array];
-    for (TypeSpecial * special in list){
-        [array addObject:[self convertTypeSpecial:special]];
-    }
-    return [array componentsJoinedByString:@","];
-}
-
 @end

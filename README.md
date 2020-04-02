@@ -2,10 +2,34 @@
 convert Objective-C to mango script:https://github.com/YPLiang19/Mango
 # 帮助
 
-不支持预编译指令 #define #if 等等
+如何使用:
 
-不支持关键字: static, const, enum, struct, typedef,_Nullable, nullable, @required, @optional, @encode等
+```shell
+unzip ~/Downloads/oc2mango.zip -d ~/Downloads/
+sudo mv ~/Downloads/oc2mango/oc2mango /usr/bin/
+oc2mango input_dir output_dir
+```
 
-支持写法: NSArray <NSArray*> *array, 不支持 NSArray <NSArray<id> *> *array;
+## 暂不支持
 
-当前对于typedef, enum, struct等声明的类型，无法进行判断，代码中仍会以原名称展示。
+全局自定义函数
+
+struct
+
+enum
+
+## 无法识别
+
+typedef,  enum, struct
+
+类型转换 不能识别：a = (CFString) a; 。 能识别  a = (CFString *) a;
+
+Tips: 尽量不用使用类型转换。 
+
+## 自动忽略 
+
+@protocol 声明协议
+
+关键字: static, const, enum, struct, typedef,_Nullable, nullable, @required, @optional, @encode等
+
+预编译指令: #define #if 等
