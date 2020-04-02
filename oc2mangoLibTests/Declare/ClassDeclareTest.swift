@@ -43,7 +43,7 @@ void func(NSString *a, int *b){
         let methodImp = ocparser.ast.class(forName: "Demo").methods[0] as? MethodImplementation
         XCTAssert(methodImp?.declare.methodNames == ["initWithBaseUrl"])
         XCTAssert(methodImp?.declare.isClassMethod == false)
-        XCTAssert(methodImp?.declare.returnType.type.type == TypeId)
+        XCTAssert(methodImp?.declare.returnType.type.type == TypeObject)
         
         let methodImp1 = ocparser.ast.class(forName: "Demo").methods[1] as? MethodImplementation
         XCTAssert(methodImp1?.declare.methodNames == ["method2"])

@@ -20,6 +20,10 @@
     char const *st_source_string;
     static unsigned long st_current_char_index;
     static unsigned long st_source_len;
+    static unsigned long protocol_left;
+    static unsigned long protocol_right;
+    static unsigned long must_ASTERISK = 0;
+    static unsigned long has_assign = 0;
     void yy_set_source_string(char const *source)
     {
         st_source_string = source;
@@ -40,19 +44,20 @@
 
 %}
 
-%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE
+%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE POINT_STATE PROTOCOL_CHECK POINT_CHECK ASSING_POINT_CHECK
 %%
 <INITIAL>"#" { BEGIN POUNDKEY; }
 <POUNDKEY>.* ;
 <POUNDKEY>\n { BEGIN INITIAL; }
-
+<INITIAL>"NS_ASSUME_NONNULL_BEGIN" ;
+<INITIAL>"NS_ASSUME_NONNULL_END" ;
 <INITIAL>"," { return COMMA ;}
-<INITIAL>";" { return SEMICOLON; }
+<INITIAL>";" { has_assign = 0; return SEMICOLON; }
 <INITIAL>"(" { return LP; }
 <INITIAL>")" { return RP; }
 <INITIAL>"[" { return LB; }
 <INITIAL>"]" { return RB; }
-<INITIAL>"{" { return LC; }
+<INITIAL>"{" { has_assign = 0; return LC; }
 <INITIAL>"}" { return RC; }
 <INITIAL>"." { return DOT; }
 <INITIAL>"->" { return ARROW; }
@@ -81,7 +86,7 @@
 <INITIAL>"/" {return DIV; }
 <INITIAL>"%" {return MOD; }
 
-<INITIAL>"=" {return ASSIGN; }
+<INITIAL>"=" { has_assign = 1; return ASSIGN; }
 <INITIAL>"&=" {return AND_ASSIGN; }
 <INITIAL>"|=" {return OR_ASSIGN; }
 <INITIAL>"^=" {return POWER_ASSIGN; }
@@ -113,20 +118,23 @@
 <INITIAL>"nonnull" { yylval.identifier =(__bridge_retained void *)@"nonnull"; return NONNULL; }
 <INITIAL>"nullable" { yylval.identifier =(__bridge_retained void *)@"nullable"; return NULLABLE; }
 
-<INITIAL>"extern" { yylval.identifier =(__bridge_retained void *)@"extern"; return EXTERN; }
-<INITIAL>"static" { yylval.identifier =(__bridge_retained void *)@"static"; return STATIC; }
-<INITIAL>"const" { yylval.identifier =(__bridge_retained void *)@"const"; return CONST; }
-<INITIAL>"_Nonnull" { yylval.identifier =(__bridge_retained void *)@"_Nonnull"; return _NONNULL; }
-<INITIAL>"_Nullable" { yylval.identifier =(__bridge_retained void *)@"_Nullable"; return _NULLABLE; }
-<INITIAL>"__autoreleasing" { yylval.identifier =(__bridge_retained void *)@"__autoreleasing"; return _AUTORELEASE; }
 
-<INITIAL>"__strong" { yylval.identifier =(__bridge_retained void *)@"__strong"; return _STRONG; }
-<INITIAL>"__weak"  { yylval.identifier =(__bridge_retained void *)@"__weak"; return _WEAK; }
-<INITIAL>"__block" { yylval.identifier =(__bridge_retained void *)@"__block"; return _BLOCK; }
-<INITIAL>"__bridge" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE; }
-<INITIAL>"__bridge_transfer" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE_TRANSFER; }
-<INITIAL>"__bridge_retained" { yylval.identifier =(__bridge_retained void *)@"__bridge"; return _BRIDGE_RETAINED; }
-<INITIAL>"__unused" { yylval.identifier =(__bridge_retained void *)@"__unused"; return _UNUSED; }
+<INITIAL>"UI_APPEARANCE_SELECTOR" ;
+<INITIAL>"IBInspectable" ;
+<INITIAL>"extern" ;
+<INITIAL>"static" ;
+<INITIAL>"const" ;
+<INITIAL>"_Nonnull" ;
+<INITIAL>"_Nullable" ;
+<INITIAL>"__autoreleasing" ;
+
+<INITIAL>"__strong" ;
+<INITIAL>"__weak"  ;
+<INITIAL>"__block" ;
+<INITIAL>"__bridge" {} ;
+<INITIAL>"__bridge_transfer" ;
+<INITIAL>"__bridge_retained" ;
+<INITIAL>"__unused" ;
 
 <INITIAL>"@required" ;
 <INITIAL>"@optional" ;
@@ -175,6 +183,7 @@
 <INITIAL>"typeof" { return TYPEOF; }
 <INITIAL>"__typeof__" { return __TYPEOF; }
 <INITIAL>"char" { TypeReturn(CHAR); }
+<INITIAL>"id" { TypeReturn(id); }
 <INITIAL>"..."  {return ELLIPSIS;}
 <INITIAL>"short" { TypeReturn(SHORT); }
 <INITIAL>"int" { TypeReturn(INT); }
@@ -239,21 +248,95 @@
 <INITIAL>"<" {
     return LT;
 }
-<INITIAL><[A-Za-z_$][A-Za-z_$0-9]*[ ]*\**[ ]*> {
-    return CHILD_COLLECTION;
+<INITIAL><[A-Za-z_$][A-Za-z_$0-9]*[ ]*\**[ ]*[,<>] {
+    // return CHILD_COLLECTION;
+    yyless(0);
+    BEGIN PROTOCOL_CHECK;
 }
-<INITIAL>"*" {
-    return ASTERISK;
+<PROTOCOL_CHECK>[A-Za-z_$][A-Za-z_$0-9]* ;
+<PROTOCOL_CHECK>"*" ;
+<PROTOCOL_CHECK>"," ;
+<PROTOCOL_CHECK>" " ;
+<PROTOCOL_CHECK>"<" {
+    protocol_left += 1;
 }
-<INITIAL>\*+[ ]*[A-Za-z_$0-9]*[ ]*[,(){}] {
-    yyless(1);
-    return POINT;
+<PROTOCOL_CHECK>">" {
+    protocol_right += 1;
+    if (protocol_left == protocol_right){
+        protocol_left = 0;
+        protocol_right = 0;
+        BEGIN INITIAL;
+        return CHILD_COLLECTION;
+    }
 }
 
-<INITIAL>\*+[ ]*[A-Za-z_$][A-Za-z_$0-9]*[ ]*[;="in"] {
-    // FIXME: a = x * b; error    a = x * b * 1; true
-    // FIXME: a = *x;
+<INITIAL>\)[ ]*\* {
     yyless(1);
+    must_ASTERISK = 1;
+    return RP;
+}
+<INITIAL>=[ ]*\* {
+    yyless(1);
+    has_assign = 0;
+    return ASSIGN;
+}
+<INITIAL>\*[ ]*[1-9][0-9]* {
+    yyless(1);
+    return ASTERISK;
+}
+<INITIAL>\*[ ]*"0"[xX][0-9a-fA-F]+ {
+    yyless(1);
+    return ASTERISK;
+}
+<INITIAL>\*[ ]*"0" {
+    yyless(1);
+    return ASTERISK;
+}
+<INITIAL>\*[ ]*[0-9]+\.[0-9]+ {
+    yyless(1);
+    return ASTERISK;
+}
+<INITIAL>"*" {
+    if (must_ASTERISK == 1) {
+        must_ASTERISK = 0;
+        return ASTERISK;
+    }
+    if (has_assign == 1){
+        BEGIN ASSING_POINT_CHECK;
+    }else{
+        BEGIN POINT_CHECK;
+    }
+}
+<ASSING_POINT_CHECK>[ ]* ;
+<ASSING_POINT_CHECK>[,(){] {
+    yyless(0);
+    BEGIN INITIAL;
+    return POINT;
+}
+<ASSING_POINT_CHECK>[A-Za-z_$][A-Za-z_$0-9]*[ ]*[,(){] {
+    yyless(0);
+    BEGIN INITIAL;
+    return POINT;
+}
+<ASSING_POINT_CHECK>. {
+    yyless(0);
+    BEGIN INITIAL;
+    return ASTERISK;
+}
+<POINT_CHECK>[ ]* ;
+<POINT_CHECK>[,(){] {
+    yyless(0);
+    BEGIN INITIAL;
+    return POINT;
+}
+<POINT_CHECK>[A-Za-z_$][A-Za-z_$0-9]*[ ]*[,(){] {
+    yyless(0);
+    BEGIN INITIAL;
+    return POINT;
+}
+<POINT_CHECK>[A-Za-z_$]+[A-Za-z_$0-9]*[ ]*[;="in"] {
+    yyless(0);
+    BEGIN INITIAL;
     return POINT;
 }
 

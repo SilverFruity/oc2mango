@@ -36,7 +36,6 @@ void compileFiles(NSMutableArray *files){
     NSMutableArray *failedFiles = [NSMutableArray array];
     for (NSString *path in headers) {
         NSData *data = [NSData dataWithContentsOfFile:path];
-        NSLog(@"%@",path);
         [OCParser parseSource:[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding]];
         if (!OCParser.isSuccess) {
             [failedFiles addObject:path];
@@ -46,26 +45,67 @@ void compileFiles(NSMutableArray *files){
     //2. 扫描实现文件完成转换
     for (NSString *path in implementations) {
         NSData *data = [NSData dataWithContentsOfFile:path];
-        NSLog(@"%@",path);
         [OCParser parseSource:[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding]];
         if (!OCParser.isSuccess) {
             [failedFiles addObject:path];
         }
     }
-    NSLog(@"%@",failedFiles);
-    NSLog(@"%lu",failedFiles.count);
-    if (OCParser.isSuccess) {
+    if (!OCParser.isSuccess) {
+        NSLog(@"%@",failedFiles);
+        NSLog(@"%lu",failedFiles.count);
         return;
     }
 }
 
 int main(int argc, const char * argv[]) {
-    NSString *path  = [NSString stringWithUTF8String:argv[1]];
+    char opt = 0;
+    BOOL help = NO;
+    while ((opt = getopt(argc, (char * const *)argv, "h")) != -1) {
+        switch (opt) {
+            case 'h':{
+                help = YES;
+                break;
+            }
+            default:{
+                break;
+            }
+        }
+    }
+    if (help || argc != 3) {
+        printf("oc2mango input_dir output_dir \n");
+        printf("Example: oc2mango /HMFilesDir /mangoFilesDir \n");
+        return 0;
+    }
+    NSString *inputDir  = [NSString stringWithUTF8String:argv[1]];
+    NSString *outputDir = [NSString stringWithUTF8String:argv[2]];
+    BOOL isDir = YES;
+    BOOL existed = [[NSFileManager defaultManager] fileExistsAtPath:outputDir isDirectory:&isDir];
+    if (existed && !isDir){
+        NSLog(@"输出路径已经存在，不为文件夹~");
+        return 0;
+    }
+    if (!existed){
+        [[NSFileManager defaultManager] createDirectoryAtPath:outputDir withIntermediateDirectories:YES attributes:nil error:nil];
+    }
     NSMutableArray *dirs = [NSMutableArray array];
     NSMutableArray *files = [NSMutableArray array];
-    recursiveLookupCompileFiles(path, dirs, files);
+    recursiveLookupCompileFiles(inputDir, dirs, files);
     compileFiles(files);
-
+    if (OCParser.isSuccess) {
+        Convert *convert = [[Convert alloc] init];
+//        for (id statement in OCParser.ast.globalStatements) {
+//            NSLog(@"%@",[convert convert:statement]);
+//        }
+        [OCParser.ast.classCache enumerateKeysAndObjectsUsingBlock:^(NSString * key, OCClass *class, BOOL * _Nonnull stop) {
+            NSString *filename = [NSString stringWithFormat:@"%@.mango",key];
+            NSString *filepath = [outputDir stringByAppendingPathComponent:filename];
+            NSError *error = nil;
+            [[convert convert:class] writeToFile:filepath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+            if (error) {
+                NSLog(@"%@ - error: %@",filepath, error.localizedDescription);
+            }
+        }];
+    }
     return 1;
 }
 

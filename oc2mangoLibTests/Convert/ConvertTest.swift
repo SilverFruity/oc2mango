@@ -32,9 +32,9 @@ BOOL x;
         let result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
         let result2 = convert.convert(ocparser.ast.globalStatements[2] as Any)
         XCTAssert(ocparser.error == nil)
-        XCTAssert(result == "int x",result)
-        XCTAssert(result1 == "NSObject *x",result1)
-        XCTAssert(result2 == "BOOL x",result2)
+        XCTAssert(result == "int x;",result)
+        XCTAssert(result1 == "NSObject *x;",result1)
+        XCTAssert(result2 == "BOOL x;",result2)
         
     }
     
@@ -49,8 +49,8 @@ int x = 0, b = 0;
         let result = convert.convert(ocparser.ast.globalStatements[0] as Any)
         let result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
 
-        XCTAssert(result == "int x = 0",result)
-        XCTAssert(result1 == "int b = 0",result1)
+        XCTAssert(result == "int x = 0;",result)
+        XCTAssert(result1 == "int b = 0;",result1)
     }
     
     func testConvertMethodCall(){
@@ -273,6 +273,7 @@ let source =
             """
             class SFHTTPClient:NSObject{
             @property(nonatomic,readonly)NSURL *baseUrl;
+
             -(id )baseUrl:(NSURL *)baseUrl{
             }
             -(NSURLSessionDataTask *)method:(int )method uri:(NSString *)uri param:(NSDictionary *)param plugin:(id )plugin completion:(int )completion{
@@ -284,6 +285,7 @@ let source =
             -(NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id )plugin completion:(int )completion{
             }
             }
+
             """,result1)
         
     }

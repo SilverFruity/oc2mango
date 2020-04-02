@@ -92,14 +92,14 @@ protocol_declare:
             ;
 class_declare:
             //
-            INTERFACE IDENTIFIER COLON IDENTIFIER
+            INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
                 OCClass *occlass = [LibAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
                 $$ = _vretained occlass;
             }
             // category 
-            | INTERFACE IDENTIFIER LP IDENTIFIER RP
+            | INTERFACE IDENTIFIER LP IDENTIFIER RP CHILD_COLLECTION_OPTIONAL
             {
                 $$ = _vretained [LibAst classForName:_transfer(id)$2];
             }
@@ -228,20 +228,9 @@ class_property_declare:
             }
             ;
 
-
-
 declare_left_attribute:
-            EXTERN
-            | STATIC
-            | CONST
             | NONNULL
             | NULLABLE
-            | _STRONG
-            | _WEAK
-            | _BLOCK
-            | _BRIDGE
-            | _BRIDGE_RETAINED
-            | _BRIDGE_TRANSFER
             ;
 declare_right_attribute:
             _NONNULL
@@ -379,11 +368,18 @@ expression_statement:
         ;
 
 if_statement:
-         IF LP expression RP LC function_implementation RC
-         {
+        IF LP expression RP expression_statement
+        {
+            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            [imp addStatements:_transfer(id) $5];
+            IfStatement *statement = makeIfStatement(_transfer(id) $3,imp);
+            $$ = _vretained statement;
+        }
+        | IF LP expression RP LC function_implementation RC
+        {
             IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(BlockImp *)$6);
             $$ = _vretained statement;
-         }
+        }
         | if_statement _else IF LP expression RP LC function_implementation RC
         {
             IfStatement *statement = _transfer(IfStatement *)$1;
@@ -757,7 +753,7 @@ multiplication_expression: unary_expression
     }
     ;
 
-// !x -x *x &x ~x sizof(x) (IDENTIFIER)x x++ x-- ++x --x
+// !x -x *x &x ~x sizof(x) (IDENTIFIER *)x x++ x-- ++x --x
 unary_expression: postfix_expression
     | unary_operator unary_expression
     {
@@ -770,10 +766,6 @@ unary_expression: postfix_expression
         UnaryExpression *exp = makeUnaryExpression(UnaryOperatorSizeOf);
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
-    }
-    | LP parameter_declaration RP unary_expression
-    {
-        $$ = $4;
     }
     | INCREMENT unary_expression
     {
@@ -795,10 +787,6 @@ unary_operator:
         $$ = UnaryOperatorAdressPoint;
     }
     | POINT
-    {
-        $$ = UnaryOperatorAdressValue;
-    }
-    | ASTERISK
     {
         $$ = UnaryOperatorAdressValue;
     }
@@ -868,7 +856,7 @@ numerical_value_type:
         }
         | DOUBLE_LITERAL
         {
-            $$ = _vretained makeValue(OCValueInt,_transfer(id)$1);
+            $$ = _vretained makeValue(OCValueDouble,_transfer(id)$1);
         }
     ;
 dict_entrys:
@@ -901,6 +889,10 @@ primary_expression:
             $$ = _vretained makeValue(OCValueSuper);
         }
         | objc_method_call
+        | LP type_specifier pointer_optional RP expression
+        {
+            $$ = $4;
+        }
         | LP expression RP
         {
             $$ = $2;
@@ -949,11 +941,11 @@ primary_expression:
         }
         | _YES
         {
-            $$ = _vretained makeValue(OCValueBOOL);
+            $$ = _vretained makeValue(OCValueBOOL, @"YES");
         }
         | _NO
         {
-            $$ = _vretained makeValue(OCValueBOOL);
+            $$ = _vretained makeValue(OCValueBOOL, @"NO");
         }
         ;
 
@@ -1084,9 +1076,9 @@ parameter_list: /* empty */
             ;
 
 parameter_declaration: 
-    type_specifier declarator_optional
+    declare_left_attribute type_specifier declarator_optional
     {
-        $$ = _vretained makeTypeVarPair(_typeId $1, _typeId $2);
+        $$ = _vretained makeTypeVarPair(_typeId $2, _typeId $3);
     };
 parameter_declaration_optional:
         | parameter_declaration
@@ -1098,6 +1090,10 @@ type_specifier:
             IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
                 $$ = _vretained makeTypeSpecial(TypeObject,(__bridge NSString *)$1);
+            }
+            | _id CHILD_COLLECTION_OPTIONAL
+            {
+                $$ = _vretained makeTypeSpecial(TypeObject,@"id");
             }
             | TYPEOF LP expression RP
             {
@@ -1163,13 +1159,17 @@ type_specifier:
             {
                 $$ = _vretained makeTypeSpecial(TypeBOOL);
             }
+            | _SEL
+            {
+                $$ = _vretained makeTypeSpecial(TypeSEL);
+            }
             | _void
             {
                 $$ = _vretained makeTypeSpecial(TypeVoid);
             }
             | _instancetype
             {
-                $$ = _vretained makeTypeSpecial(TypeId);
+                $$ = _vretained makeTypeSpecial(TypeObject,@"id");
             }
             ;
 
