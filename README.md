@@ -6,8 +6,7 @@ convert Objective-C to mango script:https://github.com/YPLiang19/Mango
 
 ```shell
 unzip ~/Downloads/oc2mango.zip -d ~/Downloads/
-sudo mv ~/Downloads/oc2mango/oc2mango /usr/bin/
-oc2mango input_dir output_dir
+~/Downloads/oc2mango input_dir output_dir
 ```
 
 ## 暂不支持
