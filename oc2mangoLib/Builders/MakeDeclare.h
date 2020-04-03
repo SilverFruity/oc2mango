@@ -26,7 +26,7 @@ extern FuncDeclare *makeFuncDeclare(TypeVarPair *returnType, FuncVariable *var);
 
 extern OCValue *makeValue(OC_VALUE_TYPE type, id value);
 extern OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
-
+extern CFuncCall *makeFuncCall(OCValue *caller, NSMutableArray *expressions);
 extern UnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern BinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern TernaryExpression *makeTernaryExpression(void);
