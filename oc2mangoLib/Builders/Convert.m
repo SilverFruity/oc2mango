@@ -347,8 +347,15 @@ int indentationCont = 0;
             }
             return [NSString stringWithFormat:@"@[%@]",[elements componentsJoinedByString:@","]];
         }
-        case OCValueNSNumber:
-            return [NSString stringWithFormat:@"@(%@)",value.value];
+        case OCValueNSNumber:{
+            if ([value.value isKindOfClass:[NSString class]]) {
+                return [NSString stringWithFormat:@"@(%@)",value.value];
+            }
+            if ([value.value isKindOfClass:[OCValue class]]) {
+                return [NSString stringWithFormat:@"@(%@)",[self convertOCValue:value.value]];
+            }
+        }
+            
 
         case OCValueBlock:
         {

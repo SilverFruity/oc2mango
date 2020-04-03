@@ -42,15 +42,25 @@ BOOL x;
         let source =
 """
 int x = 0, b = 0;
+NSNumber *a = @(3);
+NSNumber *a = @(self.object.intValue);
+NSNumber *a = @([self.object intValue]);
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         
         let result = convert.convert(ocparser.ast.globalStatements[0] as Any)
         let result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        let result2 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        let result3 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        let result4 = convert.convert(ocparser.ast.globalStatements[4] as Any)
 
         XCTAssert(result == "int x = 0;",result)
         XCTAssert(result1 == "int b = 0;",result1)
+        XCTAssert(result2 == "NSNumber *a = @(3);",result2)
+        XCTAssert(result3 == "NSNumber *a = @(self.object.intValue);",result3)
+        XCTAssert(result4 == "NSNumber *a = @(self.object.intValue());",result4)
+        
     }
     
     func testConvertMethodCall(){
@@ -81,7 +91,7 @@ self.block(value,[NSObject new].x);
         XCTAssert(result1 == "NSObject.new().x",result1)
         XCTAssert(result2 == "x.get",result2)
         XCTAssert(result3 == "self.request:plugin:completion:(request,plugin,completion)",result3)
-        XCTAssert(result4 == "self.block(value,NSObject.new().x)",result4)
+        XCTAssert(result4 == "self.block()(value,NSObject.new().x)",result4)
         XCTAssert(result5 ==
             """
             self.request:(^void (NSString *name,NSURL *URL){
