@@ -134,6 +134,8 @@ x++;
 !x;
 x == nil ? 1 : 2;
 x?:y;
+x||y;
+x&&y;
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
@@ -144,6 +146,8 @@ x?:y;
         let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
         let result6 = convert.convert(ocparser.ast.globalStatements[5] as Any)
         let result7 = convert.convert(ocparser.ast.globalStatements[6] as Any)
+        let result8 = convert.convert(ocparser.ast.globalStatements[7] as Any)
+        let result9 = convert.convert(ocparser.ast.globalStatements[8] as Any)
         XCTAssert(result1 == "x + 1",result1);
         XCTAssert(result2 == "x + b + 1",result2);
         XCTAssert(result3 == "x++",result3);
@@ -151,6 +155,8 @@ x?:y;
         XCTAssert(result5 == "!x",result5);
         XCTAssert(result6 == "x == nil ? 1 : 2",result6);
         XCTAssert(result7 == "x ?: y",result7);
+        XCTAssert(result8 == "x || y",result8);
+        XCTAssert(result9 == "x && y",result9);
     }
     
     func testConvertStatement(){
@@ -274,13 +280,13 @@ let source =
             class SFHTTPClient:NSObject{
             @property(nonatomic,readonly)NSURL *baseUrl;
 
-            -(id )baseUrl:(NSURL *)baseUrl{
+            -(id )initWithBaseUrl:(NSURL *)baseUrl{
             }
-            -(NSURLSessionDataTask *)method:(int )method uri:(NSString *)uri param:(NSDictionary *)param plugin:(id )plugin completion:(int )completion{
+            -(NSURLSessionDataTask *)requestWithMethod:(int )method uri:(NSString *)uri parameters:(NSDictionary *)param plugin:(id )plugin completion:(int )completion{
             }
-            -(NSMutableURLRequest *)method:(int )method URLString:(NSString *)URLString param:(NSDictionary *)param{
+            -(NSMutableURLRequest *)createRequestWithMethod:(int )method uri:(NSString *)URLString parameters:(NSDictionary *)param{
             }
-            -(NSMutableURLRequest *)method:(int )method URLString:(NSString *)URLString param:(NSDictionary *)param{
+            -(NSMutableURLRequest *)createEncryptedRequestWithMethod:(int )method uri:(NSString *)URLString parameters:(NSDictionary *)param{
             }
             -(NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id )plugin completion:(int )completion{
             }
@@ -401,7 +407,7 @@ let source =
             class SFHTTPClient:NSObject{
             @property(nonatomic,readonly)Block a;
 
-            +(id )processHandler:(Block)processHandler isEnableHandler:(Block)isEnableHandler identifierHandler:(Block)identifierHandler{
+            +(id )imageMakerWithProcessHandler:(Block)processHandler isEnableHandler:(Block)isEnableHandler identifierHandler:(Block)identifierHandler{
             }
             }
 
@@ -412,5 +418,44 @@ let source =
         let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
         XCTAssert(result2 == "Point a = nil;","\n"+result2)
         
+    }
+    func testMethodDeclare(){
+        let source =
+        """
+        @interface SFHTTPClient: NSObject
+        @end
+        @implementation SFHTTPClient
+        - (void)viewWillAppear:(BOOL)animated{
+
+        }
+        @end
+        """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        
+        let result = convert.convert(ocparser.ast.class(forName: "SFHTTPClient") as Any)
+        XCTAssert(result ==
+            """
+            class SFHTTPClient:NSObject{
+            
+            -(void )viewWillAppear:(BOOL )animated{
+            }
+            }
+
+            ""","\n"+result)
+    }
+    func testSimpleChinese(){
+        let source =
+        """
+        NSString * string = @"测试";
+        """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        
+        let result = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        XCTAssert(result ==
+            """
+            NSString *string = @"测试";
+            ""","\n"+result)
     }
 }

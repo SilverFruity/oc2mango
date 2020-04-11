@@ -342,6 +342,7 @@
 
 
 <INITIAL>\" {
+startStringBuffer();
 BEGIN STRING_LITERAL_STATE;
 }
 
@@ -367,20 +368,21 @@ BEGIN STRING_LITERAL_STATE;
 
 <STRING_LITERAL_STATE>\" {
     BEGIN  INITIAL;
-    yylval.identifier = (__bridge_retained void *)getString();
+    NSString *string = [NSString stringWithUTF8String:endStringBuffer()];
+    yylval.identifier = (__bridge_retained void *)string;
     return STRING_LITERAL;
 }
 
-<STRING_LITERAL_STATE>. { appendCharacter(yytext[0]); };
+<STRING_LITERAL_STATE>. { stringBufferAppendCharacter(yytext[0]); };
 
 
-<STRING_LITERAL_STATE>\\\"  { appendCharacter('\"'); }
-<STRING_LITERAL_STATE>\\n	{ appendCharacter('\n'); }
-<STRING_LITERAL_STATE>\\t	{ appendCharacter('\t'); }
-<STRING_LITERAL_STATE>\\\\	{ appendCharacter('\\'); }
+<STRING_LITERAL_STATE>\\\"  { stringBufferAppendCharacter('\"'); }
+<STRING_LITERAL_STATE>\\n	{ stringBufferAppendCharacter('\n'); }
+<STRING_LITERAL_STATE>\\t	{ stringBufferAppendCharacter('\t'); }
+<STRING_LITERAL_STATE>\\\\	{ stringBufferAppendCharacter('\\'); }
 <STRING_LITERAL_STATE>[\x81-\x9f\xe0-\xef][\x40-\x7e\x80-\xfc] {
-	appendCharacter(yytext[0]);
-	appendCharacter(yytext[1]);
+	stringBufferAppendCharacter(yytext[0]);
+    stringBufferAppendCharacter(yytext[1]);
 }
 
 <INITIAL>\n.* {

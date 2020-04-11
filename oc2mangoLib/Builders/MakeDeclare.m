@@ -168,24 +168,31 @@ ContinueStatement *makeContinueStatement(void){
 }
 
 static NSMutableString *buffer = nil;
-void appendCharacter(char chr){
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        buffer = [NSMutableString string];
-    });
-    [buffer appendFormat:@"%c",chr];
+static char *string_buffer = NULL;
+static int string_buffer_index = 0;
+static int string_buffer_size = 0;
+#define STRING_BUFFER_ALLOC_SIZE 256;
+void startStringBuffer(void){
+    string_buffer_index = 0;
 }
-void appendText(char *text){
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        buffer = [NSMutableString string];
-    });
-    [buffer appendFormat:@"%s",text];
+char *endStringBuffer(void){
+    stringBufferAppendCharacter('\0');
+    size_t strLen = strlen(string_buffer);
+    char *str = malloc(strLen + 1);
+    strcpy(str, string_buffer);
+    free(string_buffer);
+    string_buffer = NULL;
+    string_buffer_index = 0;
+    string_buffer_size = 0;
+    return str;
 }
-
-
-NSString * getString(void){
-    NSString *string = [buffer copy];
-    buffer = [NSMutableString string];
-    return string;
+void stringBufferAppendCharacter(char chr){
+   if (string_buffer_index >= string_buffer_size) {
+        string_buffer_size +=  STRING_BUFFER_ALLOC_SIZE;
+        void *new_pointer = realloc(string_buffer, string_buffer_size);
+        free(string_buffer);
+        string_buffer = new_pointer;
+    }
+    string_buffer[string_buffer_index] = chr;
+    string_buffer_index++;
 }

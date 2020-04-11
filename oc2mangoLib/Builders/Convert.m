@@ -146,7 +146,7 @@
         NSMutableArray *list = [NSMutableArray array];
         for (int i = 0; i < methodDecl.parameterNames.count; i++) {
             [list addObject:[NSString stringWithFormat:@"%@:(%@)%@",
-                             methodDecl.parameterNames[i],
+                             methodDecl.methodNames[i],
                              [self convertDeclareTypeVarPair:methodDecl.parameterTypes[i]],
                              methodDecl.parameterNames[i]]];
         }
@@ -243,10 +243,10 @@ int indentationCont = 0;
             operator = @"==";
             break;
         case BinaryOperatorLOGIC_AND:
-            operator = @"||";
+            operator = @"&&";
             break;
         case BinaryOperatorLOGIC_OR:
-            operator = @"&&";
+            operator = @"||";
             break;
     }
     return [NSString stringWithFormat:@"%@ %@ %@",[self convertExpression:exp.left],operator,[self convertExpression:exp.right]];

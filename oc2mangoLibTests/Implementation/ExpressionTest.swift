@@ -262,7 +262,6 @@ class ExpressionTest: XCTestCase {
         XCTAssert(exps[5].operatorType == BinaryOperatorSub)
         XCTAssert(exps[6].operatorType == BinaryOperatorMulti)
         XCTAssert(exps[7].operatorType == BinaryOperatorAdd)
-        
     }
     func testTernaryExpression(){
         

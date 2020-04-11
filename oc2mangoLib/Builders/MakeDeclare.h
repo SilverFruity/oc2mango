@@ -48,7 +48,6 @@ extern ContinueStatement *makeContinueStatement(void);
 
 
 
-
-extern void appendCharacter(char chr);
-void appendText(char *text);
-NSString * getString(void);
+void startStringBuffer(void);
+char *endStringBuffer(void);
+void stringBufferAppendCharacter(char chr);
