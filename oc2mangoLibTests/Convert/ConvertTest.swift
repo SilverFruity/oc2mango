@@ -42,15 +42,25 @@ BOOL x;
         let source =
 """
 int x = 0, b = 0;
+NSNumber *a = @(3);
+NSNumber *a = @(self.object.intValue);
+NSNumber *a = @([self.object intValue]);
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         
         let result = convert.convert(ocparser.ast.globalStatements[0] as Any)
         let result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        let result2 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        let result3 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        let result4 = convert.convert(ocparser.ast.globalStatements[4] as Any)
 
         XCTAssert(result == "int x = 0;",result)
         XCTAssert(result1 == "int b = 0;",result1)
+        XCTAssert(result2 == "NSNumber *a = @(3);",result2)
+        XCTAssert(result3 == "NSNumber *a = @(self.object.intValue);",result3)
+        XCTAssert(result4 == "NSNumber *a = @(self.object.intValue());",result4)
+        
     }
     
     func testConvertMethodCall(){
@@ -81,7 +91,7 @@ self.block(value,[NSObject new].x);
         XCTAssert(result1 == "NSObject.new().x",result1)
         XCTAssert(result2 == "x.get",result2)
         XCTAssert(result3 == "self.request:plugin:completion:(request,plugin,completion)",result3)
-        XCTAssert(result4 == "self.block(value,NSObject.new().x)",result4)
+        XCTAssert(result4 == "self.block()(value,NSObject.new().x)",result4)
         XCTAssert(result5 ==
             """
             self.request:(^void (NSString *name,NSURL *URL){
@@ -457,5 +467,49 @@ let source =
             """
             NSString *string = @"测试";
             ""","\n"+result)
+    }
+    func testConvertMasonryBlock(){
+        let source =
+        """
+        [view1 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(superview.mas_top).with.offset(padding.top); //with is an optional semantic filler
+            make.left.equalTo(superview.mas_left).with.offset(padding.left);
+            make.bottom.equalTo(superview.mas_bottom).with.offset(-padding.bottom);
+            make.right.equalTo(superview.mas_right).with.offset(-padding.right);
+        }];
+        self.handler(@"GGGG");
+        handler(@"GGGG");
+        self.handler = 2;
+        """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        XCTAssert(result1 ==
+            """
+            view1.mas_makeConstraints:(^void (MASConstraintMaker *make){
+                make.top.equalTo()(superview.mas_top).with.offset()(padding.top);
+                make.left.equalTo()(superview.mas_left).with.offset()(padding.left);
+                make.bottom.equalTo()(superview.mas_bottom).with.offset()(-padding.bottom);
+                make.right.equalTo()(superview.mas_right).with.offset()(-padding.right);
+            })
+            ""","\n"+result1)
+        
+        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        XCTAssert(result2 ==
+            """
+            self.handler()(@"GGGG")
+            ""","\n"+result2)
+        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        XCTAssert(result3 ==
+            """
+            handler(@"GGGG")
+            ""","\n"+result3)
+        
+        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        XCTAssert(result4 ==
+            """
+            self.handler = 2;
+            ""","\n"+result4)
+
     }
 }

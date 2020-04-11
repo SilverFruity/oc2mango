@@ -347,8 +347,15 @@ int indentationCont = 0;
             }
             return [NSString stringWithFormat:@"@[%@]",[elements componentsJoinedByString:@","]];
         }
-        case OCValueNSNumber:
-            return [NSString stringWithFormat:@"@(%@)",value.value];
+        case OCValueNSNumber:{
+            if ([value.value isKindOfClass:[NSString class]]) {
+                return [NSString stringWithFormat:@"@(%@)",value.value];
+            }
+            if ([value.value isKindOfClass:[OCValue class]]) {
+                return [NSString stringWithFormat:@"@(%@)",[self convertOCValue:value.value]];
+            }
+        }
+            
 
         case OCValueBlock:
         {
@@ -376,6 +383,11 @@ int indentationCont = 0;
     return @"";
 }
 - (NSString *)convertFunCall:(CFuncCall *)call{
+    // FIX: make.left.equalTo(superview.mas_left) to make.left.equalTo()(superview.mas_left)
+    // FIX: x.left(a) to x.left()(a)
+    if ([call.caller isKindOfClass:[OCMethodCall class]] && [(OCMethodCall *)call.caller isDot]){
+        return [NSString stringWithFormat:@"%@()(%@)",[self convertExpression:call.caller],[self convertExpressionList:call.expressions]];
+    }
     return [NSString stringWithFormat:@"%@(%@)",[self convertExpression:call.caller],[self convertExpressionList:call.expressions]];
 }
 - (NSString *)convertOCMethodCall:(OCMethodCall *)call{

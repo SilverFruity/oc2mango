@@ -835,10 +835,7 @@ postfix_expression: primary_expression
     }
     | postfix_expression LP expression_list RP
     {   
-        CFuncCall *call = (CFuncCall *)makeValue(OCValueFuncCall);
-        call.caller = _transfer(id) $1;
-        call.expressions = _transfer(id) $3;
-        $$ = _vretained call;
+        $$ = _vretained makeFuncCall(_transfer(id) $1, _transfer(id) $3);
     }
     | postfix_expression LB expression RB
     {

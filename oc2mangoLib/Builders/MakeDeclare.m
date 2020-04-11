@@ -85,6 +85,16 @@ OCValue *makeValue(OC_VALUE_TYPE type, id value){
 OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
     return makeValue(type, nil);
 }
+CFuncCall *makeFuncCall(OCValue *caller, NSMutableArray *expressions){
+    CFuncCall *call = [CFuncCall new];
+    call.value_type = OCValueFuncCall;
+    call.caller = caller;
+    call.expressions = expressions;
+    if ([caller.value isKindOfClass:[NSString class]]) {
+        NSLog(@"%@",caller.value);
+    }
+    return call;
+}
 UnaryExpression *makeUnaryExpression(UnaryOperatorType type){
     UnaryExpression *expression = [UnaryExpression  new];
     expression.operatorType = type;

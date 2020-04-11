@@ -97,7 +97,7 @@ int main(int argc, const char * argv[]) {
 //            NSLog(@"%@",[convert convert:statement]);
 //        }
         [OCParser.ast.classCache enumerateKeysAndObjectsUsingBlock:^(NSString * key, OCClass *class, BOOL * _Nonnull stop) {
-            NSString *filename = [NSString stringWithFormat:@"%@.mango",key];
+            NSString *filename = [NSString stringWithFormat:@"%@.mg",key];
             NSString *filepath = [outputDir stringByAppendingPathComponent:filename];
             NSError *error = nil;
             [[convert convert:class] writeToFile:filepath atomically:YES encoding:NSUTF8StringEncoding error:&error];
