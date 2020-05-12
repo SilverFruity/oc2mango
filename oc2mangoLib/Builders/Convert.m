@@ -310,11 +310,10 @@ int indentationCont = 0;
 
 - (NSString *)convertOCValue:(OCValue *)value{
     switch (value.value_type){
-        case OCValueClassType:
+        case OCValueClassName:
         case OCValueSelector:
         case OCValueInt:
         case OCValueDouble:
-        case OCValueConvert:
         case OCValueBOOL:
         case OCValueVariable:
             return value.value;
@@ -365,10 +364,6 @@ int indentationCont = 0;
             return @"nil";
         case OCValueNULL:
             return @"NULL";
-        case OCValuePointValue:
-            return [NSString stringWithFormat:@"*%@",value.value];
-        case OCValueVarPoint:
-            return [NSString stringWithFormat:@"&%@",value.value];
         case OCValueMethodCall:
             return [self convertOCMethodCall:(OCMethodCall *) value];
         case OCValueFuncCall:{

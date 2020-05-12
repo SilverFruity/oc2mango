@@ -23,7 +23,6 @@ typedef enum{
     TypeFloat,
     TypeDouble,
     TypeLongDouble,
-    TypePointer,
     TypeVoid,
     TypeUnion,
     TypeStruct,

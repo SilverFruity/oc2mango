@@ -296,7 +296,7 @@ objc_method_call:
          LB IDENTIFIER objc_method_call_pramameters RB
         {
              OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
-             methodcall.caller =  makeValue(OCValueClassType,_typeId $2);
+             methodcall.caller =  makeValue(OCValueClassName,_typeId $2);
              NSArray *params = _transfer(NSArray *)$3;
              methodcall.names = params[0];
              methodcall.values = params[1];

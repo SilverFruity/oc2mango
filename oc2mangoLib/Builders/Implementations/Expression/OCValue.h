@@ -10,28 +10,27 @@
 
 // MARK: - ValueType
 typedef enum {
-    OCValueVariable,
-    OCValueClassType,
-    OCValueSelf,
-    OCValueSuper,
-    OCValueBlock,
-    OCValueSelector,
-    OCValueProtocol,
-    OCValueDictionary, // value -> [[exp,exp]..]
-    OCValueArray, // value -> [exp..]
-    OCValueNSNumber,
-    OCValueString,
-    OCValueCString,
-    OCValueInt,
-    OCValueDouble,
-    OCValueConvert,
-    OCValueNil,
-    OCValueNULL,
-    OCValueBOOL,
-    OCValuePointValue,
-    OCValueVarPoint,
+    OCValueVariable, // value: NSString
+    OCValueClassName, // value: NSString
+    OCValueSelf, // value: nil
+    OCValueSuper, // value: nil
+    OCValueSelector, // value: sel NSString
+    OCValueProtocol, // value: String
+    OCValueDictionary, // value: Exp Array
+    OCValueArray, // value: Exp Array
+    OCValueNSNumber, // value: Exp
+    OCValueString, // value: NSString
+    OCValueCString, // value: NSString
+    OCValueInt, // value: NSString
+    OCValueDouble, // value: NSString
+    OCValueNil, //  value: nil
+    OCValueNULL, //  value: nil
+    OCValueBOOL, //  value: @"YES" @"NO"
+    
+    //Class
     OCValueMethodCall,
     OCValueFuncCall,
+    OCValueBlock,
     OCValueCollectionGetValue // array[0] , dict[@"key"]
 }OC_VALUE_TYPE;
 
