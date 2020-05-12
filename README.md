@@ -5,8 +5,9 @@ convert Objective-C to mango script:https://github.com/YPLiang19/Mango
 如何使用:
 
 ```shell
+# 先在releases中下载最新的oc2mango.zip
 unzip ~/Downloads/oc2mango.zip -d ~/Downloads/
-~/Downloads/oc2mango input_dir output_dir
+~/Downloads/oc2mango input_dir[包含Objective-C .h .m的文件夹] output_dir[.mg的输出文件夹]
 ```
 
 ## 暂不支持
