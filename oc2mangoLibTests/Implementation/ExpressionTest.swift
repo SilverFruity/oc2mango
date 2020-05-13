@@ -59,66 +59,66 @@ class ExpressionTest: XCTestCase {
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
 
-        let assign = ocparser.ast.globalStatements[0] as? DeclareExpression;
+        let assign = ocparser.ast.globalStatements[0] as? ORDeclareExpression;
         XCTAssert(assign?.pair.type.type == TypeInt)
         XCTAssert(assign?.pair.var.varname == "a")
         
-        let assign1 = ocparser.ast.globalStatements[1] as? DeclareExpression;
+        let assign1 = ocparser.ast.globalStatements[1] as? ORDeclareExpression;
         XCTAssert(assign1?.pair.type.type == TypeInt)
 
 
-        let assign2 = ocparser.ast.globalStatements[2] as? DeclareExpression;
+        let assign2 = ocparser.ast.globalStatements[2] as? ORDeclareExpression;
         XCTAssert(assign2?.pair.type.type == TypeUInt)
         
-        let assign3 = ocparser.ast.globalStatements[3] as? DeclareExpression;
+        let assign3 = ocparser.ast.globalStatements[3] as? ORDeclareExpression;
         XCTAssert(assign3?.pair.type.type == TypeChar)
         
-        let assign4 = ocparser.ast.globalStatements[4] as? DeclareExpression;
+        let assign4 = ocparser.ast.globalStatements[4] as? ORDeclareExpression;
         XCTAssert(assign4?.pair.type.type == TypeUChar)
         
-        let assign5 = ocparser.ast.globalStatements[5] as? DeclareExpression;
+        let assign5 = ocparser.ast.globalStatements[5] as? ORDeclareExpression;
         XCTAssert(assign5?.pair.type.type == TypeLong)
         
-        let assign6 = ocparser.ast.globalStatements[6] as? DeclareExpression;
+        let assign6 = ocparser.ast.globalStatements[6] as? ORDeclareExpression;
         XCTAssert(assign6?.pair.type.type == TypeULong)
         
-        let assign7 = ocparser.ast.globalStatements[7] as? DeclareExpression;
+        let assign7 = ocparser.ast.globalStatements[7] as? ORDeclareExpression;
         XCTAssert(assign7?.pair.type.type == TypeLongLong)
         
-        let assign8 = ocparser.ast.globalStatements[8] as? DeclareExpression;
+        let assign8 = ocparser.ast.globalStatements[8] as? ORDeclareExpression;
         XCTAssert(assign8?.pair.type.type == TypeULongLong)
         
-        let assign9 = ocparser.ast.globalStatements[9] as? DeclareExpression;
+        let assign9 = ocparser.ast.globalStatements[9] as? ORDeclareExpression;
         XCTAssert(assign9?.pair.type.type == TypeLong)
         
-        let assign10 = ocparser.ast.globalStatements[10] as? DeclareExpression;
+        let assign10 = ocparser.ast.globalStatements[10] as? ORDeclareExpression;
         XCTAssert(assign10?.pair.type.type == TypeULong)
         
-        let assign11 = ocparser.ast.globalStatements[11] as? DeclareExpression;
+        let assign11 = ocparser.ast.globalStatements[11] as? ORDeclareExpression;
         XCTAssert(assign11?.pair.type.type == TypeUInt)
         
-        let assign12 = ocparser.ast.globalStatements[12] as? DeclareExpression
+        let assign12 = ocparser.ast.globalStatements[12] as? ORDeclareExpression
         XCTAssert(assign12?.pair.var.ptCount == -1)
         XCTAssert(assign12?.pair.var.varname == "block")
         
-        let assign13 = ocparser.ast.globalStatements[13] as? DeclareExpression
+        let assign13 = ocparser.ast.globalStatements[13] as? ORDeclareExpression
         XCTAssert(assign13?.pair.type.type == TypeObject,"\(assign13?.pair.type.type)")
         
-        let assign14 = ocparser.ast.globalStatements[14] as? DeclareExpression
+        let assign14 = ocparser.ast.globalStatements[14] as? ORDeclareExpression
         XCTAssert(assign14?.pair.type.type == TypeObject)
         XCTAssert(assign14?.pair.type.name == "NSObject")
         
-        let assign15 = ocparser.ast.globalStatements[15] as? DeclareExpression
+        let assign15 = ocparser.ast.globalStatements[15] as? ORDeclareExpression
         XCTAssert(assign15?.pair.type.type == TypeObject)
         XCTAssert(assign15?.pair.type.name == "NSMutableArray")
         
-        let assign16 = ocparser.ast.globalStatements[16] as? DeclareExpression
+        let assign16 = ocparser.ast.globalStatements[16] as? ORDeclareExpression
         XCTAssert(assign16?.pair.type.type == TypeObject)
-        let expresssion16 = assign16?.expression as? OCValue
+        let expresssion16 = assign16?.expression as? ORValueExpression
         XCTAssert(expresssion16?.value_type == OCValueString)
         XCTAssert(expresssion16?.value as? String == "123")
         
-        let assign17 = ocparser.ast.globalStatements[17] as? DeclareExpression
+        let assign17 = ocparser.ast.globalStatements[17] as? ORDeclareExpression
         XCTAssert(assign17?.pair.var.ptCount == 1)
         XCTAssert(assign17?.pair.var.varname == "a",assign17?.pair.var.varname ?? "")
     }
@@ -240,20 +240,20 @@ class ExpressionTest: XCTestCase {
         """
         ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
-        let exps = ocparser.ast.globalStatements as! [BinaryExpression]
+        let exps = ocparser.ast.globalStatements as! [ORBinaryExpression]
         XCTAssert(exps[0].operatorType == BinaryOperatorLT)
         let exp2 = exps[1]
         XCTAssert(exp2.operatorType == BinaryOperatorLOGIC_AND)
-        let exp2Left = exp2.left as? BinaryExpression
-        let exp2Rigth = exp2.right as? BinaryExpression
+        let exp2Left = exp2.left as? ORBinaryExpression
+        let exp2Rigth = exp2.right as? ORBinaryExpression
         XCTAssert(exp2Left?.operatorType == BinaryOperatorLT)
         XCTAssert(exp2Rigth?.operatorType == BinaryOperatorGT)
         
         let exp3 = exps[2]
         XCTAssert(exp3.operatorType == BinaryOperatorLOGIC_OR)
         
-        let exp3l = exp3.left as? BinaryExpression
-        let exp3r = exp3.right as? BinaryExpression
+        let exp3l = exp3.left as? ORBinaryExpression
+        let exp3r = exp3.right as? ORBinaryExpression
         
         XCTAssert(exp3l?.operatorType == BinaryOperatorLOGIC_AND)
         XCTAssert(exp3r?.operatorType == BinaryOperatorLOGIC_AND)

@@ -33,7 +33,7 @@ if (x >= 0 ){
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let state = ocparser.ast.globalStatements.firstObject as! IfStatement
+        let state = ocparser.ast.globalStatements.firstObject as! ORIfStatement
         XCTAssert(state.condition == nil)
         XCTAssert(state.funcImp != nil)
         
@@ -48,21 +48,21 @@ if (x >= 0 ){
         let ifS = elseif1?.last;
         XCTAssert(ifS?.condition != nil)
         XCTAssert(ifS?.funcImp != nil)
-        XCTAssert(ifS?.funcImp.isKind(of: BlockImp.classForCoder()) ?? false)
+        XCTAssert(ifS?.funcImp.isKind(of: ORBlockImp.classForCoder()) ?? false)
         
         
         // if ()
-        let condition = ifS?.condition as? BinaryExpression
+        let condition = ifS?.condition as? ORBinaryExpression
         XCTAssert(condition?.operatorType == BinaryOperatorGE)
-        let left1 = condition?.left as? OCValue
-        let right1 = condition?.right as? OCValue
+        let left1 = condition?.left as? ORValueExpression
+        let right1 = condition?.right as? ORValueExpression
         XCTAssert(left1?.value_type == OCValueVariable && left1?.value as! String == "x")
         XCTAssert(right1?.value_type == OCValueInt && right1?.value as! String == "0")
         
-        let condition1 = elseif1?.condition as? OCValue
+        let condition1 = elseif1?.condition as? ORValueExpression
         XCTAssert(condition1?.value as! String == "x")
         
-        let condition2 = elseif2?.condition as? BinaryExpression
+        let condition2 = elseif2?.condition as? ORBinaryExpression
         XCTAssert(condition2?.operatorType == BinaryOperatorEqual)
 
         
@@ -78,7 +78,7 @@ do{
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let state = ocparser.ast.globalStatements.firstObject as! DoWhileStatement
+        let state = ocparser.ast.globalStatements.firstObject as! ORDoWhileStatement
         XCTAssert(state.funcImp != nil)
         XCTAssert(state.condition != nil)
     }
@@ -91,7 +91,7 @@ while(x > 0 && x < 0){
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let state = ocparser.ast.globalStatements.firstObject as! WhileStatement
+        let state = ocparser.ast.globalStatements.firstObject as! ORWhileStatement
         XCTAssert(state.funcImp != nil)
         XCTAssert(state.condition != nil)
         
@@ -133,11 +133,11 @@ switch (x) {
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess());
-        let state1 = ocparser.ast.globalStatements.firstObject as! SwitchStatement
+        let state1 = ocparser.ast.globalStatements.firstObject as! ORSwitchStatement
         XCTAssert(state1.value != nil)
         XCTAssert(state1.cases.count == 3)
         
-        let state2 = ocparser.ast.globalStatements[1] as! SwitchStatement
+        let state2 = ocparser.ast.globalStatements[1] as! ORSwitchStatement
         XCTAssert(state2.value != nil)
         XCTAssert(state2.cases.count == 3)
         

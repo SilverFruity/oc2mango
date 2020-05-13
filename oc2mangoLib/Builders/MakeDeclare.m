@@ -9,34 +9,34 @@
 #import "MakeDeclare.h"
 
 
-TypeSpecial *makeTypeSpecial(TypeKind type ,NSString *name){
-    return [TypeSpecial specialWithType:type name:name];
+ORTypeSpecial *makeTypeSpecial(TypeKind type ,NSString *name){
+    return [ORTypeSpecial specialWithType:type name:name];
 }
-TypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)){
+ORTypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)){
     return makeTypeSpecial(type, nil);
 }
-Variable *makeVar(NSString *name, NSUInteger ptCount){
-    Variable *var = [Variable new];
+ORVariable *makeVar(NSString *name, NSUInteger ptCount){
+    ORVariable *var = [ORVariable new];
     var.ptCount = ptCount;
     var.varname = name;
     return var;
 }
-Variable *makeVar(NSString *name) __attribute__((overloadable)){
+ORVariable *makeVar(NSString *name) __attribute__((overloadable)){
     return makeVar(name, 0);
 }
-extern TypeVarPair *makeTypeVarPair(TypeSpecial *type, Variable *var){
-    TypeVarPair *pair = [TypeVarPair new];
+extern ORTypeVarPair *makeTypeVarPair(ORTypeSpecial *type, ORVariable *var){
+    ORTypeVarPair *pair = [ORTypeVarPair new];
     pair.type = type;
     pair.var = var;
     return pair;
 }
 
-OCClass *makeOCClass(NSString *className){
-    return [OCClass classWithClassName:className];
+ORClass *makeOCClass(NSString *className){
+    return [ORClass classWithClassName:className];
 }
 
-MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeVarPair *returnType){
-    MethodDeclare *method = [MethodDeclare new];
+ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORTypeVarPair *returnType){
+    ORMethodDeclare *method = [ORMethodDeclare new];
     method.methodNames = [NSMutableArray array];
     method.parameterNames  = [NSMutableArray array];
     method.parameterTypes = [NSMutableArray array];
@@ -44,49 +44,49 @@ MethodDeclare *makeMethodDeclare(BOOL isClassMethod, TypeVarPair *returnType){
     method.returnType = returnType;
     return method;
 }
-FuncDeclare *makeFuncDeclare(TypeVarPair *returnType,FuncVariable *var){
-    FuncDeclare *decl = [FuncDeclare new];
+ORFuncDeclare *makeFuncDeclare(ORTypeVarPair *returnType,ORFuncVariable *var){
+    ORFuncDeclare *decl = [ORFuncDeclare new];
     decl.returnType = returnType;
     decl.var = var;
     return decl;
 }
 
-MethodImplementation *makeMethodImplementation(MethodDeclare *declare){
-    MethodImplementation *imp = [MethodImplementation new];
+ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare){
+    ORMethodImplementation *imp = [ORMethodImplementation new];
     imp.declare = declare;
     return imp;
 }
 
 
 
-OCValue *makeValue(OC_VALUE_TYPE type, id value){
-    OCValue *ocvalue;
+ORValueExpression *makeValue(OC_VALUE_TYPE type, id value){
+    ORValueExpression *ocvalue;
     switch (type){
         case OCValueMethodCall:
-            ocvalue = [OCMethodCall new];
+            ocvalue = [ORMethodCall new];
             break;
         case OCValueFuncCall:
-            ocvalue = [CFuncCall new];
+            ocvalue = [ORCFuncCall new];
             break;
         case OCValueBlock:
-            ocvalue = [BlockImp new];
+            ocvalue = [ORBlockImp new];
             break;
         case OCValueCollectionGetValue:
-            ocvalue = [OCCollectionGetValue new];
+            ocvalue = [ORSubscriptExpression new];
             break;
         default:
-            ocvalue = [OCValue new];
+            ocvalue = [ORValueExpression new];
             break;
     }
     ocvalue.value_type = type;
     ocvalue.value = value;
     return ocvalue;
 }
-OCValue *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
+ORValueExpression *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
     return makeValue(type, nil);
 }
-CFuncCall *makeFuncCall(OCValue *caller, NSMutableArray *expressions){
-    CFuncCall *call = [CFuncCall new];
+ORCFuncCall *makeFuncCall(ORValueExpression *caller, NSMutableArray *expressions){
+    ORCFuncCall *call = [ORCFuncCall new];
     call.value_type = OCValueFuncCall;
     call.caller = caller;
     call.expressions = expressions;
@@ -95,28 +95,28 @@ CFuncCall *makeFuncCall(OCValue *caller, NSMutableArray *expressions){
     }
     return call;
 }
-UnaryExpression *makeUnaryExpression(UnaryOperatorType type){
-    UnaryExpression *expression = [UnaryExpression  new];
+ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type){
+    ORUnaryExpression *expression = [ORUnaryExpression  new];
     expression.operatorType = type;
     return expression;
 }
-BinaryExpression *makeBinaryExpression(BinaryOperatorType type)
+ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type)
 {
-    BinaryExpression *expression = [BinaryExpression new];
+    ORBinaryExpression *expression = [ORBinaryExpression new];
     expression.operatorType = type;
     return expression;
 }
-TernaryExpression *makeTernaryExpression(){
-    return [TernaryExpression  new];
+ORTernaryExpression *makeTernaryExpression(){
+    return [ORTernaryExpression  new];
 }
 
-AssignExpression *makeAssignExpression(AssignOperatorType type){
-    AssignExpression *expression = [AssignExpression new];
+ORAssignExpression *makeAssignExpression(AssignOperatorType type){
+    ORAssignExpression *expression = [ORAssignExpression new];
     expression.assignType = type;
     return expression;
 }
-extern DeclareExpression *makeDeclareExpression(TypeSpecial *type,Variable *var,id <Expression> exp){
-    DeclareExpression *declare = [DeclareExpression new];
+extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,id <Expression> exp){
+    ORDeclareExpression *declare = [ORDeclareExpression new];
     declare.pair = makeTypeVarPair(type, var);
     declare.expression = exp;
     return declare;
@@ -124,57 +124,57 @@ extern DeclareExpression *makeDeclareExpression(TypeSpecial *type,Variable *var,
 
 
 
-IfStatement *makeIfStatement(id <Expression> judgement, BlockImp *imp){
-    IfStatement *statement = [IfStatement new];
+ORIfStatement *makeIfStatement(id <Expression> judgement, ORBlockImp *imp){
+    ORIfStatement *statement = [ORIfStatement new];
     statement.funcImp = imp;
     statement.condition = judgement;
     return statement;
 }
-WhileStatement *makeWhileStatement(id <Expression>judgement, BlockImp *imp){
-    WhileStatement *statement = [WhileStatement new];
+ORWhileStatement *makeWhileStatement(id <Expression>judgement, ORBlockImp *imp){
+    ORWhileStatement *statement = [ORWhileStatement new];
     statement.funcImp = imp;
     statement.condition = judgement;
     return statement;
 }
-DoWhileStatement *makeDoWhileStatement(id <Expression>judgement, BlockImp *imp){
-    DoWhileStatement *statement = [DoWhileStatement new];
+ORDoWhileStatement *makeDoWhileStatement(id <Expression>judgement, ORBlockImp *imp){
+    ORDoWhileStatement *statement = [ORDoWhileStatement new];
     statement.condition = judgement;
     statement.funcImp = imp;
     return statement;
 }
-CaseStatement *makeCaseStatement(OCValue *value){
-    CaseStatement *statement = [CaseStatement new];
+ORCaseStatement *makeCaseStatement(ORValueExpression *value){
+    ORCaseStatement *statement = [ORCaseStatement new];
     statement.value = value;
-    statement.funcImp = [BlockImp new];
+    statement.funcImp = [ORBlockImp new];
     return statement;
 }
-SwitchStatement *makeSwitchStatement(OCValue *value){
-    SwitchStatement *statement = [SwitchStatement new];
+ORSwitchStatement *makeSwitchStatement(ORValueExpression *value){
+    ORSwitchStatement *statement = [ORSwitchStatement new];
     statement.value = value;
     return statement;
 }
-ForStatement *makeForStatement(BlockImp *imp){
-    ForStatement *statement = [ForStatement new];
+ORForStatement *makeForStatement(ORBlockImp *imp){
+    ORForStatement *statement = [ORForStatement new];
     statement.funcImp = imp;
     return statement;
 }
-ForInStatement *makeForInStatement(BlockImp *imp){
-    ForInStatement *statement = [ForInStatement new];
+ORForInStatement *makeForInStatement(ORBlockImp *imp){
+    ORForInStatement *statement = [ORForInStatement new];
     statement.funcImp = imp;
     return statement;
 }
 
-ReturnStatement *makeReturnStatement(id <ValueExpression> expression){
-    ReturnStatement *statement = [ReturnStatement new];
+ORReturnStatement *makeReturnStatement(id <ValueExpression> expression){
+    ORReturnStatement *statement = [ORReturnStatement new];
     statement.expression = expression;
     return statement;
 }
-BreakStatement *makeBreakStatement(void){
-    return [BreakStatement new];
+ORBreakStatement *makeBreakStatement(void){
+    return [ORBreakStatement new];
 }
 
-ContinueStatement *makeContinueStatement(void){
-    return [ContinueStatement new];
+ORContinueStatement *makeContinueStatement(void){
+    return [ORContinueStatement new];
 }
 
 static NSMutableString *buffer = nil;

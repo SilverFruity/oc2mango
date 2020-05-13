@@ -8,7 +8,7 @@
 
 #import "Parser.h"
 #import "Expression.h"
-#import "Statement.h"
+#import "ORStatement.h"
 void UncaughtExceptionHandler(NSException *exception) {
     extern unsigned long yylineno;
     NSArray *array = [OCParser.source componentsSeparatedByString:@"\n"];

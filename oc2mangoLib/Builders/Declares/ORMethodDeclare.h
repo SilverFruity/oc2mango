@@ -7,12 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "TypeSpecial.h"
-@interface MethodDeclare : NSObject
+#import "ORTypeSpecial.h"
+@interface ORMethodDeclare : NSObject
 @property(nonatomic,assign) BOOL isClassMethod;
-@property(nonatomic,strong) TypeVarPair *returnType;
+@property(nonatomic,strong) ORTypeVarPair *returnType;
 @property(nonatomic,strong) NSMutableArray *methodNames;
-@property(nonatomic,strong) NSMutableArray <TypeVarPair *>*parameterTypes;
+@property(nonatomic,strong) NSMutableArray <ORTypeVarPair *>*parameterTypes;
 @property(nonatomic,strong) NSMutableArray *parameterNames;
 @end
 

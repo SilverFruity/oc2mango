@@ -17,10 +17,10 @@
 }
 @end
 
-@implementation Variable
+@implementation ORVariable
 
-+ (instancetype)copyFromVar:(Variable *)var{
-    Variable *new = [[self class] new];
++ (instancetype)copyFromVar:(ORVariable *)var{
+    ORVariable *new = [[self class] new];
     new.ptCount = var.ptCount;
     new.varname = var.varname;
     return new;

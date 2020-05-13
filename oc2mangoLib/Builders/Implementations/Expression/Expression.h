@@ -7,14 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "TypeSpecial.h"
-@class OCValue;
+#import "ORTypeSpecial.h"
+@class ORValueExpression;
 
 
 @protocol Expression <NSObject>
 
 @end
 @protocol ValueExpression <Expression>
+
+@end
+
+@interface ORCodeCheck : NSObject
+@property (nonatomic, assign)NSInteger lineNum;
+@property (nonatomic, assign)NSInteger columnStart;
+@property (nonatomic, assign)NSInteger length;
+@property (nonatomic, copy)NSString *filename;
+@end
+
+@interface ORExpression: ORCodeCheck
 
 @end
 
@@ -34,15 +45,15 @@ typedef enum {
 }AssignOperatorType;
 
 // MARK: - Assign
-@interface AssignExpression : NSObject <Expression>
-@property (nonatomic,strong)OCValue *value;
+@interface ORAssignExpression : ORExpression <Expression>
+@property (nonatomic,strong)ORValueExpression *value;
 @property (nonatomic,assign)AssignOperatorType assignType;
 @property (nonatomic,strong)id <ValueExpression> expression;
 @end
 
 
-@interface DeclareExpression: NSObject <Expression>
-@property (nonatomic,strong)TypeVarPair *pair;
+@interface ORDeclareExpression: ORExpression <Expression>
+@property (nonatomic,strong)ORTypeVarPair *pair;
 @property (nonatomic,strong)id <Expression> expression;
 @end
 
@@ -62,7 +73,7 @@ typedef enum {
     UnaryOperatorAdressValue
 }UnaryOperatorType;
 
-@interface UnaryExpression: NSObject <ValueExpression>
+@interface ORUnaryExpression: ORExpression <ValueExpression>
 @property (nonatomic,strong)id <ValueExpression> value;
 @property (nonatomic,assign)UnaryOperatorType operatorType;
 @end
@@ -88,13 +99,13 @@ typedef enum {
     BinaryOperatorLOGIC_OR
 }BinaryOperatorType;
 
-@interface BinaryExpression: NSObject <ValueExpression>
+@interface ORBinaryExpression: ORExpression <ValueExpression>
 @property (nonatomic,strong)id <ValueExpression> left;
 @property (nonatomic,assign) BinaryOperatorType operatorType;
 @property (nonatomic,strong)id <ValueExpression> right;
 @end
 
-@interface TernaryExpression : NSObject <ValueExpression>
+@interface ORTernaryExpression : ORExpression <ValueExpression>
 @property (nonatomic,strong)id <ValueExpression> expression;
 @property (nonatomic,strong)NSMutableArray <id <ValueExpression>>*values;
 

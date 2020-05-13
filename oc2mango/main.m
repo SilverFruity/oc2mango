@@ -96,7 +96,7 @@ int main(int argc, const char * argv[]) {
 //        for (id statement in OCParser.ast.globalStatements) {
 //            NSLog(@"%@",[convert convert:statement]);
 //        }
-        [OCParser.ast.classCache enumerateKeysAndObjectsUsingBlock:^(NSString * key, OCClass *class, BOOL * _Nonnull stop) {
+        [OCParser.ast.classCache enumerateKeysAndObjectsUsingBlock:^(NSString * key, ORClass *class, BOOL * _Nonnull stop) {
             NSString *filename = [NSString stringWithFormat:@"%@.mg",key];
             NSString *filepath = [outputDir stringByAppendingPathComponent:filename];
             NSError *error = nil;

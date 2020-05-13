@@ -5,8 +5,8 @@
 
 #import <Foundation/Foundation.h>
 #import "Expression.h"
-#import "Statement.h"
-#import "FuncDeclare.h"
+#import "ORStatement.h"
+#import "ORFuncDeclare.h"
 
 // MARK: - ValueType
 typedef enum {
@@ -34,7 +34,7 @@ typedef enum {
     OCValueCollectionGetValue // array[0] , dict[@"key"]
 }OC_VALUE_TYPE;
 
-@interface OCValue: NSObject <ValueExpression>
+@interface ORValueExpression: NSObject <ValueExpression>
 @property (nonatomic,assign)OC_VALUE_TYPE value_type;
 @property (nonatomic,strong)id value;
 @end
@@ -44,26 +44,26 @@ typedef enum{
 }OCMethodCallType;
 
 
-@interface OCMethodCall : OCValue
-@property (nonatomic, strong)OCValue *caller;
+@interface ORMethodCall : ORValueExpression
+@property (nonatomic, strong)ORValueExpression *caller;
 @property (nonatomic, assign)BOOL isDot;
 @property (nonatomic, strong)NSMutableArray *names;
 @property (nonatomic, strong)NSMutableArray <id <ValueExpression>> *values;
 @end
 
-@interface CFuncCall: OCValue
-@property (nonatomic, strong)OCValue *caller;
+@interface ORCFuncCall: ORValueExpression
+@property (nonatomic, strong)ORValueExpression *caller;
 @property (nonatomic, strong)NSMutableArray <id <ValueExpression>>*expressions;
 @end
 
-@interface BlockImp : OCValue
-@property(nonatomic,strong) FuncDeclare *declare;
+@interface ORBlockImp : ORValueExpression
+@property(nonatomic,strong) ORFuncDeclare *declare;
 @property(nonatomic,strong) NSMutableArray * statements;
 - (void)addStatements:(id)statements;
-- (void)copyFromImp:(BlockImp *)imp;
+- (void)copyFromImp:(ORBlockImp *)imp;
 @end
 
-@interface OCCollectionGetValue: OCValue
-@property (nonatomic, strong)OCValue *caller;
+@interface ORSubscriptExpression: ORValueExpression
+@property (nonatomic, strong)ORValueExpression *caller;
 @property (nonatomic, strong)id <Expression> keyExp;
 @end

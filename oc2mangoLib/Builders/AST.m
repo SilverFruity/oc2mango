@@ -9,9 +9,9 @@
 #import "AST.h"
 #import "MakeDeclare.h"
 
-@implementation OCClass
+@implementation ORClass
 + (instancetype)classWithClassName:(NSString *)className{
-    OCClass *class = [OCClass new];
+    ORClass *class = [ORClass new];
     class.className = className;
     return class;
 }
@@ -27,8 +27,8 @@
 }
 @end
 @implementation AST
-- (OCClass *)classForName:(NSString *)className{
-    OCClass *class = self.classCache[className];
+- (ORClass *)classForName:(NSString *)className{
+    ORClass *class = self.classCache[className];
     if (!class) {
         class = makeOCClass(className);
         self.classCache[className] = class;

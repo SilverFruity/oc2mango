@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "TypeSpecial.h"
+#import "ORTypeSpecial.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ORFuncDeclare : NSObject

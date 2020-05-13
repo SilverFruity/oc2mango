@@ -8,26 +8,31 @@
 
 #import "Expression.h"
 
+@implementation ORCodeCheck
+@end
 
-@implementation AssignExpression {
+@implementation ORExpression
+
+@end
+@implementation ORAssignExpression {
     
 }
 @end
 
 
-@implementation DeclareExpression
+@implementation ORDeclareExpression
 
 
 @end
 
-@implementation UnaryExpression
+@implementation ORUnaryExpression
 
 @end
 
-@implementation BinaryExpression
+@implementation ORBinaryExpression
 @end
 
-@implementation TernaryExpression
+@implementation ORTernaryExpression
 - (instancetype)init
 {
     self = [super init];

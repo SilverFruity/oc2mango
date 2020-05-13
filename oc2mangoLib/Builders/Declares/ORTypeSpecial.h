@@ -52,25 +52,25 @@ enum{
 };
 
 
-@interface TypeSpecial : NSObject
+@interface ORTypeSpecial : NSObject
 @property (nonatomic, assign) TypeKind type;
 @property (nonatomic, nullable, copy) NSString * name;
 + (instancetype)specialWithType:(TypeKind)type name:(NSString *)name;
 @end
 
 
-@interface Variable: NSObject
+@interface ORVariable: NSObject
 @property (nonatomic, assign) NSInteger ptCount;
 @property (nonatomic, nullable, copy) NSString * varname;
-+ (instancetype)copyFromVar:(Variable *)var;
++ (instancetype)copyFromVar:(ORVariable *)var;
 @end
 
-@interface TypeVarPair : NSObject
-@property (nonatomic, strong)TypeSpecial *type;
-@property (nonatomic, strong)Variable *var;
+@interface ORTypeVarPair : NSObject
+@property (nonatomic, strong)ORTypeSpecial *type;
+@property (nonatomic, strong)ORVariable *var;
 @end
 
-@interface FuncVariable: Variable
-@property(nonatomic,strong) NSMutableArray <TypeVarPair *>*pairs;
+@interface ORFuncVariable: ORVariable
+@property(nonatomic,strong) NSMutableArray <ORTypeVarPair *>*pairs;
 
 @end

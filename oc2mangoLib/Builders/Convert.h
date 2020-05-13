@@ -11,24 +11,24 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface Convert : NSObject
 - (NSString *)convert:(id)content;
-- (NSString *)convertOCClass:(OCClass *)occlass;
+- (NSString *)convertOCClass:(ORClass *)occlass;
 - (NSString *)convertExpression:(id <Expression>)exp;
-- (NSString *)convertStatement:(Statement *)statement;
+- (NSString *)convertStatement:(ORStatement *)statement;
 
-- (NSString *)convertTypeSpecial:(TypeSpecial *)type;
-- (NSString *)convertPropertyDeclare:(PropertyDeclare *)propertyDecl;
-- (NSString *)convertMethoDeclare:(MethodDeclare *)methodDecl;
-- (NSString *)convertMethodImp:(MethodImplementation *)methodImp;
-- (NSString *)convertFuncDeclare:(FuncDeclare *)funcDecl;
+- (NSString *)convertTypeSpecial:(ORTypeSpecial *)type;
+- (NSString *)convertPropertyDeclare:(ORPropertyDeclare *)propertyDecl;
+- (NSString *)convertMethoDeclare:(ORMethodDeclare *)methodDecl;
+- (NSString *)convertMethodImp:(ORMethodImplementation *)methodImp;
+- (NSString *)convertFuncDeclare:(ORFuncDeclare *)funcDecl;
 
-- (NSString *)convertAssginExp:(AssignExpression *)exp;
-- (NSString *)convertOCValue:(OCValue *)value;
+- (NSString *)convertAssginExp:(ORAssignExpression *)exp;
+- (NSString *)convertOCValue:(ORValueExpression *)value;
 
-- (NSString *)convertIfStatement:(IfStatement *)statement;
-- (NSString *)convertWhileStatement:(WhileStatement *)statement;
-- (NSString *)convertDoWhileStatement:(DoWhileStatement *)statement;
-- (NSString *)convertSwitchStatement:(SwitchStatement *)statement;
-- (NSString *)convertForStatement:(ForStatement *)statement;
-- (NSString *)convertForInStatement:(ForInStatement *)statement;
+- (NSString *)convertIfStatement:(ORIfStatement *)statement;
+- (NSString *)convertWhileStatement:(ORWhileStatement *)statement;
+- (NSString *)convertDoWhileStatement:(ORDoWhileStatement *)statement;
+- (NSString *)convertSwitchStatement:(ORSwitchStatement *)statement;
+- (NSString *)convertForStatement:(ORForStatement *)statement;
+- (NSString *)convertForInStatement:(ORForInStatement *)statement;
 @end
 NS_ASSUME_NONNULL_END

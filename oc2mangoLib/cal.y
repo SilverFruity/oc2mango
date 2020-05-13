@@ -76,9 +76,9 @@ global_define:
     | PROTOCOL IDENTIFIER SEMICOLON
     | type_specifier declarator LC function_implementation RC
     {
-        TypeVarPair *returnType = makeTypeVarPair(_typeId $1, nil);
-        FuncDeclare *declare = makeFuncDeclare(returnType, _typeId $2);
-        BlockImp *imp = _transfer(BlockImp *) $4;
+        ORTypeVarPair *returnType = makeTypeVarPair(_typeId $1, nil);
+        ORFuncDeclare *declare = makeFuncDeclare(returnType, _typeId $2);
+        ORBlockImp *imp = _transfer(ORBlockImp *) $4;
         imp.declare = declare;
         [LibAst addGlobalStatements:imp];
     }
@@ -94,7 +94,7 @@ class_declare:
             //
             INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
-                OCClass *occlass = [LibAst classForName:_transfer(id)$2];
+                ORClass *occlass = [LibAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
                 $$ = _vretained occlass;
             }
@@ -109,23 +109,23 @@ class_declare:
             }
             | class_declare LT protocol_list GT
             {
-                OCClass *occlass = _transfer(OCClass *) $1;
+                ORClass *occlass = _transfer(ORClass *) $1;
                 occlass.protocols = _transfer(id) $3;
                 $$ = _vretained occlass;
             }
             | class_declare LC class_private_varibale_declare RC
             {
-                OCClass *occlass = _transfer(OCClass *) $1;
+                ORClass *occlass = _transfer(ORClass *) $1;
                 [occlass.privateVariables addObjectsFromArray:_transfer(id) $3];
                 $$ = _vretained occlass;
             }
             | class_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
             {
-                OCClass *occlass = _transfer(OCClass *) $1;
+                ORClass *occlass = _transfer(ORClass *) $1;
 
-                PropertyDeclare *property = [PropertyDeclare new];
+                ORPropertyDeclare *property = [ORPropertyDeclare new];
                 property.keywords = _transfer(NSMutableArray *) $3;
-                property.var = _transfer(TypeVarPair *) $4;
+                property.var = _transfer(ORTypeVarPair *) $4;
                 
                 [occlass.properties addObject:property];
                 $$ = _vretained occlass;
@@ -148,15 +148,15 @@ class_implementation:
             }
             | class_implementation LC class_private_varibale_declare RC
             {
-                OCClass *occlass = _transfer(OCClass *) $1;
+                ORClass *occlass = _transfer(ORClass *) $1;
                 [occlass.privateVariables addObjectsFromArray:_transfer(id) $3];
                 $$ = _vretained occlass;
             }
             | class_implementation method_declare LC function_implementation RC
             {
-                MethodImplementation *imp = makeMethodImplementation(_transfer(MethodDeclare *) $2);
-                imp.imp = _transfer(BlockImp *) $4;
-                OCClass *occlass = _transfer(OCClass *) $1;
+                ORMethodImplementation *imp = makeMethodImplementation(_transfer(ORMethodDeclare *) $2);
+                imp.imp = _transfer(ORBlockImp *) $4;
+                ORClass *occlass = _transfer(ORClass *) $1;
                 [occlass.methods addObject:imp];
                 $$ = _vretained occlass;
             }
@@ -186,7 +186,7 @@ class_private_varibale_declare: // empty
             | class_private_varibale_declare parameter_declaration SEMICOLON
             {
                 NSMutableArray *list = _transfer(NSMutableArray *) $1;
-				[list addObject:_transfer(TypeVarPair *) $2];
+				[list addObject:_transfer(ORTypeVarPair *) $2];
 				$$ = (__bridge_retained void *)list;
             }
             ;
@@ -244,24 +244,24 @@ declare_right_attribute:
 method_declare:
             SUB LP parameter_declaration RP
             {   
-                TypeVarPair *declare = _transfer(TypeVarPair *)$3;
+                ORTypeVarPair *declare = _transfer(ORTypeVarPair *)$3;
                 $$ = _vretained makeMethodDeclare(NO,declare);
             }
             | ADD LP parameter_declaration RP
             {
-                TypeVarPair *declare = _transfer(TypeVarPair *)$3;
+                ORTypeVarPair *declare = _transfer(ORTypeVarPair *)$3;
                 $$ = _vretained makeMethodDeclare(YES,declare);
             }
             | method_declare IDENTIFIER
             {
-                MethodDeclare *method = _transfer(MethodDeclare *)$$;
+                ORMethodDeclare *method = _transfer(ORMethodDeclare *)$$;
                 [method.methodNames addObject:_transfer(NSString *) $2];
                 $$ = _vretained method;
             }
             | method_declare IDENTIFIER COLON LP parameter_declaration RP IDENTIFIER
             {
-                TypeVarPair *pair = _transfer(TypeVarPair *)$5;
-                MethodDeclare *method = _transfer(MethodDeclare *)$$;
+                ORTypeVarPair *pair = _transfer(ORTypeVarPair *)$5;
+                ORMethodDeclare *method = _transfer(ORMethodDeclare *)$$;
                 [method.methodNames addObject:_transfer(NSString *) $2];
                 [method.parameterTypes addObject:pair];
                 [method.parameterNames addObject:_transfer(NSString *) $7];
@@ -295,7 +295,7 @@ objc_method_call_pramameters:
 objc_method_call:
          LB IDENTIFIER objc_method_call_pramameters RB
         {
-             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
+             ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
              methodcall.caller =  makeValue(OCValueClassName,_typeId $2);
              NSArray *params = _transfer(NSArray *)$3;
              methodcall.names = params[0];
@@ -304,8 +304,8 @@ objc_method_call:
         }
         | LB postfix_expression objc_method_call_pramameters RB
         {
-             OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
-             OCValue *caller = _transfer(OCValue *)$2;
+             ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
+             ORValueExpression *caller = _transfer(ORValueExpression *)$2;
              methodcall.caller =  caller;
              NSArray *params = _transfer(NSArray *)$3;
              methodcall.names = params[0];
@@ -332,12 +332,12 @@ block_implementation:
         //^returnType(optional) parameters(optional){ }
         POWER type_specifier_optional pointer_optional block_parameters_optinal LC function_implementation RC
         {
-            TypeVarPair *var = makeTypeVarPair(_typeId $2, makeVar(nil,$3));
-            FuncVariable *funVar = [FuncVariable new];
+            ORTypeVarPair *var = makeTypeVarPair(_typeId $2, makeVar(nil,$3));
+            ORFuncVariable *funVar = [ORFuncVariable new];
             funVar.pairs = _transfer(NSMutableArray *)$4;
             funVar.ptCount = -1;
-            FuncDeclare *declare = makeFuncDeclare(var, funVar);
-            BlockImp *imp = _transfer(BlockImp *) $6;
+            ORFuncDeclare *declare = makeFuncDeclare(var, funVar);
+            ORBlockImp *imp = _transfer(ORBlockImp *) $6;
             imp.declare = declare;
             $$ = _vretained imp;
         }
@@ -370,27 +370,27 @@ expression_statement:
 if_statement:
         IF LP expression RP expression_statement
         {
-            BlockImp *imp = (BlockImp *)makeValue(OCValueBlock);
+            ORBlockImp *imp = (ORBlockImp *)makeValue(OCValueBlock);
             [imp addStatements:_transfer(id) $5];
-            IfStatement *statement = makeIfStatement(_transfer(id) $3,imp);
+            ORIfStatement *statement = makeIfStatement(_transfer(id) $3,imp);
             $$ = _vretained statement;
         }
         | IF LP expression RP LC function_implementation RC
         {
-            IfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(BlockImp *)$6);
+            ORIfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(ORBlockImp *)$6);
             $$ = _vretained statement;
         }
         | if_statement _else IF LP expression RP LC function_implementation RC
         {
-            IfStatement *statement = _transfer(IfStatement *)$1;
-            IfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(BlockImp *)$8);
+            ORIfStatement *statement = _transfer(ORIfStatement *)$1;
+            ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(ORBlockImp *)$8);
             elseIfStatement.last = statement;
             $$  = _vretained elseIfStatement;
         }
         | if_statement _else LC function_implementation RC
         {
-            IfStatement *statement = _transfer(IfStatement *)$1;
-            IfStatement *elseStatement = makeIfStatement(nil,_transfer(BlockImp *)$4);
+            ORIfStatement *statement = _transfer(ORIfStatement *)$1;
+            ORIfStatement *elseStatement = makeIfStatement(nil,_transfer(ORBlockImp *)$4);
             elseStatement.last = statement;
             $$  = _vretained elseStatement;
         }
@@ -399,14 +399,14 @@ if_statement:
 dowhile_statement: 
         _do LC function_implementation RC _while LP expression RP
         {
-            DoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(BlockImp *)$3);
+            ORDoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(ORBlockImp *)$3);
             $$ = _vretained statement;
         }
         ;
 while_statement:
         _while LP expression RP LC function_implementation RC
         {
-            WhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(BlockImp *)$6);
+            ORWhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(ORBlockImp *)$6);
             $$ = _vretained statement;
         }
         ;
@@ -414,24 +414,24 @@ while_statement:
 case_statement:
         _case primary_expression COLON
         {
-             CaseStatement *statement = makeCaseStatement(_typeId $2);
+             ORCaseStatement *statement = makeCaseStatement(_typeId $2);
             $$ = _vretained statement;
         }
         | _default COLON
         {
-            CaseStatement *statement = makeCaseStatement(nil);
+            ORCaseStatement *statement = makeCaseStatement(nil);
             $$ = _vretained statement;
         }
         | case_statement expression_statement
         {
-            CaseStatement *statement =  _typeId $1;
+            ORCaseStatement *statement =  _typeId $1;
             [statement.funcImp addStatements:_typeId $2];
             $$ = _vretained statement;
         }
         | case_statement LC function_implementation RC
         {
-            CaseStatement *statement =  _transfer(CaseStatement *)$1;
-            statement.funcImp = _transfer(BlockImp *) $3;
+            ORCaseStatement *statement =  _transfer(ORCaseStatement *)$1;
+            statement.funcImp = _transfer(ORBlockImp *) $3;
             $$ = _vretained statement;
         }
         ;
@@ -449,14 +449,14 @@ case_statement_list:
 switch_statement:
          _switch LP expression RP LC case_statement_list RC
          {
-             SwitchStatement *statement = makeSwitchStatement(_transfer(id) $3);
+             ORSwitchStatement *statement = makeSwitchStatement(_transfer(id) $3);
              statement.cases = _typeId $6;
              $$ = _vretained statement;
          }
         ;
 for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
         {
-            ForStatement* statement = makeForStatement(_transfer(BlockImp *) $10);
+            ORForStatement* statement = makeForStatement(_transfer(ORBlockImp *) $10);
             statement.declareExpressions = _typeId $3;
             statement.condition = _typeId $5;
             statement.expressions = _typeId $7;
@@ -466,7 +466,7 @@ for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_lis
 
 forin_statement: _for LP declaration _in expression RP LC function_implementation RC
         {
-            ForInStatement * statement = makeForInStatement(_transfer(BlockImp *)$8);
+            ORForInStatement * statement = makeForInStatement(_transfer(ORBlockImp *)$8);
             NSArray *exps = _typeId $3;
             statement.expression = exps[0];
             statement.value = _transfer(id)$5;
@@ -491,13 +491,13 @@ function_implementation:
         }
         | function_implementation expression_statement 
         {
-            BlockImp *imp = _transfer(BlockImp *)$1;
+            ORBlockImp *imp = _transfer(ORBlockImp *)$1;
             [imp addStatements:_transfer(id) $2];
             $$ = _vretained imp;
         }
         | function_implementation control_statement
         {
-            BlockImp *imp = _transfer(BlockImp *)$1;
+            ORBlockImp *imp = _transfer(ORBlockImp *)$1;
             [imp addStatements:_transfer(id) $2];
             $$ = _vretained imp;
         }
@@ -565,9 +565,9 @@ assign_operator:
 assign_expression: ternary_expression
     | unary_expression assign_operator assign_expression
     {
-        AssignExpression *expression = makeAssignExpression($2);
+        ORAssignExpression *expression = makeAssignExpression($2);
         expression.expression = _transfer(id) $3;
-        expression.value = _transfer(OCValue *)$1;
+        expression.value = _transfer(ORValueExpression *)$1;
         $$ = _vretained expression;
     }
 ;
@@ -576,7 +576,7 @@ assign_expression: ternary_expression
 ternary_expression: logic_or_expression
     | logic_or_expression QUESTION ternary_expression COLON ternary_expression
     {
-        TernaryExpression *expression = makeTernaryExpression();
+        ORTernaryExpression *expression = makeTernaryExpression();
         expression.expression = _transfer(id)$1;
         [expression.values addObject:_transfer(id)$3];
         [expression.values addObject:_transfer(id)$5];
@@ -584,7 +584,7 @@ ternary_expression: logic_or_expression
     }
     | logic_or_expression QUESTION COLON ternary_expression
     {
-        TernaryExpression *expression = makeTernaryExpression();
+        ORTernaryExpression *expression = makeTernaryExpression();
         expression.expression = _transfer(id)$1;
         [expression.values addObject:_transfer(id)$4];
         $$ = _vretained expression;
@@ -596,7 +596,7 @@ ternary_expression: logic_or_expression
 logic_or_expression: logic_and_expression
     | logic_or_expression LOGIC_OR logic_or_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorLOGIC_OR);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorLOGIC_OR);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -607,7 +607,7 @@ logic_or_expression: logic_and_expression
 logic_and_expression: bite_or_expression
     | logic_and_expression LOGIC_AND bite_or_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorLOGIC_AND);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorLOGIC_AND);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -617,7 +617,7 @@ logic_and_expression: bite_or_expression
 bite_or_expression: bite_xor_expression
     | bite_or_expression OR bite_xor_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorOr);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorOr);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -627,7 +627,7 @@ bite_or_expression: bite_xor_expression
 bite_xor_expression: bite_and_expression
     | bite_xor_expression POWER bite_and_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorXor);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorXor);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -638,7 +638,7 @@ bite_xor_expression: bite_and_expression
 bite_and_expression: equality_expression
     | bite_and_expression AND equality_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorAnd);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorAnd);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -649,14 +649,14 @@ bite_and_expression: equality_expression
 equality_expression: relational_expression
     | equality_expression EQ relational_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorEqual);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorEqual);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
     }
     | equality_expression NE relational_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorNotEqual);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorNotEqual);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -666,28 +666,28 @@ equality_expression: relational_expression
 relational_expression: bite_shift_expression
     | relational_expression LT bite_shift_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorLT);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorLT);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
     }
     | relational_expression LE bite_shift_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorLE);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorLE);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
     }
     | relational_expression GT bite_shift_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorGT);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorGT);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
     }
     | relational_expression GE bite_shift_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorGE);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorGE);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -697,14 +697,14 @@ relational_expression: bite_shift_expression
 bite_shift_expression: additive_expression
     | bite_shift_expression SHIFTLEFT additive_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorShiftLeft);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorShiftLeft);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
     }
     | bite_shift_expression SHIFTRIGHT additive_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorShiftRight);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorShiftRight);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -714,14 +714,14 @@ bite_shift_expression: additive_expression
 additive_expression: multiplication_expression
     | additive_expression ADD multiplication_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorAdd);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorAdd);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
     }
     | additive_expression SUB multiplication_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorSub);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorSub);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -732,21 +732,21 @@ additive_expression: multiplication_expression
 multiplication_expression: unary_expression
     | multiplication_expression ASTERISK unary_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorMulti);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorMulti);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
     }
     | multiplication_expression DIV unary_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorDiv);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorDiv);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
     }
     | multiplication_expression MOD unary_expression
     {
-        BinaryExpression *exp = makeBinaryExpression(BinaryOperatorMod);
+        ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorMod);
         exp.left = _transfer(id) $1;
         exp.right = _transfer(id) $3;
         $$ = _vretained exp;
@@ -757,25 +757,25 @@ multiplication_expression: unary_expression
 unary_expression: postfix_expression
     | unary_operator unary_expression
     {
-        UnaryExpression *exp = makeUnaryExpression($1);
+        ORUnaryExpression *exp = makeUnaryExpression($1);
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
     }
     | _sizeof unary_expression
     {
-        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorSizeOf);
+        ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorSizeOf);
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
     }
     | INCREMENT unary_expression
     {
-        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorIncrementPrefix);
+        ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorIncrementPrefix);
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
     }
     | DECREMENT unary_expression
     {
-        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementPrefix);
+        ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementPrefix);
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
     }
@@ -807,28 +807,28 @@ unary_operator:
 postfix_expression: primary_expression
     | postfix_expression INCREMENT
     {
-        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorIncrementSuffix);
+        ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorIncrementSuffix);
         exp.value = _transfer(id)$1;
         $$ = _vretained exp;
     }
     | postfix_expression DECREMENT
     {
-        UnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementSuffix);
+        ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementSuffix);
         exp.value = _transfer(id)$1;
         $$ = _vretained exp;
     }
     | postfix_expression DOT IDENTIFIER
     {
-        OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
-        methodcall.caller =  _transfer(OCValue *)$1;
+        ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
+        methodcall.caller =  _transfer(ORValueExpression *)$1;
         methodcall.isDot = YES;
         methodcall.names = [@[_typeId $3] mutableCopy];
         $$ = _vretained methodcall;
     }
     | postfix_expression ARROW IDENTIFIER
     {
-        OCMethodCall *methodcall = (OCMethodCall *) makeValue(OCValueMethodCall);
-        methodcall.caller =  _transfer(OCValue *)$1;
+        ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
+        methodcall.caller =  _transfer(ORValueExpression *)$1;
         methodcall.isDot = YES;
         methodcall.names = [@[_typeId $3] mutableCopy];
         $$ = _vretained methodcall;
@@ -839,7 +839,7 @@ postfix_expression: primary_expression
     }
     | postfix_expression LB expression RB
     {
-        OCCollectionGetValue *value = (OCCollectionGetValue *)makeValue(OCValueCollectionGetValue);
+        ORSubscriptExpression *value = (ORSubscriptExpression *)makeValue(OCValueCollectionGetValue);
         value.caller = _typeId $1;
         value.keyExp = _typeId $3;
         $$ = _vretained value;
@@ -952,7 +952,7 @@ declaration:
 	type_specifier init_declarator_list
     {
         NSMutableArray *array = _transfer(NSMutableArray *)$2;
-        for (DeclareExpression *declare in array){
+        for (ORDeclareExpression *declare in array){
             declare.pair.type = _typeId $1;
             _vretained declare;
         }
@@ -995,13 +995,13 @@ declarator:
         direct_declarator
         | POWER direct_declarator_optional 
         {
-            Variable *var = _transfer(Variable *)$2;
+            ORVariable *var = _transfer(ORVariable *)$2;
             var.ptCount = -1;
             $$ = _vretained var;
         }
         | pointer direct_declarator_optional
         {
-            Variable *var = _transfer(Variable *)$2;
+            ORVariable *var = _transfer(ORVariable *)$2;
             var.ptCount = $1;
             $$ = _vretained var;
         }
@@ -1026,7 +1026,7 @@ direct_declarator:
         }
         | direct_declarator LP parameter_type_list RP
         {
-            FuncVariable *funVar = [FuncVariable copyFromVar:_transfer(Variable *)$1];
+            ORFuncVariable *funVar = [ORFuncVariable copyFromVar:_transfer(ORVariable *)$1];
             funVar.pairs = _transfer(NSMutableArray *)$3;
             $$ = _vretained funVar;
         }

@@ -7,22 +7,22 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "PropertyDeclare.h"
-#import "MethodImplementation.h"
+#import "ORPropertyDeclare.h"
+#import "ORMethodImplementation.h"
 
-@interface OCClass: NSObject
+@interface ORClass: NSObject
 + (instancetype)classWithClassName:(NSString *)className;
 @property (nonatomic,copy)NSString *className;
 @property (nonatomic,copy)NSString *superClassName;
 @property (nonatomic,strong)NSMutableArray <NSString *>*protocols;
-@property (nonatomic,strong)NSMutableArray <PropertyDeclare *>*properties;
-@property (nonatomic,strong)NSMutableArray <TypeVarPair *>*privateVariables;
-@property (nonatomic,strong)NSMutableArray <MethodImplementation *>*methods;
+@property (nonatomic,strong)NSMutableArray <ORPropertyDeclare *>*properties;
+@property (nonatomic,strong)NSMutableArray <ORTypeVarPair *>*privateVariables;
+@property (nonatomic,strong)NSMutableArray <ORMethodImplementation *>*methods;
 @end
 
 @interface AST : NSObject
 @property(nonatomic,nonnull,strong)NSMutableArray *globalStatements;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *classCache;
-- (nonnull OCClass *)classForName:(NSString *)className;
+- (nonnull ORClass *)classForName:(NSString *)className;
 - (void)addGlobalStatements:(id)objects;
 @end

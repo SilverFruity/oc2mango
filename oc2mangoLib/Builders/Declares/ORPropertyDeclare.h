@@ -6,7 +6,7 @@
 //  Copyright © 2019年 SilverFruity. All rights reserved.
 //
 
-#import "TypeSpecial.h"
+#import "ORTypeSpecial.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ORPropertyDeclare : NSObject

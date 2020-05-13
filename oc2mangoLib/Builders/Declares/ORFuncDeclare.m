@@ -6,8 +6,8 @@
 //  Copyright © 2019年 SilverFruity. All rights reserved.
 //
 
-#import "FuncDeclare.h"
+#import "ORFuncDeclare.h"
 
-@implementation FuncDeclare
+@implementation ORFuncDeclare
 
 @end

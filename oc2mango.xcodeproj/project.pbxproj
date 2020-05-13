@@ -9,17 +9,17 @@
 /* Begin PBXBuildFile section */
 		63239F0A229E623600428A17 /* NSArray+Functional.m in Sources */ = {isa = PBXBuildFile; fileRef = 63239F09229E623600428A17 /* NSArray+Functional.m */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
-		6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */; };
+		6389AFC82289CCB0006CB5A7 /* ORFuncDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = 6389AFC62289CCB0006CB5A7 /* ORFuncDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6389AFC92289CCB0006CB5A7 /* ORFuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* ORFuncDeclare.m */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
 		EE127798228084260065B1E4 /* Expression.h in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC888226E0FBA003AD212 /* Expression.h */; };
-		EE12779B228084260065B1E4 /* OCValue.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* OCValue.h */; };
-		EE12779C228084260065B1E4 /* OCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* OCValue.m */; };
+		EE12779B228084260065B1E4 /* ORValueExpression.h in Sources */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* ORValueExpression.h */; };
+		EE12779C228084260065B1E4 /* ORValueExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* ORValueExpression.m */; };
 		EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE147260227F054300566B3F /* ClassDeclareTest.swift */; };
-		EE1C71EB228829E90077A71E /* OCValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* OCValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE1C71EB228829E90077A71E /* ORValueExpression.h in Headers */ = {isa = PBXBuildFile; fileRef = 606F0D12A0E0AD5D65BAF937 /* ORValueExpression.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE1C71F122882F750077A71E /* TestSource.imp in Resources */ = {isa = PBXBuildFile; fileRef = EE1C71EE22882DBF0077A71E /* TestSource.imp */; };
 		EE1C71F42288314C0077A71E /* FileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71F32288314C0077A71E /* FileTest.swift */; };
-		EE4BAFE324364C9D00A2A080 /* TypeSpecial.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EF7226C45CF008712C2 /* TypeSpecial.m */; };
+		EE4BAFE324364C9D00A2A080 /* ORTypeSpecial.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EF7226C45CF008712C2 /* ORTypeSpecial.m */; };
 		EE4BAFE624364CAA00A2A080 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
 		EE4BAFE724364CAA00A2A080 /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
 		EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
@@ -27,13 +27,13 @@
 		EE4BAFEA24364CEA00A2A080 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE4BAFEB24364CEA00A2A080 /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE4BAFEC24364CEA00A2A080 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
-		EE4BAFED24364CEA00A2A080 /* PropertyDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F00226CA69B008712C2 /* PropertyDeclare.m */; };
-		EE4BAFEE24364CEA00A2A080 /* MethodDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F03226CB3C7008712C2 /* MethodDeclare.m */; };
-		EE4BAFEF24364CEA00A2A080 /* FuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */; };
-		EE4BAFF024364CEA00A2A080 /* MethodImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F0F226CBD28008712C2 /* MethodImplementation.m */; };
-		EE4BAFF124364CEA00A2A080 /* Statement.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC886226E0DAC003AD212 /* Statement.m */; };
+		EE4BAFED24364CEA00A2A080 /* ORPropertyDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F00226CA69B008712C2 /* ORPropertyDeclare.m */; };
+		EE4BAFEE24364CEA00A2A080 /* ORMethodDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F03226CB3C7008712C2 /* ORMethodDeclare.m */; };
+		EE4BAFEF24364CEA00A2A080 /* ORFuncDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6389AFC72289CCB0006CB5A7 /* ORFuncDeclare.m */; };
+		EE4BAFF024364CEA00A2A080 /* ORMethodImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F0F226CBD28008712C2 /* ORMethodImplementation.m */; };
+		EE4BAFF124364CEA00A2A080 /* ORStatement.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC886226E0DAC003AD212 /* ORStatement.m */; };
 		EE4BAFF224364CEA00A2A080 /* Expression.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC889226E0FBA003AD212 /* Expression.m */; };
-		EE4BAFF324364CEA00A2A080 /* OCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* OCValue.m */; };
+		EE4BAFF324364CEA00A2A080 /* ORValueExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = 606F0BB1839E29D74A0630F6 /* ORValueExpression.m */; };
 		EE4BAFF424364CEA00A2A080 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
 		EE4BAFF524364CEA00A2A080 /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
 		EE5534CF2290032700A4B32E /* AST.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534CD2290032700A4B32E /* AST.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -48,19 +48,19 @@
 		EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67A702270AE0E0015AC02 /* oc2mangoLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67A972270B0CA0015AC02 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
 		EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
-		EED67A9A2270B0CA0015AC02 /* TypeSpecial.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EF7226C45CF008712C2 /* TypeSpecial.m */; };
-		EED67A9C2270B0CA0015AC02 /* PropertyDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F00226CA69B008712C2 /* PropertyDeclare.m */; };
-		EED67A9D2270B0CA0015AC02 /* MethodDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F03226CB3C7008712C2 /* MethodDeclare.m */; };
-		EED67A9F2270B0CA0015AC02 /* MethodImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F0F226CBD28008712C2 /* MethodImplementation.m */; };
-		EED67AA02270B0CA0015AC02 /* Statement.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC886226E0DAC003AD212 /* Statement.m */; };
+		EED67A9A2270B0CA0015AC02 /* ORTypeSpecial.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982EF7226C45CF008712C2 /* ORTypeSpecial.m */; };
+		EED67A9C2270B0CA0015AC02 /* ORPropertyDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F00226CA69B008712C2 /* ORPropertyDeclare.m */; };
+		EED67A9D2270B0CA0015AC02 /* ORMethodDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F03226CB3C7008712C2 /* ORMethodDeclare.m */; };
+		EED67A9F2270B0CA0015AC02 /* ORMethodImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F0F226CBD28008712C2 /* ORMethodImplementation.m */; };
+		EED67AA02270B0CA0015AC02 /* ORStatement.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC886226E0DAC003AD212 /* ORStatement.m */; };
 		EED67AA12270B0CA0015AC02 /* Expression.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5CC889226E0FBA003AD212 /* Expression.m */; };
 		EED67AAA2270B1C70015AC02 /* Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67AA82270B1C70015AC02 /* Parser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AAB2270B1C70015AC02 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
-		EED67AAE2270B51B0015AC02 /* TypeSpecial.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982EF6226C45CF008712C2 /* TypeSpecial.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EED67AB02270B51B0015AC02 /* PropertyDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982EFF226CA69B008712C2 /* PropertyDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EED67AB12270B51B0015AC02 /* MethodDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F02226CB3C7008712C2 /* MethodDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EED67AB22270B51B0015AC02 /* MethodImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F0E226CBD28008712C2 /* MethodImplementation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EED67AB32270B51B0015AC02 /* Statement.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5CC885226E0DAC003AD212 /* Statement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EED67AAE2270B51B0015AC02 /* ORTypeSpecial.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982EF6226C45CF008712C2 /* ORTypeSpecial.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EED67AB02270B51B0015AC02 /* ORPropertyDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982EFF226CA69B008712C2 /* ORPropertyDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EED67AB12270B51B0015AC02 /* ORMethodDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F02226CB3C7008712C2 /* ORMethodDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EED67AB22270B51B0015AC02 /* ORMethodImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F0E226CBD28008712C2 /* ORMethodImplementation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EED67AB32270B51B0015AC02 /* ORStatement.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5CC885226E0DAC003AD212 /* ORStatement.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67AB42270B51B0015AC02 /* Expression.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5CC888226E0FBA003AD212 /* Expression.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67ABC2270B5A30015AC02 /* StatementTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED67ABB2270B5A30015AC02 /* StatementTest.swift */; };
 /* End PBXBuildFile section */
@@ -88,13 +88,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		606F0BB1839E29D74A0630F6 /* OCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCValue.m; sourceTree = "<group>"; };
-		606F0D12A0E0AD5D65BAF937 /* OCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCValue.h; sourceTree = "<group>"; };
+		606F0BB1839E29D74A0630F6 /* ORValueExpression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORValueExpression.m; sourceTree = "<group>"; };
+		606F0D12A0E0AD5D65BAF937 /* ORValueExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORValueExpression.h; sourceTree = "<group>"; };
 		63239F08229E623600428A17 /* NSArray+Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Functional.h"; sourceTree = "<group>"; };
 		63239F09229E623600428A17 /* NSArray+Functional.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Functional.m"; sourceTree = "<group>"; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
-		6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FuncDeclare.h; sourceTree = "<group>"; };
-		6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FuncDeclare.m; sourceTree = "<group>"; };
+		6389AFC62289CCB0006CB5A7 /* ORFuncDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORFuncDeclare.h; sourceTree = "<group>"; };
+		6389AFC72289CCB0006CB5A7 /* ORFuncDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORFuncDeclare.m; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
 		EE1C71EE22882DBF0077A71E /* TestSource.imp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestSource.imp; sourceTree = "<group>"; };
@@ -104,24 +104,24 @@
 		EE5534D12290053800A4B32E /* Convert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		EE5534D22290053800A4B32E /* Convert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert.m; sourceTree = "<group>"; };
 		EE5534DB22900DFF00A4B32E /* ConvertTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertTest.swift; sourceTree = "<group>"; };
-		EE5CC885226E0DAC003AD212 /* Statement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Statement.h; sourceTree = "<group>"; };
-		EE5CC886226E0DAC003AD212 /* Statement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Statement.m; sourceTree = "<group>"; };
+		EE5CC885226E0DAC003AD212 /* ORStatement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORStatement.h; sourceTree = "<group>"; };
+		EE5CC886226E0DAC003AD212 /* ORStatement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORStatement.m; sourceTree = "<group>"; };
 		EE5CC888226E0FBA003AD212 /* Expression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Expression.h; sourceTree = "<group>"; };
 		EE5CC889226E0FBA003AD212 /* Expression.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Expression.m; sourceTree = "<group>"; };
 		EE6E6CCF225E488000616C7E /* oc2mango */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oc2mango; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6E6CD2225E488000616C7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EE6E6CDA225E496600616C7E /* cal.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = cal.y; sourceTree = "<group>"; };
 		EE6E6CDB225E496600616C7E /* cal.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = cal.l; sourceTree = "<group>"; };
-		EE982EF6226C45CF008712C2 /* TypeSpecial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeSpecial.h; sourceTree = "<group>"; };
-		EE982EF7226C45CF008712C2 /* TypeSpecial.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeSpecial.m; sourceTree = "<group>"; };
-		EE982EFF226CA69B008712C2 /* PropertyDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PropertyDeclare.h; sourceTree = "<group>"; };
-		EE982F00226CA69B008712C2 /* PropertyDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PropertyDeclare.m; sourceTree = "<group>"; };
-		EE982F02226CB3C7008712C2 /* MethodDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MethodDeclare.h; sourceTree = "<group>"; };
-		EE982F03226CB3C7008712C2 /* MethodDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MethodDeclare.m; sourceTree = "<group>"; };
+		EE982EF6226C45CF008712C2 /* ORTypeSpecial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORTypeSpecial.h; sourceTree = "<group>"; };
+		EE982EF7226C45CF008712C2 /* ORTypeSpecial.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORTypeSpecial.m; sourceTree = "<group>"; };
+		EE982EFF226CA69B008712C2 /* ORPropertyDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORPropertyDeclare.h; sourceTree = "<group>"; };
+		EE982F00226CA69B008712C2 /* ORPropertyDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORPropertyDeclare.m; sourceTree = "<group>"; };
+		EE982F02226CB3C7008712C2 /* ORMethodDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORMethodDeclare.h; sourceTree = "<group>"; };
+		EE982F03226CB3C7008712C2 /* ORMethodDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORMethodDeclare.m; sourceTree = "<group>"; };
 		EE982F05226CB443008712C2 /* MakeDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MakeDeclare.h; sourceTree = "<group>"; };
 		EE982F06226CB4E4008712C2 /* MakeDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MakeDeclare.m; sourceTree = "<group>"; };
-		EE982F0E226CBD28008712C2 /* MethodImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MethodImplementation.h; sourceTree = "<group>"; };
-		EE982F0F226CBD28008712C2 /* MethodImplementation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MethodImplementation.m; sourceTree = "<group>"; };
+		EE982F0E226CBD28008712C2 /* ORMethodImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORMethodImplementation.h; sourceTree = "<group>"; };
+		EE982F0F226CBD28008712C2 /* ORMethodImplementation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORMethodImplementation.m; sourceTree = "<group>"; };
 		EEB17FFA22849273003D5C36 /* MethodCallTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodCallTest.swift; sourceTree = "<group>"; };
 		EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = oc2mangoLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EED67A702270AE0E0015AC02 /* oc2mangoLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = oc2mangoLib.h; sourceTree = "<group>"; };
@@ -167,8 +167,8 @@
 			children = (
 				EE5CC888226E0FBA003AD212 /* Expression.h */,
 				EE5CC889226E0FBA003AD212 /* Expression.m */,
-				606F0D12A0E0AD5D65BAF937 /* OCValue.h */,
-				606F0BB1839E29D74A0630F6 /* OCValue.m */,
+				606F0D12A0E0AD5D65BAF937 /* ORValueExpression.h */,
+				606F0BB1839E29D74A0630F6 /* ORValueExpression.m */,
 			);
 			path = Expression;
 			sourceTree = "<group>";
@@ -249,14 +249,14 @@
 		EE982F08226CBCD2008712C2 /* Declares */ = {
 			isa = PBXGroup;
 			children = (
-				EE982EF6226C45CF008712C2 /* TypeSpecial.h */,
-				EE982EF7226C45CF008712C2 /* TypeSpecial.m */,
-				EE982EFF226CA69B008712C2 /* PropertyDeclare.h */,
-				EE982F00226CA69B008712C2 /* PropertyDeclare.m */,
-				EE982F02226CB3C7008712C2 /* MethodDeclare.h */,
-				EE982F03226CB3C7008712C2 /* MethodDeclare.m */,
-				6389AFC62289CCB0006CB5A7 /* FuncDeclare.h */,
-				6389AFC72289CCB0006CB5A7 /* FuncDeclare.m */,
+				EE982EF6226C45CF008712C2 /* ORTypeSpecial.h */,
+				EE982EF7226C45CF008712C2 /* ORTypeSpecial.m */,
+				EE982EFF226CA69B008712C2 /* ORPropertyDeclare.h */,
+				EE982F00226CA69B008712C2 /* ORPropertyDeclare.m */,
+				EE982F02226CB3C7008712C2 /* ORMethodDeclare.h */,
+				EE982F03226CB3C7008712C2 /* ORMethodDeclare.m */,
+				6389AFC62289CCB0006CB5A7 /* ORFuncDeclare.h */,
+				6389AFC72289CCB0006CB5A7 /* ORFuncDeclare.m */,
 			);
 			path = Declares;
 			sourceTree = "<group>";
@@ -264,10 +264,10 @@
 		EE982F0A226CBCFA008712C2 /* Implementations */ = {
 			isa = PBXGroup;
 			children = (
-				EE982F0E226CBD28008712C2 /* MethodImplementation.h */,
-				EE982F0F226CBD28008712C2 /* MethodImplementation.m */,
-				EE5CC885226E0DAC003AD212 /* Statement.h */,
-				EE5CC886226E0DAC003AD212 /* Statement.m */,
+				EE982F0E226CBD28008712C2 /* ORMethodImplementation.h */,
+				EE982F0F226CBD28008712C2 /* ORMethodImplementation.m */,
+				EE5CC885226E0DAC003AD212 /* ORStatement.h */,
+				EE5CC886226E0DAC003AD212 /* ORStatement.m */,
 				EE12779122807CE40065B1E4 /* Expression */,
 			);
 			path = Implementations;
@@ -317,19 +317,19 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EED67AB22270B51B0015AC02 /* MethodImplementation.h in Headers */,
+				EED67AB22270B51B0015AC02 /* ORMethodImplementation.h in Headers */,
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
 				EED67AB42270B51B0015AC02 /* Expression.h in Headers */,
-				EED67AB02270B51B0015AC02 /* PropertyDeclare.h in Headers */,
-				EED67AB12270B51B0015AC02 /* MethodDeclare.h in Headers */,
-				EED67AB32270B51B0015AC02 /* Statement.h in Headers */,
+				EED67AB02270B51B0015AC02 /* ORPropertyDeclare.h in Headers */,
+				EED67AB12270B51B0015AC02 /* ORMethodDeclare.h in Headers */,
+				EED67AB32270B51B0015AC02 /* ORStatement.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
-				6389AFC82289CCB0006CB5A7 /* FuncDeclare.h in Headers */,
-				EE1C71EB228829E90077A71E /* OCValue.h in Headers */,
+				6389AFC82289CCB0006CB5A7 /* ORFuncDeclare.h in Headers */,
+				EE1C71EB228829E90077A71E /* ORValueExpression.h in Headers */,
 				EE5534D32290053800A4B32E /* Convert.h in Headers */,
-				EED67AAE2270B51B0015AC02 /* TypeSpecial.h in Headers */,
+				EED67AAE2270B51B0015AC02 /* ORTypeSpecial.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,20 +475,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE4BAFF324364CEA00A2A080 /* OCValue.m in Sources */,
+				EE4BAFF324364CEA00A2A080 /* ORValueExpression.m in Sources */,
 				EE4BAFEB24364CEA00A2A080 /* AST.m in Sources */,
 				EE4BAFF224364CEA00A2A080 /* Expression.m in Sources */,
-				EE4BAFEF24364CEA00A2A080 /* FuncDeclare.m in Sources */,
-				EE4BAFEE24364CEA00A2A080 /* MethodDeclare.m in Sources */,
+				EE4BAFEF24364CEA00A2A080 /* ORFuncDeclare.m in Sources */,
+				EE4BAFEE24364CEA00A2A080 /* ORMethodDeclare.m in Sources */,
 				EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */,
-				EE4BAFF024364CEA00A2A080 /* MethodImplementation.m in Sources */,
+				EE4BAFF024364CEA00A2A080 /* ORMethodImplementation.m in Sources */,
 				EE4BAFF524364CEA00A2A080 /* cal.y in Sources */,
 				EE4BAFEA24364CEA00A2A080 /* Convert.m in Sources */,
-				EE4BAFF124364CEA00A2A080 /* Statement.m in Sources */,
+				EE4BAFF124364CEA00A2A080 /* ORStatement.m in Sources */,
 				EE4BAFE924364CEA00A2A080 /* Log.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
-				EE4BAFED24364CEA00A2A080 /* PropertyDeclare.m in Sources */,
-				EE4BAFE324364C9D00A2A080 /* TypeSpecial.m in Sources */,
+				EE4BAFED24364CEA00A2A080 /* ORPropertyDeclare.m in Sources */,
+				EE4BAFE324364C9D00A2A080 /* ORTypeSpecial.m in Sources */,
 				EE4BAFEC24364CEA00A2A080 /* MakeDeclare.m in Sources */,
 				63239F0A229E623600428A17 /* NSArray+Functional.m in Sources */,
 				EE4BAFF424364CEA00A2A080 /* cal.l in Sources */,
@@ -501,20 +501,20 @@
 			files = (
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
 				EE127798228084260065B1E4 /* Expression.h in Sources */,
-				EE12779B228084260065B1E4 /* OCValue.h in Sources */,
-				6389AFC92289CCB0006CB5A7 /* FuncDeclare.m in Sources */,
-				EE12779C228084260065B1E4 /* OCValue.m in Sources */,
-				EED67A9C2270B0CA0015AC02 /* PropertyDeclare.m in Sources */,
+				EE12779B228084260065B1E4 /* ORValueExpression.h in Sources */,
+				6389AFC92289CCB0006CB5A7 /* ORFuncDeclare.m in Sources */,
+				EE12779C228084260065B1E4 /* ORValueExpression.m in Sources */,
+				EED67A9C2270B0CA0015AC02 /* ORPropertyDeclare.m in Sources */,
 				EED67AA12270B0CA0015AC02 /* Expression.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* cal.y in Sources */,
 				EE5534D42290053800A4B32E /* Convert.m in Sources */,
-				EED67A9F2270B0CA0015AC02 /* MethodImplementation.m in Sources */,
+				EED67A9F2270B0CA0015AC02 /* ORMethodImplementation.m in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
-				EED67A9A2270B0CA0015AC02 /* TypeSpecial.m in Sources */,
-				EED67A9D2270B0CA0015AC02 /* MethodDeclare.m in Sources */,
+				EED67A9A2270B0CA0015AC02 /* ORTypeSpecial.m in Sources */,
+				EED67A9D2270B0CA0015AC02 /* ORMethodDeclare.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
-				EED67AA02270B0CA0015AC02 /* Statement.m in Sources */,
+				EED67AA02270B0CA0015AC02 /* ORStatement.m in Sources */,
 				EE4BAFE624364CAA00A2A080 /* cal.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -40,12 +40,12 @@ void func(NSString *a, int *b){
 """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let methodImp = ocparser.ast.class(forName: "Demo").methods[0] as? MethodImplementation
+        let methodImp = ocparser.ast.class(forName: "Demo").methods[0] as? ORMethodImplementation
         XCTAssert(methodImp?.declare.methodNames == ["initWithBaseUrl"])
         XCTAssert(methodImp?.declare.isClassMethod == false)
         XCTAssert(methodImp?.declare.returnType.type.type == TypeObject)
         
-        var methodImp1 = ocparser.ast.class(forName: "Demo").methods[1] as? MethodImplementation
+        var methodImp1 = ocparser.ast.class(forName: "Demo").methods[1] as? ORMethodImplementation
         XCTAssert(methodImp1?.declare.methodNames == ["method2"])
         XCTAssert(methodImp1?.declare.isClassMethod == false)
         XCTAssert(methodImp1?.declare.returnType.type.type == TypeObject)
@@ -69,7 +69,7 @@ void func(NSString *a, int *b){
 """
         ocparser.parseSource(source)
         let occlass = ocparser.ast.class(forName: "Demo")
-        let prop = occlass.properties.firstObject as! PropertyDeclare
+        let prop = occlass.properties.firstObject as! ORPropertyDeclare
         XCTAssert(ocparser.isSuccess())
 //        XCTAssert(prop.var.name == "className")
 //        XCTAssert(prop.var.type.type == TypeObject)

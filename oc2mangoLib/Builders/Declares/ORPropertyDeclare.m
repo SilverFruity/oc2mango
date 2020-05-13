@@ -6,8 +6,8 @@
 //  Copyright © 2019年 SilverFruity. All rights reserved.
 //
 
-#import "PropertyDeclare.h"
+#import "ORPropertyDeclare.h"
 
-@implementation PropertyDeclare
+@implementation ORPropertyDeclare
 
 @end
