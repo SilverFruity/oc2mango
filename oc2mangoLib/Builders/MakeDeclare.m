@@ -90,9 +90,6 @@ ORCFuncCall *makeFuncCall(ORValueExpression *caller, NSMutableArray *expressions
     call.value_type = OCValueFuncCall;
     call.caller = caller;
     call.expressions = expressions;
-    if ([caller.value isKindOfClass:[NSString class]]) {
-        NSLog(@"%@",caller.value);
-    }
     return call;
 }
 ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type){

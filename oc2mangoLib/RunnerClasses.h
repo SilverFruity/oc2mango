@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
+@interface ORCodeCheck : NSObject
+@property (nonatomic, assign)NSInteger lineNum;
+@property (nonatomic, assign)NSInteger columnStart;
+@property (nonatomic, assign)NSInteger length;
+@property (nonatomic, copy)NSString *filename;
+@end
 
 // MARK: - Base
 typedef enum{
@@ -81,13 +87,6 @@ enum{
 @end
 
 // MARK: - Expression
-@interface ORCodeCheck : NSObject
-@property (nonatomic, assign)NSInteger lineNum;
-@property (nonatomic, assign)NSInteger columnStart;
-@property (nonatomic, assign)NSInteger length;
-@property (nonatomic, copy)NSString *filename;
-@end
-
 @interface ORExpression: ORCodeCheck
 
 @end

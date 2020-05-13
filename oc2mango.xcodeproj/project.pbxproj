@@ -598,7 +598,9 @@
 				PLIST_FILE_OUTPUT_FORMAT = "same-as-input";
 				PRODUCT_BUNDLE_IDENTIFIER = silverfruity.oc2mangoLib;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 				YACCFLAGS = "";
@@ -630,7 +632,9 @@
 				PLIST_FILE_OUTPUT_FORMAT = "same-as-input";
 				PRODUCT_BUNDLE_IDENTIFIER = silverfruity.oc2mangoLib;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 				YACCFLAGS = "";
@@ -652,6 +656,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = silverfruity.oc2mangoLibTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "oc2mangoLibTests/oc2mangoLibTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
@@ -672,6 +677,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = silverfruity.oc2mangoLibTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "oc2mangoLibTests/oc2mangoLibTests-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 			};

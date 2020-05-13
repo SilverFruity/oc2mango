@@ -7,11 +7,6 @@
 //
 
 #import "Log.h"
-NSString *typeFormmatWithObject(void *value){
-    NSLog(@"%s",@encode(typeof(value)));
-    return @"";
-}
-
 NSString *_generatorFormmt(size_t argc){
     NSMutableString *format = [NSMutableString string];
     for (int i = 0; i < argc; i++) {
