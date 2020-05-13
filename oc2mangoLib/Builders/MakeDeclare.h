@@ -8,9 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Parser.h"
-#import "ORValueExpression.h"
-#import "ORStatement.h"
-
+#import "RunnerClasses.h"
 
 
 extern ORTypeSpecial *makeTypeSpecial(TypeKind type, NSString *name);
@@ -31,18 +29,18 @@ extern ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern ORTernaryExpression *makeTernaryExpression(void);
 extern ORAssignExpression *makeAssignExpression(AssignOperatorType type);
-extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,id <Expression> exp);
+extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORExpression * exp);
 
 
-extern ORIfStatement *makeIfStatement(id <Expression>judgement, ORBlockImp *imp);
-extern ORWhileStatement *makeWhileStatement(id <Expression>judgement, ORBlockImp *imp);
-extern ORDoWhileStatement *makeDoWhileStatement(id <Expression>judgement, ORBlockImp *imp);
+extern ORIfStatement *makeIfStatement(ORExpression *judgement, ORBlockImp *imp);
+extern ORWhileStatement *makeWhileStatement(ORExpression *judgement, ORBlockImp *imp);
+extern ORDoWhileStatement *makeDoWhileStatement(ORExpression *judgement, ORBlockImp *imp);
 extern ORCaseStatement *makeCaseStatement(ORValueExpression *value);
 extern ORSwitchStatement *makeSwitchStatement(ORValueExpression *value);
 extern ORForStatement *makeForStatement(ORBlockImp *imp);
 extern ORForInStatement *makeForInStatement(ORBlockImp *imp);
 
-extern ORReturnStatement *makeReturnStatement(id <ValueExpression> expression);
+extern ORReturnStatement *makeReturnStatement(ORExpression * expression);
 extern ORBreakStatement *makeBreakStatement(void);
 extern ORContinueStatement *makeContinueStatement(void);
 

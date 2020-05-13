@@ -34,7 +34,7 @@ typedef enum {
     OCValueCollectionGetValue // array[0] , dict[@"key"]
 }OC_VALUE_TYPE;
 
-@interface ORValueExpression: NSObject <ValueExpression>
+@interface ORValueExpression: ORExpression
 @property (nonatomic,assign)OC_VALUE_TYPE value_type;
 @property (nonatomic,strong)id value;
 @end
@@ -48,12 +48,12 @@ typedef enum{
 @property (nonatomic, strong)ORValueExpression *caller;
 @property (nonatomic, assign)BOOL isDot;
 @property (nonatomic, strong)NSMutableArray *names;
-@property (nonatomic, strong)NSMutableArray <id <ValueExpression>> *values;
+@property (nonatomic, strong)NSMutableArray <ORExpression *> *values;
 @end
 
 @interface ORCFuncCall: ORValueExpression
 @property (nonatomic, strong)ORValueExpression *caller;
-@property (nonatomic, strong)NSMutableArray <id <ValueExpression>>*expressions;
+@property (nonatomic, strong)NSMutableArray <ORExpression *>*expressions;
 @end
 
 @interface ORBlockImp : ORValueExpression
@@ -65,5 +65,5 @@ typedef enum{
 
 @interface ORSubscriptExpression: ORValueExpression
 @property (nonatomic, strong)ORValueExpression *caller;
-@property (nonatomic, strong)id <Expression> keyExp;
+@property (nonatomic, strong)ORExpression * keyExp;
 @end

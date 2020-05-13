@@ -45,16 +45,16 @@ typedef enum {
 }AssignOperatorType;
 
 // MARK: - Assign
-@interface ORAssignExpression : ORExpression <Expression>
+@interface ORAssignExpression : ORExpression
 @property (nonatomic,strong)ORValueExpression *value;
 @property (nonatomic,assign)AssignOperatorType assignType;
-@property (nonatomic,strong)id <ValueExpression> expression;
+@property (nonatomic,strong)ORExpression *expression;
 @end
 
 
-@interface ORDeclareExpression: ORExpression <Expression>
+@interface ORDeclareExpression: ORExpression
 @property (nonatomic,strong)ORTypeVarPair *pair;
-@property (nonatomic,strong)id <Expression> expression;
+@property (nonatomic,strong)ORExpression *expression;
 @end
 
 
@@ -73,8 +73,8 @@ typedef enum {
     UnaryOperatorAdressValue
 }UnaryOperatorType;
 
-@interface ORUnaryExpression: ORExpression <ValueExpression>
-@property (nonatomic,strong)id <ValueExpression> value;
+@interface ORUnaryExpression: ORExpression
+@property (nonatomic,strong)ORExpression *value;
 @property (nonatomic,assign)UnaryOperatorType operatorType;
 @end
 
@@ -99,15 +99,15 @@ typedef enum {
     BinaryOperatorLOGIC_OR
 }BinaryOperatorType;
 
-@interface ORBinaryExpression: ORExpression <ValueExpression>
-@property (nonatomic,strong)id <ValueExpression> left;
-@property (nonatomic,assign) BinaryOperatorType operatorType;
-@property (nonatomic,strong)id <ValueExpression> right;
+@interface ORBinaryExpression: ORExpression
+@property (nonatomic,strong)ORExpression *left;
+@property (nonatomic,assign)BinaryOperatorType operatorType;
+@property (nonatomic,strong)ORExpression *right;
 @end
 
-@interface ORTernaryExpression : ORExpression <ValueExpression>
-@property (nonatomic,strong)id <ValueExpression> expression;
-@property (nonatomic,strong)NSMutableArray <id <ValueExpression>>*values;
+@interface ORTernaryExpression : ORExpression
+@property (nonatomic,strong)ORExpression *expression;
+@property (nonatomic,strong)NSMutableArray <ORExpression *>*values;
 
 @end
 

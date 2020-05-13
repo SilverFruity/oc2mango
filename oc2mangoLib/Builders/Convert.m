@@ -12,7 +12,7 @@
 - (NSString *)convert:(id)content{
     if ([content isKindOfClass:[ORClass class]]) {
         return [self convertOCClass:content];
-    }else if ([content conformsToProtocol:@protocol(Expression)]){
+    }else if ([content isKindOfClass:[ORExpression class]]){
         NSMutableString *result = [[self convertExpression:content] mutableCopy];
         if ([content isKindOfClass:[ORAssignExpression class]] || [content isKindOfClass:[ORDeclareExpression class]]) {
             [result appendString:@";"];
@@ -40,11 +40,11 @@
     [content appendString:@"\n}\n"];
     return content;
 }
-- (NSString *)convertExpression:(id <Expression>)exp{
+- (NSString *)convertExpression:(ORExpression *)exp{
     if ([exp isKindOfClass:[ORDeclareExpression class]]) {
-        return [self convertDeclareExp:exp];
+        return [self convertDeclareExp:(ORDeclareExpression *)exp];
     }else if ([exp isKindOfClass:[ORAssignExpression class]]) {
-        return [self convertAssginExp:exp];
+        return [self convertAssginExp:(ORAssignExpression *)exp];
     }else if ([exp isKindOfClass:[ORValueExpression class]]){
         return [self convertOCValue:(ORValueExpression *)exp];
     }else if ([exp isKindOfClass:[ORBinaryExpression class]]){
@@ -115,14 +115,10 @@
         case TypeEnum:
             [result appendString:@"int"]; break;
             break;
-        case TypeLongDouble:
-            [result appendString:@"double"]; break;
             break;
         case TypeStruct:
             [result appendString:typeSpecial.name]; break;
             break;
-        case TypeFunction:
-            [result appendString:typeSpecial.name]; break;
             break;
         default:
             [result appendString:@"UnKnownType"];
@@ -180,7 +176,7 @@ int indentationCont = 0;
         [tabs appendString:@"    "];
     }
     for (id statement in imp.statements) {
-        if ([statement conformsToProtocol:@protocol(Expression)]) {
+        if ([statement isKindOfClass:[ORExpression class]]) {
             [content appendFormat:@"%@    %@;\n",tabs,[self convertExpression:statement]];
         }else if ([statement isKindOfClass:[ORStatement class]]){
             [content appendFormat:@"%@    %@\n",tabs,[self convertStatement:statement]];
@@ -341,7 +337,7 @@ int indentationCont = 0;
         case OCValueArray:{
             NSMutableArray *exps = value.value;
             NSMutableArray *elements = [NSMutableArray array];
-            for (id <Expression> exp in exps) {
+            for (ORExpression * exp in exps) {
                 [elements addObject:[self convertExpression:exp]];
             }
             return [NSString stringWithFormat:@"@[%@]",[elements componentsJoinedByString:@","]];
@@ -457,7 +453,7 @@ int indentationCont = 0;
 }
 - (NSString * )convertExpressionList:(NSArray *)list{    
     NSMutableArray *array = [NSMutableArray array];
-    for (id <Expression> exp in list){
+    for (ORExpression * exp in list){
         [array addObject:[self convertExpression:exp]];
     }
     return [array componentsJoinedByString:@","];
@@ -511,7 +507,6 @@ int indentationCont = 0;
             case TypeLong:
             case TypeFloat:
             case TypeDouble:
-            case TypeLongDouble:
             case TypeBOOL:
             case TypeLongLong:{
                 if (pair.var.ptCount > 0){

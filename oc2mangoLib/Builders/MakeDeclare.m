@@ -115,7 +115,7 @@ ORAssignExpression *makeAssignExpression(AssignOperatorType type){
     expression.assignType = type;
     return expression;
 }
-extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,id <Expression> exp){
+extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORExpression * exp){
     ORDeclareExpression *declare = [ORDeclareExpression new];
     declare.pair = makeTypeVarPair(type, var);
     declare.expression = exp;
@@ -124,19 +124,19 @@ extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable
 
 
 
-ORIfStatement *makeIfStatement(id <Expression> judgement, ORBlockImp *imp){
+ORIfStatement *makeIfStatement(ORExpression * judgement, ORBlockImp *imp){
     ORIfStatement *statement = [ORIfStatement new];
     statement.funcImp = imp;
     statement.condition = judgement;
     return statement;
 }
-ORWhileStatement *makeWhileStatement(id <Expression>judgement, ORBlockImp *imp){
+ORWhileStatement *makeWhileStatement(ORExpression *judgement, ORBlockImp *imp){
     ORWhileStatement *statement = [ORWhileStatement new];
     statement.funcImp = imp;
     statement.condition = judgement;
     return statement;
 }
-ORDoWhileStatement *makeDoWhileStatement(id <Expression>judgement, ORBlockImp *imp){
+ORDoWhileStatement *makeDoWhileStatement(ORExpression *judgement, ORBlockImp *imp){
     ORDoWhileStatement *statement = [ORDoWhileStatement new];
     statement.condition = judgement;
     statement.funcImp = imp;
@@ -164,7 +164,7 @@ ORForInStatement *makeForInStatement(ORBlockImp *imp){
     return statement;
 }
 
-ORReturnStatement *makeReturnStatement(id <ValueExpression> expression){
+ORReturnStatement *makeReturnStatement(ORExpression* expression){
     ORReturnStatement *statement = [ORReturnStatement new];
     statement.expression = expression;
     return statement;

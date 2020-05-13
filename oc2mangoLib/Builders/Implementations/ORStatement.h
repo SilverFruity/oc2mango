@@ -16,16 +16,16 @@
 
 
 @interface ORIfStatement : ORStatement
-@property (nonatomic,strong)id <Expression> condition;
+@property (nonatomic,strong)ORExpression * condition;
 @property (nonatomic,strong)ORIfStatement *last;
 @end
 
 @interface ORWhileStatement : ORStatement
-@property (nonatomic,strong)id <Expression> condition;
+@property (nonatomic,strong)ORExpression * condition;
 @end
 
 @interface ORDoWhileStatement: ORStatement
-@property (nonatomic,strong)id <Expression> condition;
+@property (nonatomic,strong)ORExpression * condition;
 @end
 
 @interface ORCaseStatement: ORStatement
@@ -39,8 +39,8 @@
 
 @interface ORForStatement : ORStatement
 @property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*declareExpressions;
-@property (nonatomic,strong)id <Expression> condition;
-@property (nonatomic,strong)NSMutableArray <id <Expression>>* expressions;
+@property (nonatomic,strong)ORExpression * condition;
+@property (nonatomic,strong)NSMutableArray <ORExpression *>* expressions;
 @end
 
 @interface ORForInStatement : ORStatement
@@ -49,7 +49,7 @@
 @end
 
 @interface ORReturnStatement: ORStatement
-@property (nonatomic,strong)id <ValueExpression> expression;
+@property (nonatomic,strong)ORExpression * expression;
 @end
 
 @interface ORBreakStatement: ORStatement

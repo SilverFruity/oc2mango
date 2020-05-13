@@ -8,24 +8,6 @@
 
 #import "AST.h"
 #import "MakeDeclare.h"
-
-@implementation ORClass
-+ (instancetype)classWithClassName:(NSString *)className{
-    ORClass *class = [ORClass new];
-    class.className = className;
-    return class;
-}
-- (instancetype)init
-{
-    self = [super init];
-    self.properties  = [NSMutableArray array];
-    self.privateVariables = [NSMutableArray array];
-    self.properties = [NSMutableArray array];
-    self.methods = [NSMutableArray array];
-    
-    return self;
-}
-@end
 @implementation AST
 - (ORClass *)classForName:(NSString *)className{
     ORClass *class = self.classCache[className];
