@@ -46,7 +46,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <expression> objc_method_call primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression postfix_expression
 %type <Operator>  assign_operator unary_operator
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
-%type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys
+%type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys for_statement_var_list
 %type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional
 %type <IntValue> pointer pointer_optional 
 %%
@@ -296,7 +296,7 @@ objc_method_call:
          LB IDENTIFIER objc_method_call_pramameters RB
         {
              ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
-             methodcall.caller =  makeValue(OCValueClassName,_typeId $2);
+             methodcall.caller =  makeValue(OCValueVariable,_typeId $2);
              NSArray *params = _transfer(NSArray *)$3;
              methodcall.names = params[0];
              methodcall.values = params[1];
@@ -380,18 +380,32 @@ if_statement:
             ORIfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(ORBlockImp *)$6);
             $$ = _vretained statement;
         }
+        | if_statement _else IF LP expression RP expression_statement
+        {
+            ORBlockImp *imp = (ORBlockImp *)makeValue(OCValueBlock);
+            [imp addStatements:_transfer(id) $7];
+            ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,imp);
+            elseIfStatement.last = _transfer(ORIfStatement *)$1;
+            $$  = _vretained elseIfStatement;
+        }
         | if_statement _else IF LP expression RP LC function_implementation RC
         {
-            ORIfStatement *statement = _transfer(ORIfStatement *)$1;
             ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(ORBlockImp *)$8);
-            elseIfStatement.last = statement;
+            elseIfStatement.last = _transfer(ORIfStatement *)$1;
             $$  = _vretained elseIfStatement;
+        }
+        | if_statement _else expression_statement
+        {
+            ORBlockImp *imp = (ORBlockImp *)makeValue(OCValueBlock);
+            [imp addStatements:_transfer(id) $3];
+            ORIfStatement *elseStatement = makeIfStatement(nil,imp);
+            elseStatement.last = _transfer(ORIfStatement *)$1;
+            $$  = _vretained elseStatement;
         }
         | if_statement _else LC function_implementation RC
         {
-            ORIfStatement *statement = _transfer(ORIfStatement *)$1;
             ORIfStatement *elseStatement = makeIfStatement(nil,_transfer(ORBlockImp *)$4);
-            elseStatement.last = statement;
+            elseStatement.last = _transfer(ORIfStatement *)$1;
             $$  = _vretained elseStatement;
         }
         ;
@@ -454,14 +468,37 @@ switch_statement:
              $$ = _vretained statement;
          }
         ;
+
+for_statement_var_list:
+        | primary_expression
+        {
+            NSMutableArray *list = [NSMutableArray array];
+            [list addObject:_transfer(id)$1];
+            $$ = _vretained list;
+        }
+        | for_statement_var_list COMMA primary_expression
+        {
+            NSMutableArray *list = (__bridge_transfer NSMutableArray *)$1;
+            [list addObject:_transfer(id) $3];
+            $$ = _vretained list;
+        }
+
 for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
         {
             ORForStatement* statement = makeForStatement(_transfer(ORBlockImp *) $10);
-            statement.declareExpressions = _typeId $3;
+            statement.varExpressions = _typeId $3;
             statement.condition = _typeId $5;
             statement.expressions = _typeId $7;
             $$ = _vretained statement;
         }
+        |  _for LP for_statement_var_list SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
+               {
+                   ORForStatement* statement = makeForStatement(_transfer(ORBlockImp *) $10);
+                   statement.varExpressions = _typeId $3;
+                   statement.condition = _typeId $5;
+                   statement.expressions = _typeId $7;
+                   $$ = _vretained statement;
+               }
         ;
 
 forin_statement: _for LP declaration _in expression RP LC function_implementation RC

@@ -81,7 +81,7 @@ enum{
 
 @interface ORFuncDeclare: NSObject
 @property(nonatomic,strong) ORTypeVarPair *returnType;
-@property(nonatomic,strong) ORFuncVariable *var;
+@property(nonatomic,strong) ORFuncVariable *funVar;
 @property(nonatomic,assign) BOOL isBlockDeclare;
 - (void)becomeNormalFuncDeclare;
 @end
@@ -93,7 +93,6 @@ enum{
 
 typedef enum {
     OCValueVariable, // value: NSString
-    OCValueClassName, // value: NSString
     OCValueSelf, // value: nil
     OCValueSuper, // value: nil
     OCValueSelector, // value: sel NSString
@@ -249,7 +248,7 @@ typedef enum {
 @end
 
 @interface ORForStatement : ORStatement
-@property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*declareExpressions;
+@property (nonatomic,strong)NSMutableArray <ORExpression *>*varExpressions;
 @property (nonatomic,strong)ORExpression * condition;
 @property (nonatomic,strong)NSMutableArray <ORExpression *>* expressions;
 @end

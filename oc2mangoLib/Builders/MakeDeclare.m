@@ -47,7 +47,7 @@ ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORTypeVarPair *returnType
 ORFuncDeclare *makeFuncDeclare(ORTypeVarPair *returnType,ORFuncVariable *var){
     ORFuncDeclare *decl = [ORFuncDeclare new];
     decl.returnType = returnType;
-    decl.var = var;
+    decl.funVar = var;
     return decl;
 }
 

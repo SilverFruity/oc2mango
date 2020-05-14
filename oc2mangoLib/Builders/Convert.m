@@ -154,14 +154,14 @@
     return [NSString stringWithFormat:@"\n%@%@",[self convertMethoDeclare:methodImp.declare],[self convertBlockImp:methodImp.imp]];
 }
 - (NSString *)convertFuncDeclare:(ORFuncDeclare *)funcDecl{
-    return [NSString stringWithFormat:@"%@%@",[self convertDeclareTypeVarPair:funcDecl.returnType],[self convertVariable:funcDecl.var]];;
+    return [NSString stringWithFormat:@"%@%@",[self convertDeclareTypeVarPair:funcDecl.returnType],[self convertVariable:funcDecl.funVar]];;
 }
 
 int indentationCont = 0;
 - (NSString *)convertBlockImp:(ORBlockImp *)imp{
     NSMutableString *content = [NSMutableString string];
     if (imp.declare) {
-        if (imp.declare.var.ptCount > 0) {
+        if (imp.declare.funVar.ptCount > 0) {
             // void x(int y){ }
             [content appendFormat:@"%@", [self convertFuncDeclare:imp.declare]];
         }else{
@@ -306,7 +306,6 @@ int indentationCont = 0;
 
 - (NSString *)convertOCValue:(ORValueExpression *)value{
     switch (value.value_type){
-        case OCValueClassName:
         case OCValueSelector:
         case OCValueInt:
         case OCValueDouble:
@@ -433,7 +432,7 @@ int indentationCont = 0;
 }
 - (NSString *)convertForStatement:(ORForStatement *)statement{
     NSMutableString *content = [@"for (" mutableCopy];
-    [content appendFormat:@"%@; ",[self convertExpressionList:statement.declareExpressions]];
+    [content appendFormat:@"%@; ",[self convertExpressionList:statement.varExpressions]];
     [content appendFormat:@"%@; ",[self convertExpression:statement.condition]];
     [content appendFormat:@"%@)",[self convertExpressionList:statement.expressions]];
     [content appendFormat:@"%@",[self convertBlockImp:statement.funcImp]];

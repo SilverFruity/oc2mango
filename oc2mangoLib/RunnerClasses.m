@@ -33,10 +33,10 @@
 @end
 @implementation ORFuncDeclare
 - (BOOL)isBlockDeclare{
-    return self.var.ptCount < 0;
+    return self.funVar.ptCount < 0;
 }
 - (void)becomeNormalFuncDeclare{
-    self.var.ptCount = 0;
+    self.funVar.ptCount = 0;
 }
 @end
 @implementation ORExpression
