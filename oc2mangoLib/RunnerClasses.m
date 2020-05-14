@@ -44,6 +44,13 @@
 @implementation ORValueExpression
 @end
 @implementation ORMethodCall
+- (NSString *)selectorName{
+    NSString *selector = [self.names componentsJoinedByString:@":"];
+    if (self.values.count >= 1) {
+        selector = [selector stringByAppendingString:@":"];
+    }
+    return selector;
+}
 @end
 @implementation ORCFuncCall
 @end
@@ -119,6 +126,13 @@
 @implementation ORPropertyDeclare
 @end
 @implementation ORMethodDeclare
+- (NSString *)selectorName{
+    NSString *selector = [self.methodNames componentsJoinedByString:@":"];
+    if (self.parameterNames.count >= 1) {
+        selector = [selector stringByAppendingString:@":"];
+    }
+    return selector;
+}
 @end
 @implementation ORMethodImplementation
 @end

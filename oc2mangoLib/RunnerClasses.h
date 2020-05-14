@@ -125,6 +125,7 @@ typedef enum {
 @property (nonatomic, assign)BOOL isDot;
 @property (nonatomic, strong)NSMutableArray *names;
 @property (nonatomic, strong)NSMutableArray <ORExpression *> *values;
+- (NSString *)selectorName;
 @end
 
 @interface ORCFuncCall: ORValueExpression
@@ -294,6 +295,7 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 @property(nonatomic,strong) NSMutableArray *methodNames;
 @property(nonatomic,strong) NSMutableArray <ORTypeVarPair *>*parameterTypes;
 @property(nonatomic,strong) NSMutableArray *parameterNames;
+- (NSString *)selectorName;
 @end
 
 @interface ORMethodImplementation: NSObject
