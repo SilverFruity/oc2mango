@@ -133,11 +133,14 @@ typedef enum {
 @property (nonatomic, strong)NSMutableArray <ORExpression *>*expressions;
 @end
 
-@interface ORBlockImp: ORValueExpression
-@property(nonatomic,strong) ORFuncDeclare *declare;
-@property(nonatomic,strong) NSMutableArray<id >* statements;
+@interface ORScopeImp: ORValueExpression
+@property(nonatomic,strong) NSMutableArray* statements;
 - (void)addStatements:(id)statements;
-- (void)copyFromImp:(ORBlockImp *)imp;
+- (void)copyFromImp:(ORScopeImp *)imp;
+@end
+
+@interface ORBlockImp: ORScopeImp
+@property(nonatomic,strong) ORFuncDeclare *declare;
 @end
 
 @interface ORSubscriptExpression: ORValueExpression

@@ -47,7 +47,8 @@
 @end
 @implementation ORCFuncCall
 @end
-@implementation ORBlockImp
+
+@implementation ORScopeImp
 - (instancetype)init
 {
     self = [super init];
@@ -64,6 +65,10 @@
 - (void)copyFromImp:(ORBlockImp *)imp{
     self.statements = imp.statements;
 }
+
+@end
+@implementation ORBlockImp
+
 @end
 @implementation ORSubscriptExpression
 @end
