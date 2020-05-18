@@ -177,7 +177,7 @@
 <INITIAL>"unsigned int" { TypeReturn(UINT); }
 <INITIAL>"unsigned long" { TypeReturn(ULONG); }
 <INITIAL>"unsigned long long" { TypeReturn(ULLONG); }
-<INITIAL>"NSUInteger" { TypeReturn(ULONG); }
+<INITIAL>"NSUInteger" { TypeReturn(ULLONG); }
 
 <INITIAL>"sizeof" { TypeReturn(sizeof); }
 <INITIAL>"typeof" { return TYPEOF; }
@@ -189,7 +189,7 @@
 <INITIAL>"int" { TypeReturn(INT); }
 <INITIAL>"long" { TypeReturn(LONG); }
 <INITIAL>"long long" { TypeReturn(LLONG); }
-<INITIAL>"NSInteger" { TypeReturn(LONG); }
+<INITIAL>"NSInteger" { TypeReturn(LLONG); }
 
 <INITIAL>"int8_t" { TypeReturn(CHAR); }
 <INITIAL>"int16_t" { TypeReturn(SHORT); }
