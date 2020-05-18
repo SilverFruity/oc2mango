@@ -894,9 +894,13 @@ numerical_value_type:
         }
     ;
 dict_entrys:
-        expression COLON expression
         {
             NSMutableArray *array = [NSMutableArray array];
+            $$ = _vretained array;
+        }
+        | expression COLON expression
+        {
+            NSMutableArray *array = _transfer(id)$1;
             [array addObject:@[_transfer(id)$1,_transfer(id)$3]];
             $$ = _vretained array;
         }
