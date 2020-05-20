@@ -167,6 +167,13 @@ typedef enum {
 @property (nonatomic,strong)ORExpression * expression;
 @end
 
+typedef NS_OPTIONS(NSUInteger,ORDeclarationModifier) {
+    ORDeclarationModifierNone       = 1,
+    ORDeclarationModifierStrong     = 1 << 1,
+    ORDeclarationModifierWeak       = 1 << 2,
+    ORDeclarationModifierStatic     = 1 << 3,
+};
+
 @interface ORDeclareExpression: ORExpression
 @property (nonatomic,strong)ORTypeVarPair *pair;
 @property (nonatomic,strong, nullable)ORExpression * expression;
@@ -285,7 +292,7 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 @interface ORPropertyDeclare: ORCodeCheck
 @property(nonatomic,strong) NSMutableArray *keywords;
 @property(nonatomic,strong) ORTypeVarPair * var;
-@property(nonatomic,assign) MFPropertyModifier modifier;
+@property(nonatomic, assign, readonly) MFPropertyModifier modifier;
 @end
 
 @interface ORMethodDeclare: ORCodeCheck
