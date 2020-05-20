@@ -177,7 +177,7 @@
 <INITIAL>"unsigned int" { TypeReturn(UINT); }
 <INITIAL>"unsigned long" { TypeReturn(ULONG); }
 <INITIAL>"unsigned long long" { TypeReturn(ULLONG); }
-<INITIAL>"NSUInteger" { TypeReturn(ULONG); }
+<INITIAL>"NSUInteger" { TypeReturn(ULLONG); }
 
 <INITIAL>"sizeof" { TypeReturn(sizeof); }
 <INITIAL>"typeof" { return TYPEOF; }
@@ -189,7 +189,7 @@
 <INITIAL>"int" { TypeReturn(INT); }
 <INITIAL>"long" { TypeReturn(LONG); }
 <INITIAL>"long long" { TypeReturn(LLONG); }
-<INITIAL>"NSInteger" { TypeReturn(LONG); }
+<INITIAL>"NSInteger" { TypeReturn(LLONG); }
 
 <INITIAL>"int8_t" { TypeReturn(CHAR); }
 <INITIAL>"int16_t" { TypeReturn(SHORT); }
@@ -279,6 +279,34 @@
     yyless(1);
     has_assign = 0;
     return ASSIGN;
+}
+<INITIAL>[1-9][0-9]*[ ]*\* {
+    must_ASTERISK = 1;
+    yyless(yyleng-1);
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return INTETER_LITERAL;
+}
+<INITIAL>"0"[xX][0-9a-fA-F]+[ ]*\* {
+    must_ASTERISK = 1;
+    yyless(yyleng-1);
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return INTETER_LITERAL;
+}
+<INITIAL>"0"[ ]*\* {
+    must_ASTERISK = 1;
+    yyless(yyleng-1);
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return INTETER_LITERAL;
+}
+<INITIAL>[0-9]+\.[0-9]+[ ]*\* {
+    must_ASTERISK = 1;
+    yyless(yyleng-1);
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return DOUBLE_LITERAL;
 }
 <INITIAL>\*[ ]*[1-9][0-9]* {
     yyless(1);
