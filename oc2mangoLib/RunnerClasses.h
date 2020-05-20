@@ -175,6 +175,7 @@ typedef NS_OPTIONS(NSUInteger,ORDeclarationModifier) {
 };
 
 @interface ORDeclareExpression: ORExpression
+@property (nonatomic,assign)ORDeclarationModifier modifier;
 @property (nonatomic,strong)ORTypeVarPair *pair;
 @property (nonatomic,strong, nullable)ORExpression * expression;
 @end

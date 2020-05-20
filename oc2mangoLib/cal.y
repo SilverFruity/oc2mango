@@ -1,14 +1,13 @@
 %{
-#import <Foundation/Foundation.h>
-#import "Log.h"
-#import "MakeDeclare.h"
-#import "Parser.h"
 #define YYDEBUG 1
 #define YYERROR_VERBOSE
 #define _retained(IDENTIFIER) (__bridge_retained IDENTIFIER)
 #define _vretained _retained(void *)
 #define _transfer(IDENTIFIER) (__bridge_transfer IDENTIFIER)
 #define _typeId _transfer(id)
+#import <Foundation/Foundation.h>
+#import "Log.h"
+#import "MakeDeclare.h"
 extern int yylex (void);
 extern void yyerror(const char *s);
 %}
@@ -22,6 +21,7 @@ extern void yyerror(const char *s);
     void *expression;
     int Operator;
     int IntValue;
+    NSUInteger declaration_modifier;
 }
 
 %token <identifier> IDENTIFIER  STRING_LITERAL TYPEDEF ELLIPSIS CHILD_COLLECTION POINT
@@ -49,6 +49,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys for_statement_var_list
 %type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional
 %type <IntValue> pointer pointer_optional
+%type <declaration_modifier> declaration_modifier
 %%
 
 compile_util: /*empty*/
@@ -988,9 +989,32 @@ primary_expression:
         ;
 
 ;
+declaration_modifier: _WEAK
+        {
+            $$ = ORDeclarationModifierWeak;
+        }
+        | _STRONG
+        {
+            $$ = ORDeclarationModifierStrong;
+        }
+        | STATIC
+        {
+            $$ = ORDeclarationModifierStatic;
+        }
+        ;
 
 declaration:
-	type_specifier init_declarator_list
+	declaration_modifier type_specifier init_declarator_list
+    {
+        NSMutableArray *array = _transfer(NSMutableArray *)$3;
+        for (ORDeclareExpression *declare in array){
+            declare.pair.type = _typeId $2;
+            declare.modifier = $1;
+            _vretained declare;
+        }
+        $$ = _vretained array;
+    }
+    | type_specifier init_declarator_list
     {
         NSMutableArray *array = _transfer(NSMutableArray *)$2;
         for (ORDeclareExpression *declare in array){
