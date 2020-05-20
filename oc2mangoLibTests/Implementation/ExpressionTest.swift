@@ -89,10 +89,10 @@ class ExpressionTest: XCTestCase {
         XCTAssert(assign8?.pair.type.type == TypeULongLong)
         
         let assign9 = ocparser.ast.globalStatements[9] as? ORDeclareExpression;
-        XCTAssert(assign9?.pair.type.type == TypeLong)
+        XCTAssert(assign9?.pair.type.type == TypeLongLong)
         
         let assign10 = ocparser.ast.globalStatements[10] as? ORDeclareExpression;
-        XCTAssert(assign10?.pair.type.type == TypeULong)
+        XCTAssert(assign10?.pair.type.type == TypeULongLong)
         
         let assign11 = ocparser.ast.globalStatements[11] as? ORDeclareExpression;
         XCTAssert(assign11?.pair.type.type == TypeUInt)

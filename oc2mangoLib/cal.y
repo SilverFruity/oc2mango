@@ -898,13 +898,13 @@ dict_entrys:
             NSMutableArray *array = [NSMutableArray array];
             $$ = _vretained array;
         }
-        | expression COLON expression
+        | dict_entrys expression COLON expression
         {
             NSMutableArray *array = _transfer(id)$1;
-            [array addObject:@[_transfer(id)$1,_transfer(id)$3]];
+            [array addObject:@[_transfer(id)$2,_transfer(id)$4]];
             $$ = _vretained array;
         }
-        |dict_entrys COMMA expression COLON expression
+        | dict_entrys COMMA expression COLON expression
         {
             NSMutableArray *array = _transfer(id)$1;
             [array addObject:@[_transfer(id)$3,_transfer(id)$5]];
