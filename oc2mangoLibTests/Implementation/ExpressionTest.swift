@@ -89,10 +89,10 @@ class ExpressionTest: XCTestCase {
         XCTAssert(assign8?.pair.type.type == TypeULongLong)
         
         let assign9 = ocparser.ast.globalStatements[9] as? ORDeclareExpression;
-        XCTAssert(assign9?.pair.type.type == TypeLong)
+        XCTAssert(assign9?.pair.type.type == TypeLongLong)
         
         let assign10 = ocparser.ast.globalStatements[10] as? ORDeclareExpression;
-        XCTAssert(assign10?.pair.type.type == TypeULong)
+        XCTAssert(assign10?.pair.type.type == TypeULongLong)
         
         let assign11 = ocparser.ast.globalStatements[11] as? ORDeclareExpression;
         XCTAssert(assign11?.pair.type.type == TypeUInt)
@@ -275,4 +275,33 @@ class ExpressionTest: XCTestCase {
         
         
     }
+    func testPointer(){
+        source =
+        """
+        func(1 * a);
+        """
+        ocparser.parseSource(source);
+        XCTAssert(ocparser.isSuccess())
+        let call = ocparser.ast.globalStatements as! [ORCFuncCall]
+        let call1 = call.first!
+        XCTAssert(call1.caller.value as! String == "func")
+        XCTAssert(call1.expressions.count == 1)
+        let binary = call1.expressions[0] as! ORBinaryExpression
+        XCTAssert(binary.operatorType == BinaryOperatorMulti)
+    }
+    func testBlock(){
+        source =
+        """
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(0, 0), ^{
+            retValue = YES;
+            dispatch_semaphore_signal(semaphore);
+        });
+        """
+        ocparser.parseSource(source);
+        XCTAssert(ocparser.isSuccess())
+        let call = (ocparser.ast.globalStatements as! [ORCFuncCall]).first!
+        let param2 = call.expressions[2] as! ORBlockImp
+        XCTAssert(param2.declare.funVar.ptCount == -1)
+        XCTAssert(param2.declare.returnType.type.type == TypeVoid)
+        XCTAssert(param2.declare.funVar.pairs.count == 0)    }
 }

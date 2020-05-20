@@ -35,9 +35,6 @@
 - (BOOL)isBlockDeclare{
     return self.funVar.ptCount < 0;
 }
-- (void)becomeNormalFuncDeclare{
-    self.funVar.ptCount = 0;
-}
 @end
 @implementation ORExpression
 @end
@@ -124,6 +121,24 @@
 @implementation ORContinueStatement
 @end
 @implementation ORPropertyDeclare
+- (MFPropertyModifier)modifier{
+    NSDictionary *cache = @{
+        @"strong":@(MFPropertyModifierMemStrong),
+        @"weak":@(MFPropertyModifierMemWeak),
+        @"copy":@(MFPropertyModifierMemCopy),
+        @"assign":@(MFPropertyModifierMemAssign),
+        @"nonatomic":@(MFPropertyModifierNonatomic),
+        @"atomic":@(MFPropertyModifierAtomic)
+    };
+    NSUInteger value = 0;
+    for (NSString *keyword in self.keywords) {
+        NSNumber *keywordValue = cache[keyword];
+        if (keywordValue) {
+            value = value | keywordValue.unsignedIntegerValue;
+        }
+    }
+    return value;
+}
 @end
 @implementation ORMethodDeclare
 - (NSString *)selectorName{

@@ -122,14 +122,14 @@
 <INITIAL>"UI_APPEARANCE_SELECTOR" ;
 <INITIAL>"IBInspectable" ;
 <INITIAL>"extern" ;
-<INITIAL>"static" ;
+<INITIAL>"static" return STATIC;
 <INITIAL>"const" ;
 <INITIAL>"_Nonnull" ;
 <INITIAL>"_Nullable" ;
 <INITIAL>"__autoreleasing" ;
 
-<INITIAL>"__strong" ;
-<INITIAL>"__weak"  ;
+<INITIAL>"__strong" return _STRONG;
+<INITIAL>"__weak"  return _WEAK;
 <INITIAL>"__block" ;
 <INITIAL>"__bridge" {} ;
 <INITIAL>"__bridge_transfer" ;
@@ -279,6 +279,34 @@
     yyless(1);
     has_assign = 0;
     return ASSIGN;
+}
+<INITIAL>[1-9][0-9]*[ ]*\* {
+    must_ASTERISK = 1;
+    yyless((int)yyleng-1);
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return INTETER_LITERAL;
+}
+<INITIAL>"0"[xX][0-9a-fA-F]+[ ]*\* {
+    must_ASTERISK = 1;
+    yyless((int)yyleng-1);
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return INTETER_LITERAL;
+}
+<INITIAL>"0"[ ]*\* {
+    must_ASTERISK = 1;
+    yyless((int)yyleng-1);
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return INTETER_LITERAL;
+}
+<INITIAL>[0-9]+\.[0-9]+[ ]*\* {
+    must_ASTERISK = 1;
+    yyless((int)yyleng-1);
+    NSString *text = [NSString stringWithUTF8String:yytext];
+    yylval.identifier =(__bridge_retained void *)[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return DOUBLE_LITERAL;
 }
 <INITIAL>\*[ ]*[1-9][0-9]* {
     yyless(1);

@@ -118,7 +118,7 @@ b[0];
         let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
         let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
         let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
-        XCTAssert(result1 == "@[self.x,NSObject.new()]")
+        XCTAssert(result1 == "@[self.x,NSObject.new()]",result1)
         XCTAssert(result2 ==
             """
             @{@"key":@"value",@"key1":@"value1"}
