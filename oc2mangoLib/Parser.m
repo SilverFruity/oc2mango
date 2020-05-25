@@ -8,11 +8,6 @@
 
 #import "Parser.h"
 #import "RunnerClasses.h"
-void UncaughtExceptionHandler(NSException *exception) {
-    extern unsigned long yylineno;
-    NSArray *array = [OCParser.source componentsSeparatedByString:@"\n"];
-    NSLog(@"error :%@",array[yylineno]);
-}
 @implementation Parser
 + (instancetype)shared{
     static dispatch_once_t onceToken;
@@ -26,13 +21,15 @@ void UncaughtExceptionHandler(NSException *exception) {
 {
     self = [super init];
     self.ast = [AST new];
-    NSSetUncaughtExceptionHandler(&UncaughtExceptionHandler);
     return self;
 }
 - (BOOL)isSuccess{
     return self.source && self.error == nil;
 }
 - (void)parseSource:(NSString *)source{
+    if (!source) {
+        return;
+    }
     self.error = nil;
     extern void yy_set_source_string(char const *source);
     extern void yyrestart (FILE * input_file );
