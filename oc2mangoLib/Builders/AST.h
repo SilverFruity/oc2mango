@@ -8,9 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "RunnerClasses.h"
+NS_ASSUME_NONNULL_BEGIN
+int startClassProrityDetect(ORClass *class);
 @interface AST : NSObject
 @property(nonatomic,nonnull,strong)NSMutableArray *globalStatements;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *classCache;
 - (nonnull ORClass *)classForName:(NSString *)className;
 - (void)addGlobalStatements:(id)objects;
+- (NSArray <ORClass *>*)sortClasses;
 @end
+NS_ASSUME_NONNULL_END

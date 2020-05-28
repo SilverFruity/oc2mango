@@ -50,5 +50,34 @@ completion(httpReponse,result,error);
         XCTAssert(ocparser.isSuccess())
     }
 
-
+    func testClassCacheSort(){
+        let class0 = ORClass.init(className: "Class0")
+        class0.superClassName = "NSObject"
+        let class1 = ORClass.init(className: "Class1")
+        class1.superClassName = class0.className
+        let class2 = ORClass.init(className: "Class2")
+        class2.superClassName = class1.className
+        let class3 = ORClass.init(className: "Class3")
+        class3.superClassName = class1.className
+        let class4 = ORClass.init(className: "Class4")
+        class4.superClassName = class0.className
+        let class5 = ORClass.init(className: "Class5")
+        class5.superClassName = class3.className
+        let arrs = [class0,class1,class2,class3,class4,class5]
+        var dict = [String:ORClass]()
+        for item in arrs {
+            dict[item.className] = item
+        }
+        ocparser.ast.classCache = NSMutableDictionary.init(dictionary: dict)
+        XCTAssert(startClassProrityDetect(class0) == 0)
+        XCTAssert(startClassProrityDetect(class1) == 1)
+        XCTAssert(startClassProrityDetect(class2) == 2)
+        XCTAssert(startClassProrityDetect(class3) == 2)
+        XCTAssert(startClassProrityDetect(class4) == 1)
+        XCTAssert(startClassProrityDetect(class5) == 3)
+        let prorityDict = ["Class0":0,"Class1":1,"Class4":1,"Class3":2,"Class2":2,"Class5":3]
+        let results = ocparser.ast.sortClasses()
+        let prorities = results.map{ prorityDict[$0.className]! }
+        XCTAssert(prorities == [0, 1, 1, 2, 2, 3])
+    }
 }
