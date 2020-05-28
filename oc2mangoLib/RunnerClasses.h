@@ -319,4 +319,21 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 @property (nonatomic,strong)NSMutableArray <ORMethodImplementation *>*methods;
 + (instancetype)classWithClassName:(NSString *)className;
 @end
+
+
+@interface ORStructExpressoin : NSObject
+@property (nonatomic,copy)NSString *sturctName;
+@property (nonatomic,strong)NSMutableArray <ORTypeVarPair *>*fields;
+@end
+
+@interface OREnumExpressoin : NSObject
+@property (nonatomic,copy)NSString *enumName;
+@property (nonatomic,assign)TypeKind valueType;
+@property (nonatomic,strong)NSMutableArray *fields;
+@end
+
+@interface ORTypedefExpressoin : NSObject
+@property (nonatomic,strong)id expression;
+@property (nonatomic,copy)NSString *typeNewName;
+@end
 NS_ASSUME_NONNULL_END

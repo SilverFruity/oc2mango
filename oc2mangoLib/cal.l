@@ -164,6 +164,8 @@
 <INITIAL>"case" { TypeReturn(case); }
 <INITIAL>"default" { TypeReturn(default); }
 <INITIAL>"typedef" { return TYPEDEF;}
+<INITIAL>"struct" { TypeReturn(struct); }
+<INITIAL>"enum" { TypeReturn(enum); }
 
 <INITIAL>"self" { TypeReturn(self); }
 <INITIAL>"super" { TypeReturn(super); }

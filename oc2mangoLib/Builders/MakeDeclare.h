@@ -44,6 +44,9 @@ extern ORReturnStatement *makeReturnStatement(ORExpression * expression);
 extern ORBreakStatement *makeBreakStatement(void);
 extern ORContinueStatement *makeContinueStatement(void);
 
+extern ORTypedefExpressoin *makeTypedefExp(id exp,NSString *newName);
+extern ORStructExpressoin *makeStructExp(NSString *name, NSMutableArray *fields);
+extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArray *fields);
 
 
 void startStringBuffer(void);

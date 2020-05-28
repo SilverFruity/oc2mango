@@ -27,7 +27,7 @@ extern void yyerror(const char *s);
 %token <identifier> IDENTIFIER  STRING_LITERAL TYPEDEF ELLIPSIS CHILD_COLLECTION POINT
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE 
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default TYPEOF __TYPEOF  _sizeof
-%token <identifier> INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE 
+%token <identifier> _struct _enum INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE 
 %token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE 
 %token <identifier> EXTERN STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK _BRIDGE _AUTORELEASE _BRIDGE_TRANSFER _BRIDGE_RETAINED _UNUSED
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS ARROW
@@ -50,6 +50,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional
 %type <IntValue> pointer pointer_optional
 %type <declaration_modifier> declaration_modifier
+%type <expression> struct_declare struct_field_list enum_declare enum_field_list typedef_declare
 %%
 
 compile_util: /*empty*/
@@ -83,7 +84,90 @@ global_define:
         imp.declare = declare;
         [LibAst addGlobalStatements:imp];
     }
+    | struct_declare SEMICOLON
+    {
+        [LibAst addGlobalStatements:_typeId $1];
+    }
+    | enum_declare SEMICOLON
+    {
+        [LibAst addGlobalStatements:_typeId $1];
+    }
+    | TYPEDEF typedef_declare SEMICOLON
+    {
+        [LibAst addGlobalStatements:_typeId $2];
+    }
     ;
+
+struct_declare:
+            _struct IDENTIFIER LC struct_field_list RC
+            {
+                $$ = _vretained makeStructExp(_typeId $2, _typeId $4);
+            }
+            ;
+
+struct_field_list:
+            type_specifier declarator SEMICOLON
+            {
+                ORTypeVarPair *field = makeTypeVarPair(_typeId $1, _typeId $2);
+                NSMutableArray *list = [@[field] mutableCopy];
+                $$ = _vretained list;
+            }
+            | struct_field_list type_specifier declarator SEMICOLON
+            {
+                ORTypeVarPair *field = makeTypeVarPair(_typeId $2, _typeId $3);
+                NSMutableArray *list = _transfer(NSMutableArray *) $1;
+                [list addObject:field];
+                $$ = _vretained list;
+            }
+            ;
+enum_declare:
+            _enum IDENTIFIER enum_declare
+            {
+                OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $3;
+                exp.enumName = _typeId $2;
+                $$ = _vretained exp;
+            }
+            | LC enum_field_list RC
+            {
+                $$ = _vretained makeEnumExp(@"",makeTypeSpecial(TypeInt), _typeId $2);
+            }
+            | COLON type_specifier LC enum_field_list RC
+            {
+                $$ = _vretained makeEnumExp(@"",_typeId $2, _typeId $4);
+            }
+            
+            ;
+
+enum_field_list:
+            assign_expression
+            {
+                NSMutableArray *list = [@[_typeId $1] mutableCopy];
+                $$ = (__bridge_retained void *)list;
+            }
+            | enum_field_list COMMA assign_expression
+            {
+                NSMutableArray *list = _transfer(NSMutableArray *) $1;
+                [list addObject:_typeId $3];
+                $$ = _vretained list;
+            }
+            ;
+
+            
+typedef_declare:
+            type_specifier declarator
+            {
+                ORTypeVarPair *pair = makeTypeVarPair(_typeId $1, _typeId $2);
+                $$ = _vretained makeTypedefExp(pair, pair.var.varname);
+            }
+            | enum_declare IDENTIFIER
+            {
+                $$ = _vretained makeTypedefExp(_typeId $1, _typeId $2);
+            }
+            | struct_declare IDENTIFIER
+            {
+                $$ = _vretained makeTypedefExp(_typeId $1, _typeId $2);
+            }
+            ;
 
 protocol_declare:
             PROTOCOL IDENTIFIER CHILD_COLLECTION
@@ -1151,7 +1235,7 @@ CHILD_COLLECTION_OPTIONAL:
 type_specifier:
             IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
-                $$ = _vretained makeTypeSpecial(TypeObject,(__bridge NSString *)$1);
+                $$ = _vretained makeTypeSpecial(TypeObject, _typeId $1);
             }
             | _id CHILD_COLLECTION_OPTIONAL
             {
