@@ -10,17 +10,7 @@ unzip ~/Downloads/oc2mango.zip -d ~/Downloads/
 ~/Downloads/oc2mango input_dir[包含Objective-C .h .m的文件夹] output_dir[.mg的输出文件夹]
 ```
 
-## 暂不支持
-
-全局自定义函数
-
-struct
-
-enum
-
 ## 无法识别
-
-typedef,  enum, struct
 
 类型转换 不能识别：a = (CFString) a; 。 能识别  a = (CFString *) a;
 
