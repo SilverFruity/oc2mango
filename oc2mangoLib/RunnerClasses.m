@@ -169,14 +169,14 @@
 }
 @end
 
-@implementation ORStructExpressoin : NSObject
+@implementation ORStructExpressoin
 
 @end
 
-@implementation OREnumExpressoin : NSObject
+@implementation OREnumExpressoin
 
 @end
 
-@implementation ORTypedefExpressoin : NSObject
+@implementation ORTypedefExpressoin
 
 @end

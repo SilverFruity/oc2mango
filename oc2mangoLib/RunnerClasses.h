@@ -60,7 +60,7 @@ enum{
 @interface ORTypeSpecial: NSObject
 @property (nonatomic, assign) TypeKind type;
 @property (nonatomic, nullable, copy) NSString * name;
-+ (instancetype)specialWithType:(TypeKind)type name:(NSString *)name;
++ (instancetype)specialWithType:(TypeKind)type name:(nullable NSString *)name;
 @end
 
 
@@ -321,18 +321,18 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 @end
 
 
-@interface ORStructExpressoin : NSObject
+@interface ORStructExpressoin : ORExpression
 @property (nonatomic,copy)NSString *sturctName;
 @property (nonatomic,strong)NSMutableArray <ORTypeVarPair *>*fields;
 @end
 
-@interface OREnumExpressoin : NSObject
+@interface OREnumExpressoin : ORExpression
 @property (nonatomic,copy)NSString *enumName;
 @property (nonatomic,assign)TypeKind valueType;
 @property (nonatomic,strong)NSMutableArray *fields;
 @end
 
-@interface ORTypedefExpressoin : NSObject
+@interface ORTypedefExpressoin : ORExpression
 @property (nonatomic,strong)id expression;
 @property (nonatomic,copy)NSString *typeNewName;
 @end
