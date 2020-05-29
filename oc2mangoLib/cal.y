@@ -127,6 +127,11 @@ enum_declare:
                 exp.enumName = _typeId $2;
                 $$ = _vretained exp;
             }
+            | _enum enum_declare
+            {
+                OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $2;
+                $$ = _vretained exp;
+            }
             | LC enum_field_list RC
             {
                 $$ = _vretained makeEnumExp(@"",makeTypeSpecial(TypeInt), _typeId $2);

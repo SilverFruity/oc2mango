@@ -123,6 +123,24 @@ void func(NSString *a, int *b){
         XCTAssert(secondExp.fields[0] is ORValueExpression)
         XCTAssert(secondExp.fields[1] is ORValueExpression)
         XCTAssert(secondExp.fields[2] is ORValueExpression)
+        
+        source =
+        """
+        enum : NSUInteger{
+        Value1,
+        Value2,
+        Value3
+        };
+        """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let thirdExp = ocparser.ast.globalStatements.firstObject as! OREnumExpressoin
+        XCTAssert(thirdExp.valueType == TypeULongLong)
+        XCTAssert(thirdExp.enumName == "Test")
+        XCTAssert(thirdExp.fields.count == 3)
+        XCTAssert(thirdExp.fields[0] is ORValueExpression)
+        XCTAssert(thirdExp.fields[1] is ORValueExpression)
+        XCTAssert(thirdExp.fields[2] is ORValueExpression)
     }
     
     func testStructExpression(){
