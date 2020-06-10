@@ -77,6 +77,7 @@ enum{
 
 @interface ORFuncVariable: ORVariable
 @property(nonatomic,strong) NSMutableArray <ORTypeVarPair *> *pairs;
+@property(nonatomic,assign) BOOL isMultiArgs;
 @end
 
 @interface ORFuncDeclare: NSObject
@@ -323,7 +324,7 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 
 @interface ORStructExpressoin : ORExpression
 @property (nonatomic,copy)NSString *sturctName;
-@property (nonatomic,strong)NSMutableArray <ORTypeVarPair *>*fields;
+@property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*fields;
 @end
 
 @interface OREnumExpressoin : ORExpression

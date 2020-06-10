@@ -106,17 +106,15 @@ struct_declare:
             ;
 
 struct_field_list:
-            type_specifier declarator SEMICOLON
+            declaration SEMICOLON
             {
-                ORTypeVarPair *field = makeTypeVarPair(_typeId $1, _typeId $2);
-                NSMutableArray *list = [@[field] mutableCopy];
+                NSMutableArray *list = [_typeId $1 mutableCopy];
                 $$ = _vretained list;
             }
-            | struct_field_list type_specifier declarator SEMICOLON
+            | struct_field_list declaration SEMICOLON
             {
-                ORTypeVarPair *field = makeTypeVarPair(_typeId $2, _typeId $3);
                 NSMutableArray *list = _transfer(NSMutableArray *) $1;
-                [list addObject:field];
+                [list addObjectsFromArray:_transfer(NSMutableArray *) $2];
                 $$ = _vretained list;
             }
             ;
@@ -1181,7 +1179,12 @@ direct_declarator:
         | direct_declarator LP parameter_type_list RP
         {
             ORFuncVariable *funVar = [ORFuncVariable copyFromVar:_transfer(ORVariable *)$1];
-            funVar.pairs = _transfer(NSMutableArray *)$3;
+            NSMutableArray *pairs = _transfer(NSMutableArray *)$3;
+            if ([pairs lastObject] == [NSNull null]) {
+                funVar.isMultiArgs = YES;
+                [pairs removeLastObject];
+            }
+            funVar.pairs = pairs;
             $$ = _vretained funVar;
         }
         ;
@@ -1206,6 +1209,11 @@ pointer_optional:
 parameter_type_list:
          parameter_list
         | parameter_list COMMA ELLIPSIS
+        {
+            NSMutableArray *array = _transfer(NSMutableArray *)$1;
+            [array addObject:[NSNull null]];
+            $$ = _vretained array;
+        }
         ;
 
 parameter_list: /* empty */

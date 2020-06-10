@@ -146,6 +146,7 @@
 <INITIAL>"SEL" { TypeReturn(SEL); }
 <INITIAL>"Class" { TypeReturn(Class);}
 <INITIAL>"BOOL" { TypeReturn(BOOL); }
+<INITIAL>"bool" { TypeReturn(BOOL); }
 <INITIAL>"void" { TypeReturn(void); }
 <INITIAL>"instancetype" { TypeReturn(instancetype); }
 

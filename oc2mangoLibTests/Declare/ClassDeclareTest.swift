@@ -150,16 +150,19 @@ void func(NSString *a, int *b){
             CGFloat x;
             CGFloat y;
         };
+        struct CGPoint {
+            CGFloat x,y;
+        };
         """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let exp = ocparser.ast.globalStatements.firstObject as! ORStructExpressoin
-        let fields = exp.fields as! [ORTypeVarPair]
+        let fields = exp.fields as! [ORDeclareExpression]
         XCTAssert(fields.count == 2)
-        XCTAssert(fields[0].type.type == TypeDouble)
-        XCTAssert(fields[1].type.type == TypeDouble)
-        XCTAssert(fields[0].var.varname == "x")
-        XCTAssert(fields[1].var.varname == "y")
+        XCTAssert(fields[0].pair.type.type == TypeDouble)
+        XCTAssert(fields[1].pair.type.type == TypeDouble)
+        XCTAssert(fields[0].pair.var.varname == "x")
+        XCTAssert(fields[1].pair.var.varname == "y")
     }
     func testTypeDefExpression(){
         var source =
@@ -186,12 +189,12 @@ void func(NSString *a, int *b){
         let structTypeDef = ocparser.ast.globalStatements.firstObject as! ORTypedefExpressoin
         XCTAssert(structTypeDef.typeNewName == "Point")
         let structExp = structTypeDef.expression as! ORStructExpressoin
-        let fields = structExp.fields as! [ORTypeVarPair]
+        let fields = structExp.fields as! [ORDeclareExpression]
         XCTAssert(fields.count == 2)
-        XCTAssert(fields[0].type.type == TypeDouble)
-        XCTAssert(fields[1].type.type == TypeDouble)
-        XCTAssert(fields[0].var.varname == "x")
-        XCTAssert(fields[1].var.varname == "y")
+        XCTAssert(fields[0].pair.type.type == TypeDouble)
+        XCTAssert(fields[1].pair.type.type == TypeDouble)
+        XCTAssert(fields[0].pair.var.varname == "x")
+        XCTAssert(fields[1].pair.var.varname == "y")
         ocparser.clear()
         
         source =
@@ -244,5 +247,17 @@ void func(NSString *a, int *b){
         XCTAssert((enumFields[17].value.value as? String) == "UIControlEventSystemReserved")
         XCTAssert((enumFields[18].value.value as? String) == "UIControlEventAllEvents")
         
+    }
+    func testMutilArgsDeclare(){
+        let source =
+        """
+        void NSLog(NSString *format,...);
+        """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let declare = ocparser.ast.globalStatements.firstObject as! ORDeclareExpression
+        let funcVar = declare.pair.var as! ORFuncVariable
+        XCTAssert(funcVar.varname == "NSLog")
+        XCTAssert(funcVar.isMultiArgs)
     }
 }
