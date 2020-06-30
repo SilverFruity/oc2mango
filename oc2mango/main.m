@@ -33,27 +33,13 @@ void compileFiles(NSMutableArray *files){
     }];
     
     //1. 扫描所有头文件生成 Class的property、TypeDeclareSymbol
-    NSMutableArray *failedFiles = [NSMutableArray array];
     for (NSString *path in headers) {
-        NSData *data = [NSData dataWithContentsOfFile:path];
-        [OCParser parseSource:[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding]];
-        if (!OCParser.isSuccess) {
-            [failedFiles addObject:path];
-        }
+        [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
     }
     
     //2. 扫描实现文件完成转换
     for (NSString *path in implementations) {
-        NSData *data = [NSData dataWithContentsOfFile:path];
-        [OCParser parseSource:[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding]];
-        if (!OCParser.isSuccess) {
-            [failedFiles addObject:path];
-        }
-    }
-    if (!OCParser.isSuccess) {
-        NSLog(@"%@",failedFiles);
-        NSLog(@"%lu",failedFiles.count);
-        return;
+        [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
     }
 }
 

@@ -8,7 +8,22 @@
 
 #import "Parser.h"
 #import "RunnerClasses.h"
+@implementation CodeSource
+- (instancetype)initWithFilePath:(NSString *)filePath{
+    self = [super init];
+    self.filePath = filePath;
+    NSData *data = [NSData dataWithContentsOfFile:filePath];
+    self.source = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return self;
+}
+- (instancetype)initWithSource:(NSString *)source{
+    self = [super init];
+    self.source = source;
+    return self;
+}
+@end
 @implementation Parser
+
 + (instancetype)shared{
     static dispatch_once_t onceToken;
     static Parser * _instance = nil;
@@ -26,8 +41,8 @@
 - (BOOL)isSuccess{
     return self.source && self.error == nil;
 }
-- (void)parseSource:(NSString *)source{
-    if (!source) {
+- (void)parseCodeSource:(CodeSource *)source{
+    if (source.source == nil) {
         return;
     }
     self.error = nil;
@@ -35,11 +50,14 @@
     extern void yyrestart (FILE * input_file );
     extern int yyparse(void);
     self.source = source;
-    yy_set_source_string([source UTF8String]);
+    yy_set_source_string([source.source UTF8String]);
     if (yyparse()) {
         yyrestart(NULL);
-        self.error = @"ERROR !!!";
+        NSLog(@"\n----Error: \n  PATH: %@\n  INFO:%@",self.source.filePath,self.error);
     }
+}
+- (void)parseSource:(NSString *)source{
+    [self parseCodeSource:[[CodeSource alloc] initWithSource:source]];
 }
 - (void)clear{
     [self.lock lock];

@@ -191,7 +191,7 @@ class_declare:
             {
                 $$ = _vretained [LibAst classForName:_transfer(id)$2];
             }
-            | INTERFACE IDENTIFIER LP RP
+            | INTERFACE IDENTIFIER LP RP CHILD_COLLECTION_OPTIONAL
             {
                 $$ = _vretained [LibAst classForName:_transfer(id)$2];
             }
@@ -1351,7 +1351,6 @@ void yyerror(const char *s){
     }else{
         str = [text mutableCopy];
     }
-    NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\n%@\n%@\nerror: %s\n-------------------\n",line,str,s];
+    NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\nline: %lu\n%@\n%@\nerror: %s\n-------------------\n",yylineno + 1,line,str,s];
     OCParser.error = errorInfo;
-    log(OCParser.error);
 }

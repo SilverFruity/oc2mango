@@ -10,16 +10,23 @@
 #import "AST.h"
 #define OCParser [Parser shared]
 #define LibAst OCParser.ast
+NS_ASSUME_NONNULL_BEGIN
+@interface CodeSource: NSObject
+@property(nonatomic,nullable,copy)NSString *source;
+@property(nonatomic,nullable,copy)NSString *filePath;
+- (instancetype)initWithFilePath:(NSString *)filePath;
+- (instancetype)initWithSource:(NSString *)source;
+@end
 
 @interface Parser : NSObject
 @property(nonatomic,nonnull,strong)AST *ast;
 @property(nonatomic,nonnull,strong)NSLock *lock;
 @property(nonatomic,nullable,copy)NSString *error;
-@property(nonatomic,nullable,copy)NSString *source;
+@property(nonatomic,nullable,strong)CodeSource *source;
 + (nonnull instancetype)shared;
-- (void)parseSource:(NSString *)source;
+- (void)parseCodeSource:(CodeSource *)source;
+- (void)parseSource:(nullable NSString *)source;
 - (BOOL)isSuccess;
 - (void)clear;
 @end
-
-
+NS_ASSUME_NONNULL_END

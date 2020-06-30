@@ -78,7 +78,7 @@ void func(NSString *a, int *b){
     func testProtocolDeclare(){
         let source =
         """
-        @protocol Demo <NSObject>
+        @interface Demo ()<NSObject,NSObject>
         @property (nonatomic,atomic) NSString *className;
         @property (nonatomic,atomic) void (^name)(void);
         @end

@@ -17,6 +17,7 @@
     #define TypeReturn(OMType) yylval.identifier =(__bridge_retained void *)[NSString stringWithFormat:@"%@",@#OMType]; return _##OMType;
     #define smaller(a, b) ((a) < (b) ? (a) : (b))
     #define larger(a, b) ((a) > (b) ? (a) : (b))
+    #define RETURN_ASTERISK must_ASTERISK = 0; return ASTERISK;
     char const *st_source_string;
     static unsigned long st_current_char_index;
     static unsigned long st_source_len;
@@ -26,6 +27,7 @@
     static unsigned long has_assign = 0;
     void yy_set_source_string(char const *source)
     {
+        yylineno = 0;
         st_source_string = source;
         st_current_char_index = 0;
         st_source_len = strlen(source);
@@ -313,24 +315,23 @@
 }
 <INITIAL>\*[ ]*[1-9][0-9]* {
     yyless(1);
-    return ASTERISK;
+    RETURN_ASTERISK
 }
 <INITIAL>\*[ ]*"0"[xX][0-9a-fA-F]+ {
     yyless(1);
-    return ASTERISK;
+    RETURN_ASTERISK
 }
 <INITIAL>\*[ ]*"0" {
     yyless(1);
-    return ASTERISK;
+    RETURN_ASTERISK
 }
 <INITIAL>\*[ ]*[0-9]+\.[0-9]+ {
     yyless(1);
-    return ASTERISK;
+    RETURN_ASTERISK
 }
 <INITIAL>"*" {
     if (must_ASTERISK == 1) {
-        must_ASTERISK = 0;
-        return ASTERISK;
+        RETURN_ASTERISK
     }
     if (has_assign == 1){
         BEGIN ASSING_POINT_CHECK;
@@ -352,7 +353,7 @@
 <ASSING_POINT_CHECK>. {
     yyless(0);
     BEGIN INITIAL;
-    return ASTERISK;
+    RETURN_ASTERISK
 }
 <POINT_CHECK>[ ]* ;
 <POINT_CHECK>[,(){] {
