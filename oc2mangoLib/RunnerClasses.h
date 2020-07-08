@@ -125,6 +125,7 @@ typedef enum {
 @property (nonatomic, assign)BOOL isDot;
 @property (nonatomic, strong)NSMutableArray *names;
 @property (nonatomic, strong)NSMutableArray <ORExpression *> *values;
+@property (nonatomic, assign)BOOL isAssignedValue;
 - (NSString *)selectorName;
 @end
 
