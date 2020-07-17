@@ -423,7 +423,7 @@ block_implementation:
             ORTypeVarPair *var = makeTypeVarPair(_typeId $2, makeVar(nil,$3));
             ORFuncVariable *funVar = [ORFuncVariable new];
             funVar.pairs = _transfer(NSMutableArray *)$4;
-            funVar.ptCount = -1;
+            funVar.isBlock = YES;
             ORFuncDeclare *declare = makeFuncDeclare(var, funVar);
             ORBlockImp *imp = _transfer(ORBlockImp *) $6;
             imp.declare = declare;
@@ -1148,7 +1148,7 @@ declarator:
         | POWER direct_declarator_optional 
         {
             ORVariable *var = _transfer(ORVariable *)$2;
-            var.ptCount = -1;
+            var.isBlock = YES;
             $$ = _vretained var;
         }
         | pointer direct_declarator_optional

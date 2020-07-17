@@ -484,14 +484,10 @@ int indentationCont = 0;
 }
 - (NSString *)convertDeclareTypeVarPair:(ORTypeVarPair *)pair{
     if ([pair.var isKindOfClass:[ORFuncVariable class]]){
-        if (pair.var.varname == nil){
-            return [NSString stringWithFormat:@"Block"];
-        }
-        if (pair.var.ptCount > 0) {
-            return [NSString stringWithFormat:@"Point %@", pair.var.varname];
-        }
-        if (pair.var.ptCount < 0) {
+        if (pair.var.isBlock){
             return [NSString stringWithFormat:@"Block %@", pair.var.varname];
+        }else{
+            return [NSString stringWithFormat:@"Point %@", pair.var.varname];
         }
     }else{
         switch (pair.type.type){

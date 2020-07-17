@@ -24,6 +24,7 @@
     ORVariable *new = [[self class] new];
     new.ptCount = var.ptCount;
     new.varname = var.varname;
+    new.isBlock = var.isBlock;
     return new;
 }
 @end
@@ -33,7 +34,7 @@
 @end
 @implementation ORFuncDeclare
 - (BOOL)isBlockDeclare{
-    return self.funVar.ptCount < 0;
+    return self.funVar.isBlock;
 }
 @end
 @implementation ORExpression

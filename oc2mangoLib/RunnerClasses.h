@@ -65,6 +65,7 @@ enum{
 
 
 @interface ORVariable :NSObject
+@property (nonatomic, assign) BOOL isBlock;
 @property (nonatomic, assign) NSInteger ptCount;
 @property (nonatomic, nullable, copy) NSString * varname;
 + (instancetype)copyFromVar:(ORVariable *)var;
