@@ -18,7 +18,16 @@ class ExpressionTest: XCTestCase {
     override func tearDown() {
         ocparser.clear()
     }
-
+    func testDeclarePointerCheck(){
+        source =
+        """
+        int ***a;
+        """
+        ocparser.parseSource(source)
+        let assign = ocparser.ast.globalStatements[0] as? ORDeclareExpression
+        XCTAssert(assign?.pair.var.ptCount == 3)
+        XCTAssert(assign?.pair.var.varname == "a",assign?.pair.var.varname ?? "")
+    }
     func testDeclareExpression(){
         source =
         """

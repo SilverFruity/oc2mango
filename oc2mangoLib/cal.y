@@ -1199,7 +1199,7 @@ pointer:
         {
             $$ = 1;
         }
-	   | POINT pointer 
+	   | POINT pointer
        {
            $$ = $2 + 1;
        }

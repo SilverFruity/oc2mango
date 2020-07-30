@@ -329,6 +329,10 @@
     yyless(1);
     RETURN_ASTERISK
 }
+<INITIAL>\*[ ]*\* {
+    yyless(1);
+    return POINT;
+}
 <INITIAL>"*" {
     if (must_ASTERISK == 1) {
         RETURN_ASTERISK
