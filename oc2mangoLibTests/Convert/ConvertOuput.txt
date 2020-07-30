@@ -1,22 +1,23 @@
 NSString *queryPramameters(NSDictionary *param){
     NSMutableArray *pairs = NSMutableArray.array();
-    param.enumerateKeysAndObjectsUsingBlock:(^void (id key,id obj,BOOL *stop){
+    param.enumerateKeysAndObjectsUsingBlock:(^void (id key,id obj,Point stop){
         pairs.addObject:(NSString.stringWithFormat:(@"%@=%@",key,obj));
     });
     return pairs.componentsJoinedByString:(@"&");
 }
 class SFHTTPClient:NSObject{
 @property(nonatomic,readonly)NSURL *baseUrl;
--(id )baseUrl:(NSURL *)baseUrl{
+
+-(id )initWithBaseUrl:(NSURL *)baseUrl{
     self = super.init();
     self._baseUrl = baseUrl;
     return self;
 }
--(NSURLSessionDataTask *)method:(int )method URLString:(NSString *)URLString param:(NSDictionary *)param plugin:(id )plugin completion:(Block )completion{
+-(NSURLSessionDataTask *)requestWithMethod:(SFNHTTPMethod )method uri:(NSString *)URLString parameters:(NSDictionary *)param plugin:(id )plugin completion:(HTTPHandler )completion{
     NSMutableURLRequest *request = self.createRequestWithMethod:uri:parameters:(method,URLString,param);
     return self.request:plugin:completion:(request,plugin,completion);
 }
--(NSMutableURLRequest *)method:(int )method uri:(NSString *)uri param:(NSDictionary *)param{
+-(NSMutableURLRequest *)createRequestWithMethod:(SFNHTTPMethod )method uri:(NSString *)uri parameters:(NSDictionary *)param{
     NSURL *url = self.baseUrl.URLByAppendingPathComponent:(uri);
     NSMutableURLRequest *request = NSMutableURLRequest.requestWithURL:(url);
     request.timeoutInterval = 15;
@@ -29,7 +30,7 @@ class SFHTTPClient:NSObject{
     }
     return request;
 }
--(NSMutableURLRequest *)method:(int )method uri:(NSString *)uri param:(NSDictionary *)param{
+-(NSMutableURLRequest *)createEncryptedRequestWithMethod:(SFNHTTPMethod )method uri:(NSString *)uri parameters:(NSDictionary *)param{
     NSURL *url = self.baseUrl.URLByAppendingPathComponent:(uri);
     NSMutableURLRequest *request = NSMutableURLRequest.requestWithURL:(url);
     request.timeoutInterval = 15;
@@ -41,7 +42,7 @@ class SFHTTPClient:NSObject{
     request.HTTPBody = NSJSONSerialization.dataWithJSONObject:options:error:(container,0,nil);
     return request;
 }
--(NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id )plugin completion:(Block )completion{
+-(NSURLSessionDataTask *)request:(NSURLRequest *)request plugin:(id )plugin completion:(HTTPHandler )completion{
     NSMutableArray *plugins = NSMutableArray.array();
     while(plugin){
         plugins.addObject:(plugin);
@@ -52,7 +53,7 @@ class SFHTTPClient:NSObject{
         id result = data;
         for (id plugin in plugins){
             if(plugin.respondsToSelector:(@selector(handleWithRequest:Reponse:data:error:))){
-                if(!response || plugin.respondsToSelector:(@selector(cachedDataForRequest:))){
+                if(!response && plugin.respondsToSelector:(@selector(cachedDataForRequest:))){
                     continue;
                 }
                 result = plugin.handleWithRequest:Reponse:data:error:(request,httpReponse,result,&error);
@@ -68,7 +69,7 @@ class SFHTTPClient:NSObject{
         }
     }
     typeof weakPlugins = plugins;
-    Block resumeTask = ^NSURLSessionDataTask *(){
+    Block resumeTask = ^NSURLSessionDataTask *{
         for (id plugin in weakPlugins){
             if(plugin.respondsToSelector:(@selector(willStart:))){
                 plugin.willStart:(request);
@@ -88,7 +89,7 @@ class SFHTTPClient:NSObject{
     };
     for (id plugin in plugins){
         if(plugin.respondsToSelector:(@selector(canRetry))){
-            if(plugin.canRetry() || plugin.respondsToSelector:(@selector(setRetryClosure:))){
+            if(plugin.canRetry() && plugin.respondsToSelector:(@selector(setRetryClosure:))){
                 plugin.setRetryClosure:(resumeTask);
             }
         }

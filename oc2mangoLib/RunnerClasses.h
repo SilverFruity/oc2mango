@@ -40,7 +40,6 @@ typedef enum{
     TypeObject = 0x50,
     TypeBlock = 0x60,
     TypeId = 0x70,
-    TypeEnum = 0x80,
     TypeUnKnown = 0xF0
 }TypeKind;
 enum{

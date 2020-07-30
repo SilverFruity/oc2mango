@@ -98,7 +98,7 @@ class ExpressionTest: XCTestCase {
         XCTAssert(assign11?.pair.type.type == TypeUInt)
         
         let assign12 = ocparser.ast.globalStatements[12] as? ORDeclareExpression
-        XCTAssert(assign12?.pair.var.ptCount == -1)
+        XCTAssert(assign12?.pair.var.isBlock == true)
         XCTAssert(assign12?.pair.var.varname == "block")
         
         let assign13 = ocparser.ast.globalStatements[13] as? ORDeclareExpression
@@ -301,7 +301,9 @@ class ExpressionTest: XCTestCase {
         XCTAssert(ocparser.isSuccess())
         let call = (ocparser.ast.globalStatements as! [ORCFuncCall]).first!
         let param2 = call.expressions[2] as! ORBlockImp
-        XCTAssert(param2.declare.funVar.ptCount == -1)
+        XCTAssert(param2.declare.funVar.isBlock == true)
         XCTAssert(param2.declare.returnType.type.type == TypeVoid)
-        XCTAssert(param2.declare.funVar.pairs.count == 0)    }
+        XCTAssert(param2.declare.funVar.pairs.count == 0)
+    }
+
 }

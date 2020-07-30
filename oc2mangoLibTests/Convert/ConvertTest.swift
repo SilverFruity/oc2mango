@@ -512,4 +512,15 @@ let source =
             ""","\n"+result4)
 
     }
+    func testTypeConvert(){
+        let source =
+        """
+        NSHTTPURLResponse *httpReponse = (NSHTTPURLResponse *)response;
+        """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
+        
+    }
 }

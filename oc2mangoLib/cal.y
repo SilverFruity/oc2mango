@@ -898,6 +898,10 @@ unary_expression: postfix_expression
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
     }
+    | LP type_specifier declarator RP unary_expression
+    {
+        $$ = $5;
+    }
     | DECREMENT unary_expression
     {
         ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementPrefix);

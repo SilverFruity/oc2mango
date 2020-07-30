@@ -111,11 +111,7 @@
             [result appendString:typeSpecial.name]; break;
         case TypeBlock:
             [result appendString:@"Block"]; break;
-        
-        case TypeEnum:
-            [result appendString:@"int"]; break;
-            break;
-            break;
+
         case TypeStruct:
             [result appendString:typeSpecial.name]; break;
             break;
@@ -485,6 +481,9 @@ int indentationCont = 0;
 - (NSString *)convertDeclareTypeVarPair:(ORTypeVarPair *)pair{
     if ([pair.var isKindOfClass:[ORFuncVariable class]]){
         if (pair.var.isBlock){
+            if (pair.var.varname == nil) {
+                return @"Block";
+            }
             return [NSString stringWithFormat:@"Block %@", pair.var.varname];
         }else{
             return [NSString stringWithFormat:@"Point %@", pair.var.varname];
