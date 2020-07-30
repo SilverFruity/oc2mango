@@ -515,11 +515,26 @@ let source =
     func testTypeConvert(){
         let source =
         """
+
+        NSHTTPURLResponse *httpReponse = (char)response;
+        NSHTTPURLResponse *httpReponse = (char *)response;
+        NSHTTPURLResponse *httpReponse = (char(*)(void))response;
+        NSHTTPURLResponse *httpReponse = (char(^)(void))response;
         NSHTTPURLResponse *httpReponse = (NSHTTPURLResponse *)response;
+        NSHTTPURLResponse *httpReponse = (NSHTTPURLResponse)response;
+
         """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        var result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
+        result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
+        result1 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
+        result1 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
+        result1 = convert.convert(ocparser.ast.globalStatements[4] as Any)
         XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
         
     }
