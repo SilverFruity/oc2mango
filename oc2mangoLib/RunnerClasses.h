@@ -134,14 +134,17 @@ typedef enum {
 @property (nonatomic, strong)NSMutableArray <ORExpression *>*expressions;
 @end
 
-@interface ORScopeImp: ORValueExpression
+@interface ORScopeImp: ORExpression
 @property(nonatomic,strong) NSMutableArray* statements;
 - (void)addStatements:(id)statements;
 - (void)copyFromImp:(ORScopeImp *)imp;
 @end
 
-@interface ORBlockImp: ORScopeImp
+@interface ORFunctionImp: ORValueExpression
 @property(nonatomic,strong) ORFuncDeclare *declare;
+@property(nonatomic,strong) ORScopeImp *scopeImp;
+- (instancetype)normalFunctionImp;
+- (BOOL)isBlockImp;
 @end
 
 @interface ORSubscriptExpression: ORValueExpression
@@ -232,20 +235,20 @@ typedef enum {
 @end
 // MARK: - Statement
 @interface ORStatement:NSObject
-@property (nonatomic, strong)ORBlockImp *funcImp;
+@property (nonatomic, strong, nullable)ORScopeImp *scopeImp;
 @end
 
 @interface ORIfStatement : ORStatement
-@property (nonatomic,strong)ORExpression * condition;
-@property (nonatomic,strong, nullable)ORIfStatement * last;
+@property (nonatomic,strong,nullable)ORExpression * condition;
+@property (nonatomic,strong,nullable)ORIfStatement * last;
 @end
 
 @interface ORWhileStatement : ORStatement
-@property (nonatomic,strong)ORExpression * condition;
+@property (nonatomic,strong,nullable)ORExpression * condition;
 @end
 
 @interface ORDoWhileStatement : ORStatement
-@property (nonatomic,strong)ORExpression * condition;
+@property (nonatomic,strong,nullable)ORExpression * condition;
 @end
 
 @interface ORCaseStatement : ORStatement
@@ -309,7 +312,7 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 
 @interface ORMethodImplementation: NSObject
 @property (nonatomic,strong) ORMethodDeclare * declare;
-@property (nonatomic,strong) ORBlockImp *imp;
+@property (nonatomic,strong) ORScopeImp *scopeImp;
 @end
 
 @interface ORClass: NSObject

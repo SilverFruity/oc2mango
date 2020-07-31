@@ -310,7 +310,7 @@ class ExpressionTest: XCTestCase {
         ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
         let call = (ocparser.ast.globalStatements as! [ORCFuncCall]).first!
-        let param2 = call.expressions[2] as! ORBlockImp
+        let param2 = call.expressions[2] as! ORFunctionImp
         XCTAssert(param2.declare.funVar.isBlock == true)
         XCTAssert(param2.declare.returnType.type.type == TypeVoid)
         XCTAssert(param2.declare.funVar.pairs.count == 0)

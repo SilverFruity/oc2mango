@@ -35,20 +35,19 @@ if (x >= 0 ){
         XCTAssert(ocparser.isSuccess())
         let state = ocparser.ast.globalStatements.firstObject as! ORIfStatement
         XCTAssert(state.condition == nil)
-        XCTAssert(state.funcImp != nil)
+        XCTAssert(state.scopeImp != nil)
         
         let elseif2 = state.last;
         XCTAssert(elseif2?.condition != nil)
-        XCTAssert(elseif2?.funcImp != nil)
+        XCTAssert(elseif2?.scopeImp != nil)
         
         let elseif1 = elseif2?.last;
         XCTAssert(elseif1?.condition != nil)
-        XCTAssert(elseif1?.funcImp != nil)
+        XCTAssert(elseif1?.scopeImp != nil)
         
         let ifS = elseif1?.last;
         XCTAssert(ifS?.condition != nil)
-        XCTAssert(ifS?.funcImp != nil)
-        XCTAssert(ifS?.funcImp.isKind(of: ORBlockImp.classForCoder()) ?? false)
+        XCTAssert(ifS?.scopeImp != nil)
         
         
         // if ()
@@ -79,7 +78,7 @@ do{
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let state = ocparser.ast.globalStatements.firstObject as! ORDoWhileStatement
-        XCTAssert(state.funcImp != nil)
+        XCTAssert(state.scopeImp != nil)
         XCTAssert(state.condition != nil)
     }
     func testWhileStatement(){
@@ -92,7 +91,7 @@ while(x > 0 && x < 0){
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let state = ocparser.ast.globalStatements.firstObject as! ORWhileStatement
-        XCTAssert(state.funcImp != nil)
+        XCTAssert(state.scopeImp != nil)
         XCTAssert(state.condition != nil)
         
     }

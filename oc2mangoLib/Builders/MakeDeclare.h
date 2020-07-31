@@ -19,11 +19,12 @@ extern ORTypeVarPair *makeTypeVarPair(ORTypeSpecial *type, ORVariable *var);
 
 extern ORClass *makeOCClass(NSString *className);
 extern ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORTypeVarPair *returnType);
-extern ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare);
+extern ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare, ORScopeImp *scopeImp);
 extern ORFuncDeclare *makeFuncDeclare(ORTypeVarPair *returnType, ORFuncVariable *var);
 
 extern ORValueExpression *makeValue(OC_VALUE_TYPE type, id value);
 extern ORValueExpression *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
+extern ORScopeImp *makeScopeImp(void);
 extern ORCFuncCall *makeFuncCall(ORValueExpression *caller, NSMutableArray *expressions);
 extern ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type);
@@ -32,13 +33,13 @@ extern ORAssignExpression *makeAssignExpression(AssignOperatorType type);
 extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORExpression * exp);
 
 
-extern ORIfStatement *makeIfStatement(ORExpression *judgement, ORBlockImp *imp);
-extern ORWhileStatement *makeWhileStatement(ORExpression *judgement, ORBlockImp *imp);
-extern ORDoWhileStatement *makeDoWhileStatement(ORExpression *judgement, ORBlockImp *imp);
+extern ORIfStatement *makeIfStatement(ORExpression *judgement, ORScopeImp *imp);
+extern ORWhileStatement *makeWhileStatement(ORExpression *judgement, ORScopeImp *imp);
+extern ORDoWhileStatement *makeDoWhileStatement(ORExpression *judgement, ORScopeImp *imp);
 extern ORCaseStatement *makeCaseStatement(ORValueExpression *value);
 extern ORSwitchStatement *makeSwitchStatement(ORValueExpression *value);
-extern ORForStatement *makeForStatement(ORBlockImp *imp);
-extern ORForInStatement *makeForInStatement(ORBlockImp *imp);
+extern ORForStatement *makeForStatement(ORScopeImp *imp);
+extern ORForInStatement *makeForInStatement(ORScopeImp *imp);
 
 extern ORReturnStatement *makeReturnStatement(ORExpression * expression);
 extern ORBreakStatement *makeBreakStatement(void);

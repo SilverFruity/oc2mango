@@ -147,24 +147,14 @@
     return [NSString stringWithFormat:@"%@(%@)%@",methodDecl.isClassMethod?@"+":@"-",[self convertDeclareTypeVarPair:methodDecl.returnType],methodName];
 }
 - (NSString *)convertMethodImp:(ORMethodImplementation *)methodImp{
-    return [NSString stringWithFormat:@"\n%@%@",[self convertMethoDeclare:methodImp.declare],[self convertBlockImp:methodImp.imp]];
+    return [NSString stringWithFormat:@"\n%@%@",[self convertMethoDeclare:methodImp.declare],[self convertScopeImp:methodImp.scopeImp]];
 }
 - (NSString *)convertFuncDeclare:(ORFuncDeclare *)funcDecl{
     return [NSString stringWithFormat:@"%@%@",[self convertDeclareTypeVarPair:funcDecl.returnType],[self convertVariable:funcDecl.funVar]];;
 }
-
 int indentationCont = 0;
-- (NSString *)convertBlockImp:(ORBlockImp *)imp{
+- (NSString *)convertScopeImp:(ORScopeImp *)imp{
     NSMutableString *content = [NSMutableString string];
-    if (imp.declare) {
-        if (imp.declare.funVar.ptCount > 0) {
-            // void x(int y){ }
-            [content appendFormat:@"%@", [self convertFuncDeclare:imp.declare]];
-        }else{
-            // ^void (int x){ }
-            [content appendFormat:@"^%@", [self convertFuncDeclare:imp.declare]];
-        }
-    }
     indentationCont++;
     [content appendString:@"{\n"];
     NSMutableString *tabs = [@"" mutableCopy];
@@ -181,7 +171,20 @@ int indentationCont = 0;
     [content appendFormat:@"%@}",tabs];
     indentationCont--;
     return content;
-    return @"";
+}
+- (NSString *)convertBlockImp:(ORFunctionImp *)imp{
+    NSMutableString *content = [NSMutableString string];
+    if (imp.declare) {
+        if (imp.declare.funVar.ptCount > 0) {
+            // void x(int y){ }
+            [content appendFormat:@"%@", [self convertFuncDeclare:imp.declare]];
+        }else{
+            // ^void (int x){ }
+            [content appendFormat:@"^%@", [self convertFuncDeclare:imp.declare]];
+        }
+    }
+    [content appendString:[self convertScopeImp:imp.scopeImp]];
+    return content;
 }
 - (NSString *)convertBinaryExp:(ORBinaryExpression *)exp{
     NSString *operator = @"";
@@ -349,7 +352,7 @@ int indentationCont = 0;
 
         case OCValueBlock:
         {
-            return [self convertBlockImp:(ORBlockImp *)value];
+            return [self convertBlockImp:(ORFunctionImp *)value];
         }
         case OCValueNil:
             return @"nil";
@@ -394,23 +397,23 @@ int indentationCont = 0;
     NSString *content = @"";
     while (statement.last) {
         if (!statement.condition) {
-           content = [NSString stringWithFormat:@"%@else%@",content,[self convertBlockImp:statement.funcImp]];
+           content = [NSString stringWithFormat:@"%@else%@",content,[self convertScopeImp:statement.scopeImp]];
         }else{
-           content = [NSString stringWithFormat:@"else if(%@)%@%@",[self convertExpression:statement.condition],[self convertBlockImp:statement.funcImp],content];
+            content = [NSString stringWithFormat:@"else if(%@)%@%@",[self convertExpression:statement.condition],[self convertScopeImp:statement.scopeImp],content];
         }
         statement = statement.last;
     }
-    content = [NSString stringWithFormat:@"if(%@)%@%@",[self convertExpression:statement.condition],[self convertBlockImp:statement.funcImp],content];
+    content = [NSString stringWithFormat:@"if(%@)%@%@",[self convertExpression:statement.condition],[self convertScopeImp:statement.scopeImp],content];
     return content;
 }
 - (NSString *)convertWhileStatement:(ORWhileStatement *)statement{
     NSMutableString *content = [NSMutableString string];
     [content appendFormat:@"while(%@)",[self convertExpression:statement.condition]];
-    [content appendString:[self convertBlockImp:statement.funcImp]];
+    [content appendString:[self convertScopeImp:statement.scopeImp]];
     return content;
 }
 - (NSString *)convertDoWhileStatement:(ORDoWhileStatement *)statement{
-    return [NSString stringWithFormat:@"do%@while(%@)",[self convertBlockImp:statement.funcImp],[self convertExpression:statement.condition]];
+    return [NSString stringWithFormat:@"do%@while(%@)",[self convertScopeImp:statement.scopeImp],[self convertExpression:statement.condition]];
 }
 - (NSString *)convertSwitchStatement:(ORSwitchStatement *)statement{
     return [NSString stringWithFormat:@"switch(%@){\n%@}",[self convertExpression:statement.value],[self convertCaseStatements:statement.cases]];
@@ -419,9 +422,9 @@ int indentationCont = 0;
     NSMutableString *content = [NSMutableString string];
     for (ORCaseStatement *statement in cases) {
         if (statement.value) {
-            [content appendFormat:@"case %@:%@\n",[self convertExpression:statement.value],[self convertBlockImp:statement.funcImp]];
+            [content appendFormat:@"case %@:%@\n",[self convertExpression:statement.value],[self convertScopeImp:statement.scopeImp]];
         }else{
-            [content appendFormat:@"default:%@\n",[self convertBlockImp:statement.funcImp]];
+            [content appendFormat:@"default:%@\n",[self convertScopeImp:statement.scopeImp]];
         }
     }
     return content;
@@ -431,11 +434,11 @@ int indentationCont = 0;
     [content appendFormat:@"%@; ",[self convertExpressionList:statement.varExpressions]];
     [content appendFormat:@"%@; ",[self convertExpression:statement.condition]];
     [content appendFormat:@"%@)",[self convertExpressionList:statement.expressions]];
-    [content appendFormat:@"%@",[self convertBlockImp:statement.funcImp]];
+    [content appendFormat:@"%@",[self convertScopeImp:statement.scopeImp]];
     return content;
 }
 - (NSString *)convertForInStatement:(ORForInStatement *)statement{
-    return [NSString stringWithFormat:@"for (%@ in %@)%@",[self convertDeclareExp:statement.expression],[self convertExpression:statement.value],[self convertBlockImp:statement.funcImp]];
+    return [NSString stringWithFormat:@"for (%@ in %@)%@",[self convertDeclareExp:statement.expression],[self convertExpression:statement.value],[self convertScopeImp:statement.scopeImp]];
 }
 - (NSString *)convertReturnStatement:(ORReturnStatement *)statement{
     return [NSString stringWithFormat:@"return %@;",[self convertExpression:statement.expression]];

@@ -80,7 +80,8 @@ global_define:
     {
         ORTypeVarPair *returnType = makeTypeVarPair(_typeId $1, nil);
         ORFuncDeclare *declare = makeFuncDeclare(returnType, _typeId $2);
-        ORBlockImp *imp = _transfer(ORBlockImp *) $4;
+        ORFunctionImp *imp = (ORFunctionImp *)makeValue(OCValueBlock);
+        imp.scopeImp = _transfer(ORScopeImp *)$4;
         imp.declare = declare;
         [LibAst addGlobalStatements:imp];
     }
@@ -242,8 +243,7 @@ class_implementation:
             }
             | class_implementation method_declare LC function_implementation RC
             {
-                ORMethodImplementation *imp = makeMethodImplementation(_transfer(ORMethodDeclare *) $2);
-                imp.imp = _transfer(ORBlockImp *) $4;
+                ORMethodImplementation *imp = makeMethodImplementation(_transfer(ORMethodDeclare *) $2, _transfer(ORScopeImp *) $4);
                 ORClass *occlass = _transfer(ORClass *) $1;
                 [occlass.methods addObject:imp];
                 $$ = _vretained occlass;
@@ -425,7 +425,8 @@ block_implementation:
             funVar.pairs = _transfer(NSMutableArray *)$4;
             funVar.isBlock = YES;
             ORFuncDeclare *declare = makeFuncDeclare(var, funVar);
-            ORBlockImp *imp = _transfer(ORBlockImp *) $6;
+            ORFunctionImp *imp = (ORFunctionImp *)makeValue(OCValueBlock);
+            imp.scopeImp = _transfer(ORScopeImp *) $6;
             imp.declare = declare;
             $$ = _vretained imp;
         }
@@ -458,19 +459,19 @@ expression_statement:
 if_statement:
         IF LP expression RP expression_statement
         {
-            ORBlockImp *imp = (ORBlockImp *)makeValue(OCValueBlock);
+            ORScopeImp *imp = makeScopeImp();
             [imp addStatements:_transfer(id) $5];
             ORIfStatement *statement = makeIfStatement(_transfer(id) $3,imp);
             $$ = _vretained statement;
         }
         | IF LP expression RP LC function_implementation RC
         {
-            ORIfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(ORBlockImp *)$6);
+            ORIfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(ORScopeImp *)$6);
             $$ = _vretained statement;
         }
         | if_statement _else IF LP expression RP expression_statement
         {
-            ORBlockImp *imp = (ORBlockImp *)makeValue(OCValueBlock);
+            ORScopeImp *imp = makeScopeImp();
             [imp addStatements:_transfer(id) $7];
             ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,imp);
             elseIfStatement.last = _transfer(ORIfStatement *)$1;
@@ -478,13 +479,13 @@ if_statement:
         }
         | if_statement _else IF LP expression RP LC function_implementation RC
         {
-            ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(ORBlockImp *)$8);
+            ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(ORScopeImp *)$8);
             elseIfStatement.last = _transfer(ORIfStatement *)$1;
             $$  = _vretained elseIfStatement;
         }
         | if_statement _else expression_statement
         {
-            ORBlockImp *imp = (ORBlockImp *)makeValue(OCValueBlock);
+            ORScopeImp *imp = makeScopeImp();
             [imp addStatements:_transfer(id) $3];
             ORIfStatement *elseStatement = makeIfStatement(nil,imp);
             elseStatement.last = _transfer(ORIfStatement *)$1;
@@ -492,7 +493,7 @@ if_statement:
         }
         | if_statement _else LC function_implementation RC
         {
-            ORIfStatement *elseStatement = makeIfStatement(nil,_transfer(ORBlockImp *)$4);
+            ORIfStatement *elseStatement = makeIfStatement(nil,_transfer(ORScopeImp *)$4);
             elseStatement.last = _transfer(ORIfStatement *)$1;
             $$  = _vretained elseStatement;
         }
@@ -501,14 +502,14 @@ if_statement:
 dowhile_statement: 
         _do LC function_implementation RC _while LP expression RP
         {
-            ORDoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(ORBlockImp *)$3);
+            ORDoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(ORScopeImp *)$3);
             $$ = _vretained statement;
         }
         ;
 while_statement:
         _while LP expression RP LC function_implementation RC
         {
-            ORWhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(ORBlockImp *)$6);
+            ORWhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(ORScopeImp *)$6);
             $$ = _vretained statement;
         }
         ;
@@ -527,13 +528,13 @@ case_statement:
         | case_statement expression_statement
         {
             ORCaseStatement *statement =  _typeId $1;
-            [statement.funcImp addStatements:_typeId $2];
+            [statement.scopeImp addStatements:_typeId $2];
             $$ = _vretained statement;
         }
         | case_statement LC function_implementation RC
         {
             ORCaseStatement *statement =  _transfer(ORCaseStatement *)$1;
-            statement.funcImp = _transfer(ORBlockImp *) $3;
+            statement.scopeImp = _transfer(ORScopeImp *) $3;
             $$ = _vretained statement;
         }
         ;
@@ -573,7 +574,7 @@ for_statement_var_list:
 
 for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
         {
-            ORForStatement* statement = makeForStatement(_transfer(ORBlockImp *) $10);
+            ORForStatement* statement = makeForStatement(_transfer(ORScopeImp *) $10);
             statement.varExpressions = _typeId $3;
             statement.condition = _typeId $5;
             statement.expressions = _typeId $7;
@@ -581,7 +582,7 @@ for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_lis
         }
         |  _for LP for_statement_var_list SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
                {
-                   ORForStatement* statement = makeForStatement(_transfer(ORBlockImp *) $10);
+                   ORForStatement* statement = makeForStatement(_transfer(ORScopeImp *) $10);
                    statement.varExpressions = _typeId $3;
                    statement.condition = _typeId $5;
                    statement.expressions = _typeId $7;
@@ -591,7 +592,7 @@ for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_lis
 
 forin_statement: _for LP declaration _in expression RP LC function_implementation RC
         {
-            ORForInStatement * statement = makeForInStatement(_transfer(ORBlockImp *)$8);
+            ORForInStatement * statement = makeForInStatement(_transfer(ORScopeImp *)$8);
             NSArray *exps = _typeId $3;
             statement.expression = exps[0];
             statement.value = _transfer(id)$5;
@@ -612,17 +613,17 @@ control_statement:
 
 function_implementation:
         {
-            $$ = _vretained makeValue(OCValueBlock);
+            $$ = _vretained makeScopeImp();
         }
         | function_implementation expression_statement 
         {
-            ORBlockImp *imp = _transfer(ORBlockImp *)$1;
+            ORScopeImp *imp = _transfer(ORScopeImp *)$1;
             [imp addStatements:_transfer(id) $2];
             $$ = _vretained imp;
         }
         | function_implementation control_statement
         {
-            ORBlockImp *imp = _transfer(ORBlockImp *)$1;
+            ORScopeImp *imp = _transfer(ORScopeImp *)$1;
             [imp addStatements:_transfer(id) $2];
             $$ = _vretained imp;
         }
@@ -904,6 +905,10 @@ unary_expression: postfix_expression
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
     }
+    | LP type_specifier declarator_optional RP expression
+    {
+        $$ = $5;
+    }
     ;
 
 unary_operator: 
@@ -1015,14 +1020,6 @@ primary_expression:
             $$ = _vretained makeValue(OCValueSuper);
         }
         | objc_method_call
-        | LP type_specifier declarator_optional RP expression
-        {
-            $$ = $5;
-        }
-//        | LP IDENTIFIER RP expression
-//        {
-//            $$ = $4;
-//        }
         | LP expression RP
         {
             $$ = $2;

@@ -67,13 +67,24 @@
         [self.statements addObject:statements];
     }
 }
-- (void)copyFromImp:(ORBlockImp *)imp{
+- (void)copyFromImp:(ORScopeImp *)imp{
     self.statements = imp.statements;
 }
 
 @end
-@implementation ORBlockImp
-
+@implementation ORFunctionImp
+- (instancetype)normalFunctionImp{
+    ORFunctionImp *imp = [ORFunctionImp new];
+    imp.declare = [self.declare copy];
+    imp.value = self.value;
+    imp.value_type = self.value_type;
+    imp.scopeImp = self.scopeImp;
+    imp.declare.funVar.isBlock = NO;
+    return imp;
+}
+- (BOOL)isBlockImp{
+    return self.declare.funVar.isBlock;
+}
 @end
 @implementation ORSubscriptExpression
 @end
