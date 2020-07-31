@@ -22,6 +22,7 @@ class ExpressionTest: XCTestCase {
         source =
         """
         int ***a;
+        ini x = sizeof(a);
         """
         ocparser.parseSource(source)
         let assign = ocparser.ast.globalStatements[0] as? ORDeclareExpression

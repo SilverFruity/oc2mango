@@ -1019,10 +1019,10 @@ primary_expression:
         {
             $$ = $5;
         }
-        | LP IDENTIFIER RP expression
-        {
-            $$ = $4;
-        }
+//        | LP IDENTIFIER RP expression
+//        {
+//            $$ = $4;
+//        }
         | LP expression RP
         {
             $$ = $2;
