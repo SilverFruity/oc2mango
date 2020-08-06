@@ -18,6 +18,7 @@ extern ORVariable *makeVar(NSString *name) __attribute__((overloadable)) ;
 extern ORTypeVarPair *makeTypeVarPair(ORTypeSpecial *type, ORVariable *var);
 
 extern ORClass *makeOCClass(NSString *className);
+extern ORProtocol *makeORProtcol(NSString *protocolName);
 extern ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORTypeVarPair *returnType);
 extern ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare, ORScopeImp *scopeImp);
 extern ORFuncDeclare *makeFuncDeclare(ORTypeVarPair *returnType, ORFuncVariable *var);
@@ -53,3 +54,4 @@ extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMuta
 void startStringBuffer(void);
 char *endStringBuffer(void);
 void stringBufferAppendCharacter(char chr);
+void stringBufferAppendString(char *str);

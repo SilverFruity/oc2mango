@@ -13,7 +13,9 @@ int startClassProrityDetect(ORClass *class);
 @interface AST : NSObject
 @property(nonatomic,nonnull,strong)NSMutableArray *globalStatements;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *classCache;
+@property(nonatomic,nonnull,strong)NSMutableDictionary *protcolCache;
 - (nonnull ORClass *)classForName:(NSString *)className;
+- (nonnull ORProtocol *)protcolForName:(NSString *)protcolName;
 - (void)addGlobalStatements:(id)objects;
 - (NSArray <ORClass *>*)sortClasses;
 @end

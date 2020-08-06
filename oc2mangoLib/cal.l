@@ -254,22 +254,28 @@
     return LT;
 }
 <INITIAL><[A-Za-z_$][A-Za-z_$0-9]*[ ]*\**[ ]*[,<>] {
-    // return CHILD_COLLECTION;
     yyless(0);
     BEGIN PROTOCOL_CHECK;
 }
-<PROTOCOL_CHECK>[A-Za-z_$][A-Za-z_$0-9]* ;
+<PROTOCOL_CHECK>[A-Za-z_$][A-Za-z_$0-9]* {
+    stringBufferAppendString(yytext);
+};
 <PROTOCOL_CHECK>"*" ;
-<PROTOCOL_CHECK>"," ;
+<PROTOCOL_CHECK>"," {
+    stringBufferAppendCharacter(yytext[0]);
+};
 <PROTOCOL_CHECK>" " ;
 <PROTOCOL_CHECK>"<" {
     protocol_left += 1;
+    startStringBuffer();
 }
 <PROTOCOL_CHECK>">" {
     protocol_right += 1;
     if (protocol_left == protocol_right){
         protocol_left = 0;
         protocol_right = 0;
+        NSString *string = [NSString stringWithUTF8String:endStringBuffer()];
+        yylval.identifier = (__bridge_retained void *)string;
         BEGIN INITIAL;
         return CHILD_COLLECTION;
     }

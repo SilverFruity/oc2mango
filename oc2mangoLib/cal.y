@@ -174,17 +174,38 @@ typedef_declare:
             ;
 
 protocol_declare:
-            PROTOCOL IDENTIFIER CHILD_COLLECTION
-            | protocol_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
-            | protocol_declare method_declare SEMICOLON
-            | protocol_declare END
-            ;
+PROTOCOL IDENTIFIER CHILD_COLLECTION
+{
+    ORProtocol *orprotcol = [LibAst protcolForName:_transfer(id)$2];
+    orprotcol.protocols = [_transfer(NSString *)$3 componentsSeparatedByString:@","];
+    $$ = _vretained orprotcol;
+}
+| protocol_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
+{
+    ORProtocol *orprotcol = _transfer(ORProtocol *) $1;
+
+    ORPropertyDeclare *property = [ORPropertyDeclare new];
+    property.keywords = _transfer(NSMutableArray *) $3;
+    property.var = _transfer(ORTypeVarPair *) $4;
+    
+    [orprotcol.properties addObject:property];
+    $$ = _vretained orprotcol;
+}
+| protocol_declare method_declare SEMICOLON
+{
+    ORProtocol *orprotcol = _transfer(ORProtocol *) $1;
+    [orprotcol.methods addObject:_transfer(ORMethodDeclare *) $2];
+    $$ = _vretained orprotcol;
+}
+| protocol_declare END
+;
 class_declare:
             //
             INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
                 ORClass *occlass = [LibAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
+                occlass.protocols = [_transfer(NSString *)$5 componentsSeparatedByString:@","];
                 $$ = _vretained occlass;
             }
             // category 
@@ -1245,7 +1266,10 @@ parameter_declaration_optional:
         ;
 
 CHILD_COLLECTION_OPTIONAL:
-        | CHILD_COLLECTION;
+{
+    $$ = nil;
+}
+| CHILD_COLLECTION;
 type_specifier:
             IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {

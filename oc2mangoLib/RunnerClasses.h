@@ -325,6 +325,14 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 + (instancetype)classWithClassName:(NSString *)className;
 @end
 
+@interface ORProtocol: NSObject
+@property (nonatomic,copy)NSString *protcolName;
+@property (nonatomic,strong)NSMutableArray <NSString *>*protocols;
+@property (nonatomic,strong)NSMutableArray <ORPropertyDeclare *>*properties;
+@property (nonatomic,strong)NSMutableArray <ORMethodDeclare *>*methods;
++ (instancetype)protcolWithProtcolName:(NSString *)protcolName;
+@end
+
 
 @interface ORStructExpressoin : ORExpression
 @property (nonatomic,copy)NSString *sturctName;

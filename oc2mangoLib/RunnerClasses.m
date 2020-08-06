@@ -180,6 +180,21 @@
     return self;
 }
 @end
+@implementation ORProtocol
++ (instancetype)protcolWithProtcolName:(NSString *)protcolName{
+    ORProtocol *protcol = [ORProtocol new];
+    protcol.protcolName = protcolName;
+    return protcol;
+}
+- (instancetype)init
+{
+    self = [super init];
+    self.properties  = [NSMutableArray array];
+    self.properties = [NSMutableArray array];
+    self.methods = [NSMutableArray array];
+    return self;
+}
+@end
 
 @implementation ORStructExpressoin
 

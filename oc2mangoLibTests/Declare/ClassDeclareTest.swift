@@ -75,7 +75,7 @@ void func(NSString *a, int *b){
         //        XCTAssert(prop.var.type.type == TypeObject)
         //        XCTAssert(prop.keywords == ["nonatomic","atomic"])
     }
-    func testProtocolDeclare(){
+    func testClassConfirmProtocol(){
         let source =
         """
         @interface Demo ()<NSObject,NSObject>
@@ -259,5 +259,20 @@ void func(NSString *a, int *b){
         let funcVar = declare.pair.var as! ORFuncVariable
         XCTAssert(funcVar.varname == "NSLog")
         XCTAssert(funcVar.isMultiArgs)
+    }
+    
+    func testDeclareProtcol(){
+        let source =
+        """
+
+        @protocol Demo <NSObject,Test>
+        @property (nonatomic,atomic) NSString *className;
+        @property (nonatomic,atomic) void (^name)(void);
+        @end
+        """
+        ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let value = ocparser.ast.protcolCache["Demo"] as! ORProtocol
+        XCTAssert(value.protocols == ["NSObject","Test"])
     }
 }

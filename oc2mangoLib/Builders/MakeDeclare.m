@@ -34,7 +34,9 @@ extern ORTypeVarPair *makeTypeVarPair(ORTypeSpecial *type, ORVariable *var){
 ORClass *makeOCClass(NSString *className){
     return [ORClass classWithClassName:className];
 }
-
+ORProtocol *makeORProtcol(NSString *protocolName){
+    return [ORProtocol protcolWithProtcolName:protocolName];
+}
 ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORTypeVarPair *returnType){
     ORMethodDeclare *method = [ORMethodDeclare new];
     method.methodNames = [NSMutableArray array];
@@ -227,4 +229,15 @@ void stringBufferAppendCharacter(char chr){
     }
     string_buffer[string_buffer_index] = chr;
     string_buffer_index++;
+}
+void stringBufferAppendString(char *str){
+    size_t len = strlen(str);
+    if (string_buffer_index + len > string_buffer_size) {
+         string_buffer_size +=  STRING_BUFFER_ALLOC_SIZE;
+         void *new_pointer = realloc(string_buffer, string_buffer_size);
+         free(string_buffer);
+         string_buffer = new_pointer;
+    }
+    strncpy(string_buffer+string_buffer_index, str, len);
+    string_buffer_index += len;
 }

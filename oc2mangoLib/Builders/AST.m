@@ -34,10 +34,19 @@ int startClassProrityDetect(ORClass *class){
     }
     return class;
 }
+- (nonnull ORProtocol *)protcolForName:(NSString *)protcolName{
+    ORProtocol *protocol = self.protcolCache[protcolName];
+    if (!protocol) {
+        protocol = makeORProtcol(protcolName);
+        self.protcolCache[protcolName] = protocol;
+    }
+    return protocol;
+}
 - (instancetype)init
 {
     self = [super init];
     self.classCache = [NSMutableDictionary dictionary];
+    self.protcolCache = [NSMutableDictionary dictionary];
     self.globalStatements = [NSMutableArray array];
     return self;
 }
