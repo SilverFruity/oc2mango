@@ -177,7 +177,8 @@ protocol_declare:
 PROTOCOL IDENTIFIER CHILD_COLLECTION
 {
     ORProtocol *orprotcol = [LibAst protcolForName:_transfer(id)$2];
-    orprotcol.protocols = [_transfer(NSString *)$3 componentsSeparatedByString:@","];
+    NSArray *protocols = [_transfer(NSString *)$3 componentsSeparatedByString:@","];
+    orprotcol.protocols = [protocols mutableCopy];
     $$ = _vretained orprotcol;
 }
 | protocol_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
@@ -205,22 +206,23 @@ class_declare:
             {
                 ORClass *occlass = [LibAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
-                occlass.protocols = [_transfer(NSString *)$5 componentsSeparatedByString:@","];
+                NSArray *protocols = [_transfer(NSString *)$5 componentsSeparatedByString:@","];
+                occlass.protocols = [protocols mutableCopy];
                 $$ = _vretained occlass;
             }
             // category 
             | INTERFACE IDENTIFIER LP IDENTIFIER RP CHILD_COLLECTION_OPTIONAL
             {
-                $$ = _vretained [LibAst classForName:_transfer(id)$2];
+                ORClass *occlass = [LibAst classForName:_transfer(id)$2];
+                NSArray *protocols = [_transfer(NSString *)$6 componentsSeparatedByString:@","];
+                occlass.protocols = [protocols mutableCopy];
+                $$ = _vretained occlass;
             }
             | INTERFACE IDENTIFIER LP RP CHILD_COLLECTION_OPTIONAL
             {
-                $$ = _vretained [LibAst classForName:_transfer(id)$2];
-            }
-            | class_declare LT protocol_list GT
-            {
-                ORClass *occlass = _transfer(ORClass *) $1;
-                occlass.protocols = _transfer(id) $3;
+                ORClass *occlass = [LibAst classForName:_transfer(id)$2];
+                NSArray *protocols = [_transfer(NSString *)$5 componentsSeparatedByString:@","];
+                occlass.protocols = [protocols mutableCopy];
                 $$ = _vretained occlass;
             }
             | class_declare LC class_private_varibale_declare RC

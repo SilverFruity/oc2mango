@@ -85,6 +85,8 @@ void func(NSString *a, int *b){
         """
         ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
+        let classes = ocparser.ast.classCache["Demo"] as! ORClass
+        XCTAssert(classes.protocols == ["NSObject", "NSObject"])
     }
     
     func testEnumExpression(){
