@@ -1,0 +1,16 @@
+PODS:
+  - oc2mangoLib (1.0)
+
+DEPENDENCIES:
+  - oc2mangoLib (from `../`)
+
+EXTERNAL SOURCES:
+  oc2mangoLib:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  oc2mangoLib: 7e945e9588047920ff03f0fee365e1f616c49cd9
+
+PODFILE CHECKSUM: bf93cda44c71de406b84ddd61ee445e05d453f02
+
+COCOAPODS: 1.8.4
