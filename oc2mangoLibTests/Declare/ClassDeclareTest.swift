@@ -16,7 +16,7 @@ class ClassDeclareTest: XCTestCase {
     
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
-        ocparser.clear()
+        
     }
     func testFunction(){
         let source =
@@ -26,7 +26,7 @@ void func(NSString *a, int *b){
 
 }
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         
     }
@@ -38,14 +38,14 @@ void func(NSString *a, int *b){
 - (NSString *)method2:(void(^)(NSString *name))callback{ }
 @end
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let methodImp = ocparser.ast.class(forName: "Demo").methods[0] as? ORMethodImplementation
+        let methodImp = ast.class(forName: "Demo").methods[0] as? ORMethodImplementation
         XCTAssert(methodImp?.declare.methodNames == ["initWithBaseUrl"])
         XCTAssert(methodImp?.declare.isClassMethod == false)
         XCTAssert(methodImp?.declare.returnType.type.type == TypeObject)
         
-        var methodImp1 = ocparser.ast.class(forName: "Demo").methods[1] as? ORMethodImplementation
+        var methodImp1 = ast.class(forName: "Demo").methods[1] as? ORMethodImplementation
         XCTAssert(methodImp1?.declare.methodNames == ["method2"])
         XCTAssert(methodImp1?.declare.isClassMethod == false)
         XCTAssert(methodImp1?.declare.returnType.type.type == TypeObject)
@@ -57,7 +57,7 @@ void func(NSString *a, int *b){
 @interface Demo (Category)
 @end
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
     }
     func testPropertyDeclare(){
         let source =
@@ -67,8 +67,8 @@ void func(NSString *a, int *b){
 @property (nonatomic,atomic) void (^name)(void);
 @end
 """
-        ocparser.parseSource(source)
-        let occlass = ocparser.ast.class(forName: "Demo")
+        let ast = ocparser.parseSource(source)
+        let occlass = ast.class(forName: "Demo")
         let prop = occlass.properties.firstObject as! ORPropertyDeclare
         XCTAssert(ocparser.isSuccess())
         //        XCTAssert(prop.var.name == "className")
@@ -83,9 +83,9 @@ void func(NSString *a, int *b){
         @property (nonatomic,atomic) void (^name)(void);
         @end
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let classes = ocparser.ast.classCache["Demo"] as! ORClass
+        let classes = ast.classCache["Demo"] as! ORClass
         XCTAssert(classes.protocols == ["NSObject", "NSObject"])
     }
     
@@ -98,15 +98,15 @@ void func(NSString *a, int *b){
             Value3
         };
         """
-        ocparser.parseSource(source)
+        var ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let exp = ocparser.ast.globalStatements.firstObject as! OREnumExpressoin
+        let exp = ast.globalStatements.firstObject as! OREnumExpressoin
         XCTAssert(exp.valueType == TypeInt)
         XCTAssert(exp.fields.count == 3)
         XCTAssert(exp.fields[0] is ORValueExpression)
         XCTAssert(exp.fields[1] is ORValueExpression)
         XCTAssert(exp.fields[2] is ORValueExpression)
-        ocparser.clear()
+        
         
         source =
         """
@@ -116,9 +116,9 @@ void func(NSString *a, int *b){
         Value3
         };
         """
-        ocparser.parseSource(source)
+        ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let secondExp = ocparser.ast.globalStatements.firstObject as! OREnumExpressoin
+        let secondExp = ast.globalStatements.firstObject as! OREnumExpressoin
         XCTAssert(secondExp.valueType == TypeULongLong)
         XCTAssert(secondExp.enumName == "Test")
         XCTAssert(secondExp.fields.count == 3)
@@ -134,11 +134,11 @@ void func(NSString *a, int *b){
         Value3
         };
         """
-        ocparser.parseSource(source)
+        ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let thirdExp = ocparser.ast.globalStatements.firstObject as! OREnumExpressoin
+        let thirdExp = ast.globalStatements.firstObject as! OREnumExpressoin
         XCTAssert(thirdExp.valueType == TypeULongLong)
-        XCTAssert(thirdExp.enumName == "Test")
+        XCTAssert(thirdExp.enumName == "")
         XCTAssert(thirdExp.fields.count == 3)
         XCTAssert(thirdExp.fields[0] is ORValueExpression)
         XCTAssert(thirdExp.fields[1] is ORValueExpression)
@@ -156,9 +156,9 @@ void func(NSString *a, int *b){
             CGFloat x,y;
         };
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let exp = ocparser.ast.globalStatements.firstObject as! ORStructExpressoin
+        let exp = ast.globalStatements.firstObject as! ORStructExpressoin
         let fields = exp.fields as! [ORDeclareExpression]
         XCTAssert(fields.count == 2)
         XCTAssert(fields[0].pair.type.type == TypeDouble)
@@ -171,13 +171,13 @@ void func(NSString *a, int *b){
         """
         typedef int * value;
         """
-        ocparser.parseSource(source)
+        var ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let exp = ocparser.ast.globalStatements.firstObject as! ORTypedefExpressoin
+        let exp = ast.globalStatements.firstObject as! ORTypedefExpressoin
         XCTAssert(exp.typeNewName == "value")
         let typepair = exp.expression as! ORTypeVarPair
         XCTAssert(typepair.type.type == TypeInt)
-        ocparser.clear()
+        
         
         source =
         """
@@ -186,9 +186,9 @@ void func(NSString *a, int *b){
         CGFloat y;
         }Point;
         """
-        ocparser.parseSource(source)
+        ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let structTypeDef = ocparser.ast.globalStatements.firstObject as! ORTypedefExpressoin
+        let structTypeDef = ast.globalStatements.firstObject as! ORTypedefExpressoin
         XCTAssert(structTypeDef.typeNewName == "Point")
         let structExp = structTypeDef.expression as! ORStructExpressoin
         let fields = structExp.fields as! [ORDeclareExpression]
@@ -197,7 +197,7 @@ void func(NSString *a, int *b){
         XCTAssert(fields[1].pair.type.type == TypeDouble)
         XCTAssert(fields[0].pair.var.varname == "x")
         XCTAssert(fields[1].pair.var.varname == "y")
-        ocparser.clear()
+        
         
         source =
         """
@@ -223,9 +223,9 @@ void func(NSString *a, int *b){
         UIControlEventAllEvents                                         = 0xFFFFFFFF
         }UIControlEvents;
         """
-        ocparser.parseSource(source)
+        ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let enumTypeDef = ocparser.ast.globalStatements.firstObject as! ORTypedefExpressoin
+        let enumTypeDef = ast.globalStatements.firstObject as! ORTypedefExpressoin
         XCTAssert(enumTypeDef.typeNewName == "UIControlEvents")
         let enumExp = enumTypeDef.expression as! OREnumExpressoin
         let enumFields = enumExp.fields as! [ORAssignExpression]
@@ -255,9 +255,9 @@ void func(NSString *a, int *b){
         """
         void NSLog(NSString *format,...);
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let declare = ocparser.ast.globalStatements.firstObject as! ORDeclareExpression
+        let declare = ast.globalStatements.firstObject as! ORDeclareExpression
         let funcVar = declare.pair.var as! ORFuncVariable
         XCTAssert(funcVar.varname == "NSLog")
         XCTAssert(funcVar.isMultiArgs)
@@ -272,9 +272,9 @@ void func(NSString *a, int *b){
         @property (nonatomic,atomic) void (^name)(void);
         @end
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let value = ocparser.ast.protcolCache["Demo"] as! ORProtocol
+        let value = ast.protcolCache["Demo"] as! ORProtocol
         XCTAssert(value.protocols == ["NSObject","Test"])
     }
 }

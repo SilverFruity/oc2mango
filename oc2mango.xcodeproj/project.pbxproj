@@ -261,6 +261,7 @@
 				EE6E6CCB225E488000616C7E /* Sources */,
 				EE6E6CCC225E488000616C7E /* Frameworks */,
 				EE6E6CCD225E488000616C7E /* CopyFiles */,
+				EEF1528424DE8F2300574FA7 /* TODO Warning */,
 			);
 			buildRules = (
 			);
@@ -279,7 +280,6 @@
 				EED67A6A2270AE0E0015AC02 /* Sources */,
 				EED67A6B2270AE0E0015AC02 /* Frameworks */,
 				EED67A6C2270AE0E0015AC02 /* Resources */,
-				EE1C71F522884BA40077A71E /* TODO Warning */,
 			);
 			buildRules = (
 			);
@@ -368,7 +368,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		EE1C71F522884BA40077A71E /* TODO Warning */ = {
+		EEF1528424DE8F2300574FA7 /* TODO Warning */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (

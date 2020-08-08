@@ -31,7 +31,7 @@ void compileFiles(NSMutableArray *files){
     NSMutableArray *implementations = [files filter:^BOOL(NSUInteger index, NSString *path) {
         return [path.pathExtension.lowercaseString isEqualToString:@"m"];
     }];
-    
+    //ERROR: ast合并时问题，没有父类名
     //1. 扫描所有头文件生成 Class的property、TypeDeclareSymbol
     for (NSString *path in headers) {
         [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];

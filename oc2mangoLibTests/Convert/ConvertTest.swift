@@ -16,7 +16,7 @@ class ConvertTest: XCTestCase {
     }
 
     override func tearDown() {
-        ocparser.clear()
+        
     }
 
     func testTypeSpecail(){
@@ -26,11 +26,11 @@ int x;
 NSObject *x;
 BOOL x;
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result = convert.convert(ocparser.ast.globalStatements[0] as Any)
-        let result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
-        let result2 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        let result = convert.convert(ast.globalStatements[0] as Any)
+        let result1 = convert.convert(ast.globalStatements[1] as Any)
+        let result2 = convert.convert(ast.globalStatements[2] as Any)
         XCTAssert(ocparser.error == nil)
         XCTAssert(result == "int x;",result)
         XCTAssert(result1 == "NSObject *x;",result1)
@@ -46,14 +46,14 @@ NSNumber *a = @(3);
 NSNumber *a = @(self.object.intValue);
 NSNumber *a = @([self.object intValue]);
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         
-        let result = convert.convert(ocparser.ast.globalStatements[0] as Any)
-        let result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
-        let result2 = convert.convert(ocparser.ast.globalStatements[2] as Any)
-        let result3 = convert.convert(ocparser.ast.globalStatements[3] as Any)
-        let result4 = convert.convert(ocparser.ast.globalStatements[4] as Any)
+        let result = convert.convert(ast.globalStatements[0] as Any)
+        let result1 = convert.convert(ast.globalStatements[1] as Any)
+        let result2 = convert.convert(ast.globalStatements[2] as Any)
+        let result3 = convert.convert(ast.globalStatements[3] as Any)
+        let result4 = convert.convert(ast.globalStatements[4] as Any)
 
         XCTAssert(result == "int x = 0;",result)
         XCTAssert(result1 == "int b = 0;",result1)
@@ -77,16 +77,16 @@ self.block(value,[NSObject new].x);
 "123";
 @protocol(NSObject);
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
-        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
-        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
-        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
-        let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
-        let result6 = convert.convert(ocparser.ast.globalStatements[5] as Any)
-        let result7 = convert.convert(ocparser.ast.globalStatements[6] as Any)
-        let result8 = convert.convert(ocparser.ast.globalStatements[7] as Any)
+        let result1 = convert.convert(ast.globalStatements[0] as Any)
+        let result2 = convert.convert(ast.globalStatements[1] as Any)
+        let result3 = convert.convert(ast.globalStatements[2] as Any)
+        let result4 = convert.convert(ast.globalStatements[3] as Any)
+        let result5 = convert.convert(ast.globalStatements[4] as Any)
+        let result6 = convert.convert(ast.globalStatements[5] as Any)
+        let result7 = convert.convert(ast.globalStatements[6] as Any)
+        let result8 = convert.convert(ast.globalStatements[7] as Any)
         
         XCTAssert(result1 == "NSObject.new().x",result1)
         XCTAssert(result2 == "x.get",result2)
@@ -112,12 +112,12 @@ self.block(value,[NSObject new].x);
 a[@"key"];
 b[0];
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
-        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
-        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
-        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        let result1 = convert.convert(ast.globalStatements[0] as Any)
+        let result2 = convert.convert(ast.globalStatements[1] as Any)
+        let result3 = convert.convert(ast.globalStatements[2] as Any)
+        let result4 = convert.convert(ast.globalStatements[3] as Any)
         XCTAssert(result1 == "@[self.x,NSObject.new()]",result1)
         XCTAssert(result2 ==
             """
@@ -147,17 +147,17 @@ x?:y;
 x||y;
 x&&y;
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
-        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
-        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
-        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
-        let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
-        let result6 = convert.convert(ocparser.ast.globalStatements[5] as Any)
-        let result7 = convert.convert(ocparser.ast.globalStatements[6] as Any)
-        let result8 = convert.convert(ocparser.ast.globalStatements[7] as Any)
-        let result9 = convert.convert(ocparser.ast.globalStatements[8] as Any)
+        let result1 = convert.convert(ast.globalStatements[0] as Any)
+        let result2 = convert.convert(ast.globalStatements[1] as Any)
+        let result3 = convert.convert(ast.globalStatements[2] as Any)
+        let result4 = convert.convert(ast.globalStatements[3] as Any)
+        let result5 = convert.convert(ast.globalStatements[4] as Any)
+        let result6 = convert.convert(ast.globalStatements[5] as Any)
+        let result7 = convert.convert(ast.globalStatements[6] as Any)
+        let result8 = convert.convert(ast.globalStatements[7] as Any)
+        let result9 = convert.convert(ast.globalStatements[8] as Any)
         XCTAssert(result1 == "x + 1",result1);
         XCTAssert(result2 == "x + b + 1",result2);
         XCTAssert(result3 == "x++",result3);
@@ -202,14 +202,14 @@ while(x != nil){
 }
 return self.x;
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
-        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
-        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
-        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
-        let result5 = convert.convert(ocparser.ast.globalStatements[4] as Any)
-        let result6 = convert.convert(ocparser.ast.globalStatements[5] as Any)
+        let result1 = convert.convert(ast.globalStatements[0] as Any)
+        let result2 = convert.convert(ast.globalStatements[1] as Any)
+        let result3 = convert.convert(ast.globalStatements[2] as Any)
+        let result4 = convert.convert(ast.globalStatements[3] as Any)
+        let result5 = convert.convert(ast.globalStatements[4] as Any)
+        let result6 = convert.convert(ast.globalStatements[5] as Any)
         XCTAssert(result1 ==
         """
         if(x.isSuccess() == 1){
@@ -251,7 +251,7 @@ return self.x;
         while(x != nil){
         }
         """,result6)
-        let result7 = convert.convert(ocparser.ast.globalStatements[6] as Any)
+        let result7 = convert.convert(ast.globalStatements[6] as Any)
         XCTAssert(result7 ==
         """
         return self.x;
@@ -282,9 +282,9 @@ let source =
 }
 @end
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result1 = convert.convert(ocparser.ast.class(forName: "SFHTTPClient") as Any)
+        let result1 = convert.convert(ast.class(forName: "SFHTTPClient") as Any)
         XCTAssert(result1 ==
             """
             class SFHTTPClient:NSObject{
@@ -311,13 +311,13 @@ let source =
         let path = bundle.path(forResource: "TestSource", ofType: "imp")
         let data = try? Data.init(contentsOf:URL.init(fileURLWithPath: path!))
         let source = String.init(data: data ?? Data.init(), encoding: .utf8)
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         var result = ""
-        for statement in ocparser.ast.globalStatements {
+        for statement in ast.globalStatements {
             result.append(convert.convert(statement)+"\n")
         }
-        for occlas in ocparser.ast.classCache.allValues{
+        for occlas in ast.classCache.allValues{
             result.append(convert.convert(occlas))
         }
         let resultData = try? Data.init(contentsOf:URL.init(fileURLWithPath: bundle.path(forResource: "ConvertOuput", ofType: "txt")!))
@@ -336,9 +336,9 @@ let source =
         return [pairs componentsJoinedByString:@"&"];
     }
     """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result1 = convert.convert(ocparser.ast.globalStatements[0])
+        let result1 = convert.convert(ast.globalStatements[0])
         XCTAssert(result1 ==
             """
             NSString *queryPramameters(NSDictionary *param){
@@ -373,25 +373,25 @@ let source =
         CGFloat *a;
         """
                 
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[0]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[1]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[2]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[3]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[4]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[5]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[6]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[7]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[8]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[9]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[10]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[11]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[12]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[13]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[14]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[15]) == "Point a;")
-        XCTAssert(convert.convert(ocparser.ast.globalStatements[16]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[0]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[1]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[2]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[3]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[4]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[5]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[6]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[7]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[8]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[9]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[10]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[11]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[12]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[13]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[14]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[15]) == "Point a;")
+        XCTAssert(convert.convert(ast.globalStatements[16]) == "Point a;")
         
     }
     func testMangoBlockTypeAdapt(){
@@ -408,10 +408,10 @@ let source =
         void(^a)(NSString *name) = nil;
         void(*a)(NSString *name) = nil;
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         
-        let result = convert.convert(ocparser.ast.class(forName: "SFHTTPClient") as Any)
+        let result = convert.convert(ast.class(forName: "SFHTTPClient") as Any)
         XCTAssert(result ==
             """
             class SFHTTPClient:NSObject{
@@ -423,9 +423,9 @@ let source =
 
             ""","\n"+result)
         
-        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        let result1 = convert.convert(ast.globalStatements[0] as Any)
         XCTAssert(result1 == "Block a = nil;","\n"+result1)
-        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        let result2 = convert.convert(ast.globalStatements[1] as Any)
         XCTAssert(result2 == "Point a = nil;","\n"+result2)
         
     }
@@ -440,10 +440,10 @@ let source =
         }
         @end
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         
-        let result = convert.convert(ocparser.ast.class(forName: "SFHTTPClient") as Any)
+        let result = convert.convert(ast.class(forName: "SFHTTPClient") as Any)
         XCTAssert(result ==
             """
             class SFHTTPClient:NSObject{
@@ -459,10 +459,10 @@ let source =
         """
         NSString * string = @"测试";
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         
-        let result = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        let result = convert.convert(ast.globalStatements[0] as Any)
         XCTAssert(result ==
             """
             NSString *string = @"测试";
@@ -481,9 +481,9 @@ let source =
         handler(@"GGGG");
         self.handler = 2;
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        let result1 = convert.convert(ast.globalStatements[0] as Any)
         XCTAssert(result1 ==
             """
             view1.mas_makeConstraints:(^void (MASConstraintMaker *make){
@@ -494,18 +494,18 @@ let source =
             })
             ""","\n"+result1)
         
-        let result2 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        let result2 = convert.convert(ast.globalStatements[1] as Any)
         XCTAssert(result2 ==
             """
             self.handler()(@"GGGG")
             ""","\n"+result2)
-        let result3 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        let result3 = convert.convert(ast.globalStatements[2] as Any)
         XCTAssert(result3 ==
             """
             handler(@"GGGG")
             ""","\n"+result3)
         
-        let result4 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        let result4 = convert.convert(ast.globalStatements[3] as Any)
         XCTAssert(result4 ==
             """
             self.handler = 2;
@@ -523,17 +523,17 @@ let source =
         // not surpport
         // NSHTTPURLResponse *httpReponse = (NSHTTPURLResponse)response;
         """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        var result1 = convert.convert(ocparser.ast.globalStatements[0] as Any)
+        var result1 = convert.convert(ast.globalStatements[0] as Any)
         XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
-        result1 = convert.convert(ocparser.ast.globalStatements[1] as Any)
+        result1 = convert.convert(ast.globalStatements[1] as Any)
         XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
-        result1 = convert.convert(ocparser.ast.globalStatements[2] as Any)
+        result1 = convert.convert(ast.globalStatements[2] as Any)
         XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
-        result1 = convert.convert(ocparser.ast.globalStatements[3] as Any)
+        result1 = convert.convert(ast.globalStatements[3] as Any)
         XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
-        result1 = convert.convert(ocparser.ast.globalStatements[4] as Any)
+        result1 = convert.convert(ast.globalStatements[4] as Any)
         XCTAssert(result1 == "NSHTTPURLResponse *httpReponse = response;", result1)
         
     }

@@ -9,7 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "RunnerClasses.h"
 NS_ASSUME_NONNULL_BEGIN
-int startClassProrityDetect(ORClass *class);
+@class AST;
+int startClassProrityDetect(AST *ast, ORClass *class);
+
+extern AST *GlobalAst;
 @interface AST : NSObject
 @property(nonatomic,nonnull,strong)NSMutableArray *globalStatements;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *classCache;

@@ -32,20 +32,15 @@
     });
     return _instance;
 }
-- (instancetype)init
-{
-    self = [super init];
-    self.ast = [AST new];
-    return self;
-}
 - (BOOL)isSuccess{
     return self.source && self.error == nil;
 }
-- (void)parseCodeSource:(CodeSource *)source{
+- (AST *)parseCodeSource:(CodeSource *)source{
     if (source.source == nil) {
-        return;
+        return nil;
     }
     self.error = nil;
+    GlobalAst = [AST new];
     extern void yy_set_source_string(char const *source);
     extern void yyrestart (FILE * input_file );
     extern int yyparse(void);
@@ -55,14 +50,10 @@
         yyrestart(NULL);
         NSLog(@"\n----Error: \n  PATH: %@\n  INFO:%@",self.source.filePath,self.error);
     }
+    return GlobalAst;
 }
-- (void)parseSource:(NSString *)source{
-    [self parseCodeSource:[[CodeSource alloc] initWithSource:source]];
+- (AST *)parseSource:(NSString *)source{
+    return [self parseCodeSource:[[CodeSource alloc] initWithSource:source]];
 }
-- (void)clear{
-    [self.lock lock];
-    self.ast = [AST new];
-    self.error = nil;
-    [self.lock unlock];
-}
+
 @end

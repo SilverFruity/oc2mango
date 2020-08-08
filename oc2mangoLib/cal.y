@@ -66,11 +66,11 @@ definition:
             | class_implementation
             | expression_statement
             {
-                [LibAst addGlobalStatements:_typeId $1];
+                [GlobalAst addGlobalStatements:_typeId $1];
             }
             | control_statement
             {
-                [LibAst addGlobalStatements:_typeId $1];
+                [GlobalAst addGlobalStatements:_typeId $1];
             }
 	    ;
 global_define:
@@ -83,19 +83,19 @@ global_define:
         ORFunctionImp *imp = (ORFunctionImp *)makeValue(OCValueBlock);
         imp.scopeImp = _transfer(ORScopeImp *)$4;
         imp.declare = declare;
-        [LibAst addGlobalStatements:imp];
+        [GlobalAst addGlobalStatements:imp];
     }
     | struct_declare SEMICOLON
     {
-        [LibAst addGlobalStatements:_typeId $1];
+        [GlobalAst addGlobalStatements:_typeId $1];
     }
     | enum_declare SEMICOLON
     {
-        [LibAst addGlobalStatements:_typeId $1];
+        [GlobalAst addGlobalStatements:_typeId $1];
     }
     | TYPEDEF typedef_declare SEMICOLON
     {
-        [LibAst addGlobalStatements:_typeId $2];
+        [GlobalAst addGlobalStatements:_typeId $2];
     }
     ;
 
@@ -176,7 +176,7 @@ typedef_declare:
 protocol_declare:
 PROTOCOL IDENTIFIER CHILD_COLLECTION
 {
-    ORProtocol *orprotcol = [LibAst protcolForName:_transfer(id)$2];
+    ORProtocol *orprotcol = [GlobalAst protcolForName:_transfer(id)$2];
     NSArray *protocols = [_transfer(NSString *)$3 componentsSeparatedByString:@","];
     orprotcol.protocols = [protocols mutableCopy];
     $$ = _vretained orprotcol;
@@ -204,7 +204,7 @@ class_declare:
             //
             INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
-                ORClass *occlass = [LibAst classForName:_transfer(id)$2];
+                ORClass *occlass = [GlobalAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
                 NSArray *protocols = [_transfer(NSString *)$5 componentsSeparatedByString:@","];
                 occlass.protocols = [protocols mutableCopy];
@@ -213,14 +213,14 @@ class_declare:
             // category 
             | INTERFACE IDENTIFIER LP IDENTIFIER RP CHILD_COLLECTION_OPTIONAL
             {
-                ORClass *occlass = [LibAst classForName:_transfer(id)$2];
+                ORClass *occlass = [GlobalAst classForName:_transfer(id)$2];
                 NSArray *protocols = [_transfer(NSString *)$6 componentsSeparatedByString:@","];
                 occlass.protocols = [protocols mutableCopy];
                 $$ = _vretained occlass;
             }
             | INTERFACE IDENTIFIER LP RP CHILD_COLLECTION_OPTIONAL
             {
-                ORClass *occlass = [LibAst classForName:_transfer(id)$2];
+                ORClass *occlass = [GlobalAst classForName:_transfer(id)$2];
                 NSArray *protocols = [_transfer(NSString *)$5 componentsSeparatedByString:@","];
                 occlass.protocols = [protocols mutableCopy];
                 $$ = _vretained occlass;
@@ -251,12 +251,12 @@ class_declare:
 class_implementation:
             IMPLEMENTATION IDENTIFIER
             {
-                $$ = _vretained [LibAst classForName:_transfer(id)$2];
+                $$ = _vretained [GlobalAst classForName:_transfer(id)$2];
             }
             // category
             | IMPLEMENTATION IDENTIFIER LP IDENTIFIER RP
             {
-                $$ = _vretained [LibAst classForName:_transfer(id)$2];
+                $$ = _vretained [GlobalAst classForName:_transfer(id)$2];
             }
             | class_implementation LC class_private_varibale_declare RC
             {

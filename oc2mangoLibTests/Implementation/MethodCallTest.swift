@@ -16,7 +16,7 @@ class MethodCallTest: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
-        ocparser.clear()
+        
     }
     
     func testMethodCall() {
@@ -68,15 +68,16 @@ completion(httpReponse,result,error);
         for item in arrs {
             dict[item.className] = item
         }
-        ocparser.ast.classCache = NSMutableDictionary.init(dictionary: dict)
-        XCTAssert(startClassProrityDetect(class0) == 0)
-        XCTAssert(startClassProrityDetect(class1) == 1)
-        XCTAssert(startClassProrityDetect(class2) == 2)
-        XCTAssert(startClassProrityDetect(class3) == 2)
-        XCTAssert(startClassProrityDetect(class4) == 1)
-        XCTAssert(startClassProrityDetect(class5) == 3)
+        let ast = AST.init()
+        ast.classCache = NSMutableDictionary.init(dictionary: dict)
+        XCTAssert(startClassProrityDetect(ast,class0) == 0)
+        XCTAssert(startClassProrityDetect(ast,class1) == 1)
+        XCTAssert(startClassProrityDetect(ast,class2) == 2)
+        XCTAssert(startClassProrityDetect(ast,class3) == 2)
+        XCTAssert(startClassProrityDetect(ast,class4) == 1)
+        XCTAssert(startClassProrityDetect(ast,class5) == 3)
         let prorityDict = ["Class0":0,"Class1":1,"Class4":1,"Class3":2,"Class2":2,"Class5":3]
-        let results = ocparser.ast.sortClasses()
+        let results = ast.sortClasses()
         let prorities = results.map{ prorityDict[$0.className]! }
         XCTAssert(prorities == [0, 1, 1, 2, 2, 3])
     }

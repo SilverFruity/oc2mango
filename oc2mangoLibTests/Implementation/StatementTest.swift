@@ -16,7 +16,7 @@ class StatementTest: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
-        ocparser.clear()
+        
     }
     func testIfStatement(){
         let source =
@@ -31,9 +31,9 @@ if (x >= 0 ){
     
 }
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let state = ocparser.ast.globalStatements.firstObject as! ORIfStatement
+        let state = ast.globalStatements.firstObject as! ORIfStatement
         XCTAssert(state.condition == nil)
         XCTAssert(state.scopeImp != nil)
         
@@ -75,9 +75,9 @@ do{
 }while(x > 0 && x < 0)
 
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let state = ocparser.ast.globalStatements.firstObject as! ORDoWhileStatement
+        let state = ast.globalStatements.firstObject as! ORDoWhileStatement
         XCTAssert(state.scopeImp != nil)
         XCTAssert(state.condition != nil)
     }
@@ -88,9 +88,9 @@ while(x > 0 && x < 0){
 
 }
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let state = ocparser.ast.globalStatements.firstObject as! ORWhileStatement
+        let state = ast.globalStatements.firstObject as! ORWhileStatement
         XCTAssert(state.scopeImp != nil)
         XCTAssert(state.condition != nil)
         
@@ -130,13 +130,13 @@ switch (x) {
         break;
 }
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess());
-        let state1 = ocparser.ast.globalStatements.firstObject as! ORSwitchStatement
+        let state1 = ast.globalStatements.firstObject as! ORSwitchStatement
         XCTAssert(state1.value != nil)
         XCTAssert(state1.cases.count == 3)
         
-        let state2 = ocparser.ast.globalStatements[1] as! ORSwitchStatement
+        let state2 = ast.globalStatements[1] as! ORSwitchStatement
         XCTAssert(state2.value != nil)
         XCTAssert(state2.cases.count == 3)
         
@@ -153,7 +153,7 @@ for (int x = 0, b = 0; x < 1 && b < 20; x++, b++) {
 
 }
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess());
         
     }
@@ -167,7 +167,7 @@ for (UIView *view in self.view.subviews) {
 }
 
 """
-        ocparser.parseSource(source)
+        let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess());
         
     }

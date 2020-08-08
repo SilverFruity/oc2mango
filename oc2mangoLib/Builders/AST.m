@@ -8,21 +8,22 @@
 
 #import "AST.h"
 #import "MakeDeclare.h"
-void classProrityDetect(ORClass *class, int *level){
+AST *GlobalAst = nil;
+void classProrityDetect(AST *ast,ORClass *class, int *level){
     if ([class.superClassName isEqualToString:@"NSObject"] || NSClassFromString(class.superClassName) != nil) {
         return;
     }
-    ORClass *superClass = OCParser.ast.classCache[class.superClassName];
+    ORClass *superClass = ast.classCache[class.superClassName];
     if (superClass) {
         (*level)++;
     }else{
         return;
     }
-    classProrityDetect(superClass, level);
+    classProrityDetect(ast, superClass, level);
 }
-int startClassProrityDetect(ORClass *class){
+int startClassProrityDetect(AST *ast, ORClass *class){
     int prority = 0;
-    classProrityDetect(class, &prority);
+    classProrityDetect(ast, class, &prority);
     return prority;
 }
 @implementation AST
@@ -61,7 +62,7 @@ int startClassProrityDetect(ORClass *class){
     //TODO: 根据Class继承关系，进行排序
     NSMutableDictionary <NSString *, NSNumber *>*classProrityDict = [@{} mutableCopy];
     for (ORClass *clazz in self.classCache.allValues) {
-        classProrityDict[clazz.className] = @(startClassProrityDetect(clazz));
+        classProrityDict[clazz.className] = @(startClassProrityDetect(self,clazz));
     }
     NSArray *classes = self.classCache.allValues;
     classes = [classes sortedArrayUsingComparator:^NSComparisonResult(ORClass *obj1, ORClass *obj2) {
