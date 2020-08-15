@@ -24,7 +24,8 @@ unzip ~/Downloads/oc2mango.zip -d ~/Downloads/
 2. 协议声明 @protocol
 3. 编译器内置函数以及属性__attribute__等
 4. 类型强制转换问题: 不能识别：a = (CFString) a; 。 能识别  a = (CFString *) a;
-5. a[x]、{x,y,z}, a->x
+5. a[x], {x,y,z}, a->x
+
 Tips: 尽量不用使用类型转换。 
 
 除以上列表，其余语法皆已支持。有问题，欢迎提交issue。
