@@ -21,5 +21,7 @@ extern AST *GlobalAst;
 - (nonnull ORProtocol *)protcolForName:(NSString *)protcolName;
 - (void)addGlobalStatements:(id)objects;
 - (NSArray <ORClass *>*)sortClasses;
+/// 合并ast
+- (void)merge:(AST *)ast;
 @end
 NS_ASSUME_NONNULL_END

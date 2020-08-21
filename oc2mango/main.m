@@ -24,24 +24,6 @@ void recursiveLookupCompileFiles(NSString *path,NSMutableArray *dirs,NSMutableAr
         }
     }
 }
-void compileFiles(NSMutableArray *files){
-    NSMutableArray *headers = [files filter:^BOOL(NSUInteger index, NSString *path) {
-        return [path.pathExtension.lowercaseString isEqualToString:@"h"];
-    }];
-    NSMutableArray *implementations = [files filter:^BOOL(NSUInteger index, NSString *path) {
-        return [path.pathExtension.lowercaseString isEqualToString:@"m"];
-    }];
-    //ERROR: ast合并时问题，没有父类名
-    //1. 扫描所有头文件生成 Class的property、TypeDeclareSymbol
-    for (NSString *path in headers) {
-        [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
-    }
-    
-    //2. 扫描实现文件完成转换
-    for (NSString *path in implementations) {
-        [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
-    }
-}
 
 int main(int argc, const char * argv[]) {
     char opt = 0;
@@ -76,22 +58,21 @@ int main(int argc, const char * argv[]) {
     NSMutableArray *dirs = [NSMutableArray array];
     NSMutableArray *files = [NSMutableArray array];
     recursiveLookupCompileFiles(inputDir, dirs, files);
-    compileFiles(files);
-    if (OCParser.isSuccess) {
-        Convert *convert = [[Convert alloc] init];
-//        for (id statement in OCParser.ast.globalStatements) {
-//            NSLog(@"%@",[convert convert:statement]);
-//        }
-        [OCParser.ast.classCache enumerateKeysAndObjectsUsingBlock:^(NSString * key, ORClass *class, BOOL * _Nonnull stop) {
-            NSString *filename = [NSString stringWithFormat:@"%@.mg",key];
-            NSString *filepath = [outputDir stringByAppendingPathComponent:filename];
-            NSError *error = nil;
-            [[convert convert:class] writeToFile:filepath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-            if (error) {
-                NSLog(@"%@ - error: %@",filepath, error.localizedDescription);
-            }
-        }];
+    AST *result = [AST new];
+    for (NSString *path in files) {
+        AST *ast = [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
+        [result merge:ast];
     }
+    Convert *convert = [[Convert alloc] init];
+    [result.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClass* class, BOOL * _Nonnull stop) {
+        NSString *filename = [NSString stringWithFormat:@"%@.mg",key];
+        NSString *filepath = [outputDir stringByAppendingPathComponent:filename];
+        NSError *error = nil;
+        [[convert convert:class] writeToFile:filepath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        if (error) {
+            NSLog(@"%@ - error: %@",filepath, error.localizedDescription);
+        }
+    }];
     return 1;
 }
 

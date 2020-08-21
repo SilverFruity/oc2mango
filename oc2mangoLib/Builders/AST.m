@@ -70,5 +70,27 @@ int startClassProrityDetect(AST *ast, ORClass *class){
     }];
     return classes;
 }
+- (void)merge:(AST *)ast{
+    [ast.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClass *obj, BOOL * _Nonnull stop) {
+        ORClass *current = self.classCache[key];
+        if (current) {
+            [current.privateVariables addObjectsFromArray:obj.privateVariables];
+            [current.properties addObjectsFromArray:obj.properties];
+            [current.protocols addObjectsFromArray:obj.protocols];
+            if (!current.superClassName && obj.superClassName) {
+                current.superClassName = obj.superClassName;
+            }
+            for (ORMethodImplementation *imp in obj.methods) {
+                if (imp.scopeImp) {
+                    [current.methods addObject:imp];
+                }
+            }
+        }else{
+            self.classCache[key] = obj;
+        }
+    }];
+    [self.globalStatements addObjectsFromArray:ast.globalStatements];
+    [self.protcolCache addEntriesFromDictionary:ast.protcolCache];
+}
 @end
 
