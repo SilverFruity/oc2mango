@@ -21,10 +21,9 @@ unzip ~/Downloads/oc2mango.zip -d ~/Downloads/
 ## 不支持
 
 1. 预编译相关
-2. 协议声明 @protocol
-3. 编译器内置函数以及属性__attribute__等
-4. 类型强制转换问题: 不能识别：a = (CFString) a; 。 能识别  a = (CFString *) a;
-5. a[x], {x,y,z}, a->x
+2. 编译器内置函数以及属性__attribute__等
+3. 类型强制转换问题: 不能识别：a = (CFString) a; 。 能识别  a = (CFString *) a;
+4. a[x], {x,y,z}, a->x
 
 Tips: 尽量不用使用类型转换。 
 
