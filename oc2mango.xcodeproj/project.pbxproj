@@ -13,6 +13,8 @@
 		EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE147260227F054300566B3F /* ClassDeclareTest.swift */; };
 		EE1C71F122882F750077A71E /* TestSource.imp in Resources */ = {isa = PBXBuildFile; fileRef = EE1C71EE22882DBF0077A71E /* TestSource.imp */; };
 		EE1C71F42288314C0077A71E /* FileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71F32288314C0077A71E /* FileTest.swift */; };
+		EE2510A524F4249100BA575A /* PatchFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE2510A324F4249100BA575A /* PatchFile.h */; };
+		EE2510A624F4249100BA575A /* PatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE2510A424F4249100BA575A /* PatchFile.m */; };
 		EE38F94C246C321700E7C37B /* RunnerClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = EE38F947246C2E4900E7C37B /* RunnerClasses.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE38F94D246C321B00E7C37B /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE38F948246C2E4A00E7C37B /* RunnerClasses.m */; };
 		EE38F94E246C321B00E7C37B /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE38F948246C2E4A00E7C37B /* RunnerClasses.m */; };
@@ -72,6 +74,8 @@
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
 		EE1C71EE22882DBF0077A71E /* TestSource.imp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestSource.imp; sourceTree = "<group>"; };
 		EE1C71F32288314C0077A71E /* FileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTest.swift; sourceTree = "<group>"; };
+		EE2510A324F4249100BA575A /* PatchFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PatchFile.h; sourceTree = "<group>"; };
+		EE2510A424F4249100BA575A /* PatchFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PatchFile.m; sourceTree = "<group>"; };
 		EE38F947246C2E4900E7C37B /* RunnerClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RunnerClasses.h; sourceTree = "<group>"; };
 		EE38F948246C2E4A00E7C37B /* RunnerClasses.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RunnerClasses.m; sourceTree = "<group>"; };
 		EE5534CD2290032700A4B32E /* AST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AST.h; sourceTree = "<group>"; };
@@ -143,6 +147,15 @@
 			path = Implementation;
 			sourceTree = "<group>";
 		};
+		EE2510A224F4247700BA575A /* PatchFile */ = {
+			isa = PBXGroup;
+			children = (
+				EE2510A324F4249100BA575A /* PatchFile.h */,
+				EE2510A424F4249100BA575A /* PatchFile.m */,
+			);
+			path = PatchFile;
+			sourceTree = "<group>";
+		};
 		EE5534D822900DD700A4B32E /* Convert */ = {
 			isa = PBXGroup;
 			children = (
@@ -207,6 +220,7 @@
 				EE38F948246C2E4A00E7C37B /* RunnerClasses.m */,
 				EE982EE5226B601C008712C2 /* Builders */,
 				EE6E6CDB225E496600616C7E /* cal.l */,
+				EE2510A224F4247700BA575A /* PatchFile */,
 				EE6E6CDA225E496600616C7E /* cal.y */,
 				EED67A702270AE0E0015AC02 /* oc2mangoLib.h */,
 				EED67A712270AE0E0015AC02 /* Info.plist */,
@@ -244,6 +258,7 @@
 			files = (
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
+				EE2510A524F4249100BA575A /* PatchFile.h in Headers */,
 				EE38F94C246C321700E7C37B /* RunnerClasses.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
@@ -414,6 +429,7 @@
 				EE4BAFE724364CAA00A2A080 /* cal.y in Sources */,
 				EE5534D42290053800A4B32E /* Convert.m in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
+				EE2510A624F4249100BA575A /* PatchFile.m in Sources */,
 				EE38F94D246C321B00E7C37B /* RunnerClasses.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
