@@ -128,10 +128,18 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
         NSData *data = [[NSData alloc] initWithContentsOfFile:path];
         cryptoMap = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
     }
+    
+    //TODO: 1. if path.links is [NSDictionary] then patch.links recover the lsit of nodes using unArchivePatch.
+    //TODO: 2. merge the nodes, recalculate the strings of patch.
     NSMutableArray *array = [@[] mutableCopy];
+    for (ORPatchFile *linked in patch.links) {
+        [array addObjectsFromArray:linked.nodes];
+    }
+    
     for (ORNode *node in patch.nodes){
         [array addObject:archiveNode(node, cryptoMap, patch)];
     }
+    
     return @{@"appVersion":patch.appVersion,
              @"osVersion":patch.osVersion,
              @"enable":@(patch.enable),
