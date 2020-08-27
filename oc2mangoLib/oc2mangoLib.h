@@ -18,4 +18,5 @@ FOUNDATION_EXPORT const unsigned char oc2mangoLibVersionString[];
 #import <oc2mangoLib/Convert.h>
 #import <oc2mangoLib/Parser.h>
 #import <oc2mangoLib/RunnerClasses.h>
+#import <oc2mangoLib/ORPatchFileArchiveHelper.h>
 

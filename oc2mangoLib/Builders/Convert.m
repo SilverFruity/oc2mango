@@ -167,7 +167,7 @@ int indentationCont = 0;
 - (NSString *)convertBlockImp:(ORFunctionImp *)imp{
     NSMutableString *content = [NSMutableString string];
     if (imp.declare) {
-        if (imp.declare.funVar.ptCount > 0) {
+        if (!imp.declare.isBlockDeclare) {
             // void x(int y){ }
             [content appendFormat:@"%@", [self convertFuncDeclare:imp.declare]];
         }else{

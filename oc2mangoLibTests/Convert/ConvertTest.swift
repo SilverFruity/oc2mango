@@ -314,11 +314,8 @@ let source =
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         var result = ""
-        for statement in ast.globalStatements {
-            result.append(convert.convert(statement)+"\n")
-        }
-        for occlas in ast.classCache.allValues{
-            result.append(convert.convert(occlas))
+         for node in ast.nodes {
+            result.append(convert.convert(node))
         }
         let resultData = try? Data.init(contentsOf:URL.init(fileURLWithPath: bundle.path(forResource: "ConvertOuput", ofType: "txt")!))
         let resultStr = String.init(data: resultData ?? Data.init(), encoding: .utf8)!

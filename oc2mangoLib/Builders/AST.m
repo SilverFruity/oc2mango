@@ -8,6 +8,13 @@
 
 #import "AST.h"
 #import "MakeDeclare.h"
+NSArray *SupplementarySetArray(NSArray *source, NSArray *compared){
+    NSMutableSet *sourceSet = [NSMutableSet setWithArray:source];
+    NSMutableSet *compredSet = [NSMutableSet setWithArray:compared];
+    [compredSet unionSet:sourceSet];
+    [compredSet minusSet:sourceSet];
+    return  compredSet.allObjects;
+}
 AST *GlobalAst = nil;
 void classProrityDetect(AST *ast,ORClass *class, int *level){
     if ([class.superClassName isEqualToString:@"NSObject"] || NSClassFromString(class.superClassName) != nil) {
@@ -81,16 +88,12 @@ int startClassProrityDetect(AST *ast, ORClass *class){
             ORClass *classNode = (ORClass *)node;
             ORClass *current = self.classCache[classNode.className];
             if (current) {
-                [current.privateVariables addObjectsFromArray:classNode.privateVariables];
-                [current.properties addObjectsFromArray:classNode.properties];
-                [current.protocols addObjectsFromArray:classNode.protocols];
+                [current merge:classNode key:@"privateVariables"];
+                [current merge:classNode key:@"properties"];
+                [current merge:classNode key:@"protocols"];
+                [current merge:classNode key:@"methods"];
                 if (!current.superClassName && classNode.superClassName) {
                     current.superClassName = classNode.superClassName;
-                }
-                for (ORMethodImplementation *imp in classNode.methods) {
-                    if (imp.scopeImp) {
-                        [current.methods addObject:imp];
-                    }
                 }
             }else{
                 self.classCache[classNode.className] = node;

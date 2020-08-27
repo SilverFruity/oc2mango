@@ -11,9 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 // MARK: - Node
 @interface ORNode: NSObject
-@property (nonatomic, assign)NSInteger line;
-@property (nonatomic, assign)NSInteger column;
-@property (nonatomic, assign)NSInteger length;
 @property (nonatomic, assign)BOOL withSemicolon;
 @end
 
@@ -161,6 +158,7 @@ typedef enum {
 @property (nonatomic,strong)ORNode * value;
 @property (nonatomic,assign)AssignOperatorType assignType;
 @property (nonatomic,strong)ORNode * expression;
+- (nullable NSString *)varname;
 @end
 
 typedef NS_OPTIONS(NSUInteger,ORDeclarationModifier) {
@@ -317,11 +315,12 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 @property (nonatomic,strong)NSMutableArray <ORTypeVarPair *>*privateVariables;
 @property (nonatomic,strong)NSMutableArray <ORMethodImplementation *>*methods;
 + (instancetype)classWithClassName:(NSString *)className;
+- (void)merge:(ORClass *)target key:(NSString *)key;
 @end
 
 @interface ORProtocol: ORNode
 @property (nonatomic,copy)NSString *protcolName;
-@property (nonatomic,strong, nullable)NSMutableArray <NSString *>*protocols;
+@property (nonatomic,strong,nullable)NSMutableArray <NSString *>*protocols;
 @property (nonatomic,strong)NSMutableArray <ORPropertyDeclare *>*properties;
 @property (nonatomic,strong)NSMutableArray <ORMethodDeclare *>*methods;
 + (instancetype)protcolWithProtcolName:(NSString *)protcolName;

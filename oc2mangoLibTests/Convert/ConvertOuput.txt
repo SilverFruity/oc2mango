@@ -4,8 +4,7 @@ NSString *queryPramameters(NSDictionary *param){
         pairs.addObject:(NSString.stringWithFormat:(@"%@=%@",key,obj));
     });
     return pairs.componentsJoinedByString:(@"&");
-}
-class SFHTTPClient:NSObject{
+}class SFHTTPClient:NSObject{
 @property(nonatomic,readonly)NSURL *baseUrl;
 
 -(id )initWithBaseUrl:(NSURL *)baseUrl{

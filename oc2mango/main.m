@@ -7,7 +7,6 @@
 //
 #import <Foundation/Foundation.h>
 #import <oc2mangoLib/oc2mangoLib.h>
-#import "NSArray+Functional.h"
 void recursiveLookupCompileFiles(NSString *path,NSMutableArray *dirs,NSMutableArray *files){
     BOOL isDir;
     if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) {
@@ -63,6 +62,16 @@ int main(int argc, const char * argv[]) {
         AST *ast = [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
         [result merge:ast.nodes];
     }
+    
+//    NSDate *startDate = [NSDate new];
+//    NSData *encryptData = [[NSData data] initWithContentsOfFile:@"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassEncryptMap.json"];
+//    NSData *decryptData = [[NSData data] initWithContentsOfFile:@"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassDecryptMap.json"];
+//    NSDictionary *encrypt = [NSJSONSerialization JSONObjectWithData:encryptData options:0 error:nil];
+//    NSDictionary *decrypt = [NSJSONSerialization JSONObjectWithData:decryptData options:0 error:nil];
+//    [ORPatchFileArchiveHelper patchFileTest:result.nodes encrptMap:encrypt decrptMap:decrypt];
+//    NSDate *endDate = [NSDate new];
+//    NSLog(@"%f",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
+    
     Convert *convert = [[Convert alloc] init];
     __block NSError *error = nil;
     [result.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClass* class, BOOL * _Nonnull stop) {

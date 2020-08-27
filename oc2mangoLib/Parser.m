@@ -50,6 +50,12 @@
         yyrestart(NULL);
         NSLog(@"\n----Error: \n  PATH: %@\n  INFO:%@",self.source.filePath,self.error);
     }
+//#define ARCHIVE_TEST
+#ifdef ARCHIVE_TEST
+    NSArray *nodes = [ORPatchFileArchiveHelper patchFileTest:GlobalAst.nodes];
+    GlobalAst = [AST new];
+    [GlobalAst merge:nodes];
+#endif
     return GlobalAst;
 }
 - (AST *)parseSource:(NSString *)source{

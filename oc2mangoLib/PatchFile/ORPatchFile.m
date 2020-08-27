@@ -9,6 +9,18 @@
 #import "ORPatchFile.h"
 
 @implementation ORPatchFile
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.appVersion = @"*";
+        self.osVersion = @"*";
+        self.stringMap = [NSMutableDictionary dictionary];
+        self.strings = [NSMutableArray array];
+        self.nodes = [NSMutableArray array];
+    }
+    return self;
+}
 - (instancetype)loads:(NSString *)path{
     return nil;
 }

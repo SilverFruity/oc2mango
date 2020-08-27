@@ -25,6 +25,12 @@
 }
 @end
 @implementation ORTypeVarPair
+- (NSUInteger)hash{
+    return [self.var.varname hash];
+}
+- (BOOL)isEqual:(id)object{
+    return [self hash] == [object hash];
+}
 @end
 @implementation ORFuncVariable
 @end
@@ -83,6 +89,12 @@
 @implementation ORSubscriptExpression
 @end
 @implementation ORAssignExpression
+- (NSString *)varname{
+    if ([self.value isKindOfClass:[ORValueExpression class]]) {
+        return [(ORValueExpression *)self.value value];
+    }
+    return nil;
+}
 @end
 @implementation ORDeclareExpression
 @end
@@ -144,6 +156,12 @@
     }
     return value;
 }
+- (NSUInteger)hash{
+    return [self.var hash];
+}
+- (BOOL)isEqual:(ORPropertyDeclare *)object{
+    return [self hash] == [object hash];
+}
 @end
 @implementation ORMethodDeclare
 - (NSString *)selectorName{
@@ -155,6 +173,12 @@
 }
 @end
 @implementation ORMethodImplementation
+- (NSUInteger)hash{
+    return [[self.declare selectorName] stringByAppendingFormat:@"%d",self.declare.isClassMethod].hash;
+}
+- (BOOL)isEqual:(id)object{
+    return [self hash] == [object hash];
+}
 @end
 @implementation ORClass
 + (instancetype)classWithClassName:(NSString *)className{
@@ -171,6 +195,14 @@
     self.methods = [NSMutableArray array];
     
     return self;
+}
+- (void)merge:(ORClass *)target key:(nonnull NSString *)key{
+    NSMutableSet *sourceSet = [NSMutableSet setWithArray:[self valueForKey:key]];
+    NSMutableSet *compredSet = [NSMutableSet setWithArray:[target valueForKey:key]];
+    [compredSet unionSet:sourceSet];
+    [compredSet minusSet:sourceSet];
+    NSMutableArray *array = [self valueForKey:key];
+    [array addObjectsFromArray:compredSet.allObjects];
 }
 @end
 @implementation ORProtocol
