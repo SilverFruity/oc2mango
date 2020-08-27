@@ -120,7 +120,11 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
 #endif
 + (NSDictionary *)archivePatch:(ORPatchFile *)patch encrptMap:(nullable NSDictionary *)cryptoMap{
     if (cryptoMap == nil) {
-        NSString *path = [[NSBundle bundleForClass:[ORPatchFileArchiveHelper class]] pathForResource:@"ClassEncryptMap.json" ofType:nil];
+        NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[ORPatchFileArchiveHelper class]] pathForResource:@"oc2mangoLib" ofType:@"bundle"]];
+        if (bundle == nil) {
+            bundle = [NSBundle bundleForClass:[ORPatchFileArchiveHelper class]];
+        }
+        NSString *path = [bundle pathForResource:@"ClassEncryptMap.json" ofType:nil];
         NSData *data = [[NSData alloc] initWithContentsOfFile:path];
         cryptoMap = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
     }
@@ -138,7 +142,11 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
     ORPatchFile *file = [ORPatchFile new];
     [file setValuesForKeysWithDictionary:patch];
     if (cryptoMap == nil) {
-        NSString *path = [[NSBundle bundleForClass:[ORPatchFileArchiveHelper class]] pathForResource:@"ClassDecryptMap.json" ofType:nil];
+        NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[ORPatchFileArchiveHelper class]] pathForResource:@"oc2mangoLib" ofType:@"bundle"]];
+        if (bundle == nil) {
+            bundle = [NSBundle bundleForClass:[ORPatchFileArchiveHelper class]];
+        }
+        NSString *path = [bundle pathForResource:@"ClassDecryptMap.json" ofType:nil];
         NSData *data = [[NSData alloc] initWithContentsOfFile:path];
         cryptoMap = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
     }

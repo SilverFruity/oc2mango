@@ -112,6 +112,7 @@
 				044918DF24DD3EC400DC9951 /* Sources */,
 				044918E024DD3EC400DC9951 /* Frameworks */,
 				044918E124DD3EC400DC9951 /* Resources */,
+				6478BF8B354005AFF56A3D8D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -168,6 +169,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		6478BF8B354005AFF56A3D8D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-oc2mangoLibDemo/Pods-oc2mangoLibDemo-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-oc2mangoLibDemo/Pods-oc2mangoLibDemo-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-oc2mangoLibDemo/Pods-oc2mangoLibDemo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		8E99ED020A6C7D07C6BECA6B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
