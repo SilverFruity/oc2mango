@@ -158,7 +158,7 @@ typedef enum {
 }AssignOperatorType;
 
 @interface ORAssignExpression: ORNode
-@property (nonatomic,strong)ORValueExpression * value;
+@property (nonatomic,strong)ORNode * value;
 @property (nonatomic,assign)AssignOperatorType assignType;
 @property (nonatomic,strong)ORNode * expression;
 @end
