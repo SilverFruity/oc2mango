@@ -6,9 +6,9 @@
 //  Copyright © 2020 SilverFruity. All rights reserved.
 //
 
-#import "PatchFile.h"
+#import "ORPatchFile.h"
 
-@implementation PatchFile
+@implementation ORPatchFile
 - (instancetype)loads:(NSString *)path{
     return nil;
 }

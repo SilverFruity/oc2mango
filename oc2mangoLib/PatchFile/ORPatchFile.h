@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PatchFile : NSObject
+@interface ORPatchFile : NSObject
 /// target app version of patch
 @property(nonatomic, copy)NSString *appVersion;
 /// target os version of patch
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Example: UIKitReference, CCDReference
  * It's similar to the dynamic links table of Mach-O file.
  */
-@property(nonatomic, copy)NSArray <PatchFile *>*links;
+@property(nonatomic, copy)NSArray <ORPatchFile *>*links;
 /// the list of statements
 @property(nonatomic, copy)NSArray *nodes;
 /// load from the patch file
