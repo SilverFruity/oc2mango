@@ -14,6 +14,7 @@ int startClassProrityDetect(AST *ast, ORClass *class);
 
 extern AST *GlobalAst;
 @interface AST : NSObject
+@property(nonatomic,nonnull,strong)NSMutableArray *nodes;
 @property(nonatomic,nonnull,strong)NSMutableArray *globalStatements;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *classCache;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *protcolCache;
@@ -22,6 +23,6 @@ extern AST *GlobalAst;
 - (void)addGlobalStatements:(id)objects;
 - (NSArray <ORClass *>*)sortClasses;
 /// 合并ast
-- (void)merge:(AST *)ast;
+- (void)merge:(NSArray *)nodes;
 @end
 NS_ASSUME_NONNULL_END

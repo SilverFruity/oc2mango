@@ -31,6 +31,7 @@ int startClassProrityDetect(AST *ast, ORClass *class){
     ORClass *class = self.classCache[className];
     if (!class) {
         class = makeOCClass(className);
+        [self.nodes addObject:class];
         self.classCache[className] = class;
     }
     return class;
@@ -39,6 +40,7 @@ int startClassProrityDetect(AST *ast, ORClass *class){
     ORProtocol *protocol = self.protcolCache[protcolName];
     if (!protocol) {
         protocol = makeORProtcol(protcolName);
+        [self.nodes addObject:protocol];
         self.protcolCache[protcolName] = protocol;
     }
     return protocol;
@@ -48,14 +50,17 @@ int startClassProrityDetect(AST *ast, ORClass *class){
     self = [super init];
     self.classCache = [NSMutableDictionary dictionary];
     self.protcolCache = [NSMutableDictionary dictionary];
+    self.nodes = [NSMutableArray array];
     self.globalStatements = [NSMutableArray array];
     return self;
 }
 - (void)addGlobalStatements:(id)objects{
     if ([objects isKindOfClass:[NSArray class]]) {
         [self.globalStatements addObjectsFromArray:objects];
+        [self.nodes addObjectsFromArray:objects];
     }else{
         [self.globalStatements addObject:objects];
+        [self.nodes addObject:objects];
     }
 }
 - (NSArray *)sortClasses{
@@ -70,27 +75,35 @@ int startClassProrityDetect(AST *ast, ORClass *class){
     }];
     return classes;
 }
-- (void)merge:(AST *)ast{
-    [ast.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClass *obj, BOOL * _Nonnull stop) {
-        ORClass *current = self.classCache[key];
-        if (current) {
-            [current.privateVariables addObjectsFromArray:obj.privateVariables];
-            [current.properties addObjectsFromArray:obj.properties];
-            [current.protocols addObjectsFromArray:obj.protocols];
-            if (!current.superClassName && obj.superClassName) {
-                current.superClassName = obj.superClassName;
-            }
-            for (ORMethodImplementation *imp in obj.methods) {
-                if (imp.scopeImp) {
-                    [current.methods addObject:imp];
+- (void)merge:(NSArray *)nodes{
+    [nodes enumerateObjectsUsingBlock:^(ORNode *node, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([node isKindOfClass:[ORClass class]]) {
+            ORClass *classNode = (ORClass *)node;
+            ORClass *current = self.classCache[classNode.className];
+            if (current) {
+                [current.privateVariables addObjectsFromArray:classNode.privateVariables];
+                [current.properties addObjectsFromArray:classNode.properties];
+                [current.protocols addObjectsFromArray:classNode.protocols];
+                if (!current.superClassName && classNode.superClassName) {
+                    current.superClassName = classNode.superClassName;
                 }
+                for (ORMethodImplementation *imp in classNode.methods) {
+                    if (imp.scopeImp) {
+                        [current.methods addObject:imp];
+                    }
+                }
+            }else{
+                self.classCache[classNode.className] = node;
+                [self.nodes addObject:node];
             }
+        }else if([node isKindOfClass:[ORProtocol class]]){
+            ORProtocol *protocolNode = (ORProtocol *)node;
+            self.protcolCache[protocolNode.protcolName] = protocolNode;
+            [self.nodes addObject:protocolNode];
         }else{
-            self.classCache[key] = obj;
+            [self addGlobalStatements:node];
         }
     }];
-    [self.globalStatements addObjectsFromArray:ast.globalStatements];
-    [self.protcolCache addEntriesFromDictionary:ast.protcolCache];
 }
 @end
 

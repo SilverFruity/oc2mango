@@ -63,24 +63,7 @@ ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare, ORSco
 
 
 ORValueExpression *makeValue(OC_VALUE_TYPE type, id value){
-    ORValueExpression *ocvalue;
-    switch (type){
-        case OCValueMethodCall:
-            ocvalue = [ORMethodCall new];
-            break;
-        case OCValueFuncCall:
-            ocvalue = [ORCFuncCall new];
-            break;
-        case OCValueBlock:
-            ocvalue = [ORFunctionImp new];
-            break;
-        case OCValueCollectionGetValue:
-            ocvalue = [ORSubscriptExpression new];
-            break;
-        default:
-            ocvalue = [ORValueExpression new];
-            break;
-    }
+    ORValueExpression *ocvalue = [ORValueExpression new];
     ocvalue.value_type = type;
     ocvalue.value = value;
     return ocvalue;
@@ -94,7 +77,6 @@ ORScopeImp *makeScopeImp(){
 }
 ORCFuncCall *makeFuncCall(ORValueExpression *caller, NSMutableArray *expressions){
     ORCFuncCall *call = [ORCFuncCall new];
-    call.value_type = OCValueFuncCall;
     call.caller = caller;
     call.expressions = expressions;
     return call;
@@ -119,7 +101,7 @@ ORAssignExpression *makeAssignExpression(AssignOperatorType type){
     expression.assignType = type;
     return expression;
 }
-extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORExpression * exp){
+extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORNode * exp){
     ORDeclareExpression *declare = [ORDeclareExpression new];
     declare.pair = makeTypeVarPair(type, var);
     declare.expression = exp;
@@ -128,19 +110,19 @@ extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable
 
 
 
-ORIfStatement *makeIfStatement(ORExpression * judgement, ORScopeImp *imp){
+ORIfStatement *makeIfStatement(ORNode * judgement, ORScopeImp *imp){
     ORIfStatement *statement = [ORIfStatement new];
     statement.scopeImp = imp;
     statement.condition = judgement;
     return statement;
 }
-ORWhileStatement *makeWhileStatement(ORExpression *judgement, ORScopeImp *imp){
+ORWhileStatement *makeWhileStatement(ORNode *judgement, ORScopeImp *imp){
     ORWhileStatement *statement = [ORWhileStatement new];
     statement.scopeImp = imp;
     statement.condition = judgement;
     return statement;
 }
-ORDoWhileStatement *makeDoWhileStatement(ORExpression *judgement, ORScopeImp *imp){
+ORDoWhileStatement *makeDoWhileStatement(ORNode *judgement, ORScopeImp *imp){
     ORDoWhileStatement *statement = [ORDoWhileStatement new];
     statement.condition = judgement;
     statement.scopeImp = imp;
@@ -168,7 +150,7 @@ ORForInStatement *makeForInStatement(ORScopeImp *imp){
     return statement;
 }
 
-ORReturnStatement *makeReturnStatement(ORExpression* expression){
+ORReturnStatement *makeReturnStatement(ORNode* expression){
     ORReturnStatement *statement = [ORReturnStatement new];
     statement.expression = expression;
     return statement;

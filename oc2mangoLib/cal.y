@@ -80,7 +80,7 @@ global_define:
     {
         ORTypeVarPair *returnType = makeTypeVarPair(_typeId $1, nil);
         ORFuncDeclare *declare = makeFuncDeclare(returnType, _typeId $2);
-        ORFunctionImp *imp = (ORFunctionImp *)makeValue(OCValueBlock);
+        ORFunctionImp *imp = [ORFunctionImp new];
         imp.scopeImp = _transfer(ORScopeImp *)$4;
         imp.declare = declare;
         [GlobalAst addGlobalStatements:imp];
@@ -406,7 +406,7 @@ objc_method_call_pramameters:
 objc_method_call:
          LB IDENTIFIER objc_method_call_pramameters RB
         {
-             ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
+             ORMethodCall *methodcall = (ORMethodCall *) [ORMethodCall new];
              methodcall.caller =  makeValue(OCValueVariable,_typeId $2);
              NSArray *params = _transfer(NSArray *)$3;
              methodcall.names = params[0];
@@ -415,7 +415,7 @@ objc_method_call:
         }
         | LB postfix_expression objc_method_call_pramameters RB
         {
-             ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
+             ORMethodCall *methodcall = (ORMethodCall *) [ORMethodCall new];
              ORValueExpression *caller = _transfer(ORValueExpression *)$2;
              methodcall.caller =  caller;
              NSArray *params = _transfer(NSArray *)$3;
@@ -448,7 +448,7 @@ block_implementation:
             funVar.pairs = _transfer(NSMutableArray *)$4;
             funVar.isBlock = YES;
             ORFuncDeclare *declare = makeFuncDeclare(var, funVar);
-            ORFunctionImp *imp = (ORFunctionImp *)makeValue(OCValueBlock);
+            ORFunctionImp *imp = [ORFunctionImp new];
             imp.scopeImp = _transfer(ORScopeImp *) $6;
             imp.declare = declare;
             $$ = _vretained imp;
@@ -459,23 +459,43 @@ block_implementation:
 expression: assign_expression;
 
 expression_statement:
-          assign_expression SEMICOLON
+        assign_expression SEMICOLON
+        {
+            ORNode *node = _transfer(ORNode *) $1;
+            node.withSemicolon = YES;
+            $$ = _vretained node;
+        }
         | declaration SEMICOLON
+        {
+            NSArray *declares = _transfer(NSArray *) $1;
+            for (ORNode* node in declares){
+                node.withSemicolon = YES;
+            }
+            $$ = _vretained declares;
+        }
         |_return SEMICOLON
         {
-            $$ = _vretained makeReturnStatement(nil);
+            ORNode *node = makeReturnStatement(nil);
+            node.withSemicolon = YES;
+            $$ = _vretained node;
         }
         | _return expression SEMICOLON
         {
-            $$ = _vretained makeReturnStatement(_transfer(id)$2);
+            ORNode *node = makeReturnStatement(_transfer(id)$2);
+            node.withSemicolon = YES;
+            $$ = _vretained node;
         }
         | _break SEMICOLON
         {
-            $$ = _vretained makeBreakStatement();
+            ORNode *node = makeBreakStatement();
+            node.withSemicolon = YES;
+            $$ = _vretained node;
         }
         | _continue SEMICOLON
         {
-            $$ = _vretained makeContinueStatement();
+            ORNode *node = makeContinueStatement();
+            node.withSemicolon = YES;
+            $$ = _vretained node;
         }
         ;
 
@@ -972,7 +992,7 @@ postfix_expression: primary_expression
     }
     | postfix_expression DOT IDENTIFIER
     {
-        ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
+        ORMethodCall *methodcall = (ORMethodCall *)[ORMethodCall new];
         methodcall.caller =  _transfer(ORValueExpression *)$1;
         methodcall.isDot = YES;
         methodcall.names = [@[_typeId $3] mutableCopy];
@@ -980,7 +1000,7 @@ postfix_expression: primary_expression
     }
     | postfix_expression ARROW IDENTIFIER
     {
-        ORMethodCall *methodcall = (ORMethodCall *) makeValue(OCValueMethodCall);
+        ORMethodCall *methodcall = (ORMethodCall *) [ORMethodCall new];
         methodcall.caller =  _transfer(ORValueExpression *)$1;
         methodcall.isDot = YES;
         methodcall.names = [@[_typeId $3] mutableCopy];
@@ -992,7 +1012,7 @@ postfix_expression: primary_expression
     }
     | postfix_expression LB expression RB
     {
-        ORSubscriptExpression *value = (ORSubscriptExpression *)makeValue(OCValueCollectionGetValue);
+        ORSubscriptExpression *value = [ORSubscriptExpression new];
         value.caller = _typeId $1;
         value.keyExp = _typeId $3;
         $$ = _vretained value;

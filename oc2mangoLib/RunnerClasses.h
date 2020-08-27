@@ -9,11 +9,12 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-@interface ORCodeCheck : NSObject
-@property (nonatomic, assign)NSInteger lineNum;
-@property (nonatomic, assign)NSInteger columnStart;
+// MARK: - Node
+@interface ORNode: NSObject
+@property (nonatomic, assign)NSInteger line;
+@property (nonatomic, assign)NSInteger column;
 @property (nonatomic, assign)NSInteger length;
-@property (nonatomic, copy)NSString *filename;
+@property (nonatomic, assign)BOOL withSemicolon;
 @end
 
 // MARK: - Base
@@ -56,21 +57,21 @@ enum{
 };
 
 
-@interface ORTypeSpecial: NSObject
+@interface ORTypeSpecial: ORNode
 @property (nonatomic, assign) TypeKind type;
 @property (nonatomic, nullable, copy) NSString * name;
 + (instancetype)specialWithType:(TypeKind)type name:(nullable NSString *)name;
 @end
 
 
-@interface ORVariable :NSObject
+@interface ORVariable: ORNode
 @property (nonatomic, assign) BOOL isBlock;
 @property (nonatomic, assign) NSInteger ptCount;
 @property (nonatomic, nullable, copy) NSString * varname;
 + (instancetype)copyFromVar:(ORVariable *)var;
 @end
 
-@interface ORTypeVarPair: NSObject
+@interface ORTypeVarPair: ORNode
 @property (nonatomic, strong)ORTypeSpecial *type;
 @property (nonatomic, strong)ORVariable *var;
 @end
@@ -80,15 +81,16 @@ enum{
 @property(nonatomic,assign) BOOL isMultiArgs;
 @end
 
-@interface ORFuncDeclare: NSObject
+@interface ORFuncDeclare: ORNode
 @property(nonatomic,strong) ORTypeVarPair *returnType;
 @property(nonatomic,strong) ORFuncVariable *funVar;
 @property(nonatomic,assign,readonly) BOOL isBlockDeclare;
 @end
 
-// MARK: - Expression
-@interface ORExpression: ORCodeCheck
-
+@interface ORScopeImp: ORNode
+@property(nonatomic,strong) NSMutableArray* statements;
+- (void)addStatements:(id)statements;
+- (void)copyFromImp:(ORScopeImp *)imp;
 @end
 
 typedef enum {
@@ -107,49 +109,38 @@ typedef enum {
     OCValueNil, //  value: nil
     OCValueNULL, //  value: nil
     OCValueBOOL, //  value: @"YES" @"NO"
-    
-    //Class
-    OCValueMethodCall,
-    OCValueFuncCall,
-    OCValueBlock,
-    OCValueCollectionGetValue // array[0] , dict[@"key"]
 }OC_VALUE_TYPE;
 
-@interface ORValueExpression: ORExpression
+@interface ORValueExpression: ORNode
 @property (nonatomic, assign)OC_VALUE_TYPE value_type;
 @property (nonatomic,strong)id value;
 @end
 
-@interface ORMethodCall: ORValueExpression
-@property (nonatomic, strong)ORValueExpression * caller;
+@interface ORMethodCall: ORNode
+@property (nonatomic, strong)ORNode * caller;
 @property (nonatomic, assign)BOOL isDot;
 @property (nonatomic, strong)NSMutableArray *names;
-@property (nonatomic, strong)NSMutableArray <ORExpression *> *values;
+@property (nonatomic, strong)NSMutableArray <ORNode *> *values;
 @property (nonatomic, assign)BOOL isAssignedValue;
 - (NSString *)selectorName;
 @end
 
-@interface ORCFuncCall: ORValueExpression
+@interface ORCFuncCall: ORNode
 @property (nonatomic, strong)ORValueExpression *caller;
-@property (nonatomic, strong)NSMutableArray <ORExpression *>*expressions;
+@property (nonatomic, strong)NSMutableArray <ORNode *>*expressions;
 @end
 
-@interface ORScopeImp: ORExpression
-@property(nonatomic,strong) NSMutableArray* statements;
-- (void)addStatements:(id)statements;
-- (void)copyFromImp:(ORScopeImp *)imp;
-@end
 
-@interface ORFunctionImp: ORValueExpression
+@interface ORFunctionImp: ORNode
 @property(nonatomic,strong) ORFuncDeclare *declare;
 @property(nonatomic,strong) ORScopeImp *scopeImp;
 - (instancetype)normalFunctionImp;
 - (BOOL)isBlockImp;
 @end
 
-@interface ORSubscriptExpression: ORValueExpression
+@interface ORSubscriptExpression: ORNode
 @property (nonatomic, strong)ORValueExpression * caller;
-@property (nonatomic, strong)ORExpression * keyExp;
+@property (nonatomic, strong)ORNode * keyExp;
 @end
 
 typedef enum {
@@ -166,10 +157,10 @@ typedef enum {
     AssignOperatorAssignShiftRight,
 }AssignOperatorType;
 
-@interface ORAssignExpression: ORExpression
+@interface ORAssignExpression: ORNode
 @property (nonatomic,strong)ORValueExpression * value;
 @property (nonatomic,assign)AssignOperatorType assignType;
-@property (nonatomic,strong)ORExpression * expression;
+@property (nonatomic,strong)ORNode * expression;
 @end
 
 typedef NS_OPTIONS(NSUInteger,ORDeclarationModifier) {
@@ -179,10 +170,10 @@ typedef NS_OPTIONS(NSUInteger,ORDeclarationModifier) {
     ORDeclarationModifierStatic     = 1 << 3,
 };
 
-@interface ORDeclareExpression: ORExpression
+@interface ORDeclareExpression: ORNode
 @property (nonatomic,assign)ORDeclarationModifier modifier;
 @property (nonatomic,strong)ORTypeVarPair *pair;
-@property (nonatomic,strong, nullable)ORExpression * expression;
+@property (nonatomic,strong, nullable)ORNode * expression;
 @end
 
 typedef enum {
@@ -197,8 +188,8 @@ typedef enum {
     UnaryOperatorAdressPoint,
     UnaryOperatorAdressValue
 }UnaryOperatorType;
-@interface ORUnaryExpression: ORExpression
-@property (nonatomic,strong)ORExpression * value;
+@interface ORUnaryExpression: ORNode
+@property (nonatomic,strong)ORNode * value;
 @property (nonatomic,assign)UnaryOperatorType operatorType;
 @end
 
@@ -223,63 +214,66 @@ typedef enum {
     BinaryOperatorLOGIC_OR
 }BinaryOperatorType;
 
-@interface ORBinaryExpression: ORExpression
-@property (nonatomic,strong)ORExpression * left;
+@interface ORBinaryExpression: ORNode
+@property (nonatomic,strong)ORNode * left;
 @property (nonatomic,assign)BinaryOperatorType operatorType;
-@property (nonatomic,strong)ORExpression * right;
+@property (nonatomic,strong)ORNode * right;
 @end
 
-@interface ORTernaryExpression: ORExpression
-@property (nonatomic,strong)ORExpression * expression;
-@property (nonatomic,strong)NSMutableArray <ORExpression *>*values;
+@interface ORTernaryExpression: ORNode
+@property (nonatomic,strong)ORNode * expression;
+@property (nonatomic,strong)NSMutableArray <ORNode *>*values;
 @end
 // MARK: - Statement
-@interface ORStatement:NSObject
+@interface ORIfStatement: ORNode
+@property (nonatomic,strong,nullable)ORNode * condition;
+@property (nonatomic,strong,nullable)ORIfStatement * last;
 @property (nonatomic, strong, nullable)ORScopeImp *scopeImp;
 @end
 
-@interface ORIfStatement : ORStatement
-@property (nonatomic,strong,nullable)ORExpression * condition;
-@property (nonatomic,strong,nullable)ORIfStatement * last;
+@interface ORWhileStatement: ORNode
+@property (nonatomic,strong,nullable)ORNode * condition;
+@property (nonatomic, strong, nullable)ORScopeImp *scopeImp;
 @end
 
-@interface ORWhileStatement : ORStatement
-@property (nonatomic,strong,nullable)ORExpression * condition;
+@interface ORDoWhileStatement: ORNode
+@property (nonatomic,strong,nullable)ORNode * condition;
+@property (nonatomic, strong, nullable)ORScopeImp *scopeImp;
 @end
 
-@interface ORDoWhileStatement : ORStatement
-@property (nonatomic,strong,nullable)ORExpression * condition;
+@interface ORCaseStatement: ORNode
+@property (nonatomic,strong)ORNode * value;
+@property (nonatomic, strong, nullable)ORScopeImp *scopeImp;
 @end
 
-@interface ORCaseStatement : ORStatement
-@property (nonatomic,strong)ORExpression * value;
-@end
-
-@interface ORSwitchStatement : ORStatement
-@property (nonatomic,strong)ORExpression * value;
+@interface ORSwitchStatement: ORNode
+@property (nonatomic,strong)ORNode * value;
 @property (nonatomic,strong)NSMutableArray <ORCaseStatement *>*cases;
+@property (nonatomic, strong, nullable)ORScopeImp *scopeImp;
 @end
 
-@interface ORForStatement : ORStatement
-@property (nonatomic,strong)NSMutableArray <ORExpression *>*varExpressions;
-@property (nonatomic,strong)ORExpression * condition;
-@property (nonatomic,strong)NSMutableArray <ORExpression *>* expressions;
+@interface ORForStatement: ORNode
+@property (nonatomic,strong)NSMutableArray <ORNode *>*varExpressions;
+@property (nonatomic,strong)ORNode * condition;
+@property (nonatomic,strong)NSMutableArray <ORNode *>* expressions;
+@property (nonatomic, strong, nullable)ORScopeImp *scopeImp;
 @end
 
-@interface ORForInStatement : ORStatement
+@interface ORForInStatement: ORNode
 @property (nonatomic,strong)ORDeclareExpression * expression;
-@property (nonatomic,strong)ORExpression * value;
+@property (nonatomic,strong)ORNode * value;
+@property (nonatomic, strong, nullable)ORScopeImp *scopeImp;
 @end
 
-@interface ORReturnStatement : ORStatement
-@property (nonatomic,strong)ORExpression * expression;
+@interface ORReturnStatement: ORNode
+@property (nonatomic,strong)ORNode * expression;
 @end
 
-@interface ORBreakStatement : ORStatement
+@interface ORBreakStatement: ORNode
 
 @end
 
-@interface ORContinueStatement : ORStatement
+@interface ORContinueStatement: ORNode
 
 @end
 
@@ -295,13 +289,13 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
     MFPropertyModifierNonatomic =  0x10,
     MFPropertyModifierAtomicMask = 0xF0,
 };
-@interface ORPropertyDeclare: ORCodeCheck
+@interface ORPropertyDeclare: ORNode
 @property(nonatomic,strong) NSMutableArray *keywords;
 @property(nonatomic,strong) ORTypeVarPair * var;
 @property(nonatomic, assign, readonly) MFPropertyModifier modifier;
 @end
 
-@interface ORMethodDeclare: ORCodeCheck
+@interface ORMethodDeclare: ORNode
 @property(nonatomic,assign) BOOL isClassMethod;
 @property(nonatomic,strong) ORTypeVarPair * returnType;
 @property(nonatomic,strong) NSMutableArray *methodNames;
@@ -310,12 +304,12 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 - (NSString *)selectorName;
 @end
 
-@interface ORMethodImplementation: NSObject
+@interface ORMethodImplementation: ORNode
 @property (nonatomic,strong) ORMethodDeclare * declare;
 @property (nonatomic,strong) ORScopeImp *scopeImp;
 @end
 
-@interface ORClass: NSObject
+@interface ORClass: ORNode
 @property (nonatomic,copy)NSString *className;
 @property (nonatomic,copy)NSString *superClassName;
 @property (nonatomic,strong)NSMutableArray <NSString *>*protocols;
@@ -325,7 +319,7 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 + (instancetype)classWithClassName:(NSString *)className;
 @end
 
-@interface ORProtocol: NSObject
+@interface ORProtocol: ORNode
 @property (nonatomic,copy)NSString *protcolName;
 @property (nonatomic,strong, nullable)NSMutableArray <NSString *>*protocols;
 @property (nonatomic,strong)NSMutableArray <ORPropertyDeclare *>*properties;
@@ -334,19 +328,19 @@ typedef NS_ENUM(NSUInteger, MFPropertyModifier) {
 @end
 
 
-@interface ORStructExpressoin : ORExpression
+@interface ORStructExpressoin: ORNode
 @property (nonatomic,copy)NSString *sturctName;
 @property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*fields;
 @end
 
-@interface OREnumExpressoin : ORExpression
+@interface OREnumExpressoin: ORNode
 @property (nonatomic,copy)NSString *enumName;
 @property (nonatomic,assign)TypeKind valueType;
 @property (nonatomic,strong)NSMutableArray *fields;
 @end
 
-@interface ORTypedefExpressoin : ORExpression
-@property (nonatomic,strong)id expression;
+@interface ORTypedefExpressoin: ORNode
+@property (nonatomic,strong)ORNode *expression;
 @property (nonatomic,copy)NSString *typeNewName;
 @end
 NS_ASSUME_NONNULL_END

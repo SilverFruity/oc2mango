@@ -61,18 +61,21 @@ int main(int argc, const char * argv[]) {
     AST *result = [AST new];
     for (NSString *path in files) {
         AST *ast = [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
-        [result merge:ast];
+        [result merge:ast.nodes];
     }
     Convert *convert = [[Convert alloc] init];
+    __block NSError *error = nil;
     [result.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClass* class, BOOL * _Nonnull stop) {
         NSString *filename = [NSString stringWithFormat:@"%@.mg",key];
         NSString *filepath = [outputDir stringByAppendingPathComponent:filename];
-        NSError *error = nil;
         [[convert convert:class] writeToFile:filepath atomically:YES encoding:NSUTF8StringEncoding error:&error];
         if (error) {
-            NSLog(@"%@ - error: %@",filepath, error.localizedDescription);
+            NSLog(@"oc2mango: %@ - error: %@",filepath, error.localizedDescription);
         }
     }];
+    if (error == nil) {
+        NSLog(@"oc2mango: convert success!");
+    }
     return 1;
 }
 

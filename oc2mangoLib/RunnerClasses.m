@@ -7,10 +7,6 @@
 //
 
 #import "RunnerClasses.h"
-
-
-@implementation ORCodeCheck
-@end
 @implementation ORTypeSpecial
 + (instancetype)specialWithType:(TypeKind)type name:(NSString *)name{
     ORTypeSpecial *s = [ORTypeSpecial new];
@@ -37,7 +33,7 @@
     return self.funVar.isBlock;
 }
 @end
-@implementation ORExpression
+@implementation ORNode
 @end
 @implementation ORValueExpression
 @end
@@ -76,8 +72,6 @@
 - (instancetype)normalFunctionImp{
     ORFunctionImp *imp = [ORFunctionImp new];
     imp.declare = [self.declare copy];
-    imp.value = self.value;
-    imp.value_type = self.value_type;
     imp.scopeImp = self.scopeImp;
     imp.declare.funVar.isBlock = NO;
     return imp;
@@ -104,8 +98,7 @@
     return self;
 }
 @end
-@implementation ORStatement
-@end
+
 @implementation ORIfStatement
 @end
 @implementation ORWhileStatement

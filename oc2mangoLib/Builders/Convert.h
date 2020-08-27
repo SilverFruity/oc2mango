@@ -10,10 +10,8 @@
 #import "MakeDeclare.h"
 NS_ASSUME_NONNULL_BEGIN
 @interface Convert : NSObject
-- (NSString *)convert:(id)content;
+- (NSString *)convert:(id)node;
 - (NSString *)convertOCClass:(ORClass *)occlass;
-- (NSString *)convertExpression:(ORExpression *)exp;
-- (NSString *)convertStatement:(ORStatement *)statement;
 
 - (NSString *)convertTypeSpecial:(ORTypeSpecial *)type;
 - (NSString *)convertPropertyDeclare:(ORPropertyDeclare *)propertyDecl;

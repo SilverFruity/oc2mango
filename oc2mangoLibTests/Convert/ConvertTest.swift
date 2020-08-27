@@ -88,19 +88,19 @@ self.block(value,[NSObject new].x);
         let result7 = convert.convert(ast.globalStatements[6] as Any)
         let result8 = convert.convert(ast.globalStatements[7] as Any)
         
-        XCTAssert(result1 == "NSObject.new().x",result1)
-        XCTAssert(result2 == "x.get",result2)
-        XCTAssert(result3 == "self.request:plugin:completion:(request,plugin,completion)",result3)
-        XCTAssert(result4 == "self.block()(value,NSObject.new().x)",result4)
+        XCTAssert(result1 == "NSObject.new().x;",result1)
+        XCTAssert(result2 == "x.get;",result2)
+        XCTAssert(result3 == "self.request:plugin:completion:(request,plugin,completion);",result3)
+        XCTAssert(result4 == "self.block()(value,NSObject.new().x);",result4)
         XCTAssert(result5 ==
             """
             self.request:(^void (NSString *name,NSURL *URL){
                 NSObject.new();
-            })
+            });
             ""","\n"+result5)
-        XCTAssert(result6 == "@\"123\"",result6)
-        XCTAssert(result7 == "\"123\"",result7)
-        XCTAssert(result8 == "@protocol(NSObject)",result8)
+        XCTAssert(result6 == "@\"123\";",result6)
+        XCTAssert(result7 == "\"123\";",result7)
+        XCTAssert(result8 == "@protocol(NSObject);",result8)
         
     }
     
@@ -118,18 +118,18 @@ b[0];
         let result2 = convert.convert(ast.globalStatements[1] as Any)
         let result3 = convert.convert(ast.globalStatements[2] as Any)
         let result4 = convert.convert(ast.globalStatements[3] as Any)
-        XCTAssert(result1 == "@[self.x,NSObject.new()]",result1)
+        XCTAssert(result1 == "@[self.x,NSObject.new()];",result1)
         XCTAssert(result2 ==
             """
-            @{@"key":@"value",@"key1":@"value1"}
+            @{@"key":@"value",@"key1":@"value1"};
             """)
         XCTAssert(result3 ==
             """
-            a[@"key"]
+            a[@"key"];
             """)
         XCTAssert(result4 ==
             """
-            b[0]
+            b[0];
             """)
         
     }
@@ -158,15 +158,15 @@ x&&y;
         let result7 = convert.convert(ast.globalStatements[6] as Any)
         let result8 = convert.convert(ast.globalStatements[7] as Any)
         let result9 = convert.convert(ast.globalStatements[8] as Any)
-        XCTAssert(result1 == "x + 1",result1);
-        XCTAssert(result2 == "x + b + 1",result2);
-        XCTAssert(result3 == "x++",result3);
-        XCTAssert(result4 == "++x",result4);
-        XCTAssert(result5 == "!x",result5);
-        XCTAssert(result6 == "x == nil ? 1 : 2",result6);
-        XCTAssert(result7 == "x ?: y",result7);
-        XCTAssert(result8 == "x || y",result8);
-        XCTAssert(result9 == "x && y",result9);
+        XCTAssert(result1 == "x + 1;",result1);
+        XCTAssert(result2 == "x + b + 1;",result2);
+        XCTAssert(result3 == "x++;",result3);
+        XCTAssert(result4 == "++x;",result4);
+        XCTAssert(result5 == "!x;",result5);
+        XCTAssert(result6 == "x == nil ? 1 : 2;",result6);
+        XCTAssert(result7 == "x ?: y;",result7);
+        XCTAssert(result8 == "x || y;",result8);
+        XCTAssert(result9 == "x && y;",result9);
     }
     
     func testConvertStatement(){
@@ -491,18 +491,18 @@ let source =
                 make.left.equalTo()(superview.mas_left).with.offset()(padding.left);
                 make.bottom.equalTo()(superview.mas_bottom).with.offset()(-padding.bottom);
                 make.right.equalTo()(superview.mas_right).with.offset()(-padding.right);
-            })
+            });
             ""","\n"+result1)
         
         let result2 = convert.convert(ast.globalStatements[1] as Any)
         XCTAssert(result2 ==
             """
-            self.handler()(@"GGGG")
+            self.handler()(@"GGGG");
             ""","\n"+result2)
         let result3 = convert.convert(ast.globalStatements[2] as Any)
         XCTAssert(result3 ==
             """
-            handler(@"GGGG")
+            handler(@"GGGG");
             ""","\n"+result3)
         
         let result4 = convert.convert(ast.globalStatements[3] as Any)

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy)NSArray <PatchFile *>*links;
 /// the list of statements
 @property(nonatomic, copy)NSArray *nodes;
-/// load from from the patch file
+/// load from the patch file
 - (instancetype)loads:(NSString *)path;
 /// save the patch to the path
 - (void)dumps:(NSString *)path;

@@ -26,23 +26,23 @@ extern ORFuncDeclare *makeFuncDeclare(ORTypeVarPair *returnType, ORFuncVariable 
 extern ORValueExpression *makeValue(OC_VALUE_TYPE type, id value);
 extern ORValueExpression *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
 extern ORScopeImp *makeScopeImp(void);
-extern ORCFuncCall *makeFuncCall(ORValueExpression *caller, NSMutableArray *expressions);
+extern ORCFuncCall *makeFuncCall(ORNode *caller, NSMutableArray *expressions);
 extern ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type);
 extern ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern ORTernaryExpression *makeTernaryExpression(void);
 extern ORAssignExpression *makeAssignExpression(AssignOperatorType type);
-extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORExpression * exp);
+extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORNode * exp);
 
 
-extern ORIfStatement *makeIfStatement(ORExpression *judgement, ORScopeImp *imp);
-extern ORWhileStatement *makeWhileStatement(ORExpression *judgement, ORScopeImp *imp);
-extern ORDoWhileStatement *makeDoWhileStatement(ORExpression *judgement, ORScopeImp *imp);
+extern ORIfStatement *makeIfStatement(ORNode *judgement, ORScopeImp *imp);
+extern ORWhileStatement *makeWhileStatement(ORNode *judgement, ORScopeImp *imp);
+extern ORDoWhileStatement *makeDoWhileStatement(ORNode *judgement, ORScopeImp *imp);
 extern ORCaseStatement *makeCaseStatement(ORValueExpression *value);
 extern ORSwitchStatement *makeSwitchStatement(ORValueExpression *value);
 extern ORForStatement *makeForStatement(ORScopeImp *imp);
 extern ORForInStatement *makeForInStatement(ORScopeImp *imp);
 
-extern ORReturnStatement *makeReturnStatement(ORExpression * expression);
+extern ORReturnStatement *makeReturnStatement(ORNode * expression);
 extern ORBreakStatement *makeBreakStatement(void);
 extern ORContinueStatement *makeContinueStatement(void);
 
