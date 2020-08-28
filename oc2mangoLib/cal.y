@@ -1122,15 +1122,15 @@ primary_expression:
 ;
 declaration_modifier: _WEAK
         {
-            $$ = ORDeclarationModifierWeak;
+            $$ = DeclarationModifierWeak;
         }
         | _STRONG
         {
-            $$ = ORDeclarationModifierStrong;
+            $$ = DeclarationModifierStrong;
         }
         | STATIC
         {
-            $$ = ORDeclarationModifierStatic;
+            $$ = DeclarationModifierStatic;
         }
         ;
 

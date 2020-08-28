@@ -52,7 +52,15 @@
     }
 //#define ARCHIVE_TEST
 #ifdef ARCHIVE_TEST
-    NSArray *nodes = [ORPatchFileArchiveHelper patchFileTest:GlobalAst.nodes];
+    NSArray *nodes;
+    nodes = [ORPatchFileArchiveHelper patchFileTest:GlobalAst.nodes];
+    
+//    ORPatchFile *file = [ORPatchFile new];
+//    file.nodes = GlobalAst.nodes;
+//    _PatchNode *node = _PatchNodeConvert(file);
+//    file = _PatchNodeDeConvert(node);
+//    nodes = file.nodes;
+    
     GlobalAst = [AST new];
     [GlobalAst merge:nodes];
 #endif
