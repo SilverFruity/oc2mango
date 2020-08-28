@@ -7,6 +7,26 @@
 //
 #import <Foundation/Foundation.h>
 #import <oc2mangoLib/oc2mangoLib.h>
+long long fileSizeAtPath(NSString* filePath)
+{
+    NSFileManager* manager = [NSFileManager defaultManager];
+    if ([manager fileExistsAtPath:filePath]){
+        return [[manager attributesOfItemAtPath:filePath error:nil] fileSize];
+    }
+    return 0;
+}
+float folderSizeAtPath(NSString *folderPath){
+    NSFileManager* manager = [NSFileManager defaultManager];
+    if (![manager fileExistsAtPath:folderPath]) return 0;
+    NSEnumerator *childFilesEnumerator = [[manager subpathsAtPath:folderPath] objectEnumerator];
+    NSString* fileName;
+    long long folderSize = 0;
+    while ((fileName = [childFilesEnumerator nextObject]) != nil){
+        NSString* fileAbsolutePath = [folderPath stringByAppendingPathComponent:fileName];
+        folderSize += fileSizeAtPath(fileAbsolutePath);
+    }
+    return folderSize;
+}
 void recursiveLookupCompileFiles(NSString *path,NSMutableArray *dirs,NSMutableArray *files){
     BOOL isDir;
     if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) {
@@ -57,23 +77,28 @@ int main(int argc, const char * argv[]) {
     NSMutableArray *dirs = [NSMutableArray array];
     NSMutableArray *files = [NSMutableArray array];
     recursiveLookupCompileFiles(inputDir, dirs, files);
+    NSDate *startDate = [NSDate new];
+    NSDate *endDate = [NSDate new];
+    
+    startDate = [NSDate new];
     AST *result = [AST new];
     for (NSString *path in files) {
         AST *ast = [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
         [result merge:ast.nodes];
     }
-    
-    NSDate *startDate = [NSDate new];
-    NSDate *endDate = [NSDate new];
+    endDate = [NSDate new];
+    NSLog(@"raw files size: %.2fKB", folderSizeAtPath(inputDir) / 1000);
+    NSLog(@"compile time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
     
     startDate = [NSDate new];
     NSData *encryptData = [[NSData data] initWithContentsOfFile:@"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassEncryptMap.json"];
     NSData *decryptData = [[NSData data] initWithContentsOfFile:@"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassDecryptMap.json"];
     NSDictionary *encrypt = [NSJSONSerialization JSONObjectWithData:encryptData options:0 error:nil];
     NSDictionary *decrypt = [NSJSONSerialization JSONObjectWithData:decryptData options:0 error:nil];
-    [ORPatchFileArchiveHelper patchFileTest:result.nodes encrptMap:encrypt decrptMap:decrypt];
+    NSArray *jsonNodes = [JSONPatchHelper patchFileTest:result.nodes encrptMap:encrypt decrptMap:decrypt];
     endDate = [NSDate new];
-    NSLog(@"%f",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
+    NSLog(@"json serialization, deserialization time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
+    [result merge:jsonNodes];
     
     startDate = [NSDate new];
     ORPatchFile *file = [ORPatchFile new];
@@ -81,9 +106,9 @@ int main(int argc, const char * argv[]) {
     _PatchNode *node = _PatchNodeConvert(file);
     file = _PatchNodeDeConvert(node);
     endDate = [NSDate new];
-    NSLog(@"%lluKB",node->length / 1000);
-    NSLog(@"%f",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-    
+    NSLog(@"binary serialization time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
+    NSLog(@"binary length: %lluKB",node->length / 1000);
+    [result merge:file.nodes];
     
     Convert *convert = [[Convert alloc] init];
     __block NSError *error = nil;

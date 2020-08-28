@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "AST.h"
 #import "ORPatchFile.h"
-#import "BinaryPatch.h"
+#import "BinaryPatchHelper.h"
 #define OCParser [Parser shared]
 NS_ASSUME_NONNULL_BEGIN
 @interface CodeSource: NSObject

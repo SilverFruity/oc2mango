@@ -6,20 +6,20 @@
 //  Copyright © 2020 SilverFruity. All rights reserved.
 //
 
-#import "JsonPatchHelper.h"
+#import "JSONPatchHelper.h"
 #import "ORPatchFile.h"
-@implementation ClassEncrypt
+@implementation JSONPatchClassEncrypt
 + (instancetype)encryptWithDict:(NSDictionary *)dict{
-    ClassEncrypt *encryt = [ClassEncrypt new];
+    JSONPatchClassEncrypt *encryt = [JSONPatchClassEncrypt new];
     encryt.nodeName = dict[@"n"];
     encryt.fieldNames = dict[@"f"];
     encryt.fieldEncryptMap = dict[@"m"];
     return encryt;
 }
 @end
-@implementation ClassDecrypt
+@implementation JSONPatchClassDecrypt
 + (instancetype)decryptWithDict:(NSDictionary *)dict{
-    ClassDecrypt *encryt = [ClassDecrypt new];
+    JSONPatchClassDecrypt *encryt = [JSONPatchClassDecrypt new];
     encryt.className = dict[@"c"];
     encryt.fieldNames = dict[@"f"];
     encryt.fieldDecryptMap = dict[@"m"];
@@ -58,7 +58,7 @@ id archiveRecursive(id object, NSDictionary *encryptMap, ORPatchFile *patch){
 }
 NSDictionary *archiveNode(ORNode *node, NSDictionary *encryptMap, ORPatchFile *patch){
     NSMutableDictionary *nodeData = [@{} mutableCopy];
-    ClassEncrypt *item = [ClassEncrypt encryptWithDict:encryptMap[NSStringFromClass([node class])]];
+    JSONPatchClassEncrypt *item = [JSONPatchClassEncrypt encryptWithDict:encryptMap[NSStringFromClass([node class])]];
     nodeData[@"n"] = item.nodeName;
     for (NSString *name in item.fieldNames){
         id value = [node valueForKey:name];
@@ -90,7 +90,7 @@ id unArchiveRecursive(id object, NSDictionary *decryptMap, ORPatchFile *patch){
 }
 ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchFile *patch){
     NSString *nodeName = nodeData[@"n"];
-    ClassDecrypt *item = [ClassDecrypt decryptWithDict:decryptMap[nodeName]];
+    JSONPatchClassDecrypt *item = [JSONPatchClassDecrypt decryptWithDict:decryptMap[nodeName]];
     ORNode *node = [[NSClassFromString(item.className) alloc] init];
     for (NSString *name in item.fieldNames){
         id value = nodeData[name];
@@ -103,7 +103,7 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
     return node;
 }
 
-@implementation JsonPatchHelper
+@implementation JSONPatchHelper
 #if DEBUG
 + (NSArray<ORNode *> *)patchFileTest:(NSArray<ORNode *> *)nodes{
     return [self patchFileTest:nodes encrptMap:nil decrptMap:nil];
@@ -114,7 +114,7 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
     NSDictionary *dictionary = [self archivePatch:file encrptMap:encryptMap];
     NSError *error = nil;
     NSData *jsondata = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
-    NSLog(@"file length: %.2fKB",(double)jsondata.length / 1000.0);
+    NSLog(@"josn file length: %.2fKB",(double)jsondata.length / 1000.0);
     NSAssert(error == nil, error.localizedDescription);
     dictionary = [NSJSONSerialization JSONObjectWithData:jsondata options:NSJSONReadingMutableLeaves error:&error];
     NSAssert(error == nil, error.localizedDescription);
@@ -127,9 +127,9 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
     _jsonPatchStringMap = [NSMutableDictionary dictionary];
     
     if (cryptoMap == nil) {
-        NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[JsonPatchHelper class]] pathForResource:@"oc2mangoLib" ofType:@"bundle"]];
+        NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[JSONPatchHelper class]] pathForResource:@"oc2mangoLib" ofType:@"bundle"]];
         if (bundle == nil) {
-            bundle = [NSBundle bundleForClass:[JsonPatchHelper class]];
+            bundle = [NSBundle bundleForClass:[JSONPatchHelper class]];
         }
         NSString *path = [bundle pathForResource:@"ClassEncryptMap.json" ofType:nil];
         NSData *data = [[NSData alloc] initWithContentsOfFile:path];
@@ -152,9 +152,9 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
     ORPatchFile *file = [ORPatchFile new];
     [file setValuesForKeysWithDictionary:patch];
     if (cryptoMap == nil) {
-        NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[JsonPatchHelper class]] pathForResource:@"oc2mangoLib" ofType:@"bundle"]];
+        NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[JSONPatchHelper class]] pathForResource:@"oc2mangoLib" ofType:@"bundle"]];
         if (bundle == nil) {
-            bundle = [NSBundle bundleForClass:[JsonPatchHelper class]];
+            bundle = [NSBundle bundleForClass:[JSONPatchHelper class]];
         }
         NSString *path = [bundle pathForResource:@"ClassDecryptMap.json" ofType:nil];
         NSData *data = [[NSData alloc] initWithContentsOfFile:path];

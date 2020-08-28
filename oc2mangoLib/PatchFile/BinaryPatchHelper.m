@@ -1,8 +1,8 @@
-//  BinaryPatch.m
+//  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
 //  Created by Jiang on 1598646865
 //  Copyright © 2020 SilverFruity. All rights reserved.
-#import "BinaryPatch.h"
+#import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
 typedef enum: uint64_t{
     ORNodeType = 0,

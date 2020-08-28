@@ -9,12 +9,15 @@
 import Foundation
 let filepath = CommandLine.arguments[1]
 let resultDir = CommandLine.arguments[2]
-let resultFileName = "BinaryPatch"
 
 let parser = Parser()
 let source = CodeSource.init(filePath: filepath)
 let ast = parser.parseCodeSource(source)
+
 let NodeDefine = "_ORNodeFields"
+let PatchClass = "ORPatchFile"
+let resultFileName = "BinaryPatchHelper"
+
 let _ORNodeLength = 16
 var headerSource =
 """
@@ -24,7 +27,7 @@ var headerSource =
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
-@class ORPatchFile;
+@class \(PatchClass);
 #define \(NodeDefine) \\
 uint64_t nodeType;\\
 uint64_t length;
@@ -67,8 +70,8 @@ typedef struct {
 #pragma pack()
 #pragma pack(show)
 
-_PatchNode *_PatchNodeConvert(ORPatchFile *patch);
-ORPatchFile *_PatchNodeDeConvert(_PatchNode *node);
+_PatchNode *_PatchNodeConvert(\(PatchClass) *patch);
+\(PatchClass) *_PatchNodeDeConvert(_PatchNode *node);
 """
 
 var NodeTypeEnums = ""
@@ -90,7 +93,7 @@ NodeTypeEnums =
 //  Created by Jiang on \(Int(Date.init().timeIntervalSince1970))
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "\(resultFileName).h"
-#import "ORPatchFile.h"
+#import "\(PatchClass).h"
 typedef enum: uint64_t{
     ORNodeType = 0,
     PatchNodeType = 1,
@@ -176,7 +179,7 @@ NSString *getString(_StringNode *node, _PatchNode *patch){
     return [NSString stringWithUTF8String:buffer];
 }
 
-_PatchNode *_PatchNodeConvert(ORPatchFile *patch){
+_PatchNode *_PatchNodeConvert(\(PatchClass) *patch){
     _stringMap = [NSMutableDictionary dictionary];
     _PatchNode *node = malloc(sizeof(_PatchNode));
     memset(node, 0, sizeof(_PatchNode));
@@ -191,8 +194,8 @@ _PatchNode *_PatchNodeConvert(ORPatchFile *patch){
     return node;
 }
 
-ORPatchFile *_PatchNodeDeConvert(_PatchNode *patch){
-    ORPatchFile *file = [ORPatchFile new];
+\(PatchClass) *_PatchNodeDeConvert(_PatchNode *patch){
+    \(PatchClass) *file = [\(PatchClass) new];
     file.appVersion = _ORNodeDeConvert((_ORNode *)patch->appVersion, patch);
     file.osVersion = _ORNodeDeConvert((_ORNode *)patch->osVersion, patch);
     file.enable = patch->enable;
@@ -389,3 +392,5 @@ let impFilePath = resultDir + "/" + resultFileName + ".m"
 try? headerSource.write(toFile: headerFilePath, atomically: true, encoding: .utf8)
 try? impSource.write(toFile: impFilePath, atomically: true, encoding: .utf8)
 
+print(headerFilePath)
+print(impFilePath)

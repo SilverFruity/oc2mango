@@ -15,7 +15,6 @@
     if (self) {
         self.appVersion = @"*";
         self.osVersion = @"*";
-        self.stringMap = [NSMutableDictionary dictionary];
         self.strings = [NSMutableArray array];
         self.nodes = [NSMutableArray array];
     }

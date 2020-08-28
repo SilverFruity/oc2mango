@@ -9,4 +9,4 @@
 #import "Convert.h"
 #import "Parser.h"
 #import "RunnerClasses.h"
-#import "ORPatchFileArchiveHelper.h"
+#import "ORPatchFile.h"

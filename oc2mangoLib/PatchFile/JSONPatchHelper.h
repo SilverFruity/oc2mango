@@ -10,14 +10,14 @@
 #import "RunnerClasses.h"
 NS_ASSUME_NONNULL_BEGIN
 @class ORPatchFile;
-@interface ClassEncrypt: NSObject
+@interface JSONPatchClassEncrypt: NSObject
 @property(nonatomic, copy)NSString *nodeName;
 @property(nonatomic, copy)NSDictionary <NSString*, NSString*>*fieldEncryptMap;
 @property(nonatomic, copy)NSArray <NSString *>*fieldNames;
 + (instancetype)encryptWithDict:(NSDictionary *)dict;
 @end
 
-@interface ClassDecrypt: NSObject
+@interface JSONPatchClassDecrypt: NSObject
 @property(nonatomic, copy)NSString *className;
 @property(nonatomic, copy)NSDictionary <NSString*, NSString*>*fieldDecryptMap;
 @property(nonatomic, copy)NSArray <NSString *>*fieldNames;
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface ORPatchFileArchiveHelper : NSObject
+@interface JSONPatchHelper : NSObject
 + (NSDictionary *)archivePatch:(ORPatchFile *)patch encrptMap:(nullable NSDictionary *)cryptoMap;
 + (ORPatchFile *)unArchivePatch:(NSDictionary *)patch decrptMap:(nullable NSDictionary *)cryptoMap;
 #if DEBUG
