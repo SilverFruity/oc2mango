@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1598719158
+//  Created by Jiang on 1598721829
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
@@ -55,3 +55,4 @@ _PatchNode *_PatchNodeConvert(ORPatchFile *patch);
 ORPatchFile *_PatchNodeDeConvert(_PatchNode *node);
 void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor);
 _PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
+void _PatchNodeDestroy(_PatchNode *node);

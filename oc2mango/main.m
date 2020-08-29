@@ -76,11 +76,11 @@ int main(int argc, const char * argv[]) {
     }
     NSMutableArray *dirs = [NSMutableArray array];
     NSMutableArray *files = [NSMutableArray array];
-    recursiveLookupCompileFiles(inputDir, dirs, files);
     NSDate *startDate = [NSDate new];
     NSDate *endDate = [NSDate new];
-    
     startDate = [NSDate new];
+    
+    recursiveLookupCompileFiles(inputDir, dirs, files);
     AST *result = [AST new];
     for (NSString *path in files) {
         AST *ast = [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
@@ -116,6 +116,8 @@ int main(int argc, const char * argv[]) {
     void *buffer = malloc(node->length);
     _PatchNodeSerialization(node, buffer, &cursor);
     data = [[NSData alloc] initWithBytes:buffer length:node->length];
+    _PatchNodeDestroy(node);
+    
     [data writeToFile:filePath atomically:YES];
 
     //Deserialization
@@ -123,12 +125,12 @@ int main(int argc, const char * argv[]) {
     void *fileBuffer = (void *)data.bytes;
     cursor = 0;
     node = _PatchNodeDeserialization(fileBuffer, &cursor, (uint32_t)data.length);
-
     file = _PatchNodeDeConvert(node);
+    _PatchNodeDestroy(node);
     
     endDate = [NSDate new];
     NSLog(@"binary serialization time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-    NSLog(@"binary length: %uKB",node->length / 1000);
+    NSLog(@"binary length: %luKB",data.length / 1000);
     result = [AST new];
     [result merge:file.nodes];
     

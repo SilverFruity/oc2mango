@@ -88,6 +88,7 @@ _PatchNode *_PatchNodeConvert(\(PatchClass) *patch);
 \(PatchClass) *_PatchNodeDeConvert(_PatchNode *node);
 void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor);
 _PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
+void _PatchNodeDestroy(_PatchNode *node);
 """
 
 var NodeTypeEnums = ""
@@ -294,6 +295,27 @@ _PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t b
     node->nodes = (_ListNode *)_ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
+void _ORNodeDestroy(_ORNode *node);
+void _StringNodeDestroy(_StringNode *node){
+    free(node);
+}
+void _ListNodeDestroy(_ListNode *node){
+    for (int i = 0; i < node->count; i++) {
+         _ORNodeDestroy(node->nodes[i]);
+    }
+    free(node);
+}
+void _StringsNodeDestroy(_StringsNode *node){
+    free(node->buffer);
+    free(node);
+}
+void _PatchNodeDestroy(_PatchNode *node){
+    _ORNodeDestroy((_ORNode *)node->strings);
+    _ORNodeDestroy((_ORNode *)node->appVersion);
+    _ORNodeDestroy((_ORNode *)node->osVersion);
+    _ORNodeDestroy((_ORNode *)node->nodes);
+    free(node);
+}
 
 """
 var contentCache = [String: ClassContent]()
@@ -309,6 +331,7 @@ class ClassContent{
     var deConvertExps = [String]()
     var serializationExps = [String]()
     var deserializationExps = [String]()
+    var destoryExps = [String]()
     var lengthExps = [String]()
     var baseLength = 0
     func addStructNodeField(type: String, varname: String){
@@ -337,6 +360,9 @@ class ClassContent{
     }
     func addDeserializationExp(varname: String, nodeName:String){
         deserializationExps.append("node->\(varname) =(\(nodeName) *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
+    }
+    func addDestroyExp(varname: String){
+        destoryExps.append("_ORNodeDestroy((_ORNode *)node->\(varname));")
     }
     init(className: String, superClassName: String) {
         self.className = className
@@ -430,6 +456,16 @@ class ClassContent{
          
          """
     }
+    //TODO: Destroy
+    func destoryFunctionSource()->String{
+        return """
+        void \(structName)Destroy(\(structName) *node){
+            \(destoryExps.joined(separator: "\n    "))
+            free(node);
+        }
+        
+        """
+    }
 }
 for node in ast.nodes{
     guard let classNode = node as? ORClass, classNode.className != "ORNode" else {
@@ -450,6 +486,7 @@ for node in ast.nodes{
                 item.addNodeDeconvertExp(varname: varname, className: "NSMutableArray *")
                 item.addSerializationExp(varname: varname)
                 item.addDeserializationExp(varname: varname, nodeName: "_ListNode")
+                item.addDestroyExp(varname: varname)
             }else if typename.hasPrefix("OR") || typename == "id"{
                 item.addStructNodeField(type: "_ORNode *", varname: varname)
                 item.addLengthExp(varname: varname)
@@ -457,6 +494,7 @@ for node in ast.nodes{
                 item.addNodeDeconvertExp(varname: varname, className: "id")
                 item.addSerializationExp(varname: varname)
                 item.addDeserializationExp(varname: varname, nodeName: "_ORNode")
+                item.addDestroyExp(varname: varname)
             }else if typename == "NSString"{
                 item.addStructNodeField(type: "_StringNode *", varname: varname)
                 item.addLengthExp(varname: varname)
@@ -464,6 +502,7 @@ for node in ast.nodes{
                 item.addNodeDeconvertExp(varname: varname, className: "NSString *")
                 item.addSerializationExp(varname: varname)
                 item.addDeserializationExp(varname: varname, nodeName: "_StringNode")
+                item.addDestroyExp(varname: varname)
             }else{
                 item.addStructNodeField(type: _uintType, varname: varname)
                 item.addBaseConvertExp(varname: varname)
@@ -494,6 +533,8 @@ for node in ast.nodes{
     impSource += item.serailizationFunctionSource()
     
     impSource += item.deserializationFunctionSource()
+    
+    impSource += item.destoryFunctionSource()
 }
 
 impSource +=
@@ -506,6 +547,7 @@ var convertExps = [String]()
 var deConvertExps = [String]()
 var serializationExps = [String]()
 var deserializationExps = [String]()
+var destoryExps = [String]()
 for node in ast.nodes{
     guard let classNode = node as? ORClass else {
         continue
@@ -544,6 +586,13 @@ for node in ast.nodes{
             return (_ORNode *)\(structName)Deserialization(buffer, cursor, bufferLength);
         }
     """)
+    destoryExps.append(
+    """
+    else if (node->nodeType == \(structName)Node){
+            \(structName)Destroy((\(structName) *)node);
+        }
+    """
+    )
     
 }
 
@@ -608,6 +657,21 @@ _ORNode *_ORNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferL
     memset(node, 0, sizeof(_ORNode));
     *cursor += \(_ORNodeLength);
     return node;
+}
+
+"""
+impSource +=
+"""
+void _ORNodeDestroy(_ORNode *node){
+    if (node->nodeType == ORNodeType) {
+        free(node);
+    }else if (node->nodeType == ListNodeType) {
+        _ListNodeDestroy((_ListNode *)node);
+    }else if (node->nodeType == StringNodeType) {
+        _StringNodeDestroy((_StringNode *) node);
+    }else if (node->nodeType == StringsNodeType) {
+        _StringsNodeDestroy((_StringsNode *) node);
+    }\(destoryExps.joined(separator: ""))
 }
 
 """
