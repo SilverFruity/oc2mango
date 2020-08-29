@@ -40,7 +40,7 @@
 		EE4F368624F9254400F685AF /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
 		EE4F368724F9254400F685AF /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
 		EE4F369724F994B500F685AF /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4F369524F994B500F685AF /* BinaryPatchHelper.m */; };
-		EE4F369824F994B500F685AF /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4F369624F994B500F685AF /* BinaryPatchHelper.h */; };
+		EE4F369824F994B500F685AF /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4F369624F994B500F685AF /* BinaryPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE4F369924F994C500F685AF /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 04ADC89024F7A3900018CB64 /* JSONPatchHelper.m */; };
 		EE4F369A24F994D300F685AF /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE2510A424F4249100BA575A /* ORPatchFile.m */; };
 		EE4F369B24F9952300F685AF /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4F369524F994B500F685AF /* BinaryPatchHelper.m */; };

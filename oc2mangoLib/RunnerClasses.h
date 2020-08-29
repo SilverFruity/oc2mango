@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 // MARK: - Base
-typedef enum: uint64_t{
+typedef enum: uint32_t{
     TypeVoid = 0x00,
     TypeUChar = 0x01,
     TypeUInt,
@@ -77,7 +77,7 @@ typedef enum: uint64_t{
 - (void)copyFromImp:(ORScopeImp *)imp;
 @end
 
-typedef enum: uint64_t{
+typedef enum: uint32_t{
     OCValueVariable, // value: NSString
     OCValueSelf, // value: nil
     OCValueSuper, // value: nil
@@ -101,11 +101,11 @@ typedef enum: uint64_t{
 @end
 
 @interface ORMethodCall: ORNode
-@property (nonatomic, strong)ORNode * caller;
 @property (nonatomic, assign)BOOL isDot;
+@property (nonatomic, assign)BOOL isAssignedValue;
+@property (nonatomic, strong)ORNode * caller;
 @property (nonatomic, strong)NSMutableArray *names;
 @property (nonatomic, strong)NSMutableArray <ORNode *> *values;
-@property (nonatomic, assign)BOOL isAssignedValue;
 - (NSString *)selectorName;
 @end
 
@@ -127,7 +127,7 @@ typedef enum: uint64_t{
 @property (nonatomic, strong)ORNode * keyExp;
 @end
 
-typedef enum: uint64_t{
+typedef enum: uint32_t{
     AssignOperatorAssign,
     AssignOperatorAssignAnd,
     AssignOperatorAssignOr,
@@ -142,13 +142,13 @@ typedef enum: uint64_t{
 }AssignOperatorType;
 
 @interface ORAssignExpression: ORNode
-@property (nonatomic,strong)ORNode * value;
 @property (nonatomic,assign)AssignOperatorType assignType;
+@property (nonatomic,strong)ORNode * value;
 @property (nonatomic,strong)ORNode * expression;
 - (nullable NSString *)varname;
 @end
 
-typedef enum: uint64_t{
+typedef enum: uint32_t{
     DeclarationModifierNone       = 1,
     DeclarationModifierStrong     = 1 << 1,
     DeclarationModifierWeak       = 1 << 2,
@@ -161,7 +161,7 @@ typedef enum: uint64_t{
 @property (nonatomic,strong, nullable)ORNode * expression;
 @end
 
-typedef enum: uint64_t{
+typedef enum: uint32_t{
     UnaryOperatorIncrementSuffix,
     UnaryOperatorDecrementSuffix,
     UnaryOperatorIncrementPrefix,
@@ -174,11 +174,11 @@ typedef enum: uint64_t{
     UnaryOperatorAdressValue
 }UnaryOperatorType;
 @interface ORUnaryExpression: ORNode
-@property (nonatomic,strong)ORNode * value;
 @property (nonatomic,assign)UnaryOperatorType operatorType;
+@property (nonatomic,strong)ORNode * value;
 @end
 
-typedef enum: uint64_t{
+typedef enum: uint32_t{
     BinaryOperatorAdd,
     BinaryOperatorSub,
     BinaryOperatorDiv,
@@ -200,8 +200,8 @@ typedef enum: uint64_t{
 }BinaryOperatorType;
 
 @interface ORBinaryExpression: ORNode
-@property (nonatomic,strong)ORNode * left;
 @property (nonatomic,assign)BinaryOperatorType operatorType;
+@property (nonatomic,strong)ORNode * left;
 @property (nonatomic,strong)ORNode * right;
 @end
 
@@ -263,7 +263,7 @@ typedef enum: uint64_t{
 @end
 
 // MARK: - Class
-typedef enum: uint64_t{
+typedef enum: uint32_t{
     MFPropertyModifierMemStrong = 0x00,
     MFPropertyModifierMemWeak = 0x01,
     MFPropertyModifierMemCopy = 0x2,
@@ -275,9 +275,9 @@ typedef enum: uint64_t{
     MFPropertyModifierAtomicMask = 0xF0
 }MFPropertyModifier;
 @interface ORPropertyDeclare: ORNode
+@property(nonatomic, assign, readonly) MFPropertyModifier modifier;
 @property(nonatomic,strong) NSMutableArray *keywords;
 @property(nonatomic,strong) ORTypeVarPair * var;
-@property(nonatomic, assign, readonly) MFPropertyModifier modifier;
 @end
 
 @interface ORMethodDeclare: ORNode
@@ -320,8 +320,8 @@ typedef enum: uint64_t{
 @end
 
 @interface OREnumExpressoin: ORNode
-@property (nonatomic,copy)NSString *enumName;
 @property (nonatomic,assign)TypeKind valueType;
+@property (nonatomic,copy)NSString *enumName;
 @property (nonatomic,strong)NSMutableArray *fields;
 @end
 

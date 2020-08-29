@@ -89,7 +89,7 @@ int main(int argc, const char * argv[]) {
     endDate = [NSDate new];
     NSLog(@"raw files size: %.2fKB", folderSizeAtPath(inputDir) / 1000);
     NSLog(@"compile time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-    
+
     startDate = [NSDate new];
     NSData *encryptData = [[NSData data] initWithContentsOfFile:@"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassEncryptMap.json"];
     NSData *decryptData = [[NSData data] initWithContentsOfFile:@"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassDecryptMap.json"];
@@ -98,16 +98,38 @@ int main(int argc, const char * argv[]) {
     NSArray *jsonNodes = [JSONPatchHelper patchFileTest:result.nodes encrptMap:encrypt decrptMap:decrypt];
     endDate = [NSDate new];
     NSLog(@"json serialization, deserialization time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
+    result = [AST new];
     [result merge:jsonNodes];
     
+    NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/BinaryPatch.txt";
+    NSData *data = nil;
+    uint32_t cursor = 0;
     startDate = [NSDate new];
     ORPatchFile *file = [ORPatchFile new];
+    _PatchNode *node = nil;
+    
     file.nodes = result.nodes;
-    _PatchNode *node = _PatchNodeConvert(file);
+    node = _PatchNodeConvert(file);
+
+    //Serialization
+    //TODO: 压缩，_ORNode结构体中不包含length字段.
+    void *buffer = malloc(node->length);
+    _PatchNodeSerialization(node, buffer, &cursor);
+    data = [[NSData alloc] initWithBytes:buffer length:node->length];
+    [data writeToFile:filePath atomically:YES];
+
+    //Deserialization
+    data = [[NSData alloc] initWithContentsOfFile:filePath];
+    void *fileBuffer = (void *)data.bytes;
+    cursor = 0;
+    node = _PatchNodeDeserialization(fileBuffer, &cursor, (uint32_t)data.length);
+
     file = _PatchNodeDeConvert(node);
+    
     endDate = [NSDate new];
     NSLog(@"binary serialization time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-    NSLog(@"binary length: %lluKB",node->length / 1000);
+    NSLog(@"binary length: %uKB",node->length / 1000);
+    result = [AST new];
     [result merge:file.nodes];
     
     Convert *convert = [[Convert alloc] init];

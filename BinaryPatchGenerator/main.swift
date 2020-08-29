@@ -18,7 +18,11 @@ let NodeDefine = "_ORNodeFields"
 let PatchClass = "ORPatchFile"
 let resultFileName = "BinaryPatchHelper"
 
-let _ORNodeLength = 16
+let _ORNodeLength = 5
+let _uintType = "uint32_t"
+let _uintLength = 4
+let _NodeTypeType = "uint8_t"
+//TODO: Header
 var headerSource =
 """
 //  \(resultFileName).h
@@ -29,8 +33,8 @@ var headerSource =
 #import <Foundation/Foundation.h>
 @class \(PatchClass);
 #define \(NodeDefine) \\
-uint64_t nodeType;\\
-uint64_t length;
+\(_NodeTypeType) nodeType;\\
+uint32_t length;
 
 #pragma pack(1)
 #pragma pack(show)
@@ -38,40 +42,46 @@ typedef struct {
     \(NodeDefine)
 }_ORNode;
 
-static uint64_t _ORNodeLength = \(_ORNodeLength);
+static \(_uintType) _ORNodeLength = \(_ORNodeLength);
 
 typedef struct {
     \(NodeDefine)
-    uint64_t count;
+    \(_uintType) count;
     _ORNode **nodes;
 }_ListNode;
+static uint32_t _ListNodeBaseLength = \(_ORNodeLength + _uintLength);
 
 typedef struct {
     \(NodeDefine)
-    uint64_t offset;
-    uint64_t strLen;
+    \(_uintType) offset;
+    \(_uintType) strLen;
 }_StringNode;
-static uint64_t _StringNodeLength = \(_ORNodeLength) + 16;
+static \(_uintType) _StringNodeBaseLength = \(_ORNodeLength + _uintLength * 2);
 
 typedef struct {
     \(NodeDefine)
+    \(_uintType) cursor;
     char *buffer;
-    uint64_t cursor;
 }_StringsNode;
+static \(_uintType) _StringsNodeBaseLength = \(_ORNodeLength + _uintLength);
 
 typedef struct {
     \(NodeDefine)
+    BOOL enable;
+    _StringsNode *strings;
     _StringNode *appVersion;
     _StringNode *osVersion;
     _ListNode *nodes;
-    _StringsNode *strings;
-    BOOL enable;
 }_PatchNode;
+static \(_uintType) _PatchNodeBaseLength = \(_ORNodeLength + 1);
+
 #pragma pack()
 #pragma pack(show)
 
 _PatchNode *_PatchNodeConvert(\(PatchClass) *patch);
 \(PatchClass) *_PatchNodeDeConvert(_PatchNode *node);
+void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor);
+_PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
 """
 
 var NodeTypeEnums = ""
@@ -94,7 +104,7 @@ NodeTypeEnums =
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "\(resultFileName).h"
 #import "\(PatchClass).h"
-typedef enum: uint64_t{
+typedef enum: \(_NodeTypeType){
     ORNodeType = 0,
     PatchNodeType = 1,
     StringNodeType = 2,
@@ -116,10 +126,11 @@ _ListNode *_ListNodeConvert(NSArray *array, _PatchNode *patch){
     _ListNode *node = malloc(sizeof(_ListNode));
     memset(node, 0, sizeof(_ListNode));
     node->nodes = malloc(sizeof(void *) * array.count);
+    node->nodeType = ListNodeType;
+    node->length = _ListNodeBaseLength;
     for (id object in array) {
         _ORNode *element = _ORNodeConvert(object, patch);;
         node->nodes[node->count] = element;
-        node->nodeType = ListNodeType;
         node->length += element->length;
         node->count++;
     }
@@ -141,25 +152,28 @@ _StringNode *saveNewString(NSString *string, _PatchNode *patch){
     memset(strNode, 0, sizeof(_StringNode));
     const char *str = string.UTF8String;
     size_t len = strlen(str);
-    strNode->strLen = len;
-    strNode->length = _StringNodeLength;
+    strNode->strLen = (unsigned int)len;
+    strNode->length = _StringNodeBaseLength;
     strNode->nodeType = StringNodeType;
     
     if (_stringMap[string]) {
-        uint64_t offset = [_stringMap[string] unsignedLongLongValue];
+        \(_uintType) offset = [_stringMap[string] unsignedIntValue];
         strNode->offset = offset;
         return strNode;
     }
     
-    NSUInteger needLength = string.length + patch->strings->length;
+    NSUInteger needLength = len + patch->strings->length;
     if (patch->strings->buffer == NULL) {
-        patch->strings->buffer = malloc(string.length + patch->strings->length);
+        patch->strings->buffer = malloc(needLength + 1);
+        //FIX: strlen() heap overflow
+        patch->strings->buffer[needLength] = '\\0';
     }else if (needLength > strlen(patch->strings->buffer)){
         NSUInteger bufferLength = strlen(patch->strings->buffer);
-        NSUInteger addLength = 512;
+        NSUInteger addLength = 1000;
         NSUInteger newLength = addLength + bufferLength;
         patch->strings->buffer = realloc(patch->strings->buffer, newLength);
-        memset(patch->strings->buffer + bufferLength, 0, addLength);
+        // placeholder
+        memset(patch->strings->buffer + bufferLength, 1, addLength);
         patch->strings->buffer[newLength - 1] = '\\0';
     }
     
@@ -183,14 +197,18 @@ _PatchNode *_PatchNodeConvert(\(PatchClass) *patch){
     _stringMap = [NSMutableDictionary dictionary];
     _PatchNode *node = malloc(sizeof(_PatchNode));
     memset(node, 0, sizeof(_PatchNode));
-    node->strings = malloc(sizeof(_StringNode));
-    memset(node->strings, 0, sizeof(_StringNode));
+
+    node->strings = malloc(sizeof(_StringsNode));
+    memset(node->strings, 0, sizeof(_StringsNode));
+    node->strings->nodeType = StringsNodeType;
+    node->strings->length = _StringsNodeBaseLength;
+    
     node->nodeType = PatchNodeType;
     node->enable = patch.enable;
     node->appVersion = (_StringNode *)_ORNodeConvert(patch.appVersion, node);
     node->osVersion = (_StringNode *)_ORNodeConvert(patch.osVersion, node);
     node->nodes = (_ListNode *)_ORNodeConvert(patch.nodes, node);
-    node->length = _ORNodeLength + node->appVersion->length + node->strings->length + node->osVersion->length + node->nodes->length;
+    node->length = _PatchNodeBaseLength + node->appVersion->length + node->strings->length + node->osVersion->length + node->nodes->length;
     return node;
 }
 
@@ -207,6 +225,70 @@ _PatchNode *_PatchNodeConvert(\(PatchClass) *patch){
     return file;
 }
 
+void _ORNodeSerailization(_ORNode *node, void *buffer, uint32_t *cursor);
+void _StringNodeSerailization(_StringNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _StringNodeBaseLength);
+    *cursor += _StringNodeBaseLength;
+}
+void _ListNodeSerailization(_ListNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ListNodeBaseLength);
+    *cursor += _ListNodeBaseLength;
+    for (int i = 0; i < node->count; i++) {
+        _ORNodeSerailization(node->nodes[i], buffer, cursor);
+    }
+}
+void _StringsNodeSerailization(_StringsNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _StringsNodeBaseLength);
+    *cursor += _StringsNodeBaseLength;
+    memcpy(buffer + *cursor, node->buffer, node->cursor);
+    *cursor += node->cursor;
+}
+void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _PatchNodeBaseLength);
+    *cursor += _PatchNodeBaseLength;
+    _ORNodeSerailization((_ORNode *)node->strings, buffer, cursor);
+    _ORNodeSerailization((_ORNode *)node->appVersion, buffer, cursor);
+    _ORNodeSerailization((_ORNode *)node->osVersion, buffer, cursor);
+    _ORNodeSerailization((_ORNode *)node->nodes, buffer, cursor);
+}
+
+_ORNode *_ORNodeDeserialization(void *buffer, uint32_t *cursor,uint32_t bufferLength);
+_StringNode * _StringNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _StringNode *node = malloc(sizeof(_StringNode));
+    memcpy(node, buffer + *cursor, _StringNodeBaseLength);
+    *cursor += _StringNodeBaseLength;
+    return node;
+}
+_ListNode *_ListNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ListNode *node = malloc(sizeof(_ListNode));
+    memcpy(node, buffer + *cursor, _ListNodeBaseLength);
+    *cursor += _ListNodeBaseLength;
+    node->nodes = malloc(sizeof(void *) * node->count);
+    for (int i = 0; i < node->count; i++) {
+        node->nodes[i] = _ORNodeDeserialization(buffer, cursor, bufferLength);
+    }
+    return node;
+}
+_StringsNode *_StringsNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _StringsNode *node = malloc(sizeof(_StringsNode));
+    memcpy(node, buffer + *cursor, _StringsNodeBaseLength);
+    *cursor += _StringsNodeBaseLength;
+    node->buffer = malloc(node->cursor);
+    memcpy(node->buffer, buffer + *cursor, node->cursor);
+    *cursor += node->cursor;
+    return node;
+}
+_PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _PatchNode *node = malloc(sizeof(_PatchNode));
+    memcpy(node, buffer + *cursor, _PatchNodeBaseLength);
+    *cursor += _PatchNodeBaseLength;
+    node->strings = (_StringsNode *)_StringsNodeDeserialization(buffer, cursor, bufferLength);
+    node->appVersion = (_StringNode *)_ORNodeDeserialization(buffer, cursor, bufferLength);
+    node->osVersion = (_StringNode *)_ORNodeDeserialization(buffer, cursor, bufferLength);
+    node->nodes = (_ListNode *)_ORNodeDeserialization(buffer, cursor, bufferLength);
+    return node;
+}
+
 """
 for node in ast.nodes{
     guard let classNode = node as? ORClass else {
@@ -215,17 +297,16 @@ for node in ast.nodes{
     if classNode.className == "ORNode" {
         continue
     }
-    let properties = classNode.properties as! [ORPropertyDeclare]
-    let define = classNode.className.hasPrefix("OR") ? NodeDefine : ""
     var structFiels = [String]()
     var convertExps = [String]()
     var deConvertExps = [String]()
+    var serializationExps = [String]()
+    var deserializationExps = [String]()
     
     var offset = _ORNodeLength
-    var fieldOffsetPair:[(String, Int)] = []
-    var fieldLengthPair:[(String, Int)] = []
-    var hasList = false
-    var listLengthExps = [String]()
+    var lengthExps = [String]()
+    
+    let properties = classNode.properties as! [ORPropertyDeclare]
     for prop in properties{
         if prop.keywords.contains("readonly"){
             continue
@@ -234,26 +315,33 @@ for node in ast.nodes{
         var fiedLength = 0
         if let typename = prop.var.type.name{
             if typename == "NSMutableArray" {
-                hasList = true
-                listLengthExps.append("node->\(varname)->length");
                 structFiels.append("_ListNode *\(varname);")
+                lengthExps.append("node->\(varname)->length");
                 convertExps.append("node->\(varname) = (_ListNode *)_ORNodeConvert(exp.\(varname), patch);")
                 deConvertExps.append("exp.\(varname) = (\(typename) *)_ORNodeDeConvert((_ORNode *)node->\(varname), patch);")
+                serializationExps.append("_ORNodeSerailization((_ORNode *)node->\(varname), buffer, cursor);");
+                deserializationExps.append("node->\(varname) =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
             }else if typename.hasPrefix("OR") || typename == "id"{
                 structFiels.append("_ORNode *\(varname);")
+                lengthExps.append("node->\(varname)->length");
                 convertExps.append("node->\(varname) = _ORNodeConvert(exp.\(varname), patch);")
                 deConvertExps.append("exp.\(varname) = _ORNodeDeConvert((_ORNode *)node->\(varname), patch);")
-                fiedLength = 8
+                serializationExps.append("_ORNodeSerailization((_ORNode *)node->\(varname), buffer, cursor);");
+                deserializationExps.append("node->\(varname) =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
             }else if typename == "NSString"{
                 structFiels.append("_StringNode *\(varname);")
+                lengthExps.append("node->\(varname)->length");
                 convertExps.append("node->\(varname) = (_StringNode *)_ORNodeConvert(exp.\(varname), patch);")
                 deConvertExps.append("exp.\(varname) = (\(typename) *)_ORNodeDeConvert((_ORNode *)node->\(varname), patch);")
-                fiedLength = 8
+                serializationExps.append("_ORNodeSerailization((_ORNode *)node->\(varname), buffer, cursor);");
+                deserializationExps.append("node->\(varname) =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
             }else{
-                structFiels.append("uint64_t \(varname);")
+                structFiels.append("\(_uintType) \(varname);")
                 convertExps.append("node->\(varname) = exp.\(varname);")
                 deConvertExps.append("exp.\(varname) = node->\(varname);")
-                fiedLength = 8
+                fiedLength = _uintLength
+//                serializationExps.append("memcpy(buffer, &(node->\(varname)), \(_uintLength));");
+//                deserializationExps.append("memcpy(&(node->\(varname)), buffer, \(_uintLength));");
             }
             
         }else{
@@ -261,14 +349,21 @@ for node in ast.nodes{
                 structFiels.append("BOOL \(varname);")
                 convertExps.append("node->\(varname) = exp.\(varname);")
                 deConvertExps.append("exp.\(varname) = node->\(varname);")
+//                serializationExps.append("memcpy(buffer, &(node->\(varname)), 1);");
+//                deserializationExps.append("memcpy(&(node->\(varname)), buffer, 1);");
                 fiedLength = 1
+            }else if prop.var.type.type == TypeULongLong{
+                structFiels.append("\(_uintType) \(varname);")
+                convertExps.append("node->\(varname) = exp.\(varname);")
+                deConvertExps.append("exp.\(varname) = node->\(varname);")
+                fiedLength = _uintLength
             }
         }
-        fieldOffsetPair.append(("_\(classNode.className)_\(varname)_offset", offset))
         offset += fiedLength
-        fieldLengthPair.append(("_\(classNode.className)_\(varname)_length", fiedLength))
     }
     let structName = "_\(classNode.className)";
+    //TODO: Struct
+    let define = classNode.className.hasPrefix("OR") ? NodeDefine : ""
     impSource +=
     """
     typedef struct {
@@ -276,44 +371,24 @@ for node in ast.nodes{
         \(structFiels.joined(separator: "\n    "))
     }\(structName);\n
     """
-//    for (name, offset) in fieldOffsetPair{
-//        impSource += "static uint64_t \(name) = \(offset);\n"
-//    }
-//    for (name, len) in fieldLengthPair{
-//        impSource += "static uint64_t \(name) = \(len);\n"
-//    }
-    if hasList {
-        impSource += "static uint64_t \(structName)BaseLength = \(offset);\n"
-    }else{
-        impSource += "static uint64_t \(structName)Length = \(offset);\n"
+
+    impSource += "static \(_uintType) \(structName)BaseLength = \(offset);\n"
+    
+    //TODO: Convert
+    impSource +=
+    """
+    \(structName) *\(structName)Convert(\(classNode.className) *exp, _PatchNode *patch){
+        \(structName) *node = malloc(sizeof(\(structName)));
+        memset(node, 0, sizeof(\(structName)));
+        node->nodeType = \(structName)Node;
+        \(convertExps.joined(separator: "\n    "))
+        node->length = \(structName)BaseLength \(lengthExps.count > 0 ? "+":"")\(lengthExps.joined(separator: " + "));
+        return node;
     }
-    if hasList {
-        impSource +=
-        """
-        \(structName) *\(structName)Convert(\(classNode.className) *exp, _PatchNode *patch){
-            \(structName) *node = malloc(sizeof(\(structName)));
-            memset(node, 0, sizeof(\(structName)));
-            node->nodeType = \(structName)Node;
-            \(convertExps.joined(separator: "\n    "))
-            node->length = \(structName)BaseLength + \(listLengthExps.joined(separator: " + "));
-            return node;
-        }
-        
-        """
-    }else{
-        impSource +=
-        """
-        \(structName) *\(structName)Convert(\(classNode.className) *exp, _PatchNode *patch){
-            \(structName) *node = malloc(sizeof(\(structName)));
-            memset(node, 0, sizeof(\(structName)));
-            node->nodeType = \(structName)Node;
-            node->length = \(structName)Length;
-            \(convertExps.joined(separator: "\n    "))
-            return node;
-        }
-        
-        """
-    }
+    
+    """
+    
+    //TODO: DeConvert
     impSource +=
     """
     \(classNode.className) *\(structName)DeConvert(\(structName) *node, _PatchNode *patch){
@@ -323,6 +398,31 @@ for node in ast.nodes{
     }
     
     """
+    
+    //TODO: Serailization
+    impSource +=
+    """
+    void \(structName)Serailization(\(structName) *node, void *buffer, uint32_t *cursor){
+        memcpy(buffer + *cursor, node, \(structName)BaseLength);
+        *cursor += \(structName)BaseLength;
+        \(serializationExps.joined(separator: "\n    "))
+    }
+    
+    """
+    
+    //TODO: Deserialization
+    impSource +=
+    """
+    \(structName) *\(structName)Deserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+        \(structName) *node = malloc(sizeof(\(structName)));
+        memcpy(node, buffer + *cursor, \(structName)BaseLength);
+        *cursor += \(structName)BaseLength;
+        \(deserializationExps.joined(separator: "\n    "))
+        return node;
+    }
+    
+    """
+    
 
 }
 impSource +=
@@ -333,6 +433,8 @@ impSource +=
 """
 var convertExps = [String]()
 var deConvertExps = [String]()
+var serializationExps = [String]()
+var deserializationExps = [String]()
 for node in ast.nodes{
     guard let classNode = node as? ORClass else {
         continue
@@ -341,19 +443,37 @@ for node in ast.nodes{
         continue
     }
     let structName = "_\(classNode.className)";
-    convertExps.append(
+    let convertExp =
     """
-        if ([exp isKindOfClass:[\(classNode.className) class]]){
+    else if ([exp isKindOfClass:[\(classNode.className) class]]){
             return (_ORNode *)\(structName)Convert((\(classNode.className) *)exp, patch);
         }
-    """)
+    """
+    if classNode.superClassName.hasPrefix("OR") && classNode.superClassName != "ORNode"{
+        convertExps.insert(convertExp, at: 0)
+    }else{
+        convertExps.append(convertExp)
+    }
     
     deConvertExps.append(
     """
-        if (node->nodeType == \(structName)Node){
+    else if (node->nodeType == \(structName)Node){
             return (ORNode *)\(structName)DeConvert((\(structName) *)node, patch);
         }
     """)
+    serializationExps.append(
+    """
+    else if (node->nodeType == \(structName)Node){
+            \(structName)Serailization((\(structName) *)node, buffer, cursor);
+        }
+    """)
+    deserializationExps.append(
+    """
+    else if (nodeType == \(structName)Node){
+            return (_ORNode *)\(structName)Deserialization(buffer, cursor, bufferLength);
+        }
+    """)
+    
 }
 
 impSource +=
@@ -361,13 +481,12 @@ impSource +=
 _ORNode *_ORNodeConvert(id exp, _PatchNode *patch){
     if ([exp isKindOfClass:[NSString class]]) {
         return (_ORNode *)saveNewString((NSString *)exp, patch);
-    }
-    if ([exp isKindOfClass:[NSArray class]]) {
+    }else if ([exp isKindOfClass:[NSArray class]]) {
         return (_ORNode *)_ListNodeConvert((NSArray *)exp, patch);
-    }
-\(convertExps.joined(separator: "\n"))
+    }\(convertExps.joined(separator: ""))
     _ORNode *node = malloc(sizeof(_ORNode));
     memset(node, 0, sizeof(_ORNode));
+    node->length = \(_ORNodeLength);
     return node;
 }
 
@@ -378,12 +497,46 @@ id _ORNodeDeConvert(_ORNode *node, _PatchNode *patch){
     if (node->nodeType == ORNodeType) return nil;
     if (node->nodeType == ListNodeType) {
         return _ListNodeDeConvert((_ListNode *)node, patch);
-    }
-    if (node->nodeType == StringNodeType) {
+    }else if (node->nodeType == StringNodeType) {
         return getString((_StringNode *) node, patch);
-    }
-\(deConvertExps.joined(separator: "\n"))
+    }\(deConvertExps.joined(separator: ""))
     return [ORNode new];
+}
+
+"""
+impSource +=
+"""
+void _ORNodeSerailization(_ORNode *node, void *buffer, uint32_t *cursor){
+    if (node->nodeType == ORNodeType) {
+        memcpy(buffer + *cursor, node, \(_ORNodeLength));
+        *cursor += \(_ORNodeLength);
+    }else if (node->nodeType == ListNodeType) {
+        _ListNodeSerailization((_ListNode *)node, buffer, cursor);
+    }else if (node->nodeType == StringNodeType) {
+        _StringNodeSerailization((_StringNode *) node, buffer, cursor);
+    }else if (node->nodeType == StringsNodeType) {
+        _StringsNodeSerailization((_StringsNode *) node, buffer, cursor);
+    }\(serializationExps.joined(separator: ""))
+}
+
+"""
+impSource +=
+"""
+_ORNode *_ORNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _NodeType nodeType = ORNodeType;
+    if (*cursor < bufferLength) {
+        nodeType = *(_NodeType *)(buffer + *cursor);
+    }
+    if (nodeType == ListNodeType) {
+        return (_ORNode *)_ListNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == StringNodeType) {
+        return (_ORNode *)_StringNodeDeserialization(buffer, cursor, bufferLength);
+    }\(deserializationExps.joined(separator: ""))
+
+    _ORNode *node = malloc(sizeof(_ORNode));
+    memset(node, 0, sizeof(_ORNode));
+    *cursor += \(_ORNodeLength);
+    return node;
 }
 
 """

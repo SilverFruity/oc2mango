@@ -52,17 +52,32 @@
     }
 //#define ARCHIVE_TEST
 #ifdef ARCHIVE_TEST
-    NSArray *nodes;
-    nodes = [ORPatchFileArchiveHelper patchFileTest:GlobalAst.nodes];
-    
-//    ORPatchFile *file = [ORPatchFile new];
-//    file.nodes = GlobalAst.nodes;
-//    _PatchNode *node = _PatchNodeConvert(file);
-//    file = _PatchNodeDeConvert(node);
-//    nodes = file.nodes;
+    NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/BinaryPatch.txt";
+    NSData *data = nil;
+    uint32_t cursor = 0;
+    ORPatchFile *file = [ORPatchFile new];
+    _PatchNode *node = nil;
+
+    file.nodes = GlobalAst.nodes;
+    node = _PatchNodeConvert(file);
+
+    //Serialization
+    //TODO: 压缩，_ORNode结构体中不包含length字段.
+    void *buffer = malloc(node->length);
+    _PatchNodeSerialization(node, buffer, &cursor);
+    data = [[NSData alloc] initWithBytes:buffer length:node->length];
+    [data writeToFile:filePath atomically:NO];
+
+    //Deserialization
+    data = [[NSData alloc] initWithContentsOfFile:filePath];
+    void *fileBuffer = (void *)data.bytes;
+    cursor = 0;
+    node = _PatchNodeDeserialization(fileBuffer, &cursor, (uint32_t)data.length);
+
+    file = _PatchNodeDeConvert(node);
     
     GlobalAst = [AST new];
-    [GlobalAst merge:nodes];
+    [GlobalAst merge:file.nodes];
 #endif
     return GlobalAst;
 }

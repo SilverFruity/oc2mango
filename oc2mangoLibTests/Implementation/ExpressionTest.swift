@@ -175,7 +175,7 @@ class ExpressionTest: XCTestCase {
         let result = convert.convert(ast.globalStatements[7] as Any)
         XCTAssert(result == "a = x * c * 1;",result)
         let result1 = convert.convert(ast.globalStatements[8] as Any)
-        XCTAssert(result1 == "a = x * 1 * c;",result)
+        XCTAssert(result1 == "a = x * 1 * c;",result1)
     }
     func testBinaryExpression(){
         source =
