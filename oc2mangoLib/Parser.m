@@ -52,8 +52,7 @@
     }
 //#define ARCHIVE_TEST
 #ifdef ARCHIVE_TEST
-    NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/BinaryPatch.txt";
-    NSData *data = nil;
+    
     uint32_t cursor = 0;
     ORPatchFile *file = [ORPatchFile new];
     _PatchNode *node = nil;
@@ -66,16 +65,15 @@
     //TODO: 压缩，_ORNode结构体中不包含length字段.
     void *buffer = malloc(node->length);
     _PatchNodeSerialization(node, buffer, &cursor);
-    data = [[NSData alloc] initWithBytes:buffer length:node->length];
-    [data writeToFile:filePath atomically:NO];
-
-    //Deserialization
-    data = [[NSData alloc] initWithContentsOfFile:filePath];
-    buffer = (void *)data.bytes;
+    
     cursor = 0;
     node = _PatchNodeDeserialization(buffer, &cursor, node->length);
-
+    
     file = _PatchNodeDeConvert(node);
+    
+    NSLog(@"file size: %.2f KB", (double)node->length / 1000.0);
+    
+    _PatchNodeDestroy(node);
     
     GlobalAst = [AST new];
     [GlobalAst merge:file.nodes];
