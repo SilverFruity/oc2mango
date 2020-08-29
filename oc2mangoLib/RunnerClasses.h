@@ -61,14 +61,14 @@ typedef enum: uint32_t{
 @end
 
 @interface ORFuncVariable: ORVariable
-@property(nonatomic,strong) NSMutableArray <ORTypeVarPair *> *pairs;
 @property(nonatomic,assign) BOOL isMultiArgs;
+@property(nonatomic,strong) NSMutableArray <ORTypeVarPair *> *pairs;
 @end
 
 @interface ORFuncDeclare: ORNode
+@property(nonatomic,assign,readonly) BOOL isBlockDeclare;
 @property(nonatomic,strong) ORTypeVarPair *returnType;
 @property(nonatomic,strong) ORFuncVariable *funVar;
-@property(nonatomic,assign,readonly) BOOL isBlockDeclare;
 @end
 
 @interface ORScopeImp: ORNode

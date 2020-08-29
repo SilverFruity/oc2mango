@@ -63,6 +63,7 @@
 
     //Serialization
     //TODO: 压缩，_ORNode结构体中不包含length字段.
+    //TODO: 压缩，_ORNode结构体中不包含length字段.
     void *buffer = malloc(node->length);
     _PatchNodeSerialization(node, buffer, &cursor);
     data = [[NSData alloc] initWithBytes:buffer length:node->length];
@@ -70,9 +71,9 @@
 
     //Deserialization
     data = [[NSData alloc] initWithContentsOfFile:filePath];
-    void *fileBuffer = (void *)data.bytes;
+    buffer = (void *)data.bytes;
     cursor = 0;
-    node = _PatchNodeDeserialization(fileBuffer, &cursor, (uint32_t)data.length);
+    node = _PatchNodeDeserialization(buffer, &cursor, node->length);
 
     file = _PatchNodeDeConvert(node);
     

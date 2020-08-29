@@ -18,7 +18,13 @@ let NodeDefine = "_ORNodeFields"
 let PatchClass = "ORPatchFile"
 let resultFileName = "BinaryPatchHelper"
 
-let _ORNodeLength = 5
+let forUnitTest = false
+let withSemicolon =  forUnitTest ? "\nuint8_t withSemicolon;\\" : ""
+let withSemicolonConvertExp =  forUnitTest ? "\n    node->withSemicolon = exp.withSemicolon;\\" : ""
+let withSemicolonDeconvertExp =  forUnitTest ? "\n    exp.withSemicolon = node->withSemicolon;\\" : ""
+let withSemicolonLength = forUnitTest ? 1 : 0
+
+let _ORNodeLength = 5 + withSemicolonLength
 let _uintType = "uint32_t"
 let _uintLength = 4
 let _NodeTypeType = "uint8_t"
@@ -33,7 +39,7 @@ var headerSource =
 #import <Foundation/Foundation.h>
 @class \(PatchClass);
 #define \(NodeDefine) \\
-\(_NodeTypeType) nodeType;\\
+\(_NodeTypeType) nodeType;\\\(withSemicolon)
 uint32_t length;
 
 #pragma pack(1)
@@ -290,141 +296,206 @@ _PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t b
 }
 
 """
-for node in ast.nodes{
-    guard let classNode = node as? ORClass else {
-        continue
+var contentCache = [String: ClassContent]()
+class ClassContent{
+    var className: String
+    var superClassName: String
+    var structName: String {
+        return "_\(self.className)"
     }
-    if classNode.className == "ORNode" {
-        continue
-    }
-    var structFiels = [String]()
+    var structNodeFiels = [String]()
+    var structBaseFiels = [String]()
     var convertExps = [String]()
     var deConvertExps = [String]()
     var serializationExps = [String]()
     var deserializationExps = [String]()
-    
-    var offset = _ORNodeLength
     var lengthExps = [String]()
-    
+    var baseLength = 0
+    func addStructNodeField(type: String, varname: String){
+        self.structNodeFiels.append("\(type) \(varname);")
+    }
+    func addStructBaseFiled(type: String, varname: String){
+        self.structBaseFiels.append("\(type) \(varname);")
+    }
+    func addLengthExp(varname: String){
+        self.lengthExps.append("node->\(varname)->length");
+    }
+    func addNodeConvertExp(varname: String, nodeName:String){
+        self.convertExps.append("node->\(varname) = (\(nodeName) *)_ORNodeConvert(exp.\(varname), patch);")
+    }
+    func addBaseConvertExp(varname: String){
+        self.convertExps.append("node->\(varname) = exp.\(varname);")
+    }
+    func addNodeDeconvertExp(varname: String, className:String){
+        self.deConvertExps.append("exp.\(varname) = (\(className))_ORNodeDeConvert((_ORNode *)node->\(varname), patch);")
+    }
+    func addBaseDeconvertExp(varname: String){
+        self.deConvertExps.append("exp.\(varname) = node->\(varname);")
+    }
+    func addSerializationExp(varname: String){
+        self.serializationExps.append("_ORNodeSerailization((_ORNode *)node->\(varname), buffer, cursor);");
+    }
+    func addDeserializationExp(varname: String, nodeName:String){
+        deserializationExps.append("node->\(varname) =(\(nodeName) *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
+    }
+    init(className: String, superClassName: String) {
+        self.className = className
+        self.superClassName = superClassName
+        contentCache[className] = self
+    }
+    //TODO: Struct
+    func structDeclareSource()->String{
+        //FIX: ORFuncVariable继承问题
+        var baseFiels = self.structBaseFiels
+        var nodeFiles = self.structNodeFiels
+        var baseLength = _ORNodeLength + self.baseLength
+        if let superContent = contentCache[self.superClassName]{
+            baseFiels = superContent.structBaseFiels + baseFiels
+            nodeFiles = superContent.structNodeFiels + nodeFiles
+            baseLength += superContent.baseLength
+        }
+        let structFiels = baseFiels + nodeFiles
+        return """
+        typedef struct {
+            \(NodeDefine)
+            \(structFiels.joined(separator: "\n    "))
+        }\(structName);
+        static \(_uintType) \(structName)BaseLength = \(baseLength);\n
+        """
+    }
+    //TODO: Convert
+    func convertFunctionSource()->String{
+        var convertExps = self.convertExps
+        var lengthExps = self.lengthExps
+        if let superContent = contentCache[self.superClassName]{
+            convertExps = superContent.convertExps + convertExps
+            lengthExps = superContent.lengthExps + lengthExps
+        }
+        return """
+        \(structName) *\(structName)Convert(\(className) *exp, _PatchNode *patch){
+            \(structName) *node = malloc(sizeof(\(structName)));
+            memset(node, 0, sizeof(\(structName)));
+            node->nodeType = \(structName)Node;\(withSemicolonConvertExp)
+            \(convertExps.joined(separator: "\n    "))
+            node->length = \(structName)BaseLength \(lengthExps.count > 0 ? "+":"")\(lengthExps.joined(separator: " + "));
+            return node;
+        }
+        
+        """
+    }
+    //TODO: Deconvert
+    func deconvertFunctionSource()->String{
+        var deConvertExps = self.deConvertExps
+        if let superContent = contentCache[self.superClassName]{
+            deConvertExps = superContent.deConvertExps + deConvertExps
+        }
+        return """
+        \(className) *\(structName)DeConvert(\(structName) *node, _PatchNode *patch){
+            \(className) *exp = [\(className) new];\(withSemicolonDeconvertExp)
+            \(deConvertExps.joined(separator: "\n    "))
+            return exp;
+        }
+        
+        """
+    }
+    //TODO: Serailization
+    func serailizationFunctionSource()->String{
+        var serializationExps = self.serializationExps
+        if let superContent = contentCache[self.superClassName]{
+            serializationExps = superContent.serializationExps + serializationExps
+        }
+        return """
+        void \(structName)Serailization(\(structName) *node, void *buffer, uint32_t *cursor){
+            memcpy(buffer + *cursor, node, \(structName)BaseLength);
+            *cursor += \(structName)BaseLength;
+            \(serializationExps.joined(separator: "\n    "))
+        }
+        
+        """
+    }
+    //TODO: Deserialization
+    func deserializationFunctionSource()->String{
+        var deserializationExps = self.deserializationExps
+        if let superContent = contentCache[self.superClassName]{
+            deserializationExps = superContent.deserializationExps + deserializationExps
+        }
+        return """
+         \(structName) *\(structName)Deserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+             \(structName) *node = malloc(sizeof(\(structName)));
+             memcpy(node, buffer + *cursor, \(structName)BaseLength);
+             *cursor += \(structName)BaseLength;
+             \(deserializationExps.joined(separator: "\n    "))
+             return node;
+         }
+         
+         """
+    }
+}
+for node in ast.nodes{
+    guard let classNode = node as? ORClass, classNode.className != "ORNode" else {
+        continue
+    }
+    let item = ClassContent(className: classNode.className, superClassName:classNode.superClassName)
     let properties = classNode.properties as! [ORPropertyDeclare]
     for prop in properties{
         if prop.keywords.contains("readonly"){
             continue
         }
         let varname = prop.var.var.varname ?? ""
-        var fiedLength = 0
         if let typename = prop.var.type.name{
             if typename == "NSMutableArray" {
-                structFiels.append("_ListNode *\(varname);")
-                lengthExps.append("node->\(varname)->length");
-                convertExps.append("node->\(varname) = (_ListNode *)_ORNodeConvert(exp.\(varname), patch);")
-                deConvertExps.append("exp.\(varname) = (\(typename) *)_ORNodeDeConvert((_ORNode *)node->\(varname), patch);")
-                serializationExps.append("_ORNodeSerailization((_ORNode *)node->\(varname), buffer, cursor);");
-                deserializationExps.append("node->\(varname) =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
+                item.addStructNodeField(type: "_ListNode *", varname: varname)
+                item.addLengthExp(varname: varname)
+                item.addNodeConvertExp(varname: varname, nodeName: "_ListNode")
+                item.addNodeDeconvertExp(varname: varname, className: "NSMutableArray *")
+                item.addSerializationExp(varname: varname)
+                item.addDeserializationExp(varname: varname, nodeName: "_ListNode")
             }else if typename.hasPrefix("OR") || typename == "id"{
-                structFiels.append("_ORNode *\(varname);")
-                lengthExps.append("node->\(varname)->length");
-                convertExps.append("node->\(varname) = _ORNodeConvert(exp.\(varname), patch);")
-                deConvertExps.append("exp.\(varname) = _ORNodeDeConvert((_ORNode *)node->\(varname), patch);")
-                serializationExps.append("_ORNodeSerailization((_ORNode *)node->\(varname), buffer, cursor);");
-                deserializationExps.append("node->\(varname) =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
+                item.addStructNodeField(type: "_ORNode *", varname: varname)
+                item.addLengthExp(varname: varname)
+                item.addNodeConvertExp(varname: varname, nodeName: "_ORNode")
+                item.addNodeDeconvertExp(varname: varname, className: "id")
+                item.addSerializationExp(varname: varname)
+                item.addDeserializationExp(varname: varname, nodeName: "_ORNode")
             }else if typename == "NSString"{
-                structFiels.append("_StringNode *\(varname);")
-                lengthExps.append("node->\(varname)->length");
-                convertExps.append("node->\(varname) = (_StringNode *)_ORNodeConvert(exp.\(varname), patch);")
-                deConvertExps.append("exp.\(varname) = (\(typename) *)_ORNodeDeConvert((_ORNode *)node->\(varname), patch);")
-                serializationExps.append("_ORNodeSerailization((_ORNode *)node->\(varname), buffer, cursor);");
-                deserializationExps.append("node->\(varname) =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
+                item.addStructNodeField(type: "_StringNode *", varname: varname)
+                item.addLengthExp(varname: varname)
+                item.addNodeConvertExp(varname: varname, nodeName: "_StringNode")
+                item.addNodeDeconvertExp(varname: varname, className: "NSString *")
+                item.addSerializationExp(varname: varname)
+                item.addDeserializationExp(varname: varname, nodeName: "_StringNode")
             }else{
-                structFiels.append("\(_uintType) \(varname);")
-                convertExps.append("node->\(varname) = exp.\(varname);")
-                deConvertExps.append("exp.\(varname) = node->\(varname);")
-                fiedLength = _uintLength
-//                serializationExps.append("memcpy(buffer, &(node->\(varname)), \(_uintLength));");
-//                deserializationExps.append("memcpy(&(node->\(varname)), buffer, \(_uintLength));");
+                item.addStructNodeField(type: _uintType, varname: varname)
+                item.addBaseConvertExp(varname: varname)
+                item.addBaseDeconvertExp(varname: varname)
+                item.baseLength += _uintLength
             }
             
         }else{
             if prop.var.type.type == TypeBOOL {
-                structFiels.append("BOOL \(varname);")
-                convertExps.append("node->\(varname) = exp.\(varname);")
-                deConvertExps.append("exp.\(varname) = node->\(varname);")
-//                serializationExps.append("memcpy(buffer, &(node->\(varname)), 1);");
-//                deserializationExps.append("memcpy(&(node->\(varname)), buffer, 1);");
-                fiedLength = 1
+                item.addStructBaseFiled(type: "BOOL", varname: varname)
+                item.addBaseConvertExp(varname: varname)
+                item.addBaseDeconvertExp(varname: varname)
+                item.baseLength += 1
             }else if prop.var.type.type == TypeULongLong{
-                structFiels.append("\(_uintType) \(varname);")
-                convertExps.append("node->\(varname) = exp.\(varname);")
-                deConvertExps.append("exp.\(varname) = node->\(varname);")
-                fiedLength = _uintLength
+                item.addStructBaseFiled(type: _uintType, varname: varname)
+                item.addBaseConvertExp(varname: varname)
+                item.addBaseDeconvertExp(varname: varname)
+                item.baseLength += _uintLength
             }
         }
-        offset += fiedLength
     }
-    let structName = "_\(classNode.className)";
-    //TODO: Struct
-    let define = classNode.className.hasPrefix("OR") ? NodeDefine : ""
-    impSource +=
-    """
-    typedef struct {
-        \(define)
-        \(structFiels.joined(separator: "\n    "))
-    }\(structName);\n
-    """
-
-    impSource += "static \(_uintType) \(structName)BaseLength = \(offset);\n"
+    impSource += item.structDeclareSource()
     
-    //TODO: Convert
-    impSource +=
-    """
-    \(structName) *\(structName)Convert(\(classNode.className) *exp, _PatchNode *patch){
-        \(structName) *node = malloc(sizeof(\(structName)));
-        memset(node, 0, sizeof(\(structName)));
-        node->nodeType = \(structName)Node;
-        \(convertExps.joined(separator: "\n    "))
-        node->length = \(structName)BaseLength \(lengthExps.count > 0 ? "+":"")\(lengthExps.joined(separator: " + "));
-        return node;
-    }
+    impSource += item.convertFunctionSource()
     
-    """
+    impSource += item.deconvertFunctionSource()
     
-    //TODO: DeConvert
-    impSource +=
-    """
-    \(classNode.className) *\(structName)DeConvert(\(structName) *node, _PatchNode *patch){
-        \(classNode.className) *exp = [\(classNode.className) new];
-        \(deConvertExps.joined(separator: "\n    "))
-        return exp;
-    }
+    impSource += item.serailizationFunctionSource()
     
-    """
-    
-    //TODO: Serailization
-    impSource +=
-    """
-    void \(structName)Serailization(\(structName) *node, void *buffer, uint32_t *cursor){
-        memcpy(buffer + *cursor, node, \(structName)BaseLength);
-        *cursor += \(structName)BaseLength;
-        \(serializationExps.joined(separator: "\n    "))
-    }
-    
-    """
-    
-    //TODO: Deserialization
-    impSource +=
-    """
-    \(structName) *\(structName)Deserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-        \(structName) *node = malloc(sizeof(\(structName)));
-        memcpy(node, buffer + *cursor, \(structName)BaseLength);
-        *cursor += \(structName)BaseLength;
-        \(deserializationExps.joined(separator: "\n    "))
-        return node;
-    }
-    
-    """
-    
-
+    impSource += item.deserializationFunctionSource()
 }
+
 impSource +=
 """
 #pragma pack()
