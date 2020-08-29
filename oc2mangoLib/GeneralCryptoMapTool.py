@@ -10,6 +10,7 @@ if __name__ == "__main__":
         content = file.read()
     pattern = re.compile(r'@interface .*:[.\n\s\S]*?@end',re.M)
     results = pattern.findall(content)
+    forUnitTest = False
     encryptData = {}
     decryptData = {}
     for (classIndex, classContent) in enumerate(results):
@@ -19,8 +20,9 @@ if __name__ == "__main__":
         pattern = re.compile(r'@property[ ]*\((.*)?\)[.\s\S]*?;')
         properties = pattern.findall(classContent)
         superClassName = re.search(r'@interface[.\s\S]*?:[ ]*(.*)', classContent).group(1)
-        if superClassName != 'NSObject' and superClassName != 'ORNode':
-            fieldNames += encryptData[superClassName]["f"]
+        if superClassName != 'NSObject':
+            if forUnitTest or superClassName != 'ORNode':
+                fieldNames += encryptData[superClassName]["f"]
         encryptPropertyMap = {}
         decryptPropertyMap = {}
         encryptProperties = []
