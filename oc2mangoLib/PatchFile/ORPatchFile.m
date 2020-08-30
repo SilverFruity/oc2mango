@@ -20,10 +20,65 @@
     }
     return self;
 }
-- (instancetype)loads:(NSString *)path{
-    return nil;
+- (instancetype)initWithNodes:(NSArray *)nodes{
+    self = [self init];
+    self.nodes = [nodes mutableCopy];
+    return self;
 }
-- (void)dumps:(NSString *)path{
-    
++ (instancetype)loadBinaryPatch:(NSString *)patchPath{
+    NSData *data = [[NSData alloc] initWithContentsOfFile:patchPath];
+    if (data == nil) {
+        return nil;
+    }
+    void *buffer = (void *)[data bytes];
+    uint32_t cursor = 0;
+    _PatchNode *node = _PatchNodeDeserialization(buffer, &cursor, (uint32_t)data.length);
+    ORPatchFile *file = _PatchNodeDeConvert(node);
+    _PatchNodeDestroy(node);
+    return file;
+}
+- (void)dumpAsBinaryPatch:(NSString *)patchPath{
+    uint32_t length = 0;
+    _PatchNode *node = _PatchNodeConvert(self, &length);
+    void *buffer = malloc(length);
+    uint32_t cursor = 0;
+    _PatchNodeSerialization(node, buffer, &cursor);
+    _PatchNodeDestroy(node);
+    NSData *data = [[NSData alloc]initWithBytes:buffer length:length];
+    [data writeToFile:patchPath atomically:YES];
+    NSLog(@"binary file length %.2f KB", (double)length / 1000.0);
+    return;
+}
++ (instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(NSString *)decrptMapPath{
+    NSData *fileData = [[NSData alloc] initWithContentsOfFile:patchPatch];
+    NSError *error;
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:&error];
+    if (error) {
+        NSLog(@"%@",error);
+        return nil;
+    }
+    NSDictionary *decrptMap = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:decrptMapPath]) {
+        NSData *data = [[NSData alloc] initWithContentsOfFile:decrptMapPath];
+        NSError *error;
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+        if (error == nil) {
+            decrptMap = dict;
+        }
+    }
+    NSLog(@"json file length %.2f KB", (double)fileData.length / 1000.0);
+    return [JSONPatchHelper unArchivePatch:jsonDict decrptMap:decrptMap];
+}
+- (void)dumpAsJsonPatch:(NSString *)patchPath encrptMapPath:(NSString *)encrptMapPath{
+    NSDictionary *encrptMap = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:encrptMapPath]) {
+        NSData *data = [[NSData alloc] initWithContentsOfFile:encrptMapPath];
+        NSError *error;
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+        if (error == nil) {
+            encrptMap = dict;
+        }
+    }
+    [JSONPatchHelper archivePatch:self encrptMap:encrptMap];
 }
 @end

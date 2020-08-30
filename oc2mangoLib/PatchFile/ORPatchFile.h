@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "JSONPatchHelper.h"
+#import "BinaryPatchHelper.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ORPatchFile : NSObject
@@ -22,10 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, strong)NSMutableArray *nodes;
 
-/// load from the patch file
-- (instancetype)loads:(NSString *)path;
+- (instancetype)initWithNodes:(NSArray *)nodes;
 
-/// save the patch to the path
-- (void)dumps:(NSString *)path;
++ (instancetype)loadBinaryPatch:(NSString *)patchPath;
+- (void)dumpAsBinaryPatch:(NSString *)patchPath;
+
++ (instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(NSString *)decrptMapPath;
+- (void)dumpAsJsonPatch:(NSString *)patchPath encrptMapPath:(NSString *)encrptMapPath;
 @end
 NS_ASSUME_NONNULL_END

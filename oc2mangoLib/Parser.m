@@ -61,8 +61,6 @@
     node = _PatchNodeConvert(file);
 
     //Serialization
-    //TODO: 压缩，_ORNode结构体中不包含length字段.
-    //TODO: 压缩，_ORNode结构体中不包含length字段.
     void *buffer = malloc(node->length);
     _PatchNodeSerialization(node, buffer, &cursor);
     

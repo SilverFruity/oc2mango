@@ -24,7 +24,7 @@ let withSemicolonConvertExp =  forUnitTest ? "\n    node->withSemicolon = exp.wi
 let withSemicolonDeconvertExp =  forUnitTest ? "\n    exp.withSemicolon = node->withSemicolon;\\" : ""
 let withSemicolonLength = forUnitTest ? 1 : 0
 
-let _ORNodeLength = 5 + withSemicolonLength
+let _ORNodeLength = 1 + withSemicolonLength
 let _uintType = "uint32_t"
 let _uintLength = 4
 let _NodeTypeType = "uint8_t"
@@ -40,7 +40,6 @@ var headerSource =
 @class \(PatchClass);
 #define \(NodeDefine) \\
 \(_NodeTypeType) nodeType;\\\(withSemicolon)
-uint32_t length;
 
 #pragma pack(1)
 #pragma pack(show)
@@ -84,7 +83,7 @@ static \(_uintType) _PatchNodeBaseLength = \(_ORNodeLength + 1);
 #pragma pack()
 #pragma pack(show)
 
-_PatchNode *_PatchNodeConvert(\(PatchClass) *patch);
+_PatchNode *_PatchNodeConvert(\(PatchClass) *patch, uint32_t *length);
 \(PatchClass) *_PatchNodeDeConvert(_PatchNode *node);
 void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor);
 _PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
@@ -126,19 +125,18 @@ impSource +=
 #pragma pack(1)
 #pragma pack(show)
 
-_ORNode *_ORNodeConvert(id exp, _PatchNode *patch);
+_ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length);
 id _ORNodeDeConvert(_ORNode *node, _PatchNode *patch);
 
-_ListNode *_ListNodeConvert(NSArray *array, _PatchNode *patch){
+_ListNode *_ListNodeConvert(NSArray *array, _PatchNode *patch, uint32_t *length){
     _ListNode *node = malloc(sizeof(_ListNode));
     memset(node, 0, sizeof(_ListNode));
     node->nodes = malloc(sizeof(void *) * array.count);
     node->nodeType = ListNodeType;
-    node->length = _ListNodeBaseLength;
+    *length += _ListNodeBaseLength;
     for (id object in array) {
-        _ORNode *element = _ORNodeConvert(object, patch);;
+        _ORNode *element = _ORNodeConvert(object, patch, length);;
         node->nodes[node->count] = element;
-        node->length += element->length;
         node->count++;
     }
     return node;
@@ -154,22 +152,21 @@ NSMutableArray *_ListNodeDeConvert(_ListNode *node, _PatchNode *patch){
 }
 
 static NSMutableDictionary *_stringMap = nil;
-_StringNode *saveNewString(NSString *string, _PatchNode *patch){
+_StringNode *saveNewString(NSString *string, _PatchNode *patch, uint32_t *length){
     _StringNode * strNode = malloc(sizeof(_StringNode));
     memset(strNode, 0, sizeof(_StringNode));
     const char *str = string.UTF8String;
     size_t len = strlen(str);
     strNode->strLen = (unsigned int)len;
-    strNode->length = _StringNodeBaseLength;
     strNode->nodeType = StringNodeType;
-    
+    *length += _StringNodeBaseLength;
     if (_stringMap[string]) {
         \(_uintType) offset = [_stringMap[string] unsignedIntValue];
         strNode->offset = offset;
         return strNode;
     }
     
-    NSUInteger needLength = len + patch->strings->length;
+    NSUInteger needLength = len + patch->strings->cursor;
     if (patch->strings->buffer == NULL) {
         patch->strings->buffer = malloc(needLength + 1);
         //FIX: strlen() heap overflow
@@ -188,7 +185,7 @@ _StringNode *saveNewString(NSString *string, _PatchNode *patch){
     _stringMap[string] = @(strNode->offset);
     memcpy(patch->strings->buffer + patch->strings->cursor, str, len);
     patch->strings->cursor += len;
-    patch->strings->length += len;
+    *length += len;
     return strNode;
 }
 
@@ -200,22 +197,22 @@ NSString *getString(_StringNode *node, _PatchNode *patch){
     return [NSString stringWithUTF8String:buffer];
 }
 
-_PatchNode *_PatchNodeConvert(\(PatchClass) *patch){
+_PatchNode *_PatchNodeConvert(\(PatchClass) *patch, uint32_t *length){
     _stringMap = [NSMutableDictionary dictionary];
     _PatchNode *node = malloc(sizeof(_PatchNode));
     memset(node, 0, sizeof(_PatchNode));
+    *length += _PatchNodeBaseLength;
 
     node->strings = malloc(sizeof(_StringsNode));
     memset(node->strings, 0, sizeof(_StringsNode));
     node->strings->nodeType = StringsNodeType;
-    node->strings->length = _StringsNodeBaseLength;
+    *length += _StringsNodeBaseLength;
     
     node->nodeType = PatchNodeType;
     node->enable = patch.enable;
-    node->appVersion = (_StringNode *)_ORNodeConvert(patch.appVersion, node);
-    node->osVersion = (_StringNode *)_ORNodeConvert(patch.osVersion, node);
-    node->nodes = (_ListNode *)_ORNodeConvert(patch.nodes, node);
-    node->length = _PatchNodeBaseLength + node->appVersion->length + node->strings->length + node->osVersion->length + node->nodes->length;
+    node->appVersion = (_StringNode *)_ORNodeConvert(patch.appVersion, node, length);
+    node->osVersion = (_StringNode *)_ORNodeConvert(patch.osVersion, node, length);
+    node->nodes = (_ListNode *)_ORNodeConvert(patch.nodes, node, length);
     return node;
 }
 
@@ -332,7 +329,6 @@ class ClassContent{
     var serializationExps = [String]()
     var deserializationExps = [String]()
     var destoryExps = [String]()
-    var lengthExps = [String]()
     var baseLength = 0
     func addStructNodeField(type: String, varname: String){
         self.structNodeFiels.append("\(type) \(varname);")
@@ -340,11 +336,8 @@ class ClassContent{
     func addStructBaseFiled(type: String, varname: String){
         self.structBaseFiels.append("\(type) \(varname);")
     }
-    func addLengthExp(varname: String){
-        self.lengthExps.append("node->\(varname)->length");
-    }
     func addNodeConvertExp(varname: String, nodeName:String){
-        self.convertExps.append("node->\(varname) = (\(nodeName) *)_ORNodeConvert(exp.\(varname), patch);")
+        self.convertExps.append("node->\(varname) = (\(nodeName) *)_ORNodeConvert(exp.\(varname), patch, length);")
     }
     func addBaseConvertExp(varname: String){
         self.convertExps.append("node->\(varname) = exp.\(varname);")
@@ -392,18 +385,16 @@ class ClassContent{
     //TODO: Convert
     func convertFunctionSource()->String{
         var convertExps = self.convertExps
-        var lengthExps = self.lengthExps
         if let superContent = contentCache[self.superClassName]{
             convertExps = superContent.convertExps + convertExps
-            lengthExps = superContent.lengthExps + lengthExps
         }
         return """
-        \(structName) *\(structName)Convert(\(className) *exp, _PatchNode *patch){
+        \(structName) *\(structName)Convert(\(className) *exp, _PatchNode *patch, uint32_t *length){
             \(structName) *node = malloc(sizeof(\(structName)));
             memset(node, 0, sizeof(\(structName)));
             node->nodeType = \(structName)Node;\(withSemicolonConvertExp)
             \(convertExps.joined(separator: "\n    "))
-            node->length = \(structName)BaseLength \(lengthExps.count > 0 ? "+":"")\(lengthExps.joined(separator: " + "));
+            *length += \(structName)BaseLength;
             return node;
         }
         
@@ -481,7 +472,6 @@ for node in ast.nodes{
         if let typename = prop.var.type.name{
             if typename == "NSMutableArray" {
                 item.addStructNodeField(type: "_ListNode *", varname: varname)
-                item.addLengthExp(varname: varname)
                 item.addNodeConvertExp(varname: varname, nodeName: "_ListNode")
                 item.addNodeDeconvertExp(varname: varname, className: "NSMutableArray *")
                 item.addSerializationExp(varname: varname)
@@ -489,7 +479,6 @@ for node in ast.nodes{
                 item.addDestroyExp(varname: varname)
             }else if typename.hasPrefix("OR") || typename == "id"{
                 item.addStructNodeField(type: "_ORNode *", varname: varname)
-                item.addLengthExp(varname: varname)
                 item.addNodeConvertExp(varname: varname, nodeName: "_ORNode")
                 item.addNodeDeconvertExp(varname: varname, className: "id")
                 item.addSerializationExp(varname: varname)
@@ -497,7 +486,6 @@ for node in ast.nodes{
                 item.addDestroyExp(varname: varname)
             }else if typename == "NSString"{
                 item.addStructNodeField(type: "_StringNode *", varname: varname)
-                item.addLengthExp(varname: varname)
                 item.addNodeConvertExp(varname: varname, nodeName: "_StringNode")
                 item.addNodeDeconvertExp(varname: varname, className: "NSString *")
                 item.addSerializationExp(varname: varname)
@@ -559,7 +547,7 @@ for node in ast.nodes{
     let convertExp =
     """
     else if ([exp isKindOfClass:[\(classNode.className) class]]){
-            return (_ORNode *)\(structName)Convert((\(classNode.className) *)exp, patch);
+            return (_ORNode *)\(structName)Convert((\(classNode.className) *)exp, patch, length);
         }
     """
     if classNode.superClassName.hasPrefix("OR") && classNode.superClassName != "ORNode"{
@@ -598,15 +586,15 @@ for node in ast.nodes{
 
 impSource +=
 """
-_ORNode *_ORNodeConvert(id exp, _PatchNode *patch){
+_ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length){
     if ([exp isKindOfClass:[NSString class]]) {
-        return (_ORNode *)saveNewString((NSString *)exp, patch);
+        return (_ORNode *)saveNewString((NSString *)exp, patch, length);
     }else if ([exp isKindOfClass:[NSArray class]]) {
-        return (_ORNode *)_ListNodeConvert((NSArray *)exp, patch);
+        return (_ORNode *)_ListNodeConvert((NSArray *)exp, patch, length);
     }\(convertExps.joined(separator: ""))
     _ORNode *node = malloc(sizeof(_ORNode));
     memset(node, 0, sizeof(_ORNode));
-    node->length = \(_ORNodeLength);
+    *length += \(_ORNodeLength);
     return node;
 }
 
