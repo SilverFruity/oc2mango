@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)loadBinaryPatch:(NSString *)patchPath;
 - (void)dumpAsBinaryPatch:(NSString *)patchPath;
 
-+ (instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(NSString *)decrptMapPath;
-- (void)dumpAsJsonPatch:(NSString *)patchPath encrptMapPath:(NSString *)encrptMapPath;
++ (instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(nullable NSString *)decrptMapPath;
+- (void)dumpAsJsonPatch:(NSString *)patchPath encrptMapPath:(nullable NSString *)encrptMapPath;
 @end
 NS_ASSUME_NONNULL_END

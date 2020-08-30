@@ -50,32 +50,34 @@
         yyrestart(NULL);
         NSLog(@"\n----Error: \n  PATH: %@\n  INFO:%@",self.source.filePath,self.error);
     }
-//#define ARCHIVE_TEST
-#ifdef ARCHIVE_TEST
     
-    uint32_t cursor = 0;
-    ORPatchFile *file = [ORPatchFile new];
-    _PatchNode *node = nil;
-
-    file.nodes = GlobalAst.nodes;
-    node = _PatchNodeConvert(file);
-
-    //Serialization
-    void *buffer = malloc(node->length);
-    _PatchNodeSerialization(node, buffer, &cursor);
-    
-    cursor = 0;
-    node = _PatchNodeDeserialization(buffer, &cursor, node->length);
-    
-    file = _PatchNodeDeConvert(node);
-    
-    NSLog(@"file size: %.2f KB", (double)node->length / 1000.0);
-    
-    _PatchNodeDestroy(node);
-    
-    GlobalAst = [AST new];
-    [GlobalAst merge:file.nodes];
+//#define JSON_PATCH_TEST
+#ifdef JSON_PATCH_TEST
+    do {
+        NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+        NSString *filePath = [cachePath stringByAppendingPathComponent:@"patch.json"];
+        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:GlobalAst.nodes];
+        [file dumpAsJsonPatch:filePath encrptMapPath:nil];
+        ORPatchFile *newFile = [ORPatchFile loadJsonPatch:filePath decrptMapPath:nil];
+        GlobalAst = [AST new];
+        [GlobalAst merge:newFile.nodes];
+    } while (0);
 #endif
+    
+//#define BINARY_PATCH_TEST
+#ifdef BINARY_PATCH_TEST
+    do {
+        NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+        NSString *filePath = [cachePath stringByAppendingPathComponent:@"BinaryPatch"];
+        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:GlobalAst.nodes];
+        [file dumpAsBinaryPatch:filePath];
+        ORPatchFile *newFile = [ORPatchFile loadBinaryPatch:filePath];
+        GlobalAst = [AST new];
+        [GlobalAst merge:newFile.nodes];
+    } while (0);
+#endif
+    
+
     return GlobalAst;
 }
 - (AST *)parseSource:(NSString *)source{

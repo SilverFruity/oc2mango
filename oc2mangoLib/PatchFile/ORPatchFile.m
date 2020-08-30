@@ -51,6 +51,9 @@
 }
 + (instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(NSString *)decrptMapPath{
     NSData *fileData = [[NSData alloc] initWithContentsOfFile:patchPatch];
+    if (fileData == nil) {
+        return nil;
+    }
     NSError *error;
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:&error];
     if (error) {
@@ -79,6 +82,13 @@
             encrptMap = dict;
         }
     }
-    [JSONPatchHelper archivePatch:self encrptMap:encrptMap];
+    NSDictionary *dictionary = [JSONPatchHelper archivePatch:self encrptMap:encrptMap];
+    NSError *error = nil;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
+    if (error) {
+        NSLog(@"%@",error);
+        return;
+    }
+    [data writeToFile:patchPath atomically:YES];
 }
 @end

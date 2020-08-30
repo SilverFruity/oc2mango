@@ -102,17 +102,18 @@ int main(int argc, const char * argv[]) {
         result = [AST new];
         [result merge:newFile.nodes];
     } while (0);
-    do {
-        NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/BinaryPatch.txt";
-        startDate = [NSDate new];
-        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:result.nodes];
-        [file dumpAsBinaryPatch:filePath];
-        ORPatchFile *newFile = [ORPatchFile loadBinaryPatch:filePath];
-        endDate = [NSDate new];
-        NSLog(@"binary patch time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-        result = [AST new];
-        [result merge:newFile.nodes];
-    } while (0);
+    
+//    do {
+//        NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/BinaryPatch.txt";
+//        startDate = [NSDate new];
+//        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:result.nodes];
+//        [file dumpAsBinaryPatch:filePath];
+//        ORPatchFile *newFile = [ORPatchFile loadBinaryPatch:filePath];
+//        endDate = [NSDate new];
+//        NSLog(@"binary patch time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
+//        result = [AST new];
+//        [result merge:newFile.nodes];
+//    } while (0);
 
     
     Convert *convert = [[Convert alloc] init];
