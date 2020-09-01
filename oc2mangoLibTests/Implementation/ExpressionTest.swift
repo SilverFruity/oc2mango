@@ -301,6 +301,8 @@ class ExpressionTest: XCTestCase {
             return @"";
         }];
         void *function(type *a, type *b);
+        CGSizeMake([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 0.666);
+        CGPointMake(CGRectGetMaxX(pathRect) * cLocations * 1, CGRectGetMidY(pathRect));
         """
         let ast = ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())

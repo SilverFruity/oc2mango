@@ -73,6 +73,7 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     if (data == nil) {
         return nil;
     }
+    NSLog(@"binary file length %.2f KB", (double)data.length / 1000.0);
     void *buffer = (void *)[data bytes];
     uint32_t cursor = 0;
     if (_PatchNodeGenerateCheckFile(buffer, (uint32_t)data.length).canUseable == NO) {
@@ -92,7 +93,6 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     _PatchNodeDestroy(node);
     NSData *data = [[NSData alloc]initWithBytes:buffer length:length];
     [data writeToFile:patchPath atomically:YES];
-    NSLog(@"binary file length %.2f KB", (double)length / 1000.0);
     return;
 }
 + (instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(NSString *)decrptMapPath{

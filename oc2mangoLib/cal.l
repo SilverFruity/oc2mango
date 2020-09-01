@@ -51,7 +51,7 @@
 <POUNDKEY>\n { BEGIN INITIAL; }
 <INITIAL>"NS_ASSUME_NONNULL_BEGIN" ;
 <INITIAL>"NS_ASSUME_NONNULL_END" ;
-<INITIAL>"," { return COMMA ;}
+<INITIAL>"," { is_variable = false; return COMMA ;}
 <INITIAL>";" { is_variable = false; return SEMICOLON; }
 <INITIAL>"(" { is_variable = false; return LP; }
 <INITIAL>")" { is_variable = false; return RP; }

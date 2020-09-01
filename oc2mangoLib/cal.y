@@ -997,6 +997,7 @@ postfix_expression: primary_expression
     }
     | postfix_expression DOT IDENTIFIER
     {
+        is_variable = true;
         ORMethodCall *methodcall = (ORMethodCall *)[ORMethodCall new];
         methodcall.caller =  _transfer(ORValueExpression *)$1;
         methodcall.isDot = YES;
@@ -1012,7 +1013,8 @@ postfix_expression: primary_expression
         $$ = _vretained methodcall;
     }
     | postfix_expression LP expression_list RP
-    {   
+    {
+        is_variable = true;
         $$ = _vretained makeFuncCall(_transfer(id) $1, _transfer(id) $3);
     }
     | postfix_expression LB expression RB
