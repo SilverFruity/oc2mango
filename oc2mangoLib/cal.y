@@ -10,6 +10,7 @@
 #import "MakeDeclare.h"
 extern int yylex (void);
 extern void yyerror(const char *s);
+extern bool is_variable;
 %}
 %union{
     void *identifier;
@@ -959,6 +960,10 @@ unary_operator:
     {
         $$ = UnaryOperatorAdressPoint;
     }
+    | ASTERISK
+    {
+        $$ = UnaryOperatorAdressValue;
+    }
     | POINT
     {
         $$ = UnaryOperatorAdressValue;
@@ -1052,6 +1057,7 @@ dict_entrys:
 primary_expression:
          IDENTIFIER
         {
+            is_variable = true;
             $$ = _vretained makeValue(OCValueVariable,_transfer(id) $1);
         }
         | _self
@@ -1065,6 +1071,7 @@ primary_expression:
         | objc_method_call
         | LP expression RP
         {
+            is_variable = true;
             $$ = $2;
         }
         | AT LC dict_entrys RC

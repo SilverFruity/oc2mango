@@ -158,8 +158,8 @@ class ExpressionTest: XCTestCase {
     func testPointExpression(){
         source = """
         **a = c;
-        a = *x;
         *a = b;
+        a = *x;
         a *= b;
         a = x * 0.11;
         a = x * 1;
@@ -289,6 +289,18 @@ class ExpressionTest: XCTestCase {
         source =
         """
         func(1 * a);
+        a = (void(^)(int))a;
+        *a = b;
+        a = *x;
+        NSString *a = 1;
+        NSString *b = a * (b + c);
+        funcsss(a * b);
+        void funcs(NSString *a, NSString *b);
+        [object method:self.x * 1.0];
+        [object method:self.x * 1.0 param:self.x * self.y callback:^NSString *{
+            return @"";
+        }];
+        void *function(type *a, type *b);
         """
         let ast = ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
