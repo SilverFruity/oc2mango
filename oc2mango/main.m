@@ -89,19 +89,20 @@ int main(int argc, const char * argv[]) {
     endDate = [NSDate new];
     NSLog(@"raw files size: %.2fKB", folderSizeAtPath(inputDir) / 1000);
     NSLog(@"compile time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-    do {
-        NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/patch.json";
-        NSString *encryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassEncryptMap.json";
-        NSString *decryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassDecryptMap.json";
-        startDate = [NSDate new];
-        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:result.nodes];
-        [file dumpAsJsonPatch:filePath encrptMapPath:encryptPath];
-        ORPatchFile *newFile = [ORPatchFile loadJsonPatch:filePath decrptMapPath:decryptPath];
-        endDate = [NSDate new];
-        NSLog(@"json patch time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-        result = [AST new];
-        [result merge:newFile.nodes];
-    } while (0);
+    
+//    do {
+//        NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/patch.json";
+//        NSString *encryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassEncryptMap.json";
+//        NSString *decryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassDecryptMap.json";
+//        startDate = [NSDate new];
+//        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:result.nodes];
+//        [file dumpAsJsonPatch:filePath encrptMapPath:encryptPath];
+//        ORPatchFile *newFile = [ORPatchFile loadJsonPatch:filePath decrptMapPath:decryptPath];
+//        endDate = [NSDate new];
+//        NSLog(@"json patch time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
+//        result = [AST new];
+//        [result merge:newFile.nodes];
+//    } while (0);
     
 //    do {
 //        NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/BinaryPatch.txt";

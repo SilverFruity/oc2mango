@@ -88,6 +88,7 @@ _PatchNode *_PatchNodeConvert(\(PatchClass) *patch, uint32_t *length);
 void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor);
 _PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
 void _PatchNodeDestroy(_PatchNode *node);
+ORPatchFile *_PatchNodeGenerateCheckFile(void *buffer, uint32_t bufferLength);
 """
 
 var NodeTypeEnums = ""
@@ -281,6 +282,22 @@ _StringsNode *_StringsNodeDeserialization(void *buffer, uint32_t *cursor, uint32
     memcpy(node->buffer, buffer + *cursor, node->cursor);
     *cursor += node->cursor;
     return node;
+}
+ORPatchFile *_PatchNodeGenerateCheckFile(void *buffer, uint32_t bufferLength){
+    uint32_t cursor = 0;
+    _PatchNode *node = malloc(sizeof(_PatchNode));
+    memcpy(node, buffer + cursor, _PatchNodeBaseLength);
+    cursor += _PatchNodeBaseLength;
+    node->strings = (_StringsNode *)_StringsNodeDeserialization(buffer, &cursor, bufferLength);
+    node->appVersion = (_StringNode *)_ORNodeDeserialization(buffer, &cursor, bufferLength);
+    node->osVersion = (_StringNode *)_ORNodeDeserialization(buffer, &cursor, bufferLength);
+    node->nodes = NULL;
+    ORPatchFile *file = [ORPatchFile new];
+    file.appVersion = getString(node->appVersion, node);
+    file.osVersion = getString(node->osVersion, node);
+    file.enable = node->enable;
+    _PatchNodeDestroy(node);
+    return file;
 }
 _PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
     _PatchNode *node = malloc(sizeof(_PatchNode));
@@ -651,6 +668,7 @@ _ORNode *_ORNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferL
 impSource +=
 """
 void _ORNodeDestroy(_ORNode *node){
+    if(node == NULL) return;
     if (node->nodeType == ORNodeType) {
         free(node);
     }else if (node->nodeType == ListNodeType) {

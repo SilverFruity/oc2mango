@@ -11,8 +11,19 @@
 #import "BinaryPatchHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
+BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint);
 @interface ORPatchFile : NSObject
+/*
+    'enable' 属性的优先级在版本控制之上.
+    关于版本控制:
+    1. '>= 0.1': 当前版本号 > 0.1
+    2. '> 0.1':  当前版本号 >= 0.1
+    3. '<= 0.1': 当前版本号 <= 0.1
+    4. '<  0.1': 当前版本号 < 0.1
+    5. '=0.1' or '0.1': 当前版本号 = 0.1
+    5. '*': any verson, default
+ */
+
 /// target app version of patch
 @property(nonatomic, copy)NSString *appVersion;
 /// target os version of patch
@@ -24,12 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, strong)NSMutableArray *nodes;
 
+- (BOOL)canUseable;
+
 - (instancetype)initWithNodes:(NSArray *)nodes;
 
-+ (instancetype)loadBinaryPatch:(NSString *)patchPath;
++ (nullable instancetype)loadBinaryPatch:(NSString *)patchPath;
 - (void)dumpAsBinaryPatch:(NSString *)patchPath;
 
-+ (instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(nullable NSString *)decrptMapPath;
++ (nullable instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(nullable NSString *)decrptMapPath;
 - (void)dumpAsJsonPatch:(NSString *)patchPath encrptMapPath:(nullable NSString *)encrptMapPath;
 @end
 NS_ASSUME_NONNULL_END

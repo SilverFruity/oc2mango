@@ -7,7 +7,34 @@
 //
 
 #import "ORPatchFile.h"
-
+#if !TARGET_OS_OSX
+#import <UIKit/UIKit.h>
+#endif
+BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
+    BOOL result = YES;
+    NSString *deviceVersion = current;
+    NSString *constraintVersion = constaint;
+    if ([constraintVersion isEqualToString:@"*"]) {
+        return YES;
+    }
+    NSString *clearedOsVersion = [constraintVersion stringByReplacingOccurrencesOfString:@">" withString:@""];
+    clearedOsVersion = [clearedOsVersion stringByReplacingOccurrencesOfString:@"<" withString:@""];
+    clearedOsVersion = [clearedOsVersion stringByReplacingOccurrencesOfString:@"=" withString:@""];
+    clearedOsVersion = [clearedOsVersion stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSComparisonResult cmpResult = [deviceVersion compare:clearedOsVersion options:NSNumericSearch];
+    if ([constraintVersion hasPrefix:@">="]) {
+        result &= (cmpResult == NSOrderedDescending || cmpResult ==  NSOrderedSame);
+    }else if ([constraintVersion hasPrefix:@">"]){
+        result &= cmpResult == NSOrderedDescending;
+    }else if ([constraintVersion hasPrefix:@"<="]) {
+        result &= (cmpResult == NSOrderedAscending || cmpResult ==  NSOrderedSame);
+    }else if ([constraintVersion hasPrefix:@"<"]){
+        result &= cmpResult == NSOrderedAscending;
+    }else{
+        result &= cmpResult == NSOrderedSame;
+    }
+    return result;
+}
 @implementation ORPatchFile
 - (instancetype)init
 {
@@ -17,8 +44,24 @@
         self.osVersion = @"*";
         self.strings = [NSMutableArray array];
         self.nodes = [NSMutableArray array];
+        self.enable = YES;
     }
     return self;
+}
+- (BOOL)canUseable{
+    if (self.enable == NO) {
+        return NO;
+    }
+    BOOL useable = YES;
+    useable &= ORPatchFileVersionCompare([[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"], self.appVersion);
+    #if !TARGET_OS_OSX
+    useable &= ORPatchFileVersionCompare([[UIDevice currentDevice] systemVersion], self.osVersion);
+    #else
+    NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
+    NSString *osVersion = [NSString stringWithFormat:@"%lu.%lu.%lu", version.majorVersion, version.minorVersion, version.patchVersion];
+    useable &= ORPatchFileVersionCompare(osVersion, self.osVersion);
+    #endif
+    return useable;
 }
 - (instancetype)initWithNodes:(NSArray *)nodes{
     self = [self init];
@@ -32,6 +75,9 @@
     }
     void *buffer = (void *)[data bytes];
     uint32_t cursor = 0;
+    if (_PatchNodeGenerateCheckFile(buffer, (uint32_t)data.length).canUseable == NO) {
+        return nil;
+    }
     _PatchNode *node = _PatchNodeDeserialization(buffer, &cursor, (uint32_t)data.length);
     ORPatchFile *file = _PatchNodeDeConvert(node);
     _PatchNodeDestroy(node);

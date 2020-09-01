@@ -55,3 +55,4 @@ ORPatchFile *_PatchNodeDeConvert(_PatchNode *node);
 void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor);
 _PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
 void _PatchNodeDestroy(_PatchNode *node);
+ORPatchFile *_PatchNodeGenerateCheckFile(void *buffer, uint32_t bufferLength);

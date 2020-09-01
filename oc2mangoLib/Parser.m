@@ -70,10 +70,13 @@
         NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
         NSString *filePath = [cachePath stringByAppendingPathComponent:@"BinaryPatch"];
         ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:GlobalAst.nodes];
+        file.osVersion = @">=10.15.6";
         [file dumpAsBinaryPatch:filePath];
         ORPatchFile *newFile = [ORPatchFile loadBinaryPatch:filePath];
-        GlobalAst = [AST new];
-        [GlobalAst merge:newFile.nodes];
+        if (newFile) {
+            GlobalAst = [AST new];
+            [GlobalAst merge:newFile.nodes];
+        }
     } while (0);
 #endif
     
