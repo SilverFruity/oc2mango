@@ -51,6 +51,18 @@
 		EE5534D42290053800A4B32E /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5534DB22900DFF00A4B32E /* ConvertTest.swift */; };
 		EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F05226CB443008712C2 /* MakeDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE66C0A624FE97D500C85B31 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE66C0A524FE97D500C85B31 /* main.swift */; };
+		EE66C0AA24FE982B00C85B31 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
+		EE66C0AB24FE982B00C85B31 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
+		EE66C0AC24FE982B00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE38F948246C2E4A00E7C37B /* RunnerClasses.m */; };
+		EE66C0AD24FE982B00C85B31 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
+		EE66C0AE24FE982B00C85B31 /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
+		EE66C0AF24FE982B00C85B31 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
+		EE66C0B024FE982B00C85B31 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
+		EE66C0B124FE982B00C85B31 /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
+		EE66C0B224FE982B00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4F369524F994B500F685AF /* BinaryPatchHelper.m */; };
+		EE66C0B324FE982B00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE2510A424F4249100BA575A /* ORPatchFile.m */; };
+		EE66C0B424FE982B00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 04ADC89024F7A3900018CB64 /* JSONPatchHelper.m */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
 		EE9592E024F8064D00D8ABE0 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE2510A424F4249100BA575A /* ORPatchFile.m */; };
@@ -85,6 +97,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		EE66C0A124FE97D500C85B31 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		EE6E6CCD225E488000616C7E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -110,9 +131,9 @@
 		EE2510A424F4249100BA575A /* ORPatchFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORPatchFile.m; sourceTree = "<group>"; };
 		EE38F947246C2E4900E7C37B /* RunnerClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RunnerClasses.h; sourceTree = "<group>"; };
 		EE38F948246C2E4A00E7C37B /* RunnerClasses.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RunnerClasses.m; sourceTree = "<group>"; };
-		EE4F367924F9251C00F685AF /* BinaryPatchGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BinaryPatchGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE4F367924F9251C00F685AF /* BinaryPatchCodeGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BinaryPatchCodeGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE4F367B24F9251C00F685AF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		EE4F368824F9259D00F685AF /* BinaryPatchGenerator-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BinaryPatchGenerator-Bridging-Header.h"; sourceTree = "<group>"; };
+		EE4F368824F9259D00F685AF /* BinaryPatchCodeGenerator-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BinaryPatchCodeGenerator-Bridging-Header.h"; sourceTree = "<group>"; };
 		EE4F369524F994B500F685AF /* BinaryPatchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BinaryPatchHelper.m; sourceTree = "<group>"; };
 		EE4F369624F994B500F685AF /* BinaryPatchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryPatchHelper.h; sourceTree = "<group>"; };
 		EE5534CD2290032700A4B32E /* AST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AST.h; sourceTree = "<group>"; };
@@ -120,6 +141,9 @@
 		EE5534D12290053800A4B32E /* Convert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		EE5534D22290053800A4B32E /* Convert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert.m; sourceTree = "<group>"; };
 		EE5534DB22900DFF00A4B32E /* ConvertTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertTest.swift; sourceTree = "<group>"; };
+		EE66C0A324FE97D500C85B31 /* PatchGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PatchGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE66C0A524FE97D500C85B31 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		EE66C0B524FE984600C85B31 /* PatchGenerator-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PatchGenerator-Bridging-Header.h"; sourceTree = "<group>"; };
 		EE6E6CCF225E488000616C7E /* oc2mango */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oc2mango; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6E6CD2225E488000616C7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EE6E6CDA225E496600616C7E /* cal.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = cal.y; sourceTree = "<group>"; };
@@ -143,6 +167,13 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		EE4F367624F9251C00F685AF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE66C0A024FE97D500C85B31 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -207,13 +238,13 @@
 			path = PatchFile;
 			sourceTree = "<group>";
 		};
-		EE4F367A24F9251C00F685AF /* BinaryPatchGenerator */ = {
+		EE4F367A24F9251C00F685AF /* BinaryPatchCodeGenerator */ = {
 			isa = PBXGroup;
 			children = (
-				EE4F368824F9259D00F685AF /* BinaryPatchGenerator-Bridging-Header.h */,
+				EE4F368824F9259D00F685AF /* BinaryPatchCodeGenerator-Bridging-Header.h */,
 				EE4F367B24F9251C00F685AF /* main.swift */,
 			);
-			path = BinaryPatchGenerator;
+			path = BinaryPatchCodeGenerator;
 			sourceTree = "<group>";
 		};
 		EE5534D822900DD700A4B32E /* Convert */ = {
@@ -225,10 +256,20 @@
 			path = Convert;
 			sourceTree = "<group>";
 		};
+		EE66C0A424FE97D500C85B31 /* PatchGenerator */ = {
+			isa = PBXGroup;
+			children = (
+				EE66C0B524FE984600C85B31 /* PatchGenerator-Bridging-Header.h */,
+				EE66C0A524FE97D500C85B31 /* main.swift */,
+			);
+			path = PatchGenerator;
+			sourceTree = "<group>";
+		};
 		EE6E6CC6225E488000616C7E = {
 			isa = PBXGroup;
 			children = (
-				EE4F367A24F9251C00F685AF /* BinaryPatchGenerator */,
+				EE66C0A424FE97D500C85B31 /* PatchGenerator */,
+				EE4F367A24F9251C00F685AF /* BinaryPatchCodeGenerator */,
 				EE6E6CD1225E488000616C7E /* oc2mango */,
 				EED67A6F2270AE0E0015AC02 /* oc2mangoLib */,
 				EED67A7A2270AE0F0015AC02 /* oc2mangoLibTests */,
@@ -243,7 +284,8 @@
 				EE6E6CCF225E488000616C7E /* oc2mango */,
 				EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */,
 				EED67A762270AE0F0015AC02 /* oc2mangoLibTests.xctest */,
-				EE4F367924F9251C00F685AF /* BinaryPatchGenerator */,
+				EE4F367924F9251C00F685AF /* BinaryPatchCodeGenerator */,
+				EE66C0A324FE97D500C85B31 /* PatchGenerator */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -340,9 +382,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		EE4F367824F9251C00F685AF /* BinaryPatchGenerator */ = {
+		EE4F367824F9251C00F685AF /* BinaryPatchCodeGenerator */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EE4F367F24F9251C00F685AF /* Build configuration list for PBXNativeTarget "BinaryPatchGenerator" */;
+			buildConfigurationList = EE4F367F24F9251C00F685AF /* Build configuration list for PBXNativeTarget "BinaryPatchCodeGenerator" */;
 			buildPhases = (
 				EE4F367524F9251C00F685AF /* Sources */,
 				EE4F367624F9251C00F685AF /* Frameworks */,
@@ -352,9 +394,26 @@
 			);
 			dependencies = (
 			);
-			name = BinaryPatchGenerator;
+			name = BinaryPatchCodeGenerator;
 			productName = PatchContentGenerator;
-			productReference = EE4F367924F9251C00F685AF /* BinaryPatchGenerator */;
+			productReference = EE4F367924F9251C00F685AF /* BinaryPatchCodeGenerator */;
+			productType = "com.apple.product-type.tool";
+		};
+		EE66C0A224FE97D500C85B31 /* PatchGenerator */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE66C0A724FE97D500C85B31 /* Build configuration list for PBXNativeTarget "PatchGenerator" */;
+			buildPhases = (
+				EE66C09F24FE97D500C85B31 /* Sources */,
+				EE66C0A024FE97D500C85B31 /* Frameworks */,
+				EE66C0A124FE97D500C85B31 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PatchGenerator;
+			productName = PatchGenerator;
+			productReference = EE66C0A324FE97D500C85B31 /* PatchGenerator */;
 			productType = "com.apple.product-type.tool";
 		};
 		EE6E6CCE225E488000616C7E /* oc2mango */ = {
@@ -424,6 +483,9 @@
 					EE4F367824F9251C00F685AF = {
 						CreatedOnToolsVersion = 11.6;
 					};
+					EE66C0A224FE97D500C85B31 = {
+						CreatedOnToolsVersion = 11.6;
+					};
 					EE6E6CCE225E488000616C7E = {
 						CreatedOnToolsVersion = 10.1;
 					};
@@ -451,7 +513,8 @@
 				EE6E6CCE225E488000616C7E /* oc2mango */,
 				EED67A6D2270AE0E0015AC02 /* oc2mangoLib */,
 				EED67A752270AE0F0015AC02 /* oc2mangoLibTests */,
-				EE4F367824F9251C00F685AF /* BinaryPatchGenerator */,
+				EE4F367824F9251C00F685AF /* BinaryPatchCodeGenerator */,
+				EE66C0A224FE97D500C85B31 /* PatchGenerator */,
 			);
 		};
 /* End PBXProject section */
@@ -515,6 +578,25 @@
 				EE4F369D24F9952B00F685AF /* BinaryPatchHelper.m in Sources */,
 				EE4F368324F9254400F685AF /* Convert.m in Sources */,
 				EE4F368624F9254400F685AF /* cal.l in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE66C09F24FE97D500C85B31 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE66C0AE24FE982B00C85B31 /* AST.m in Sources */,
+				EE66C0AB24FE982B00C85B31 /* Log.m in Sources */,
+				EE66C0AA24FE982B00C85B31 /* Parser.m in Sources */,
+				EE66C0B124FE982B00C85B31 /* cal.y in Sources */,
+				EE66C0AF24FE982B00C85B31 /* MakeDeclare.m in Sources */,
+				EE66C0AC24FE982B00C85B31 /* RunnerClasses.m in Sources */,
+				EE66C0B424FE982B00C85B31 /* JSONPatchHelper.m in Sources */,
+				EE66C0A624FE97D500C85B31 /* main.swift in Sources */,
+				EE66C0B224FE982B00C85B31 /* BinaryPatchHelper.m in Sources */,
+				EE66C0B324FE982B00C85B31 /* ORPatchFile.m in Sources */,
+				EE66C0AD24FE982B00C85B31 /* Convert.m in Sources */,
+				EE66C0B024FE982B00C85B31 /* cal.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,6 +679,38 @@
 			name = Debug;
 		};
 		EE4F367E24F9251C00F685AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SH4YVD7HDL;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_INPUT_FILETYPE = sourcecode.c.objc;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		EE66C0A824FE97D500C85B31 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SH4YVD7HDL;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_INPUT_FILETYPE = sourcecode.c.objc;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		EE66C0A924FE97D500C85B31 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -859,11 +973,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EE4F367F24F9251C00F685AF /* Build configuration list for PBXNativeTarget "BinaryPatchGenerator" */ = {
+		EE4F367F24F9251C00F685AF /* Build configuration list for PBXNativeTarget "BinaryPatchCodeGenerator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EE4F367D24F9251C00F685AF /* Debug */,
 				EE4F367E24F9251C00F685AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE66C0A724FE97D500C85B31 /* Build configuration list for PBXNativeTarget "PatchGenerator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE66C0A824FE97D500C85B31 /* Debug */,
+				EE66C0A924FE97D500C85B31 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

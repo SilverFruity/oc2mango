@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EE4F367824F9251C00F685AF"
-               BuildableName = "BinaryPatchGenerator"
-               BlueprintName = "BinaryPatchGenerator"
+               BlueprintIdentifier = "EE66C0A224FE97D500C85B31"
+               BuildableName = "PatchGenerator"
+               BlueprintName = "PatchGenerator"
                ReferencedContainer = "container:oc2mango.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,15 +44,15 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EE4F367824F9251C00F685AF"
-            BuildableName = "BinaryPatchGenerator"
-            BlueprintName = "BinaryPatchGenerator"
+            BlueprintIdentifier = "EE66C0A224FE97D500C85B31"
+            BuildableName = "PatchGenerator"
+            BlueprintName = "PatchGenerator"
             ReferencedContainer = "container:oc2mango.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "$SRCROOT/oc2mangoLib/RunnerClasses.h $SRCROOT/oc2mangoLib/PatchFile"
+            argument = "-files /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/ViewController1 -refs  /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle -output /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/binarypatch"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
@@ -67,9 +67,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EE4F367824F9251C00F685AF"
-            BuildableName = "BinaryPatchGenerator"
-            BlueprintName = "BinaryPatchGenerator"
+            BlueprintIdentifier = "EE66C0A224FE97D500C85B31"
+            BuildableName = "PatchGenerator"
+            BlueprintName = "PatchGenerator"
             ReferencedContainer = "container:oc2mango.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
