@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RunnerClasses.h"
 #import "JSONPatchHelper.h"
 #import "BinaryPatchHelper.h"
 

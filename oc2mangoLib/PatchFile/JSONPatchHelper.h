@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RunnerClasses.h"
+@class ORNode;
 NS_ASSUME_NONNULL_BEGIN
 @class ORPatchFile;
 @interface JSONPatchClassEncrypt: NSObject
