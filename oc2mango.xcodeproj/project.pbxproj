@@ -55,6 +55,22 @@
 		EE66C17124FEB62C00C85B31 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C17224FEB64900C85B31 /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
 		EE66C17324FEB64900C85B31 /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EE66C18524FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
+		EE66C18624FEC14A00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
+		EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
+		EE66C18824FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
+		EE66C18924FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
+		EE66C18A24FEC14A00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
+		EE66C18B24FEC14A00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
+		EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
+		EE66C18D24FEC14B00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
+		EE66C18E24FEC14B00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
+		EE66C18F24FEC14B00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
+		EE66C19024FEC14B00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
+		EE66C19124FEC14B00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
+		EE66C19224FEC14B00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
+		EE66C19324FEC14B00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
+		EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
@@ -628,9 +644,13 @@
 				EE4F368124F9254400F685AF /* Log.m in Sources */,
 				EE4F368024F9254400F685AF /* Parser.m in Sources */,
 				EE4F368724F9254400F685AF /* cal.y in Sources */,
+				EE66C18924FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */,
 				EE4F368524F9254400F685AF /* MakeDeclare.m in Sources */,
+				EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */,
 				EE4F367C24F9251C00F685AF /* main.swift in Sources */,
 				EE4F368324F9254400F685AF /* Convert.m in Sources */,
+				EE66C18B24FEC14A00C85B31 /* ORPatchFile.m in Sources */,
+				EE66C18A24FEC14A00C85B31 /* JSONPatchHelper.m in Sources */,
 				EE4F368624F9254400F685AF /* cal.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -643,9 +663,13 @@
 				EE66C0AB24FE982B00C85B31 /* Log.m in Sources */,
 				EE66C0AA24FE982B00C85B31 /* Parser.m in Sources */,
 				EE66C0B124FE982B00C85B31 /* cal.y in Sources */,
+				EE66C18524FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */,
 				EE66C0AF24FE982B00C85B31 /* MakeDeclare.m in Sources */,
+				EE66C18824FEC14A00C85B31 /* RunnerClasses.m in Sources */,
 				EE66C0A624FE97D500C85B31 /* main.swift in Sources */,
 				EE66C0AD24FE982B00C85B31 /* Convert.m in Sources */,
+				EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */,
+				EE66C18624FEC14A00C85B31 /* JSONPatchHelper.m in Sources */,
 				EE66C0B024FE982B00C85B31 /* cal.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -669,9 +693,13 @@
 				EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */,
 				EE4BAFF524364CEA00A2A080 /* cal.y in Sources */,
 				EE4BAFEA24364CEA00A2A080 /* Convert.m in Sources */,
+				EE66C19124FEC14B00C85B31 /* BinaryPatchHelper.m in Sources */,
 				EE4BAFE924364CEA00A2A080 /* Log.m in Sources */,
+				EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
 				EE4BAFEC24364CEA00A2A080 /* MakeDeclare.m in Sources */,
+				EE66C19324FEC14B00C85B31 /* ORPatchFile.m in Sources */,
+				EE66C19224FEC14B00C85B31 /* JSONPatchHelper.m in Sources */,
 				EE4BAFF424364CEA00A2A080 /* cal.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -683,10 +711,14 @@
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* cal.y in Sources */,
 				EE5534D42290053800A4B32E /* Convert.m in Sources */,
+				EE66C18F24FEC14B00C85B31 /* ORPatchFile.m in Sources */,
+				EE66C18E24FEC14B00C85B31 /* JSONPatchHelper.m in Sources */,
+				EE66C18D24FEC14B00C85B31 /* BinaryPatchHelper.m in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
 				EE4BAFE624364CAA00A2A080 /* cal.l in Sources */,
+				EE66C19024FEC14B00C85B31 /* RunnerClasses.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

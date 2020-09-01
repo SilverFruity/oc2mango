@@ -77,8 +77,10 @@ completion(httpReponse,result,error);
         XCTAssert(startClassProrityDetect(ast,class4) == 1)
         XCTAssert(startClassProrityDetect(ast,class5) == 3)
         let prorityDict = ["Class0":0,"Class1":1,"Class4":1,"Class3":2,"Class2":2,"Class5":3]
-        let results = ast.sortClasses()
-        let prorities = results.map{ prorityDict[$0.className]! }
+        let results = ast.sortClasses() as [Any]
+        let prorities = results.map { (object) -> Int in
+            prorityDict[(object as! ORClass).className]!
+        }
         XCTAssert(prorities == [0, 1, 1, 2, 2, 3])
     }
 }

@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "$SRCROOT/oc2mangoLib/RunnerClasses.h $SRCROOT/oc2mangoLib/PatchFile"
+            argument = "$SRCROOT/oc2mangoLib/PatchFile/RunnerClasses.h $SRCROOT/oc2mangoLib/PatchFile"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

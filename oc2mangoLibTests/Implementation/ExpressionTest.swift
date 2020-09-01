@@ -306,8 +306,8 @@ class ExpressionTest: XCTestCase {
         """
         let ast = ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
-        let call = ast.globalStatements as! [ORCFuncCall]
-        let call1 = call.first!
+        let call = ast.globalStatements as! [Any]
+        let call1 = call.first! as! ORCFuncCall
         XCTAssert(call1.caller.value as! String == "func")
         XCTAssert(call1.expressions.count == 1)
         let binary = call1.expressions[0] as! ORBinaryExpression
@@ -323,7 +323,7 @@ class ExpressionTest: XCTestCase {
         """
         let ast = ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
-        let call = (ast.globalStatements as! [ORCFuncCall]).first!
+        let call = (ast.globalStatements as! [Any]).first! as! ORCFuncCall
         let param2 = call.expressions[2] as! ORFunctionImp
         XCTAssert(param2.declare.funVar.isBlock == true)
         XCTAssert(param2.declare.returnType.type.type == TypeVoid)
