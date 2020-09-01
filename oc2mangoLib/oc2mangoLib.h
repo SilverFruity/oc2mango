@@ -17,6 +17,6 @@ FOUNDATION_EXPORT const unsigned char oc2mangoLibVersionString[];
 // In this header, you should import all the public headers of your framework using statements like #import <oc2mangoLib/PublicHeader.h>
 #import <oc2mangoLib/Convert.h>
 #import <oc2mangoLib/Parser.h>
-#import <oc2mangoLib/RunnerClasses.h>
-#import <oc2mangoLib/JSONPatchHelper.h>
+#import <ORPatchFile/RunnerClasses.h>
+#import <ORPatchFile/JSONPatchHelper.h>
 
