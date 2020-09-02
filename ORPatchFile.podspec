@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/SilverFruity/oc2mango.git", :tag => "#{s.version}" }
     s.source_files  = "oc2mangoLib/PatchFile/*.{h,m}"
     s.resource_bundles = {
-        'ORPatchFile' => ['oc2mangoLib/ClassDecryptMap.json', 'oc2mangoLib/ClassEncryptMap.json']
+        'ORPatchFile' => ['oc2mangoLib/PatchFile/ClassDecryptMap.json', 'oc2mangoLib/PatchFile/ClassEncryptMap.json']
     }
     end
     
