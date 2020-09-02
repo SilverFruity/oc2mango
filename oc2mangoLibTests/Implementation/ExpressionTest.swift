@@ -23,6 +23,8 @@ class ExpressionTest: XCTestCase {
         """
         int ***a;
         ini x = sizeof(a);
+        float b = 0.1f;
+        float c = 0.111;
         """
         let ast = ocparser.parseSource(source)
         let assign = ast.globalStatements[0] as? ORDeclareExpression

@@ -27,21 +27,20 @@ extern bool is_variable;
 
 %token <identifier> IDENTIFIER  STRING_LITERAL TYPEDEF ELLIPSIS CHILD_COLLECTION POINT
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE 
-%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default TYPEOF __TYPEOF  _sizeof
-%token <identifier> _struct _enum INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE 
-%token <identifier> PROPERTY WEAK STRONG COPY ASSIGN_MEM NONATOMIC ATOMIC READONLY READWRITE NONNULL NULLABLE 
-%token <identifier> EXTERN STATIC CONST _NONNULL _NULLABLE _STRONG _WEAK _BLOCK _BRIDGE _AUTORELEASE _BRIDGE_TRANSFER _BRIDGE_RETAINED _UNUSED
+%token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default TYPEOF _sizeof
+%token <identifier> _struct _enum NS_ENUM NS_OPTIONS INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE
+%token <identifier> PROPERTY
+%token <identifier> STATIC _STRONG _WEAK _BLOCK _AUTORELEASE NONNULL NULLABLE
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS ARROW
 %token <identifier> EQ NE LT LE GT GE LOGIC_AND LOGIC_OR NOT
 %token <identifier> AND OR POWER SUB ADD DIV ASTERISK AND_ASSIGN OR_ASSIGN POWER_ASSIGN SUB_ASSIGN ADD_ASSIGN DIV_ASSIGN ASTERISK_ASSIGN INCREMENT DECREMENT
 SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %token <identifier> _self _super _nil _NULL _YES _NO 
 %token <identifier>  _Class _id _void _BOOL _SEL _CHAR _SHORT _INT _LONG _LLONG  _UCHAR _USHORT _UINT _ULONG  _ULLONG _DOUBLE _FLOAT _instancetype
-%token <identifier> INTETER_LITERAL DOUBLE_LITERAL SELECTOR 
-%type  <identifier> class_property_type declare_left_attribute declare_right_attribute
+%token <identifier> INTETER_LITERAL DOUBLE_LITERAL SELECTOR
 %type  <identifier> global_define 
-%type  <declare>  protocol_declare class_declare protocol_list class_private_varibale_declare
-%type  <declare>  class_property_declare method_declare
+%type  <declare>  protocol_declare class_declare property_list class_private_varibale_declare class_private_list
+%type  <declare>  class_property_declare method_declare declare_left_attribute class_property_type
 %type  <declare>  parameter_declaration  type_specifier  parameter_list CHILD_COLLECTION_OPTIONAL
 %type  <implementation> class_implementation
 %type  <expression> objc_method_call primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression postfix_expression
@@ -65,17 +64,17 @@ definition:
             | class_declare
             | protocol_declare
             | class_implementation
-            | expression_statement
-            {
-                [GlobalAst addGlobalStatements:_typeId $1];
-            }
             | control_statement
             {
                 [GlobalAst addGlobalStatements:_typeId $1];
             }
 	    ;
 global_define:
-    CLASS_DECLARE IDENTIFIER SEMICOLON
+    expression_statement
+    {
+        [GlobalAst addGlobalStatements:_typeId $1];
+    }
+    | CLASS_DECLARE IDENTIFIER SEMICOLON
     | PROTOCOL IDENTIFIER SEMICOLON
     | type_specifier declarator LC function_implementation RC
     {
@@ -121,58 +120,77 @@ struct_field_list:
             }
             ;
 enum_declare:
-            _enum IDENTIFIER enum_declare
-            {
-                OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $3;
-                exp.enumName = _typeId $2;
-                $$ = _vretained exp;
-            }
-            | _enum enum_declare
-            {
-                OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $2;
-                $$ = _vretained exp;
-            }
-            | LC enum_field_list RC
-            {
-                $$ = _vretained makeEnumExp(@"",makeTypeSpecial(TypeInt), _typeId $2);
-            }
-            | COLON type_specifier LC enum_field_list RC
-            {
-                $$ = _vretained makeEnumExp(@"",_typeId $2, _typeId $4);
-            }
-            
-            ;
+NS_ENUM LP type_specifier COMMA IDENTIFIER RP enum_declare
+{
+    OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $7;
+    exp.enumName = _typeId $5;
+    exp.valueType = [_transfer(ORTypeSpecial *) $3 type];
+    $$ = _vretained exp;
+}
+| NS_OPTIONS LP type_specifier COMMA IDENTIFIER RP enum_declare
+{
+    OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $7;
+    exp.enumName = _typeId $5;
+    exp.valueType =  [_transfer(ORTypeSpecial *) $3 type];
+    $$ = _vretained exp;
+}
+| _enum IDENTIFIER enum_declare
+{
+    OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $3;
+    exp.enumName = _typeId $2;
+    $$ = _vretained exp;
+}
+| _enum enum_declare
+{
+    OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $2;
+    $$ = _vretained exp;
+}
+| LC enum_field_list RC
+{
+    $$ = _vretained makeEnumExp(@"",makeTypeSpecial(TypeInt), _typeId $2);
+}
+| COLON type_specifier LC enum_field_list RC
+{
+    $$ = _vretained makeEnumExp(@"",_typeId $2, _typeId $4);
+}
+;
 
 enum_field_list:
-            assign_expression
-            {
-                NSMutableArray *list = [@[_typeId $1] mutableCopy];
-                $$ = (__bridge_retained void *)list;
-            }
-            | enum_field_list COMMA assign_expression
-            {
-                NSMutableArray *list = _transfer(NSMutableArray *) $1;
-                [list addObject:_typeId $3];
-                $$ = _vretained list;
-            }
-            ;
+assign_expression
+{
+    NSMutableArray *list = [@[_typeId $1] mutableCopy];
+    $$ = (__bridge_retained void *)list;
+}
+| enum_field_list assign_expression
+{
+    NSMutableArray *list = _transfer(NSMutableArray *) $1;
+    [list addObject:_typeId $2];
+    $$ = _vretained list;
+}
+| enum_field_list COMMA
+;
 
             
 typedef_declare:
-            type_specifier declarator
-            {
-                ORTypeVarPair *pair = makeTypeVarPair(_typeId $1, _typeId $2);
-                $$ = _vretained makeTypedefExp(pair, pair.var.varname);
-            }
-            | enum_declare IDENTIFIER
-            {
-                $$ = _vretained makeTypedefExp(_typeId $1, _typeId $2);
-            }
-            | struct_declare IDENTIFIER
-            {
-                $$ = _vretained makeTypedefExp(_typeId $1, _typeId $2);
-            }
-            ;
+type_specifier declarator
+{
+    ORTypeVarPair *pair = makeTypeVarPair(_typeId $1, _typeId $2);
+    $$ = _vretained makeTypedefExp(pair, pair.var.varname);
+}
+//for NS_ENUM NS_OPTIONS
+| enum_declare
+{
+    $$ = _vretained makeTypedefExp(_typeId $1, @"");
+}
+| enum_declare IDENTIFIER
+{
+    $$ = _vretained makeTypedefExp(_typeId $1, _typeId $2);
+}
+| struct_declare IDENTIFIER
+{
+    $$ = _vretained makeTypedefExp(_typeId $1, _typeId $2);
+}
+;
 
 protocol_declare:
 PROTOCOL IDENTIFIER CHILD_COLLECTION
@@ -250,20 +268,16 @@ class_declare:
 
 
 class_implementation:
-            IMPLEMENTATION IDENTIFIER
+            IMPLEMENTATION IDENTIFIER class_private_list
             {
-                $$ = _vretained [GlobalAst classForName:_transfer(id)$2];
+                ORClass *occlass = [GlobalAst classForName:_transfer(id)$2];
+                [occlass.privateVariables addObjectsFromArray:_transfer(id) $3];
+                $$ = _vretained occlass;
             }
             // category
             | IMPLEMENTATION IDENTIFIER LP IDENTIFIER RP
             {
                 $$ = _vretained [GlobalAst classForName:_transfer(id)$2];
-            }
-            | class_implementation LC class_private_varibale_declare RC
-            {
-                ORClass *occlass = _transfer(ORClass *) $1;
-                [occlass.privateVariables addObjectsFromArray:_transfer(id) $3];
-                $$ = _vretained occlass;
             }
             | class_implementation method_declare LC function_implementation RC
             {
@@ -272,23 +286,19 @@ class_implementation:
                 [occlass.methods addObject:imp];
                 $$ = _vretained occlass;
             }
+            | class_implementation global_define
             | class_implementation END
             ;
-protocol_list: IDENTIFIER
-			{
-				NSMutableArray *list = [NSMutableArray array];
-				NSString *identifier = (__bridge_transfer NSString *)$1;
-				[list addObject:identifier];
-				$$ = (__bridge_retained void *)list;
-			}
-			| protocol_list COMMA IDENTIFIER
-			{
-				NSMutableArray *list = (__bridge_transfer NSMutableArray *)$1;
-				NSString *identifier = (__bridge_transfer NSString *)$3;
-				[list addObject:identifier];
-				$$ = (__bridge_retained void *)list;
-			}
-			;
+
+class_private_list:
+{
+    NSMutableArray *list = [NSMutableArray array];
+    $$ = (__bridge_retained void *)list;
+}
+| LC class_private_varibale_declare RC
+{
+    $$ = $2;
+}
 
 class_private_varibale_declare: // empty
             {
@@ -304,55 +314,42 @@ class_private_varibale_declare: // empty
             ;
 
 class_property_type:
-              ASSIGN_MEM
-            | WEAK
-            | STRONG
-            | COPY
-            | NONATOMIC
-            | ATOMIC
-            | READONLY 
-            | READWRITE
+              IDENTIFIER
             | NONNULL
             | NULLABLE
             ;
 
+property_list:
+class_property_type
+{
+    NSMutableArray *list = [NSMutableArray array];
+    NSString *identifier = (__bridge_transfer NSString *)$1;
+    [list addObject:identifier];
+    $$ = (__bridge_retained void *)list;
+}
+| property_list COMMA class_property_type
+{
+    NSMutableArray *list = (__bridge_transfer NSMutableArray *)$1;
+    NSString *identifier = (__bridge_transfer NSString *)$3;
+    [list addObject:identifier];
+    $$ = (__bridge_retained void *)list;
+}
+;
+
 class_property_declare:
-            {
-                NSMutableArray *list = [NSMutableArray array];
-				$$ = (__bridge_retained void *)list;
-            }
-            | LP
-            {
-                NSMutableArray *list = [NSMutableArray array];
-				$$ = (__bridge_retained void *)list;
-            }
-            | class_property_declare class_property_type COMMA
-            {
-                NSMutableArray *list = _transfer(NSMutableArray *) $1;
-				[list addObject:_transfer(NSString *) $2];
-				$$ = (__bridge_retained void *)list;
-            }
-            | class_property_declare class_property_type RP
-            {
-                NSMutableArray *list = _transfer(NSMutableArray *) $1;
-				[list addObject:_transfer(NSString *) $2];
-				$$ = (__bridge_retained void *)list;
-            }
-            ;
+{
+    NSMutableArray *list = [NSMutableArray array];
+    $$ = (__bridge_retained void *)list;
+}
+| LP property_list RP
+{
+    $$ = $2;
+}
 
 declare_left_attribute:
             | NONNULL
             | NULLABLE
             ;
-declare_right_attribute:
-            _NONNULL
-            | _NULLABLE
-            | CONST
-            | _AUTORELEASE
-            | _UNUSED
-            ;
-
-
 method_declare:
             SUB LP parameter_declaration RP
             {   
@@ -1311,10 +1308,6 @@ type_specifier:
                 $$ = _vretained makeTypeSpecial(TypeObject,@"id");
             }
             | TYPEOF LP expression RP
-            {
-                $$ = _vretained makeTypeSpecial(TypeObject,@"typeof");
-            }
-            | __TYPEOF LP expression RP
             {
                 $$ = _vretained makeTypeSpecial(TypeObject,@"typeof");
             }

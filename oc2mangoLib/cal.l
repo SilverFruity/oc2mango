@@ -107,14 +107,6 @@
 
 <INITIAL>"@property" {  return PROPERTY; }
 <INITIAL>"@dynamic" {  return DYNAMIC; }
-<INITIAL>"weak" { yylval.identifier =(__bridge_retained void *)@"weak"; return WEAK; }
-<INITIAL>"strong" { yylval.identifier =(__bridge_retained void *)@"strong"; return STRONG; }
-<INITIAL>"copy" { yylval.identifier =(__bridge_retained void *)@"copy"; return COPY; }
-<INITIAL>"assign" { yylval.identifier =(__bridge_retained void *)@"assign"; return ASSIGN_MEM; }
-<INITIAL>"nonatomic" { yylval.identifier =(__bridge_retained void *)@"nonatomic"; return NONATOMIC; }
-<INITIAL>"atomic" { yylval.identifier =(__bridge_retained void *)@"atomic"; return ATOMIC; }
-<INITIAL>"readonly" { yylval.identifier =(__bridge_retained void *)@"readonly"; return READONLY; }
-<INITIAL>"readwrite" { yylval.identifier =(__bridge_retained void *)@"readwrite"; return READWRITE; }
 <INITIAL>"nonnull" { yylval.identifier =(__bridge_retained void *)@"nonnull"; return NONNULL; }
 <INITIAL>"nullable" { yylval.identifier =(__bridge_retained void *)@"nullable"; return NULLABLE; }
 
@@ -131,7 +123,7 @@
 <INITIAL>"__strong" return _STRONG;
 <INITIAL>"__weak"  return _WEAK;
 <INITIAL>"__block" ;
-<INITIAL>"__bridge" {} ;
+<INITIAL>"__bridge" ;
 <INITIAL>"__bridge_transfer" ;
 <INITIAL>"__bridge_retained" ;
 <INITIAL>"__unused" ;
@@ -167,6 +159,9 @@
 <INITIAL>"typedef" { return TYPEDEF;}
 <INITIAL>"struct" { TypeReturn(struct); }
 <INITIAL>"enum" { TypeReturn(enum); }
+<INITIAL>"NS_ENUM" { return NS_ENUM; }
+<INITIAL>"NS_OPTIONS" { return NS_OPTIONS; }
+
 
 <INITIAL>"self" { is_variable = true; TypeReturn(self); }
 <INITIAL>"super" {is_variable = true; TypeReturn(super); }
@@ -184,7 +179,9 @@
 
 <INITIAL>"sizeof" { is_variable = true; TypeReturn(sizeof); }
 <INITIAL>"typeof" { return TYPEOF; }
-<INITIAL>"__typeof__" { return __TYPEOF; }
+<INITIAL>"__typeof__" { return TYPEOF; }
+<INITIAL>"__typeof" { return TYPEOF; }
+
 <INITIAL>"char" { TypeReturn(CHAR); }
 <INITIAL>"id" { TypeReturn(id); }
 <INITIAL>"..."  {return ELLIPSIS;}
@@ -250,6 +247,14 @@
     yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];
     return DOUBLE_LITERAL; 
 }
+<INITIAL>[0-9]+\.[0-9]+f {
+    is_variable = true;
+    NSString *string = [NSString stringWithUTF8String:yytext];
+    string = [string substringWithRange:NSMakeRange(0, [string length] - 1)];
+    yylval.identifier =(__bridge_retained void *)string;
+    return DOUBLE_LITERAL;
+}
+
 <INITIAL>"<" {
     return LT;
 }

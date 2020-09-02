@@ -21,14 +21,14 @@ unzip ~/Downloads/oc2mango.zip -d ~/Downloads/
 
 ### 3. ORPatchFile
 
-* oc2mango、oc2mangoLib、OCRuner、PatchGenerator的基础库.
+* oc2mango、oc2mangoLib、OCRunner、PatchGenerator的基础库.
 * 包含了所有的语法节点类，以及补丁文件的序列化与反序列化. （RunnerClasses、ORPatchFile）.
 * 包含两种补丁：二进制补丁和JSON形式的补丁. 
-* 二进制补丁，反序列化速度和文件大小皆是最优秀.
+* 其中二进制补丁，反序列化速度和文件大小皆是最优秀.
 
 ### 4. PatchGenerator
 
-* 输入Objective-C文件集合或者文件夹，通过oc2mangoLib转换为AST，再使用ORPatchFile，将AST序列化为二进制补丁或者JSON补丁.
+* 输入Objective-C文件集合或者文件夹，通过oc2mangoLib转换为AST，再使用ORPatchFile，将AST序列化为可被OCRunner执行的二进制补丁或JSON补丁，.
 
 #### 使用示例
 

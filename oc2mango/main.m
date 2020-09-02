@@ -92,8 +92,8 @@ int main(int argc, const char * argv[]) {
     
 //    do {
 //        NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/patch.json";
-//        NSString *encryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassEncryptMap.json";
-//        NSString *decryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/ClassDecryptMap.json";
+//        NSString *encryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/PatchFile/ClassEncryptMap.json";
+//        NSString *decryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/PatchFile/ClassDecryptMap.json";
 //        startDate = [NSDate new];
 //        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:result.nodes];
 //        [file dumpAsJsonPatch:filePath encrptMapPath:encryptPath];
