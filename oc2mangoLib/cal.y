@@ -25,7 +25,7 @@ extern bool is_variable;
     NSUInteger declaration_modifier;
 }
 
-%token <identifier> IDENTIFIER  STRING_LITERAL TYPEDEF ELLIPSIS CHILD_COLLECTION POINT
+%token <identifier> IDENTIFIER  STRING_LITERAL TYPEDEF ELLIPSIS CHILD_COLLECTION POINT __BRIDGE __TRANSFER __RETAINED
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE 
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default TYPEOF _sizeof
 %token <identifier> _struct _enum NS_ENUM NS_OPTIONS INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE
@@ -193,11 +193,14 @@ type_specifier declarator
 ;
 
 protocol_declare:
-PROTOCOL IDENTIFIER CHILD_COLLECTION
+PROTOCOL IDENTIFIER CHILD_COLLECTION_OPTIONAL
 {
     ORProtocol *orprotcol = [GlobalAst protcolForName:_transfer(id)$2];
-    NSArray *protocols = [_transfer(NSString *)$3 componentsSeparatedByString:@","];
-    orprotcol.protocols = [protocols mutableCopy];
+    NSString *supers = _transfer(NSString *)$3;
+    if (supers != nil){
+        NSArray *protocols = [supers componentsSeparatedByString:@","];
+        orprotcol.protocols = [protocols mutableCopy];
+    }
     $$ = _vretained orprotcol;
 }
 | protocol_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
@@ -920,7 +923,7 @@ multiplication_expression: unary_expression
     }
     ;
 
-// !x -x *x &x ~x sizof(x) (IDENTIFIER *)x x++ x-- ++x --x
+// !x -x *x &x ~x sizof(x) x++ x-- ++x --x
 unary_expression: postfix_expression
     | unary_operator unary_expression
     {
@@ -945,10 +948,6 @@ unary_expression: postfix_expression
         ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementPrefix);
         exp.value = _transfer(id)$2;
         $$ = _vretained exp;
-    }
-    | LP type_specifier declarator_optional RP expression
-    {
-        $$ = $5;
     }
     ;
 
@@ -978,6 +977,13 @@ unary_operator:
         $$ = UnaryOperatorNot;
     }
     ;
+
+bridge_set:
+__BRIDGE
+| __TRANSFER
+| __TRANSFER
+bridge_set_optional:
+| bridge_set
 
 postfix_expression: primary_expression
     | postfix_expression INCREMENT
@@ -1021,6 +1027,14 @@ postfix_expression: primary_expression
         value.keyExp = _typeId $3;
         $$ = _vretained value;
     }
+    | LP type_specifier declarator_optional RP postfix_expression
+    {
+        $$ = $5;
+    }
+    | LP bridge_set type_specifier declarator_optional RP postfix_expression
+    {
+        $$ = $6;
+    }
     ;
 
 numerical_value_type:
@@ -1044,11 +1058,9 @@ dict_entrys:
             [array addObject:@[_transfer(id)$2,_transfer(id)$4]];
             $$ = _vretained array;
         }
-        | dict_entrys COMMA expression COLON expression
+        | dict_entrys COMMA
         {
-            NSMutableArray *array = _transfer(id)$1;
-            [array addObject:@[_transfer(id)$3,_transfer(id)$5]];
-            $$ = _vretained array;
+            $$ = $1;
         }
         ;
 
@@ -1068,6 +1080,10 @@ primary_expression:
             $$ = _vretained makeValue(OCValueSuper);
         }
         | objc_method_call
+        {
+            is_variable = true;
+            $$ = $1;
+        }
         | LP expression RP
         {
             is_variable = true;
@@ -1302,6 +1318,10 @@ type_specifier:
             IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
                 $$ = _vretained makeTypeSpecial(TypeObject, _typeId $1);
+            }
+            | _struct IDENTIFIER
+            {
+                $$ = _vretained makeTypeSpecial(TypeStruct, _typeId $1);
             }
             | _id CHILD_COLLECTION_OPTIONAL
             {

@@ -287,11 +287,17 @@ class ExpressionTest: XCTestCase {
         
         
     }
-    func testPointer(){
+    func testPointerAndTypeConvert(){
         source =
         """
         func(1 * a);
         a = (void(^)(int))a;
+        for (id a in (NSArray *)value){ }
+        id a = (type *)b * a;
+        id a = (NSObject *)a;
+        id a = (__bridge NSObject)a;
+        id a = (NSObject)a;
+        float q = 1.0f - (idx * 0.1f);
         *a = b;
         a = *x;
         NSString *a = 1;

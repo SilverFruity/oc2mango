@@ -123,9 +123,9 @@
 <INITIAL>"__strong" return _STRONG;
 <INITIAL>"__weak"  return _WEAK;
 <INITIAL>"__block" ;
-<INITIAL>"__bridge" ;
-<INITIAL>"__bridge_transfer" ;
-<INITIAL>"__bridge_retained" ;
+<INITIAL>"__bridge" return __BRIDGE ;
+<INITIAL>"__bridge_transfer" return __TRANSFER ;
+<INITIAL>"__bridge_retained" return __RETAINED ;
 <INITIAL>"__unused" ;
 
 <INITIAL>"@required" ;
