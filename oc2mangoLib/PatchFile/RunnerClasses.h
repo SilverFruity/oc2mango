@@ -88,16 +88,25 @@ typedef enum: uint32_t{
     OCValueNSNumber, // value: Exp
     OCValueString, // value: NSString
     OCValueCString, // value: NSString
-    OCValueInt, // value: NSString
-    OCValueDouble, // value: NSString
     OCValueNil, //  value: nil
     OCValueNULL, //  value: nil
-    OCValueBOOL //  value: @"YES" @"NO"
 }OC_VALUE_TYPE;
 
 @interface ORValueExpression: ORNode
 @property (nonatomic, assign)OC_VALUE_TYPE value_type;
 @property (nonatomic,strong)id value;
+@end
+
+@interface ORIntegerValue: ORNode
+@property (nonatomic, assign)uint64_t value;
+@end
+
+@interface ORDoubleValue: ORNode
+@property (nonatomic, assign)double value;
+@end
+
+@interface ORBoolValue: ORNode
+@property (nonatomic, assign)BOOL value;
 @end
 
 @interface ORMethodCall: ORNode

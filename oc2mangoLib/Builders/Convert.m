@@ -17,6 +17,12 @@
         result = [self convertAssginExp:(ORAssignExpression *)node];
     }else if ([node isKindOfClass:[ORValueExpression class]]){
         result = [self convertOCValue:(ORValueExpression *)node];
+    }else if ([node isKindOfClass:[ORIntegerValue class]]){
+        result = [self convertORIntegerValue:(ORIntegerValue *)node];
+    }else if ([node isKindOfClass:[ORDoubleValue class]]){
+        result = [self convertORDoubleValue:(ORDoubleValue *)node];
+    }else if ([node isKindOfClass:[ORBoolValue class]]){
+        result = [self convertORBoolValue:(ORBoolValue *)node];
     }else if ([node isKindOfClass:[ORBinaryExpression class]]){
         result = [self convertBinaryExp:(ORBinaryExpression *)node];
     }else if ([node isKindOfClass:[ORUnaryExpression class]]){
@@ -294,16 +300,20 @@ int indentationCont = 0;
     NSString *operator = @"=";
     return [NSString stringWithFormat:@"%@ %@ %@",[self convert:exp.value],operator,[self convert:exp.expression]];
 }
-
+- (NSString *)convertORIntegerValue:(ORIntegerValue *)value{
+    return [NSString stringWithFormat:@"%lld",(long long)value.value];
+}
+- (NSString *)convertORDoubleValue:(ORDoubleValue *)value{
+    return [NSString stringWithFormat:@"%f",value.value];
+}
+- (NSString *)convertORBoolValue:(ORBoolValue *)value{
+    return [NSString stringWithFormat:@"%@",value.value ? @"YES" : @"NO"];
+}
 - (NSString *)convertOCValue:(ORValueExpression *)value{
     switch (value.value_type){
         case OCValueSelector:
-        case OCValueInt:
-        case OCValueDouble:
-        case OCValueBOOL:
         case OCValueVariable:
             return value.value;
-            
         case OCValueSelf:
             return @"self";
         case OCValueSuper:

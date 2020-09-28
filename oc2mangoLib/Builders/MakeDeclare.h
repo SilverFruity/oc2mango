@@ -50,6 +50,9 @@ extern ORTypedefExpressoin *makeTypedefExp(id exp,NSString *newName);
 extern ORStructExpressoin *makeStructExp(NSString *name, NSMutableArray *fields);
 extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArray *fields);
 
+extern ORIntegerValue *makeIntegerValue(uint64_t value);
+extern ORDoubleValue *makeDoubleValue(double value);
+extern ORBoolValue *makeBoolValue(BOOL value);
 
 void startStringBuffer(void);
 char *endStringBuffer(void);

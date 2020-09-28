@@ -43,6 +43,16 @@
 @end
 @implementation ORValueExpression
 @end
+
+@implementation ORIntegerValue
+@end
+
+@implementation ORDoubleValue
+@end
+
+@implementation ORBoolValue
+@end
+
 @implementation ORMethodCall
 - (NSString *)selectorName{
     NSString *selector = [self.names componentsJoinedByString:@":"];

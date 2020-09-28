@@ -27,6 +27,10 @@ let withSemicolonLength = forUnitTest ? 1 : 0
 let _ORNodeLength = 1 + withSemicolonLength
 let _uintType = "uint32_t"
 let _uintLength = 4
+let _uint64Type = 8
+let _uint64Length = 8
+let _doubleType = "double"
+let _doubleLength = 8
 let _NodeTypeType = "uint8_t"
 //TODO: Header
 var headerSource =
@@ -526,6 +530,11 @@ for node in ast.nodes{
                 item.addBaseConvertExp(varname: varname)
                 item.addBaseDeconvertExp(varname: varname)
                 item.baseLength += _uintLength
+            }else if prop.var.type.type == TypeDouble{
+                item.addStructBaseFiled(type: _doubleType, varname: varname)
+                item.addBaseConvertExp(varname: varname)
+                item.addBaseDeconvertExp(varname: varname)
+                item.baseLength += _doubleLength
             }
         }
     }

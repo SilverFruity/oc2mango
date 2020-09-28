@@ -54,9 +54,9 @@ if (x >= 0 ){
         let condition = ifS?.condition as? ORBinaryExpression
         XCTAssert(condition?.operatorType == BinaryOperatorGE)
         let left1 = condition?.left as? ORValueExpression
-        let right1 = condition?.right as? ORValueExpression
+        let right1 = condition?.right as? ORIntegerValue
         XCTAssert(left1?.value_type == OCValueVariable && left1?.value as! String == "x")
-        XCTAssert(right1?.value_type == OCValueInt && right1?.value as! String == "0")
+        XCTAssert(right1?.value == 0)
         
         let condition1 = elseif1?.condition as? ORValueExpression
         XCTAssert(condition1?.value as! String == "x")

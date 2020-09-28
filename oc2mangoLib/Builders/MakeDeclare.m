@@ -183,6 +183,24 @@ extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMuta
     return exp;
 }
 
+ORIntegerValue *makeIntegerValue(uint64_t value){
+    ORIntegerValue *ivalue = [ORIntegerValue new];
+    ivalue.value = value;
+    return ivalue;
+}
+
+ORDoubleValue *makeDoubleValue(double value){
+    ORDoubleValue *dvalue = [ORDoubleValue new];
+    dvalue.value = value;
+    return dvalue;
+}
+
+ORBoolValue *makeBoolValue(BOOL value){
+    ORBoolValue *dvalue = [ORBoolValue new];
+    dvalue.value = value;
+    return dvalue;
+}
+
 static NSMutableString *buffer = nil;
 static char *string_buffer = NULL;
 static int string_buffer_index = 0;

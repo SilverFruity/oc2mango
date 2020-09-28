@@ -1040,11 +1040,18 @@ postfix_expression: primary_expression
 numerical_value_type:
         INTETER_LITERAL
         {
-            $$ = _vretained makeValue(OCValueInt,_transfer(id)$1);
+            NSString *value = _transfer(NSString *)$1;
+            if ([value hasPrefix:@"0x"]) {
+                long long integer = strtol(value.UTF8String, NULL, 16);
+                $$ = _vretained makeIntegerValue((uint64_t) integer);
+            }else{
+                $$ = _vretained makeIntegerValue((uint64_t) value.longLongValue);
+            }
         }
         | DOUBLE_LITERAL
         {
-            $$ = _vretained makeValue(OCValueDouble,_transfer(id)$1);
+            NSString *value = _transfer(NSString *)$1;
+            $$ = _vretained makeDoubleValue(value.doubleValue);
         }
     ;
 dict_entrys:
@@ -1133,11 +1140,11 @@ primary_expression:
         }
         | _YES
         {
-            $$ = _vretained makeValue(OCValueBOOL, @"YES");
+            $$ = _vretained makeBoolValue(YES);
         }
         | _NO
         {
-            $$ = _vretained makeValue(OCValueBOOL, @"NO");
+            $$ = _vretained makeBoolValue(NO);
         }
         ;
 
