@@ -173,13 +173,17 @@
     return [self hash] == [object hash];
 }
 @end
+@interface ORMethodDeclare()
+@property (nonatomic, copy)NSString *selectorName;
+@end
 @implementation ORMethodDeclare
 - (NSString *)selectorName{
-    NSString *selector = [self.methodNames componentsJoinedByString:@":"];
-    if (self.parameterNames.count >= 1) {
-        selector = [selector stringByAppendingString:@":"];
+    if (_selectorName == nil){
+        NSMutableArray *names = [self.methodNames mutableCopy];
+        [names addObject:@""];
+        _selectorName = [names componentsJoinedByString:@":"];
     }
-    return selector;
+    return _selectorName;
 }
 @end
 @implementation ORMethodImplementation
