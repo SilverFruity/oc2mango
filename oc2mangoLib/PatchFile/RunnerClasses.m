@@ -53,13 +53,19 @@
 @implementation ORBoolValue
 @end
 
+@interface ORMethodCall()
+@property (nonatomic, copy)NSString *selectorName;
+@end
 @implementation ORMethodCall
 - (NSString *)selectorName{
-    NSString *selector = [self.names componentsJoinedByString:@":"];
-    if (self.values.count >= 1) {
-        selector = [selector stringByAppendingString:@":"];
+    if (_selectorName == nil){
+        NSMutableArray *names = [self.names mutableCopy];
+        if (self.values.count >= 1){
+            [names addObject:@""];
+        }
+        _selectorName = [names componentsJoinedByString:@":"];
     }
-    return selector;
+    return _selectorName;
 }
 @end
 @implementation ORCFuncCall
@@ -157,11 +163,11 @@
         @"nonatomic":@(MFPropertyModifierNonatomic),
         @"atomic":@(MFPropertyModifierAtomic)
     };
-    NSUInteger value = 0;
+    uint32_t value = 0;
     for (NSString *keyword in self.keywords) {
         NSNumber *keywordValue = cache[keyword];
         if (keywordValue) {
-            value = value | keywordValue.unsignedIntegerValue;
+            value = value | keywordValue.unsignedIntValue;
         }
     }
     return value;
@@ -180,7 +186,9 @@
 - (NSString *)selectorName{
     if (_selectorName == nil){
         NSMutableArray *names = [self.methodNames mutableCopy];
-        [names addObject:@""];
+        if (self.parameterNames.count >= 1){
+            [names addObject:@""];
+        }
         _selectorName = [names componentsJoinedByString:@":"];
     }
     return _selectorName;
