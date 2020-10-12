@@ -1118,7 +1118,9 @@ primary_expression:
         }
         | SELECTOR
         {
-            $$ = _vretained makeValue(OCValueSelector,_typeId $1);
+            NSString *sel = _typeId $1;
+            NSString *selector = [sel substringWithRange:NSMakeRange(10, sel.length - 11)];
+            $$ = _vretained makeValue(OCValueSelector,selector);
         }
         | PROTOCOL LP IDENTIFIER RP
         {
