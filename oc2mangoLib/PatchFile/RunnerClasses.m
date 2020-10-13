@@ -47,6 +47,9 @@
 @implementation ORIntegerValue
 @end
 
+@implementation ORUIntegerValue: ORNode
+@end
+
 @implementation ORDoubleValue
 @end
 

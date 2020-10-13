@@ -19,6 +19,8 @@
         result = [self convertOCValue:(ORValueExpression *)node];
     }else if ([node isKindOfClass:[ORIntegerValue class]]){
         result = [self convertORIntegerValue:(ORIntegerValue *)node];
+    }else if ([node isKindOfClass:[ORIntegerValue class]]){
+        result = [self convertORUIntegerValue:(ORUIntegerValue *)node];
     }else if ([node isKindOfClass:[ORDoubleValue class]]){
         result = [self convertORDoubleValue:(ORDoubleValue *)node];
     }else if ([node isKindOfClass:[ORBoolValue class]]){
@@ -301,7 +303,10 @@ int indentationCont = 0;
     return [NSString stringWithFormat:@"%@ %@ %@",[self convert:exp.value],operator,[self convert:exp.expression]];
 }
 - (NSString *)convertORIntegerValue:(ORIntegerValue *)value{
-    return [NSString stringWithFormat:@"%lld",(long long)value.value];
+    return [NSString stringWithFormat:@"%lld",value.value];
+}
+- (NSString *)convertORUIntegerValue:(ORUIntegerValue *)value{
+    return [NSString stringWithFormat:@"%llu",value.value];
 }
 - (NSString *)convertORDoubleValue:(ORDoubleValue *)value{
     return [NSString stringWithFormat:@"%f",value.value];
@@ -312,6 +317,7 @@ int indentationCont = 0;
 - (NSString *)convertOCValue:(ORValueExpression *)value{
     switch (value.value_type){
         case OCValueSelector:
+            return [NSString stringWithFormat:@"@selector(%@)",value.value];
         case OCValueVariable:
             return value.value;
         case OCValueSelf:

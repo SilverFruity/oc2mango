@@ -1041,11 +1041,13 @@ numerical_value_type:
         INTETER_LITERAL
         {
             NSString *value = _transfer(NSString *)$1;
+            
             if ([value hasPrefix:@"0x"]) {
-                long long integer = strtol(value.UTF8String, NULL, 16);
-                $$ = _vretained makeIntegerValue((uint64_t) integer);
+                unsigned long long ullvalue = strtoull(value.UTF8String, NULL, 16);
+                $$ = _vretained makeIntegerValue(ullvalue);
             }else{
-                $$ = _vretained makeIntegerValue((uint64_t) value.longLongValue);
+                unsigned long long ullvalue = strtoull(value.UTF8String, NULL, 0);
+                $$ = _vretained makeIntegerValue(ullvalue);
             }
         }
         | DOUBLE_LITERAL

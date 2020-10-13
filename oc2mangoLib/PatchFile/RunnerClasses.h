@@ -50,7 +50,7 @@ typedef enum: uint32_t{
 
 @interface ORVariable: ORNode
 @property (nonatomic, assign) BOOL isBlock;
-@property (nonatomic, assign) NSUInteger ptCount;
+@property (nonatomic, assign) uint8_t ptCount;
 @property (nonatomic, nullable, copy) NSString * varname;
 + (instancetype)copyFromVar:(ORVariable *)var;
 @end
@@ -98,6 +98,10 @@ typedef enum: uint32_t{
 @end
 
 @interface ORIntegerValue: ORNode
+@property (nonatomic, assign)int64_t value;
+@end
+
+@interface ORUIntegerValue: ORNode
 @property (nonatomic, assign)uint64_t value;
 @end
 

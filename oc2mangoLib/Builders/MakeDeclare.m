@@ -183,10 +183,16 @@ extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMuta
     return exp;
 }
 
-ORIntegerValue *makeIntegerValue(uint64_t value){
-    ORIntegerValue *ivalue = [ORIntegerValue new];
-    ivalue.value = value;
-    return ivalue;
+ORNode *makeIntegerValue(uint64_t value){
+    if (value <= INT64_MAX) {
+        ORIntegerValue *ivalue = [ORIntegerValue new];
+        ivalue.value = (int64_t)value;
+        return ivalue;
+    }else{
+        ORUIntegerValue *uvalue = [ORUIntegerValue new];
+        uvalue.value = value;
+        return uvalue;
+    }
 }
 
 ORDoubleValue *makeDoubleValue(double value){

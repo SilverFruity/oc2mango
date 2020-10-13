@@ -18,6 +18,18 @@ class ClassDeclareTest: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         
     }
+    func testIntegerValue(){
+        let source =
+        """
+        long long value = 0xFFFFFFFF;
+        unsigned long long value1 = 0xFFFFFFFFFFFFFFFF;
+        """
+        let ast = ocparser.parseSource(source)
+        let value = ast.globalStatements[0] as! ORDeclareExpression
+        let value1 = ast.globalStatements[1] as! ORDeclareExpression
+        XCTAssert((value.expression as! ORIntegerValue).value == UINT32_MAX)
+        XCTAssert((value1.expression as! ORUIntegerValue).value == UINT64_MAX)
+    }
     func testFunction(){
         let source =
         """

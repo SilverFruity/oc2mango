@@ -25,10 +25,14 @@ let withSemicolonDeconvertExp =  forUnitTest ? "\n    exp.withSemicolon = node->
 let withSemicolonLength = forUnitTest ? 1 : 0
 
 let _ORNodeLength = 1 + withSemicolonLength
+let _byteType = "uint8_t"
+let _byteLength = 1
 let _uintType = "uint32_t"
 let _uintLength = 4
-let _uint64Type = 8
+let _uint64Type = "uint64_t"
 let _uint64Length = 8
+let _int64Type = "int64_t"
+let _int64Length = 8
 let _doubleType = "double"
 let _doubleLength = 8
 let _NodeTypeType = "uint8_t"
@@ -525,11 +529,21 @@ for node in ast.nodes{
                 item.addBaseConvertExp(varname: varname)
                 item.addBaseDeconvertExp(varname: varname)
                 item.baseLength += 1
-            }else if prop.var.type.type == TypeULongLong{
-                item.addStructBaseFiled(type: _uintType, varname: varname)
+            }else if prop.var.type.type == TypeUChar{
+                item.addStructBaseFiled(type: _byteType, varname: varname)
                 item.addBaseConvertExp(varname: varname)
                 item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _uintLength
+                item.baseLength += _byteLength
+            }else if prop.var.type.type == TypeLongLong{
+                item.addStructBaseFiled(type: _int64Type, varname: varname)
+                item.addBaseConvertExp(varname: varname)
+                item.addBaseDeconvertExp(varname: varname)
+                item.baseLength += _int64Length
+            }else if prop.var.type.type == TypeULongLong{
+                item.addStructBaseFiled(type: _uint64Type, varname: varname)
+                item.addBaseConvertExp(varname: varname)
+                item.addBaseDeconvertExp(varname: varname)
+                item.baseLength += _uint64Length
             }else if prop.var.type.type == TypeDouble{
                 item.addStructBaseFiled(type: _doubleType, varname: varname)
                 item.addBaseConvertExp(varname: varname)
