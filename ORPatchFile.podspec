@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "ORPatchFile"
-    s.version      = "1.0.2"
+    s.version      = "1.0.3"
     s.summary      = "ORPatchFile"
     s.description  = <<-DESC
     ORPatchFile is a framework that serialize and deserialize the abstract syntax tree of oc2mangoLib.
