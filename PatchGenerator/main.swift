@@ -14,13 +14,16 @@ func recursiveSanFiles(path: String) -> [String]{
         if isDir.boolValue || path.hasSuffix("bundle") {
             if let pathes = try? FileManager.default.subpathsOfDirectory(atPath: path) {
                 for subfilename in pathes{
+                    // 忽略隐藏文件
+                    if subfilename.hasPrefix(".") {
+                        continue
+                    }
                     let filepath = path + "/" + subfilename
                     if subfilename.hasSuffix("bundle") {
                         files.append(contentsOf: recursiveSanFiles(path: filepath))
                     }else{
                         files.append(contentsOf: recursiveSanFiles(path: filepath))
                     }
-                    
                 }
             }
         }else{
