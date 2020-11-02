@@ -55,6 +55,18 @@
             argument = "-files /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/ViewController1 -refs  /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle -output /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/binarypatch"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-files /user/mac/files -refs /user/mac/headers -output /usr/mac/binarypatch"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-type json -encryptMap /user/mac/ClassEncryptMap.json -files /user/mac/files -refs /user/mac/headers -output /usr/mac/binarypatch"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-h"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
