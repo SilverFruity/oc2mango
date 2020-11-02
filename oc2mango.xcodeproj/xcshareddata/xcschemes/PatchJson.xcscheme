@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EED67A6D2270AE0E0015AC02"
-               BuildableName = "oc2mangoLib.framework"
-               BlueprintName = "oc2mangoLib"
+               BlueprintIdentifier = "32169DAD254C37F500C74508"
+               BuildableName = "PatchJson"
+               BlueprintName = "PatchJson"
                ReferencedContainer = "container:oc2mango.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,32 +26,12 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EED67A6D2270AE0E0015AC02"
-            BuildableName = "oc2mangoLib.framework"
-            BlueprintName = "oc2mangoLib"
-            ReferencedContainer = "container:oc2mango.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EED67A752270AE0F0015AC02"
-               BuildableName = "oc2mangoLibTests.xctest"
-               BlueprintName = "oc2mangoLibTests"
-               ReferencedContainer = "container:oc2mango.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -60,15 +40,22 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EED67A6D2270AE0E0015AC02"
-            BuildableName = "oc2mangoLib.framework"
-            BlueprintName = "oc2mangoLib"
+            BlueprintIdentifier = "32169DAD254C37F500C74508"
+            BuildableName = "PatchJson"
+            BlueprintName = "PatchJson"
             ReferencedContainer = "container:oc2mango.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-files /Users/weij/Desktop/&#x7b2c;&#x4e09;&#x65b9;&#x5f00;&#x6e90;&#x4ee3;&#x7801;/OCRunner/OCRunnerDemo/OCRunnerDemo/HotPath -refs /Users/weij/Desktop/&#x7b2c;&#x4e09;&#x65b9;&#x5f00;&#x6e90;&#x4ee3;&#x7801;/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle -encrptMap /Users/weij/Desktop/&#x7b2c;&#x4e09;&#x65b9;&#x5f00;&#x6e90;&#x4ee3;&#x7801;/OCRunner/oc2mango/oc2mangoLib/PatchFile/ClassEncryptMap.json -output /Users/weij/Desktop/&#x7b2c;&#x4e09;&#x65b9;&#x5f00;&#x6e90;&#x4ee3;&#x7801;/OCRunner/OCRunnerDemo/OCRunnerDemo/JsonPath"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -76,15 +63,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EED67A6D2270AE0E0015AC02"
-            BuildableName = "oc2mangoLib.framework"
-            BlueprintName = "oc2mangoLib"
+            BlueprintIdentifier = "32169DAD254C37F500C74508"
+            BuildableName = "PatchJson"
+            BlueprintName = "PatchJson"
             ReferencedContainer = "container:oc2mango.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
