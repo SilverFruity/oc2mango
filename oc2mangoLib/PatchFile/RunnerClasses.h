@@ -65,6 +65,10 @@ typedef enum: uint32_t{
 @property(nonatomic,strong) NSMutableArray <ORTypeVarPair *> *pairs;
 @end
 
+@interface ORCArrayVariable: ORVariable
+@property (nonatomic,strong)ORNode *capacity;
+@end
+
 @interface ORFuncDeclare: ORNode
 @property(nonatomic,assign,readonly) BOOL isBlockDeclare;
 @property(nonatomic,strong) ORTypeVarPair *returnType;
@@ -113,8 +117,15 @@ typedef enum: uint32_t{
 @property (nonatomic, assign)BOOL value;
 @end
 
+//兼容struct->field
+typedef enum: uint8_t{
+    MethodOpretorNone = 0,
+    MethodOpretorDot,
+    MethodOpretorArrow
+}MethodOperatorType;
+
 @interface ORMethodCall: ORNode
-@property (nonatomic, assign)BOOL isDot;
+@property (nonatomic, assign)uint8_t methodOperator; //MethodOperatorType
 @property (nonatomic, assign)BOOL isAssignedValue;
 @property (nonatomic, strong)ORNode * caller;
 @property (nonatomic, strong)NSMutableArray *names;
@@ -329,6 +340,11 @@ typedef enum: uint32_t{
 
 @interface ORStructExpressoin: ORNode
 @property (nonatomic,copy)NSString *sturctName;
+@property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*fields;
+@end
+
+@interface ORUnionExpressoin: ORNode
+@property (nonatomic,copy)NSString *unionName;
 @property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*fields;
 @end
 

@@ -250,10 +250,18 @@
 
 @end
 
+@implementation ORUnionExpressoin
+
+@end
+
 @implementation OREnumExpressoin
 
 @end
 
 @implementation ORTypedefExpressoin
+
+@end
+
+@implementation ORCArrayVariable
 
 @end

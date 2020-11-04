@@ -28,7 +28,7 @@ extern bool is_variable;
 %token <identifier> IDENTIFIER  STRING_LITERAL TYPEDEF ELLIPSIS CHILD_COLLECTION POINT __BRIDGE __TRANSFER __RETAINED
 %token <identifier> IF ENDIF IFDEF IFNDEF UNDEF IMPORT INCLUDE  TILDE 
 %token <identifier> QUESTION  _return _break _continue _goto _else  _while _do _in _for _case _switch _default TYPEOF _sizeof
-%token <identifier> _struct _enum NS_ENUM NS_OPTIONS INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE
+%token <identifier> _union _struct _enum NS_ENUM NS_OPTIONS INTERFACE IMPLEMENTATION DYNAMIC PROTOCOL END CLASS_DECLARE
 %token <identifier> PROPERTY
 %token <identifier> STATIC _STRONG _WEAK _BLOCK _AUTORELEASE NONNULL NULLABLE
 %token <identifier> COMMA COLON SEMICOLON  LP RP RIP LB RB LC RC DOT AT PS ARROW
@@ -46,11 +46,11 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <expression> objc_method_call primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression postfix_expression
 %type <Operator>  assign_operator unary_operator
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
-%type <expression> expression  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys for_statement_var_list
+%type <expression> expression expression_optional  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys for_statement_var_list
 %type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional
 %type <IntValue> pointer pointer_optional
 %type <declaration_modifier> declaration_modifier
-%type <expression> struct_declare struct_field_list enum_declare enum_field_list typedef_declare
+%type <expression> union_declare struct_declare struct_field_list enum_declare enum_field_list typedef_declare
 %%
 
 compile_util: /*empty*/
@@ -89,6 +89,10 @@ global_define:
     {
         [GlobalAst addGlobalStatements:_typeId $1];
     }
+    | union_declare SEMICOLON
+    {
+        [GlobalAst addGlobalStatements:_typeId $1];
+    }
     | enum_declare SEMICOLON
     {
         [GlobalAst addGlobalStatements:_typeId $1];
@@ -100,11 +104,18 @@ global_define:
     ;
 
 struct_declare:
-            _struct IDENTIFIER LC struct_field_list RC
-            {
-                $$ = _vretained makeStructExp(_typeId $2, _typeId $4);
-            }
-            ;
+_struct IDENTIFIER LC struct_field_list RC
+{
+    $$ = _vretained makeStructExp(_typeId $2, _typeId $4);
+}
+;
+
+union_declare:
+_union IDENTIFIER LC struct_field_list RC
+{
+    $$ = _vretained makeUnionExp(_typeId $2, _typeId $4);
+}
+;
 
 struct_field_list:
             declaration SEMICOLON
@@ -458,6 +469,11 @@ block_implementation:
 
 
 expression: assign_expression;
+expression_optional:
+{
+    $$ = NULL;
+}
+|assign_expression;
 
 expression_statement:
         assign_expression SEMICOLON
@@ -1003,7 +1019,7 @@ postfix_expression: primary_expression
         is_variable = true;
         ORMethodCall *methodcall = (ORMethodCall *)[ORMethodCall new];
         methodcall.caller =  _transfer(ORValueExpression *)$1;
-        methodcall.isDot = YES;
+        methodcall.methodOperator = MethodOpretorDot;
         methodcall.names = [@[_typeId $3] mutableCopy];
         $$ = _vretained methodcall;
     }
@@ -1011,7 +1027,7 @@ postfix_expression: primary_expression
     {
         ORMethodCall *methodcall = (ORMethodCall *) [ORMethodCall new];
         methodcall.caller =  _transfer(ORValueExpression *)$1;
-        methodcall.isDot = YES;
+        methodcall.methodOperator = MethodOpretorArrow;
         methodcall.names = [@[_typeId $3] mutableCopy];
         $$ = _vretained methodcall;
     }
@@ -1245,26 +1261,38 @@ direct_declarator_optional:
         ;
 
 direct_declarator:
-        IDENTIFIER
-        {
-            $$ = _vretained makeVar(_typeId $1);
-        }
-        |LP declarator RP
-        {
-            $$ = _vretained _typeId $2;
-        }
-        | direct_declarator LP parameter_type_list RP
-        {
-            ORFuncVariable *funVar = [ORFuncVariable copyFromVar:_transfer(ORVariable *)$1];
-            NSMutableArray *pairs = _transfer(NSMutableArray *)$3;
-            if ([pairs lastObject] == [NSNull null]) {
-                funVar.isMultiArgs = YES;
-                [pairs removeLastObject];
-            }
-            funVar.pairs = pairs;
-            $$ = _vretained funVar;
-        }
-        ;
+IDENTIFIER
+{
+    $$ = _vretained makeVar(_typeId $1);
+}
+| LP declarator RP
+{
+    $$ = _vretained _typeId $2;
+}
+| direct_declarator LP parameter_type_list RP
+{
+    ORFuncVariable *funVar = [ORFuncVariable copyFromVar:_transfer(ORVariable *)$1];
+    NSMutableArray *pairs = _transfer(NSMutableArray *)$3;
+    if ([pairs lastObject] == [NSNull null]) {
+        funVar.isMultiArgs = YES;
+        [pairs removeLastObject];
+    }
+    funVar.pairs = pairs;
+    $$ = _vretained funVar;
+}
+| direct_declarator LB expression_optional RB
+{
+    ORVariable *var = _transfer(ORVariable *)$1;
+    if ($3 == NULL){
+        var.ptCount += 1;
+        $$ = _vretained var;
+    }else{
+        ORCArrayVariable *arrayVar = [ORCArrayVariable copyFromVar:var];
+        arrayVar.capacity = _transfer(ORNode *)$3;
+        $$ = _vretained arrayVar;
+    }
+}
+;
 
 
 pointer:
@@ -1333,6 +1361,10 @@ type_specifier:
             | _struct IDENTIFIER
             {
                 $$ = _vretained makeTypeSpecial(TypeStruct, _typeId $1);
+            }
+            | _union IDENTIFIER
+            {
+                $$ = _vretained makeTypeSpecial(TypeUnion, _typeId $1);
             }
             | _id CHILD_COLLECTION_OPTIONAL
             {

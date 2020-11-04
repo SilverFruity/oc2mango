@@ -156,7 +156,47 @@ void func(NSString *a, int *b){
         XCTAssert(thirdExp.fields[1] is ORValueExpression)
         XCTAssert(thirdExp.fields[2] is ORValueExpression)
     }
-    
+    func testCArrayDeclare(){
+        let source =
+        """
+        int a[100];
+        int b[a.x];
+        int a[];
+        """
+        let ast = ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let exp = ast.globalStatements[0] as! ORDeclareExpression
+        XCTAssert(exp.pair.type.type == TypeInt)
+        XCTAssert(exp.pair.var.varname == "a")
+        XCTAssert(exp.pair.var.ptCount == 0)
+        XCTAssert(exp.pair.var is ORCArrayVariable)
+        XCTAssert(((exp.pair.var as! ORCArrayVariable).capacity as! ORIntegerValue).value == 100)
+        let exp1 = ast.globalStatements[2] as! ORDeclareExpression
+        XCTAssert(exp1.pair.type.type == TypeInt)
+        XCTAssert(exp1.pair.var.varname == "a")
+        XCTAssert(exp1.pair.var.ptCount == 1)
+    }
+    func testUnionDeclare(){
+        let source =
+        """
+        union CGPoint {
+            CGFloat x;
+            CGFloat y;
+        };
+        union CGPoint {
+            CGFloat x,y;
+        };
+        """
+        let ast = ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
+        let exp = ast.globalStatements.firstObject as! ORUnionExpressoin
+        let fields = exp.fields as! [ORDeclareExpression]
+        XCTAssert(fields.count == 2)
+        XCTAssert(fields[0].pair.type.type == TypeDouble)
+        XCTAssert(fields[1].pair.type.type == TypeDouble)
+        XCTAssert(fields[0].pair.var.varname == "x")
+        XCTAssert(fields[1].pair.var.varname == "y")
+    }
     func testStructExpression(){
         let source =
         """
