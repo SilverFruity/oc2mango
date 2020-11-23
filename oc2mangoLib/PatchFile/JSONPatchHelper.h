@@ -26,11 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface JSONPatchHelper : NSObject
-+ (NSDictionary *)archivePatch:(ORPatchFile *)patch encrptMap:(nullable NSDictionary *)cryptoMap;
-+ (ORPatchFile *)unArchivePatch:(NSDictionary *)patch decrptMap:(nullable NSDictionary *)cryptoMap;
++ (NSDictionary *)archivePatch:(ORPatchFile *)patch;
++ (ORPatchFile *)unArchivePatch:(NSDictionary *)patch;
 #if DEBUG
 + (NSArray <ORNode *>*)patchFileTest:(NSArray <ORNode *>*)nodes;
-+ (NSArray <ORNode *>*)patchFileTest:(NSArray <ORNode *>*)nodes encrptMap:(nullable NSDictionary *)cryptoMap decrptMap:(nullable NSDictionary *)cryptoMap;
 #endif
 @end
 

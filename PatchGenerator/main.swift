@@ -41,7 +41,6 @@ enum Options: String{
     case refs = "-refs"
     case output = "-output"
     case type = "-type"
-    case encryptMap = "-encryptMap"
     case h = "-h"
     case help = "-help"
 }
@@ -50,7 +49,6 @@ class CheckArgs{
     var refrencePaths = [String]()
     var output = ""
     var type: PatchType = .binary
-    var encryptMap = ""
     var isHelp = false
     init(args:[String]) {
         var curOption: Options? = .files
@@ -76,9 +74,6 @@ class CheckArgs{
                     self.type = type
                 }
                 break
-            case .encryptMap:
-                self.encryptMap = arg
-                break
             default:
                 break
             }
@@ -95,7 +90,6 @@ class CheckArgs{
 
         optional:
         -type: json or binary. default is binary.
-        -encryptMap: only for json patch. if use json patch, it must be exsited.
 
         For example:
 
@@ -103,7 +97,7 @@ class CheckArgs{
         ./PatchGenerator -files /user/mac/filesDir -refs /user/mac/headersDir -output /usr/mac/binarypatch
 
         2. Json Patch
-        ./PatchGenerator -type json -encryptMap /user/mac/ClassEncryptMap.json -files /user/mac/filesDir -refs /user/mac/headersDir -output /usr/mac/jsonpatch
+        ./PatchGenerator -type json -files /user/mac/filesDir -refs /user/mac/headersDir -output /usr/mac/jsonpatch
 
         """)
     }
@@ -147,10 +141,7 @@ func main(){
         patchFile.dump(asBinaryPatch: result.output)
         break
     case .json:
-        if result.encryptMap.count == 0{
-            print("必须传入encryptMap文件!")
-        }
-        patchFile.dump(asJsonPatch: result.output, encrptMapPath: result.encryptMap)
+        patchFile.dump(asJsonPatch: result.output)
         break
     }
     

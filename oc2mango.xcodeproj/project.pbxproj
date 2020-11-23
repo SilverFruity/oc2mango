@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
 		EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE147260227F054300566B3F /* ClassDeclareTest.swift */; };
@@ -44,14 +45,12 @@
 		EE66C0B024FE982B00C85B31 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
 		EE66C0B124FE982B00C85B31 /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
 		EE66C16824FEB62C00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
-		EE66C16924FEB62C00C85B31 /* ClassDecryptMap.json in Resources */ = {isa = PBXBuildFile; fileRef = EE66C15F24FEB62B00C85B31 /* ClassDecryptMap.json */; };
 		EE66C16A24FEB62C00C85B31 /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C16B24FEB62C00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		EE66C16C24FEB62C00C85B31 /* ORPatchFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16224FEB62C00C85B31 /* ORPatchFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C16D24FEB62C00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EE66C16E24FEB62C00C85B31 /* RunnerClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16424FEB62C00C85B31 /* RunnerClasses.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C16F24FEB62C00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
-		EE66C17024FEB62C00C85B31 /* ClassEncryptMap.json in Resources */ = {isa = PBXBuildFile; fileRef = EE66C16624FEB62C00C85B31 /* ClassEncryptMap.json */; };
 		EE66C17124FEB62C00C85B31 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C17224FEB64900C85B31 /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
 		EE66C17324FEB64900C85B31 /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -138,6 +137,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClassSecretKeyMap.h; path = oc2mangoLib/PatchFile/ClassSecretKeyMap.h; sourceTree = SOURCE_ROOT; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
@@ -157,14 +157,12 @@
 		EE66C15624FEB61300C85B31 /* ORPatchFile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ORPatchFile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE66C15924FEB61300C85B31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ORPatchFile.m; path = oc2mangoLib/PatchFile/ORPatchFile.m; sourceTree = SOURCE_ROOT; };
-		EE66C15F24FEB62B00C85B31 /* ClassDecryptMap.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = ClassDecryptMap.json; path = oc2mangoLib/PatchFile/ClassDecryptMap.json; sourceTree = SOURCE_ROOT; };
 		EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinaryPatchHelper.h; path = oc2mangoLib/PatchFile/BinaryPatchHelper.h; sourceTree = SOURCE_ROOT; };
 		EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSONPatchHelper.m; path = oc2mangoLib/PatchFile/JSONPatchHelper.m; sourceTree = SOURCE_ROOT; };
 		EE66C16224FEB62C00C85B31 /* ORPatchFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ORPatchFile.h; path = oc2mangoLib/PatchFile/ORPatchFile.h; sourceTree = SOURCE_ROOT; };
 		EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BinaryPatchHelper.m; path = oc2mangoLib/PatchFile/BinaryPatchHelper.m; sourceTree = SOURCE_ROOT; };
 		EE66C16424FEB62C00C85B31 /* RunnerClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RunnerClasses.h; path = oc2mangoLib/PatchFile/RunnerClasses.h; sourceTree = SOURCE_ROOT; };
 		EE66C16524FEB62C00C85B31 /* RunnerClasses.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RunnerClasses.m; path = oc2mangoLib/PatchFile/RunnerClasses.m; sourceTree = SOURCE_ROOT; };
-		EE66C16624FEB62C00C85B31 /* ClassEncryptMap.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = ClassEncryptMap.json; path = oc2mangoLib/PatchFile/ClassEncryptMap.json; sourceTree = SOURCE_ROOT; };
 		EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSONPatchHelper.h; path = oc2mangoLib/PatchFile/JSONPatchHelper.h; sourceTree = SOURCE_ROOT; };
 		EE6E6CCF225E488000616C7E /* oc2mango */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oc2mango; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6E6CD2225E488000616C7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -285,11 +283,10 @@
 			children = (
 				EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */,
 				EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */,
-				EE66C15F24FEB62B00C85B31 /* ClassDecryptMap.json */,
-				EE66C16624FEB62C00C85B31 /* ClassEncryptMap.json */,
 				EE66C15924FEB61300C85B31 /* Info.plist */,
 				EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */,
 				EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */,
+				32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */,
 				EE66C16224FEB62C00C85B31 /* ORPatchFile.h */,
 				EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */,
 				EE66C16424FEB62C00C85B31 /* RunnerClasses.h */,
@@ -399,6 +396,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */,
 				EE66C16C24FEB62C00C85B31 /* ORPatchFile.h in Headers */,
 				EE66C16E24FEB62C00C85B31 /* RunnerClasses.h in Headers */,
 				EE66C16A24FEB62C00C85B31 /* BinaryPatchHelper.h in Headers */,
@@ -587,8 +585,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE66C16924FEB62C00C85B31 /* ClassDecryptMap.json in Resources */,
-				EE66C17024FEB62C00C85B31 /* ClassEncryptMap.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

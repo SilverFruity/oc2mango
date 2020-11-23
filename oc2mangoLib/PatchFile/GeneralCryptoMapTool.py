@@ -1,4 +1,3 @@
-
 import os
 import re
 import json
@@ -42,11 +41,28 @@ if __name__ == "__main__":
         # decryptData[nodeName] = {'fieldDecryptMap': decryptPropertyMap, 'className': className, 'fieldNames': decryptProperties}
         encryptData[className] = {'m': encryptPropertyMap, 'n': nodeName, 'f': encryptProperties}
         decryptData[nodeName] = {'m': decryptPropertyMap, 'c': className, 'f': decryptProperties}
+    
 
+encrypt_header = "static NSString * jsonEncryptString = @"
+encrypt_end = """;
+"""
+encryptString = encrypt_header + json.dumps(json.dumps(encryptData)) + encrypt_end
+    
 
-    with open(father_path + "/ClassEncryptMap.json", 'w+') as encryptFile:
-        json.dump(encryptData, encryptFile)
+decrypt_header = "static NSString * jsonDecryptString = @"
+decrypt_end = """;
+"""
+decryptString = decrypt_header + json.dumps(json.dumps(decryptData)) + decrypt_end
+    
+#.h文件中的内容
+classSecretKey = """
+#import <Foundation/Foundation.h>
 
-    with open(father_path + "/ClassDecryptMap.json", 'w+') as decryptFile:
-        json.dump(decryptData, decryptFile)
-    print("success !!!")
+"""
+    
+classKey = classSecretKey + encryptString + decryptString
+
+with open(father_path + "/ClassSecretKeyMap.h", 'w+') as classSecretKeyFile:
+     classSecretKeyFile.write(classKey)
+     classSecretKeyFile.close()
+print("success !!!")
