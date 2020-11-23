@@ -43,7 +43,7 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint);
 + (nullable instancetype)loadBinaryPatch:(NSString *)patchPath;
 - (void)dumpAsBinaryPatch:(NSString *)patchPath;
 
-+ (nullable instancetype)loadJsonPatch:(NSString *)patchPatch decrptMapPath:(nullable NSString *)decrptMapPath;
-- (void)dumpAsJsonPatch:(NSString *)patchPath encrptMapPath:(nullable NSString *)encrptMapPath;
++ (nullable instancetype)loadJsonPatch:(NSString *)patchPatch;
+- (void)dumpAsJsonPatch:(NSString *)patchPath;
 @end
 NS_ASSUME_NONNULL_END

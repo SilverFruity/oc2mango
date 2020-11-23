@@ -8,6 +8,8 @@
 
 #import "JSONPatchHelper.h"
 #import "ORPatchFile.h"
+#import "ClassSecretKeyMap.h"
+
 @implementation JSONPatchClassEncrypt
 + (instancetype)encryptWithDict:(NSDictionary *)dict{
     JSONPatchClassEncrypt *encryt = [JSONPatchClassEncrypt new];
@@ -106,36 +108,37 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
 @implementation JSONPatchHelper
 #if DEBUG
 + (NSArray<ORNode *> *)patchFileTest:(NSArray<ORNode *> *)nodes{
-    return [self patchFileTest:nodes encrptMap:nil decrptMap:nil];
-}
-+ (NSArray <ORNode *>*)patchFileTest:(NSArray <ORNode *>*)nodes encrptMap:(nullable NSDictionary *)encryptMap decrptMap:(nullable NSDictionary *)decryptMap{
     ORPatchFile *file = [ORPatchFile new];
     file.nodes = [nodes mutableCopy];
-    NSDictionary *dictionary = [self archivePatch:file encrptMap:encryptMap];
+    NSDictionary *dictionary = [self archivePatch:file];
     NSError *error = nil;
     NSData *jsondata = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
     NSLog(@"josn file length: %.2fKB",(double)jsondata.length / 1000.0);
     NSAssert(error == nil, error.localizedDescription);
     dictionary = [NSJSONSerialization JSONObjectWithData:jsondata options:NSJSONReadingMutableLeaves error:&error];
     NSAssert(error == nil, error.localizedDescription);
-    NSArray *result = [self unArchivePatch:dictionary decrptMap:decryptMap].nodes;
+    NSArray *result = [self unArchivePatch:dictionary].nodes;
     return result;
 }
 #endif
-+ (NSDictionary *)archivePatch:(ORPatchFile *)patch encrptMap:(nullable NSDictionary *)cryptoMap{
++ (NSDictionary *)archivePatch:(ORPatchFile *)patch {
     
     _jsonPatchStringMap = [NSMutableDictionary dictionary];
+    NSDictionary *cryptoMap;
     
-    if (cryptoMap == nil) {
-        NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[JSONPatchHelper class]] pathForResource:@"oc2mangoLib" ofType:@"bundle"]];
-        if (bundle == nil) {
-            bundle = [NSBundle bundleForClass:[JSONPatchHelper class]];
-        }
-        NSString *path = [bundle pathForResource:@"ClassEncryptMap.json" ofType:nil];
-        NSData *data = [[NSData alloc] initWithContentsOfFile:path];
+    NSString *mapString = jsonEncryptString;
+    NSData *data = [mapString dataUsingEncoding:NSUTF8StringEncoding];
+#ifdef DEBUG
+    cryptoMap = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+#else
+    @try {
         cryptoMap = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+    } @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
     }
-    
+#endif
+    if (!cryptoMap || ![cryptoMap isKindOfClass:[NSDictionary class]]) { return nil; }
+
     NSMutableArray *array = [@[] mutableCopy];
 
     for (ORNode *node in patch.nodes){
@@ -148,18 +151,25 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
              @"nodes":array,
              @"strings":patch.strings};
 }
-+ (ORPatchFile *)unArchivePatch:(NSDictionary *)patch decrptMap:(nullable NSDictionary *)cryptoMap{
++ (ORPatchFile *)unArchivePatch:(NSDictionary *)patch {
     ORPatchFile *file = [ORPatchFile new];
     [file setValuesForKeysWithDictionary:patch];
-    if (cryptoMap == nil) {
-        NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[JSONPatchHelper class]] pathForResource:@"oc2mangoLib" ofType:@"bundle"]];
-        if (bundle == nil) {
-            bundle = [NSBundle bundleForClass:[JSONPatchHelper class]];
-        }
-        NSString *path = [bundle pathForResource:@"ClassDecryptMap.json" ofType:nil];
-        NSData *data = [[NSData alloc] initWithContentsOfFile:path];
+    NSDictionary *cryptoMap;
+    
+    NSString *mapString = jsonDecryptString;
+    NSData *data = [mapString dataUsingEncoding:NSUTF8StringEncoding];
+    
+#ifdef DEBUG
+    cryptoMap = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+#else
+    @try {
         cryptoMap = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+    } @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
     }
+#endif
+    if (!cryptoMap || ![cryptoMap isKindOfClass:[NSDictionary class]]) { return nil; }
+    
     NSArray *nodes = patch[@"nodes"];
     NSMutableArray *results = [@[] mutableCopy];
     for (NSDictionary *node in nodes){

@@ -91,17 +91,15 @@ int main(int argc, const char * argv[]) {
     NSLog(@"compile time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
     
     do {
-        NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/patch.json";
-        NSString *encryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/PatchFile/ClassEncryptMap.json";
-        NSString *decryptPath = @"/Users/jiang/Downloads/oc2mango/oc2mangoLib/PatchFile/ClassDecryptMap.json";
+        NSString *filePath = @" /Users/weij/Desktop/WPTPrivateTool/oc2mango/oc2mango/Output/patch.json";
         startDate = [NSDate new];
         ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:result.nodes];
-        [file dumpAsJsonPatch:filePath encrptMapPath:encryptPath];
+        [file dumpAsJsonPatch:filePath];
         endDate = [NSDate new];
         NSLog(@"json patch serialize time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
         
         startDate = [NSDate new];
-        ORPatchFile *newFile = [ORPatchFile loadJsonPatch:filePath decrptMapPath:decryptPath];
+        ORPatchFile *newFile = [ORPatchFile loadJsonPatch:filePath];
         endDate = [NSDate new];
         NSLog(@"json patch deserialize time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
         result = [AST new];
