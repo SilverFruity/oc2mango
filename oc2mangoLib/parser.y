@@ -41,15 +41,15 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <identifier> global_define 
 %type  <declare>  protocol_declare class_declare property_list class_private_varibale_declare class_private_list
 %type  <declare>  class_property_declare method_declare declare_left_attribute class_property_type
-%type  <declare>  parameter_declaration  type_specifier  parameter_list CHILD_COLLECTION_OPTIONAL
+%type  <declare>  parameter_declaration  declarator_type  parameter_list CHILD_COLLECTION_OPTIONAL
 %type  <implementation> class_implementation
 %type  <expression> objc_method_call primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression postfix_expression
 %type <Operator>  assign_operator unary_operator
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
 %type <expression> expression expression_optional  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys for_statement_var_list
-%type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional
+%type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list declarator_type_opt
 %type <IntValue> pointer pointer_optional
-%type <declaration_modifier> declaration_modifier
+%type <declaration_modifier> declaration_modifier declaration_modifier_opt
 %type <expression> union_declare struct_declare struct_field_list enum_declare enum_field_list typedef_declare
 %%
 
@@ -76,12 +76,13 @@ global_define:
     }
     | CLASS_DECLARE IDENTIFIER SEMICOLON
     | PROTOCOL IDENTIFIER SEMICOLON
-    | type_specifier declarator LC function_implementation RC
+    | declarator_type declarator LC function_implementation RC
     {
-        ORTypeVarPair *returnType = makeTypeVarPair(_typeId $1, nil);
-        ORFuncDeclare *declare = makeFuncDeclare(returnType, _typeId $2);
+        ORDeclaratorNode *returnType = makeDeclaratorNode(_typeId $1, nil);
+        ORFunctionDeclarator *declare = _typeId $2;
+        declare.returnNode = returnType;
         ORFunctionImp *imp = [ORFunctionImp new];
-        imp.scopeImp = _transfer(ORScopeImp *)$4;
+        imp.scopeImp = _transfer(ORBlockNode *)$4;
         imp.declare = declare;
         [GlobalAst addGlobalStatements:imp];
     }
@@ -131,36 +132,36 @@ struct_field_list:
             }
             ;
 enum_declare:
-NS_ENUM LP type_specifier COMMA IDENTIFIER RP enum_declare
+NS_ENUM LP declarator_type COMMA IDENTIFIER RP enum_declare
 {
-    OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $7;
+    OREnumStatNode *exp = _transfer(OREnumStatNode *) $7;
     exp.enumName = _typeId $5;
-    exp.valueType = [_transfer(ORTypeSpecial *) $3 type];
+    exp.valueType = [_transfer(ORTypeNode *) $3 type];
     $$ = _vretained exp;
 }
-| NS_OPTIONS LP type_specifier COMMA IDENTIFIER RP enum_declare
+| NS_OPTIONS LP declarator_type COMMA IDENTIFIER RP enum_declare
 {
-    OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $7;
+    OREnumStatNode *exp = _transfer(OREnumStatNode *) $7;
     exp.enumName = _typeId $5;
-    exp.valueType =  [_transfer(ORTypeSpecial *) $3 type];
+    exp.valueType =  [_transfer(ORTypeNode *) $3 type];
     $$ = _vretained exp;
 }
 | _enum IDENTIFIER enum_declare
 {
-    OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $3;
+    OREnumStatNode *exp = _transfer(OREnumStatNode *) $3;
     exp.enumName = _typeId $2;
     $$ = _vretained exp;
 }
 | _enum enum_declare
 {
-    OREnumExpressoin *exp = _transfer(OREnumExpressoin *) $2;
+    OREnumStatNode *exp = _transfer(OREnumStatNode *) $2;
     $$ = _vretained exp;
 }
 | LC enum_field_list RC
 {
-    $$ = _vretained makeEnumExp(@"",makeTypeSpecial(TypeInt), _typeId $2);
+    $$ = _vretained makeEnumExp(@"",makeTypeNode(TypeInt), _typeId $2);
 }
-| COLON type_specifier LC enum_field_list RC
+| COLON declarator_type LC enum_field_list RC
 {
     $$ = _vretained makeEnumExp(@"",_typeId $2, _typeId $4);
 }
@@ -183,9 +184,9 @@ assign_expression
 
             
 typedef_declare:
-type_specifier declarator
+declarator_type declarator
 {
-    ORTypeVarPair *pair = makeTypeVarPair(_typeId $1, _typeId $2);
+    ORDeclaratorNode *pair = makeDeclaratorNode(_typeId $1, _typeId $2);
     $$ = _vretained makeTypedefExp(pair, pair.var.varname);
 }
 //for NS_ENUM NS_OPTIONS
@@ -220,7 +221,7 @@ PROTOCOL IDENTIFIER CHILD_COLLECTION_OPTIONAL
 
     ORPropertyDeclare *property = [ORPropertyDeclare new];
     property.keywords = _transfer(NSMutableArray *) $3;
-    property.var = _transfer(ORTypeVarPair *) $4;
+    property.var = _transfer(ORDeclaratorNode *) $4;
     
     [orprotcol.properties addObject:property];
     $$ = _vretained orprotcol;
@@ -270,7 +271,7 @@ class_declare:
 
                 ORPropertyDeclare *property = [ORPropertyDeclare new];
                 property.keywords = _transfer(NSMutableArray *) $3;
-                property.var = _transfer(ORTypeVarPair *) $4;
+                property.var = _transfer(ORDeclaratorNode *) $4;
                 
                 [occlass.properties addObject:property];
                 $$ = _vretained occlass;
@@ -295,7 +296,7 @@ class_implementation:
             }
             | class_implementation method_declare LC function_implementation RC
             {
-                ORMethodImplementation *imp = makeMethodImplementation(_transfer(ORMethodDeclare *) $2, _transfer(ORScopeImp *) $4);
+                ORMethodImplementation *imp = makeMethodImplementation(_transfer(ORMethodDeclare *) $2, _transfer(ORBlockNode *) $4);
                 ORClass *occlass = _transfer(ORClass *) $1;
                 [occlass.methods addObject:imp];
                 $$ = _vretained occlass;
@@ -322,7 +323,7 @@ class_private_varibale_declare: // empty
             | class_private_varibale_declare parameter_declaration SEMICOLON
             {
                 NSMutableArray *list = _transfer(NSMutableArray *) $1;
-				[list addObject:_transfer(ORTypeVarPair *) $2];
+				[list addObject:_transfer(ORDeclaratorNode *) $2];
 				$$ = (__bridge_retained void *)list;
             }
             ;
@@ -367,12 +368,12 @@ declare_left_attribute:
 method_declare:
             SUB LP parameter_declaration RP
             {   
-                ORTypeVarPair *declare = _transfer(ORTypeVarPair *)$3;
+                ORDeclaratorNode *declare = _transfer(ORDeclaratorNode *)$3;
                 $$ = _vretained makeMethodDeclare(NO,declare);
             }
             | ADD LP parameter_declaration RP
             {
-                ORTypeVarPair *declare = _transfer(ORTypeVarPair *)$3;
+                ORDeclaratorNode *declare = _transfer(ORDeclaratorNode *)$3;
                 $$ = _vretained makeMethodDeclare(YES,declare);
             }
             | method_declare IDENTIFIER
@@ -383,7 +384,7 @@ method_declare:
             }
             | method_declare IDENTIFIER COLON LP parameter_declaration RP IDENTIFIER
             {
-                ORTypeVarPair *pair = _transfer(ORTypeVarPair *)$5;
+                ORDeclaratorNode *pair = _transfer(ORDeclaratorNode *)$5;
                 ORMethodDeclare *method = _transfer(ORMethodDeclare *)$$;
                 [method.methodNames addObject:_transfer(NSString *) $2];
                 [method.parameterTypes addObject:pair];
@@ -445,27 +446,27 @@ block_parameters_optinal:
         $$ = _vretained (__bridge NSMutableArray *)$2;
     }
     ;   
-type_specifier_optional:
-        {
-            $$ = nil;
-        }
-        | type_specifier
+declarator_type_opt:
+{
+    $$ = nil;
+}
+| declarator_type
         
 block_implementation:
-        //^returnType(optional) parameters(optional){ }
-        POWER type_specifier_optional pointer_optional block_parameters_optinal LC function_implementation RC
-        {
-            ORTypeVarPair *var = makeTypeVarPair(_typeId $2, makeVar(nil,$3));
-            ORFuncVariable *funVar = [ORFuncVariable new];
-            funVar.pairs = _transfer(NSMutableArray *)$4;
-            funVar.isBlock = YES;
-            ORFuncDeclare *declare = makeFuncDeclare(var, funVar);
-            ORFunctionImp *imp = [ORFunctionImp new];
-            imp.scopeImp = _transfer(ORScopeImp *) $6;
-            imp.declare = declare;
-            $$ = _vretained imp;
-        }
-        ;
+    //^returnType(optional) parameters(optional){ }
+    POWER declarator_type_opt pointer_optional block_parameters_optinal LC function_implementation RC
+    {
+        ORDeclaratorNode *returnNode = makeDeclaratorNode(_typeId $2, makeVarNode(nil,$3));
+        ORFunctionDeclarator *declare = [ORFunctionDeclarator new];
+        declare.declarators = _transfer(NSMutableArray *)$4;
+        declare.isBlock = YES;
+        declare.returnNode = returnNode;
+        ORFunctionImp *imp = [ORFunctionImp new];
+        imp.scopeImp = _transfer(ORBlockNode *) $6;
+        imp.declare = declare;
+        $$ = _vretained imp;
+    }
+    ;
 
 
 expression: assign_expression;
@@ -492,25 +493,25 @@ expression_statement:
         }
         |_return SEMICOLON
         {
-            ORNode *node = makeReturnStatement(nil);
+            ORNode *node = makeControlStatement(ORControlStatReturn,nil);
             node.withSemicolon = YES;
             $$ = _vretained node;
         }
         | _return expression SEMICOLON
         {
-            ORNode *node = makeReturnStatement(_transfer(id)$2);
+            ORNode *node = makeControlStatement(ORControlStatReturn,_transfer(id)$2);
             node.withSemicolon = YES;
             $$ = _vretained node;
         }
         | _break SEMICOLON
         {
-            ORNode *node = makeBreakStatement();
+            ORNode *node = makeControlStatement(ORControlStatBreak, nil);
             node.withSemicolon = YES;
             $$ = _vretained node;
         }
         | _continue SEMICOLON
         {
-            ORNode *node = makeContinueStatement();
+            ORNode *node = makeControlStatement(ORControlStatContinue, nil);
             node.withSemicolon = YES;
             $$ = _vretained node;
         }
@@ -519,19 +520,19 @@ expression_statement:
 if_statement:
         IF LP expression RP expression_statement
         {
-            ORScopeImp *imp = makeScopeImp();
+            ORBlockNode *imp = makeScopeImp();
             [imp addStatements:_transfer(id) $5];
             ORIfStatement *statement = makeIfStatement(_transfer(id) $3,imp);
             $$ = _vretained statement;
         }
         | IF LP expression RP LC function_implementation RC
         {
-            ORIfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(ORScopeImp *)$6);
+            ORIfStatement *statement = makeIfStatement(_transfer(id) $3,_transfer(ORBlockNode *)$6);
             $$ = _vretained statement;
         }
         | if_statement _else IF LP expression RP expression_statement
         {
-            ORScopeImp *imp = makeScopeImp();
+            ORBlockNode *imp = makeScopeImp();
             [imp addStatements:_transfer(id) $7];
             ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,imp);
             elseIfStatement.last = _transfer(ORIfStatement *)$1;
@@ -539,13 +540,13 @@ if_statement:
         }
         | if_statement _else IF LP expression RP LC function_implementation RC
         {
-            ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(ORScopeImp *)$8);
+            ORIfStatement *elseIfStatement = makeIfStatement(_transfer(id) $5,_transfer(ORBlockNode *)$8);
             elseIfStatement.last = _transfer(ORIfStatement *)$1;
             $$  = _vretained elseIfStatement;
         }
         | if_statement _else expression_statement
         {
-            ORScopeImp *imp = makeScopeImp();
+            ORBlockNode *imp = makeScopeImp();
             [imp addStatements:_transfer(id) $3];
             ORIfStatement *elseStatement = makeIfStatement(nil,imp);
             elseStatement.last = _transfer(ORIfStatement *)$1;
@@ -553,7 +554,7 @@ if_statement:
         }
         | if_statement _else LC function_implementation RC
         {
-            ORIfStatement *elseStatement = makeIfStatement(nil,_transfer(ORScopeImp *)$4);
+            ORIfStatement *elseStatement = makeIfStatement(nil,_transfer(ORBlockNode *)$4);
             elseStatement.last = _transfer(ORIfStatement *)$1;
             $$  = _vretained elseStatement;
         }
@@ -562,14 +563,14 @@ if_statement:
 dowhile_statement: 
         _do LC function_implementation RC _while LP expression RP
         {
-            ORDoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(ORScopeImp *)$3);
+            ORDoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(ORBlockNode *)$3);
             $$ = _vretained statement;
         }
         ;
 while_statement:
         _while LP expression RP LC function_implementation RC
         {
-            ORWhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(ORScopeImp *)$6);
+            ORWhileStatement *statement = makeWhileStatement(_transfer(id)$3,_transfer(ORBlockNode *)$6);
             $$ = _vretained statement;
         }
         ;
@@ -594,7 +595,7 @@ case_statement:
         | case_statement LC function_implementation RC
         {
             ORCaseStatement *statement =  _transfer(ORCaseStatement *)$1;
-            statement.scopeImp = _transfer(ORScopeImp *) $3;
+            statement.scopeImp = _transfer(ORBlockNode *) $3;
             $$ = _vretained statement;
         }
         ;
@@ -634,7 +635,7 @@ for_statement_var_list:
 
 for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
         {
-            ORForStatement* statement = makeForStatement(_transfer(ORScopeImp *) $10);
+            ORForStatement* statement = makeForStatement(_transfer(ORBlockNode *) $10);
             statement.varExpressions = _typeId $3;
             statement.condition = _typeId $5;
             statement.expressions = _typeId $7;
@@ -642,7 +643,7 @@ for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_lis
         }
         |  _for LP for_statement_var_list SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
                {
-                   ORForStatement* statement = makeForStatement(_transfer(ORScopeImp *) $10);
+                   ORForStatement* statement = makeForStatement(_transfer(ORBlockNode *) $10);
                    statement.varExpressions = _typeId $3;
                    statement.condition = _typeId $5;
                    statement.expressions = _typeId $7;
@@ -652,7 +653,7 @@ for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_lis
 
 forin_statement: _for LP declaration _in expression RP LC function_implementation RC
         {
-            ORForInStatement * statement = makeForInStatement(_transfer(ORScopeImp *)$8);
+            ORForInStatement * statement = makeForInStatement(_transfer(ORBlockNode *)$8);
             NSArray *exps = _typeId $3;
             statement.expression = exps[0];
             statement.value = _transfer(id)$5;
@@ -677,13 +678,13 @@ function_implementation:
         }
         | function_implementation expression_statement 
         {
-            ORScopeImp *imp = _transfer(ORScopeImp *)$1;
+            ORBlockNode *imp = _transfer(ORBlockNode *)$1;
             [imp addStatements:_transfer(id) $2];
             $$ = _vretained imp;
         }
         | function_implementation control_statement
         {
-            ORScopeImp *imp = _transfer(ORScopeImp *)$1;
+            ORBlockNode *imp = _transfer(ORBlockNode *)$1;
             [imp addStatements:_transfer(id) $2];
             $$ = _vretained imp;
         }
@@ -1043,11 +1044,11 @@ postfix_expression: primary_expression
         value.keyExp = _typeId $3;
         $$ = _vretained value;
     }
-    | LP type_specifier declarator_optional RP postfix_expression
+    | LP declarator_type declarator_optional RP postfix_expression
     {
         $$ = $5;
     }
-    | LP bridge_set type_specifier declarator_optional RP postfix_expression
+    | LP bridge_set declarator_type declarator_optional RP postfix_expression
     {
         $$ = $6;
     }
@@ -1169,36 +1170,40 @@ primary_expression:
         ;
 
 ;
+declaration_modifier_opt:
+| declaration_modifier
+;
+
 declaration_modifier: _WEAK
-        {
-            $$ = DeclarationModifierWeak;
-        }
-        | _STRONG
-        {
-            $$ = DeclarationModifierStrong;
-        }
-        | STATIC
-        {
-            $$ = DeclarationModifierStatic;
-        }
-        ;
+{
+    $$ = DeclarationModifierWeak;
+}
+| _STRONG
+{
+    $$ = DeclarationModifierStrong;
+}
+| STATIC
+{
+    $$ = DeclarationModifierStatic;
+}
+;
 
 declaration:
-	declaration_modifier type_specifier init_declarator_list
+	declaration_modifier declarator_type init_declarator_list
     {
         NSMutableArray *array = _transfer(NSMutableArray *)$3;
-        for (ORDeclareExpression *declare in array){
-            declare.pair.type = _typeId $2;
-            declare.modifier = $1;
+        for (ORInitDeclaratorNode *declare in array){
+            declare.declarator.type = _typeId $2;
+            declare.declarator.type.modifier = $1;
             _vretained declare;
         }
         $$ = _vretained array;
     }
-    | type_specifier init_declarator_list
+    | declarator_type init_declarator_list
     {
         NSMutableArray *array = _transfer(NSMutableArray *)$2;
-        for (ORDeclareExpression *declare in array){
-            declare.pair.type = _typeId $1;
+        for (ORInitDeclaratorNode *declare in array){
+            declare.declarator.type = _typeId $1;
             _vretained declare;
         }
         $$ = _vretained array;
@@ -1220,18 +1225,20 @@ init_declarator_list:
 init_declarator:
     declarator
     {
-        $$ = _vretained makeDeclareExpression(nil, _typeId $1, nil);
+        ORDeclaratorNode *node = makeDeclaratorNode(nil, _typeId $1);
+        $$ = _vretained makeInitDeclaratorNode(node, nil);
     }
     | declarator ASSIGN assign_expression
     {
-        $$ = _vretained makeDeclareExpression(nil, _typeId $1, _typeId $3);
+        ORDeclaratorNode *node = makeDeclaratorNode(nil, _typeId $1);
+        $$ = _vretained makeInitDeclaratorNode(node, _typeId $3);
     }
 	;
 
 
 declarator_optional:
         {
-            $$ = _vretained makeVar(nil);
+            $$ = _vretained makeVarNode(nil);
         }
         | declarator
         ;
@@ -1240,13 +1247,13 @@ declarator:
         direct_declarator
         | POWER direct_declarator_optional 
         {
-            ORVariable *var = _transfer(ORVariable *)$2;
+            ORVariableNode *var = _transfer(ORVariableNode *)$2;
             var.isBlock = YES;
             $$ = _vretained var;
         }
         | pointer direct_declarator_optional
         {
-            ORVariable *var = _transfer(ORVariable *)$2;
+            ORVariableNode *var = _transfer(ORVariableNode *)$2;
             var.ptCount = $1;
             $$ = _vretained var;
         }
@@ -1255,7 +1262,7 @@ declarator:
 
 direct_declarator_optional:
         {
-            $$ = _vretained makeVar(nil);
+            $$ = _vretained makeVarNode(nil);
         }
         | direct_declarator
         ;
@@ -1263,7 +1270,7 @@ direct_declarator_optional:
 direct_declarator:
 IDENTIFIER
 {
-    $$ = _vretained makeVar(_typeId $1);
+    $$ = _vretained makeVarNode(_typeId $1);
 }
 | LP declarator RP
 {
@@ -1271,18 +1278,18 @@ IDENTIFIER
 }
 | direct_declarator LP parameter_type_list RP
 {
-    ORFuncVariable *funVar = [ORFuncVariable copyFromVar:_transfer(ORVariable *)$1];
+    ORFunctionDeclarator *funVar = [ORFunctionDeclarator copyFromVar:_transfer(ORVariableNode *)$1];
     NSMutableArray *pairs = _transfer(NSMutableArray *)$3;
     if ([pairs lastObject] == [NSNull null]) {
         funVar.isMultiArgs = YES;
         [pairs removeLastObject];
     }
-    funVar.pairs = pairs;
+    funVar.declarators = pairs;
     $$ = _vretained funVar;
 }
 | direct_declarator LB expression_optional RB
 {
-    ORVariable *var = _transfer(ORVariable *)$1;
+    ORVariableNode *var = _transfer(ORVariableNode *)$1;
     if ($3 == NULL){
         var.ptCount += 1;
         $$ = _vretained var;
@@ -1340,9 +1347,9 @@ parameter_list: /* empty */
             ;
 
 parameter_declaration: 
-    declare_left_attribute type_specifier declarator_optional
+    declare_left_attribute declarator_type declarator_optional
     {
-        $$ = _vretained makeTypeVarPair(_typeId $2, _typeId $3);
+        $$ = _vretained makeDeclaratorNode(_typeId $2, _typeId $3);
     };
 parameter_declaration_optional:
         | parameter_declaration
@@ -1353,96 +1360,97 @@ CHILD_COLLECTION_OPTIONAL:
     $$ = nil;
 }
 | CHILD_COLLECTION;
-type_specifier:
-            IDENTIFIER CHILD_COLLECTION_OPTIONAL
-            {
-                $$ = _vretained makeTypeSpecial(TypeObject, _typeId $1);
-            }
-            | _struct IDENTIFIER
-            {
-                $$ = _vretained makeTypeSpecial(TypeStruct, _typeId $1);
-            }
-            | _union IDENTIFIER
-            {
-                $$ = _vretained makeTypeSpecial(TypeUnion, _typeId $1);
-            }
-            | _id CHILD_COLLECTION_OPTIONAL
-            {
-                $$ = _vretained makeTypeSpecial(TypeObject,@"id");
-            }
-            | TYPEOF LP expression RP
-            {
-                $$ = _vretained makeTypeSpecial(TypeObject,@"typeof");
-            }
-            | _UCHAR
-            {
-                 $$ = _vretained makeTypeSpecial(TypeUChar);
-            }
-            | _USHORT
-            {
-                $$ = _vretained makeTypeSpecial(TypeUShort);
-            }
-            | _UINT
-            {
-                $$ = _vretained makeTypeSpecial(TypeUInt);
-            }
-            | _ULONG
-            {
-                $$ = _vretained makeTypeSpecial(TypeULong);
-            }
-            | _ULLONG
-            {
-                $$ = _vretained makeTypeSpecial(TypeULongLong);
-            }
-            | _CHAR
-            {
-                $$ = _vretained makeTypeSpecial(TypeChar);
-            }
-            | _SHORT
-            {
-                $$ = _vretained makeTypeSpecial(TypeShort);
-            }
-            | _INT
-            {
-                $$ = _vretained makeTypeSpecial(TypeInt);
-            }
-            | _LONG
-            {
-                $$ = _vretained makeTypeSpecial(TypeLong);
-            }
-            | _LLONG
-            {
-                $$ = _vretained makeTypeSpecial(TypeLongLong);
-            }
-            | _DOUBLE
-            {
-                $$ = _vretained makeTypeSpecial(TypeDouble);
-            }
-            | _FLOAT
-            {
-                $$ = _vretained makeTypeSpecial(TypeFloat);
-            }
-            | _Class
-            {
-                $$ = _vretained makeTypeSpecial(TypeClass);
-            }
-            | _BOOL
-            {
-                $$ = _vretained makeTypeSpecial(TypeBOOL);
-            }
-            | _SEL
-            {
-                $$ = _vretained makeTypeSpecial(TypeSEL);
-            }
-            | _void
-            {
-                $$ = _vretained makeTypeSpecial(TypeVoid);
-            }
-            | _instancetype
-            {
-                $$ = _vretained makeTypeSpecial(TypeObject,@"id");
-            }
-            ;
+
+declarator_type:
+IDENTIFIER CHILD_COLLECTION_OPTIONAL
+{
+    $$ = _vretained makeTypeNode(TypeObject, _typeId $1);
+}
+| _struct IDENTIFIER
+{
+    $$ = _vretained makeTypeNode(TypeStruct, _typeId $1);
+}
+| _union IDENTIFIER
+{
+    $$ = _vretained makeTypeNode(TypeUnion, _typeId $1);
+}
+| _id CHILD_COLLECTION_OPTIONAL
+{
+    $$ = _vretained makeTypeNode(TypeObject,@"id");
+}
+| TYPEOF LP expression RP
+{
+    $$ = _vretained makeTypeNode(TypeObject,@"typeof");
+}
+| _UCHAR
+{
+        $$ = _vretained makeTypeNode(TypeUChar);
+}
+| _USHORT
+{
+    $$ = _vretained makeTypeNode(TypeUShort);
+}
+| _UINT
+{
+    $$ = _vretained makeTypeNode(TypeUInt);
+}
+| _ULONG
+{
+    $$ = _vretained makeTypeNode(TypeULong);
+}
+| _ULLONG
+{
+    $$ = _vretained makeTypeNode(TypeULongLong);
+}
+| _CHAR
+{
+    $$ = _vretained makeTypeNode(TypeChar);
+}
+| _SHORT
+{
+    $$ = _vretained makeTypeNode(TypeShort);
+}
+| _INT
+{
+    $$ = _vretained makeTypeNode(TypeInt);
+}
+| _LONG
+{
+    $$ = _vretained makeTypeNode(TypeLong);
+}
+| _LLONG
+{
+    $$ = _vretained makeTypeNode(TypeLongLong);
+}
+| _DOUBLE
+{
+    $$ = _vretained makeTypeNode(TypeDouble);
+}
+| _FLOAT
+{
+    $$ = _vretained makeTypeNode(TypeFloat);
+}
+| _Class
+{
+    $$ = _vretained makeTypeNode(TypeClass);
+}
+| _BOOL
+{
+    $$ = _vretained makeTypeNode(TypeBOOL);
+}
+| _SEL
+{
+    $$ = _vretained makeTypeNode(TypeSEL);
+}
+| _void
+{
+    $$ = _vretained makeTypeNode(TypeVoid);
+}
+| _instancetype
+{
+    $$ = _vretained makeTypeNode(TypeObject,@"id");
+}
+;
 
 %%
 void yyerror(const char *s){

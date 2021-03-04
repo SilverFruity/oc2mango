@@ -7,37 +7,24 @@
 //
 
 #import "RunnerClasses.h"
-@implementation ORTypeSpecial
+@implementation ORTypeNode
 + (instancetype)specialWithType:(TypeKind)type name:(NSString *)name{
-    ORTypeSpecial *s = [ORTypeSpecial new];
+    ORTypeNode *s = [ORTypeNode new];
     s.type = type;
     s.name = name;
     return s;
 }
 @end
-@implementation ORVariable
-+ (instancetype)copyFromVar:(ORVariable *)var{
-    ORVariable *new = [[self class] new];
+@implementation ORVariableNode
++ (instancetype)copyFromVar:(ORVariableNode *)var{
+    ORVariableNode *new = [[self class] new];
     new.ptCount = var.ptCount;
     new.varname = var.varname;
     new.isBlock = var.isBlock;
     return new;
 }
 @end
-@implementation ORTypeVarPair
-- (NSUInteger)hash{
-    return [self.var.varname hash];
-}
-- (BOOL)isEqual:(id)object{
-    return [self hash] == [object hash];
-}
-@end
-@implementation ORFuncVariable
-@end
-@implementation ORFuncDeclare
-- (BOOL)isBlockDeclare{
-    return self.funVar.isBlock;
-}
+@implementation ORFunctionDeclarator
 @end
 @implementation ORNode
 @end
@@ -71,10 +58,10 @@
     return _selectorName;
 }
 @end
-@implementation ORCFuncCall
+@implementation ORFunctionCall
 @end
 
-@implementation ORScopeImp
+@implementation ORBlockNode
 - (instancetype)init
 {
     self = [super init];
@@ -88,7 +75,7 @@
         [self.statements addObject:statements];
     }
 }
-- (void)copyFromImp:(ORScopeImp *)imp{
+- (void)copyFromImp:(ORBlockNode *)imp{
     self.statements = imp.statements;
 }
 
@@ -98,11 +85,11 @@
     ORFunctionImp *imp = [ORFunctionImp new];
     imp.declare = [self.declare copy];
     imp.scopeImp = self.scopeImp;
-    imp.declare.funVar.isBlock = NO;
+    imp.declare.isBlock = NO;
     return imp;
 }
 - (BOOL)isBlockImp{
-    return self.declare.funVar.isBlock;
+    return self.declare.isBlock;
 }
 @end
 @implementation ORSubscriptExpression
@@ -115,8 +102,17 @@
     return nil;
 }
 @end
-@implementation ORDeclareExpression
+@implementation ORDeclaratorNode
+- (NSUInteger)hash{
+    return [self.var.varname hash];
+}
+- (BOOL)isEqual:(id)object{
+    return [self hash] == [object hash];
+}
 @end
+@implementation ORInitDeclaratorNode
+@end
+
 @implementation ORUnaryExpression
 @end
 @implementation ORBinaryExpression
@@ -150,12 +146,9 @@
 @end
 @implementation ORForInStatement
 @end
-@implementation ORReturnStatement
+@implementation ORControlStatement
 @end
-@implementation ORBreakStatement
-@end
-@implementation ORContinueStatement
-@end
+
 @implementation ORPropertyDeclare
 - (MFPropertyModifier)modifier{
     NSDictionary *cache = @{
@@ -246,19 +239,19 @@
 }
 @end
 
-@implementation ORStructExpressoin
+@implementation ORStructStatNode
 
 @end
 
-@implementation ORUnionExpressoin
+@implementation ORUnionStatNode
 
 @end
 
-@implementation OREnumExpressoin
+@implementation OREnumStatNode
 
 @end
 
-@implementation ORTypedefExpressoin
+@implementation ORTypedefStatNode
 
 @end
 

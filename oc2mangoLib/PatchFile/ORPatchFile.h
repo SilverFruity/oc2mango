@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "RunnerClasses.h"
-#import "JSONPatchHelper.h"
-#import "BinaryPatchHelper.h"
+#import <ORPatchFile/JSONPatchHelper.h>
+#import <ORPatchFile/BinaryPatchHelper.h>
 
 NS_ASSUME_NONNULL_BEGIN
 BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint);
