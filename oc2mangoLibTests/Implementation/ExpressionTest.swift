@@ -126,7 +126,7 @@ class ExpressionTest: XCTestCase {
         
         let assign16 = ast.globalStatements[16] as? ORInitDeclaratorNode
         XCTAssert(assign16?.declarator.type.type == TypeObject)
-        let expresssion16 = assign16?.expression as? ORValueExpression
+        let expresssion16 = assign16?.expression as? ORValueNode
         XCTAssert(expresssion16?.value_type == OCValueString)
         XCTAssert(expresssion16?.value as? String == "123")
         
@@ -316,7 +316,7 @@ class ExpressionTest: XCTestCase {
         XCTAssert(ocparser.isSuccess())
         let call = ast.globalStatements as! [Any]
         let call1 = call.first! as! ORFunctionCall
-        XCTAssert(call1.caller.value as! String == "func")
+        XCTAssert((call1.caller as! ORValueNode) .value as! String == "func")
         XCTAssert(call1.expressions.count == 1)
         let binary = call1.expressions[0] as! ORBinaryExpression
         XCTAssert(binary.operatorType == BinaryOperatorMulti)
@@ -332,10 +332,23 @@ class ExpressionTest: XCTestCase {
         let ast = ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
         let call = (ast.globalStatements as! [Any]).first! as! ORFunctionCall
-        let param2 = call.expressions[2] as! ORFunctionImp
+        let param2 = call.expressions[2] as! ORFunctionNode
         XCTAssert(param2.declare.isBlock == true)
-        XCTAssert(param2.declare.returnNode.type.type == TypeVoid)
-        XCTAssert(param2.declare.declarators.count == 0)
+        XCTAssert(param2.declare.returnNode?.type.type == TypeVoid)
+        XCTAssert(param2.declare.params.count == 0)
+    }
+    
+    func testBlockDeclare(){
+        source =
+        """
+        int (^block)(int b, int a);
+        """
+        let ast = ocparser.parseSource(source);
+        XCTAssert(ocparser.isSuccess())
+        let node = (ast.globalStatements as! [Any]).first! as! ORInitDeclaratorNode
+        XCTAssert(node.declarator.var.isBlock)
+        let block = node.declarator.var as! ORFunctionDeclNode
+        XCTAssert(node.declarator.type.type == TypeInt)
     }
 
 }

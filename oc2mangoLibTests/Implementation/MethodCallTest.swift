@@ -51,20 +51,20 @@ completion(httpReponse,result,error);
     }
 
     func testClassCacheSort(){
-        let class0 = ORClass.init(className: "Class0")
+        let class0 = ORClassNode.init(className: "Class0")
         class0.superClassName = "NSObject"
-        let class1 = ORClass.init(className: "Class1")
+        let class1 = ORClassNode.init(className: "Class1")
         class1.superClassName = class0.className
-        let class2 = ORClass.init(className: "Class2")
+        let class2 = ORClassNode.init(className: "Class2")
         class2.superClassName = class1.className
-        let class3 = ORClass.init(className: "Class3")
+        let class3 = ORClassNode.init(className: "Class3")
         class3.superClassName = class1.className
-        let class4 = ORClass.init(className: "Class4")
+        let class4 = ORClassNode.init(className: "Class4")
         class4.superClassName = class0.className
-        let class5 = ORClass.init(className: "Class5")
+        let class5 = ORClassNode.init(className: "Class5")
         class5.superClassName = class3.className
         let arrs = [class0,class1,class2,class3,class4,class5]
-        var dict = [String:ORClass]()
+        var dict = [String:ORClassNode]()
         for item in arrs {
             dict[item.className] = item
         }
@@ -79,7 +79,7 @@ completion(httpReponse,result,error);
         let prorityDict = ["Class0":0,"Class1":1,"Class4":1,"Class3":2,"Class2":2,"Class5":3]
         let results = ast.sortClasses() as [Any]
         let prorities = results.map { (object) -> Int in
-            prorityDict[(object as! ORClass).className]!
+            prorityDict[(object as! ORClassNode).className]!
         }
         XCTAssert(prorities == [0, 1, 1, 2, 2, 3])
     }

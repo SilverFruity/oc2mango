@@ -125,7 +125,7 @@ int main(int argc, const char * argv[]) {
     
     Convert *convert = [[Convert alloc] init];
     __block NSError *error = nil;
-    [result.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClass* class, BOOL * _Nonnull stop) {
+    [result.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClassNode* class, BOOL * _Nonnull stop) {
         NSString *filename = [NSString stringWithFormat:@"%@.mg",key];
         NSString *filepath = [outputDir stringByAppendingPathComponent:filename];
         [[convert convert:class] writeToFile:filepath atomically:YES encoding:NSUTF8StringEncoding error:&error];

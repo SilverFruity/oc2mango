@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1614919207
+//  Created by Jiang on 1615026459
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -10,43 +10,43 @@ typedef enum: uint8_t{
     StringNodeType = 2,
     StringsNodeType = 3,
     ListNodeType = 4,
-    _ORTypeNodeNode = 5,
-    _ORVariableNodeNode = 6,
-    _ORDeclaratorNodeNode = 7,
-    _ORFunctionDeclaratorNode = 8,
-    _ORCArrayVariableNode = 9,
-    _ORBlockNodeNode = 10,
-    _ORValueExpressionNode = 11,
-    _ORIntegerValueNode = 12,
-    _ORUIntegerValueNode = 13,
-    _ORDoubleValueNode = 14,
-    _ORBoolValueNode = 15,
-    _ORMethodCallNode = 16,
-    _ORFunctionCallNode = 17,
-    _ORFunctionImpNode = 18,
-    _ORSubscriptExpressionNode = 19,
-    _ORAssignExpressionNode = 20,
-    _ORInitDeclaratorNodeNode = 21,
-    _ORUnaryExpressionNode = 22,
-    _ORBinaryExpressionNode = 23,
-    _ORTernaryExpressionNode = 24,
-    _ORIfStatementNode = 25,
-    _ORWhileStatementNode = 26,
-    _ORDoWhileStatementNode = 27,
-    _ORCaseStatementNode = 28,
-    _ORSwitchStatementNode = 29,
-    _ORForStatementNode = 30,
-    _ORForInStatementNode = 31,
-    _ORControlStatementNode = 32,
-    _ORPropertyDeclareNode = 33,
-    _ORMethodDeclareNode = 34,
-    _ORMethodImplementationNode = 35,
-    _ORClassNode = 36,
-    _ORProtocolNode = 37,
-    _ORStructStatNodeNode = 38,
-    _ORUnionStatNodeNode = 39,
-    _OREnumStatNodeNode = 40,
-    _ORTypedefStatNodeNode = 41,
+    _ORTypeNodeType = 5,
+    _ORVariableNodeType = 6,
+    _ORDeclaratorNodeType = 7,
+    _ORFunctionDeclNodeType = 8,
+    _ORCArrayVariableType = 9,
+    _ORBlockNodeType = 10,
+    _ORValueNodeType = 11,
+    _ORIntegerValueType = 12,
+    _ORUIntegerValueType = 13,
+    _ORDoubleValueType = 14,
+    _ORBoolValueType = 15,
+    _ORMethodCallType = 16,
+    _ORFunctionCallType = 17,
+    _ORFunctionNodeType = 18,
+    _ORSubscriptNodeType = 19,
+    _ORAssignExpressionType = 20,
+    _ORInitDeclaratorNodeType = 21,
+    _ORUnaryExpressionType = 22,
+    _ORBinaryExpressionType = 23,
+    _ORTernaryExpressionType = 24,
+    _ORIfStatementType = 25,
+    _ORWhileStatementType = 26,
+    _ORDoWhileStatementType = 27,
+    _ORCaseStatementType = 28,
+    _ORSwitchStatementType = 29,
+    _ORForStatementType = 30,
+    _ORForInStatementType = 31,
+    _ORControlStatNodeType = 32,
+    _ORPropertyNodeType = 33,
+    _ORMethodDeclNodeType = 34,
+    _ORMethodNodeType = 35,
+    _ORClassNodeType = 36,
+    _ORProtocolNodeType = 37,
+    _ORStructStatNodeType = 38,
+    _ORUnionStatNodeType = 39,
+    _OREnumStatNodeType = 40,
+    _ORTypedefStatNodeType = 41,
 
 }_NodeType;
 #pragma pack(1)
@@ -266,7 +266,7 @@ static uint32_t _ORTypeNodeBaseLength = 9;
 _ORTypeNode *_ORTypeNodeConvert(ORTypeNode *exp, _PatchNode *patch, uint32_t *length){
     _ORTypeNode *node = malloc(sizeof(_ORTypeNode));
     memset(node, 0, sizeof(_ORTypeNode));
-    node->nodeType = _ORTypeNodeNode;
+    node->nodeType = _ORTypeNodeType;
     node->type = exp.type;
     node->name = (_StringNode *)_ORNodeConvert(exp.name, patch, length);
     node->modifier = exp.modifier;
@@ -306,7 +306,7 @@ static uint32_t _ORVariableNodeBaseLength = 3;
 _ORVariableNode *_ORVariableNodeConvert(ORVariableNode *exp, _PatchNode *patch, uint32_t *length){
     _ORVariableNode *node = malloc(sizeof(_ORVariableNode));
     memset(node, 0, sizeof(_ORVariableNode));
-    node->nodeType = _ORVariableNodeNode;
+    node->nodeType = _ORVariableNodeType;
     node->isBlock = exp.isBlock;
     node->ptCount = exp.ptCount;
     node->varname = (_StringNode *)_ORNodeConvert(exp.varname, patch, length);
@@ -345,7 +345,7 @@ static uint32_t _ORDeclaratorNodeBaseLength = 1;
 _ORDeclaratorNode *_ORDeclaratorNodeConvert(ORDeclaratorNode *exp, _PatchNode *patch, uint32_t *length){
     _ORDeclaratorNode *node = malloc(sizeof(_ORDeclaratorNode));
     memset(node, 0, sizeof(_ORDeclaratorNode));
-    node->nodeType = _ORDeclaratorNodeNode;
+    node->nodeType = _ORDeclaratorNodeType;
     node->type = (_ORNode *)_ORNodeConvert(exp.type, patch, length);
     node->var = (_ORNode *)_ORNodeConvert(exp.var, patch, length);
     *length += _ORDeclaratorNodeBaseLength;
@@ -383,51 +383,51 @@ typedef struct {
     BOOL isMultiArgs;
     _StringNode * varname;
     _ORNode * returnNode;
-    _ListNode * declarators;
-}_ORFunctionDeclarator;
-static uint32_t _ORFunctionDeclaratorBaseLength = 4;
-_ORFunctionDeclarator *_ORFunctionDeclaratorConvert(ORFunctionDeclarator *exp, _PatchNode *patch, uint32_t *length){
-    _ORFunctionDeclarator *node = malloc(sizeof(_ORFunctionDeclarator));
-    memset(node, 0, sizeof(_ORFunctionDeclarator));
-    node->nodeType = _ORFunctionDeclaratorNode;
+    _ListNode * params;
+}_ORFunctionDeclNode;
+static uint32_t _ORFunctionDeclNodeBaseLength = 4;
+_ORFunctionDeclNode *_ORFunctionDeclNodeConvert(ORFunctionDeclNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORFunctionDeclNode *node = malloc(sizeof(_ORFunctionDeclNode));
+    memset(node, 0, sizeof(_ORFunctionDeclNode));
+    node->nodeType = _ORFunctionDeclNodeType;
     node->isBlock = exp.isBlock;
     node->ptCount = exp.ptCount;
     node->varname = (_StringNode *)_ORNodeConvert(exp.varname, patch, length);
     node->isMultiArgs = exp.isMultiArgs;
     node->returnNode = (_ORNode *)_ORNodeConvert(exp.returnNode, patch, length);
-    node->declarators = (_ListNode *)_ORNodeConvert(exp.declarators, patch, length);
-    *length += _ORFunctionDeclaratorBaseLength;
+    node->params = (_ListNode *)_ORNodeConvert(exp.params, patch, length);
+    *length += _ORFunctionDeclNodeBaseLength;
     return node;
 }
-ORFunctionDeclarator *_ORFunctionDeclaratorDeConvert(_ORFunctionDeclarator *node, _PatchNode *patch){
-    ORFunctionDeclarator *exp = [ORFunctionDeclarator new];
+ORFunctionDeclNode *_ORFunctionDeclNodeDeConvert(_ORFunctionDeclNode *node, _PatchNode *patch){
+    ORFunctionDeclNode *exp = [ORFunctionDeclNode new];
     exp.isBlock = node->isBlock;
     exp.ptCount = node->ptCount;
     exp.varname = (NSString *)_ORNodeDeConvert((_ORNode *)node->varname, patch);
     exp.isMultiArgs = node->isMultiArgs;
     exp.returnNode = (id)_ORNodeDeConvert((_ORNode *)node->returnNode, patch);
-    exp.declarators = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->declarators, patch);
+    exp.params = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->params, patch);
     return exp;
 }
-void _ORFunctionDeclaratorSerailization(_ORFunctionDeclarator *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORFunctionDeclaratorBaseLength);
-    *cursor += _ORFunctionDeclaratorBaseLength;
+void _ORFunctionDeclNodeSerailization(_ORFunctionDeclNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORFunctionDeclNodeBaseLength);
+    *cursor += _ORFunctionDeclNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->varname, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->returnNode, buffer, cursor);
-    _ORNodeSerailization((_ORNode *)node->declarators, buffer, cursor);
+    _ORNodeSerailization((_ORNode *)node->params, buffer, cursor);
 }
-_ORFunctionDeclarator *_ORFunctionDeclaratorDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORFunctionDeclarator *node = malloc(sizeof(_ORFunctionDeclarator));
-    memcpy(node, buffer + *cursor, _ORFunctionDeclaratorBaseLength);
-    *cursor += _ORFunctionDeclaratorBaseLength;
+_ORFunctionDeclNode *_ORFunctionDeclNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORFunctionDeclNode *node = malloc(sizeof(_ORFunctionDeclNode));
+    memcpy(node, buffer + *cursor, _ORFunctionDeclNodeBaseLength);
+    *cursor += _ORFunctionDeclNodeBaseLength;
     node->varname =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->returnNode =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
-    node->declarators =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
+    node->params =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORFunctionDeclaratorDestroy(_ORFunctionDeclarator *node){
+void _ORFunctionDeclNodeDestroy(_ORFunctionDeclNode *node){
     _ORNodeDestroy((_ORNode *)node->returnNode);
-    _ORNodeDestroy((_ORNode *)node->declarators);
+    _ORNodeDestroy((_ORNode *)node->params);
     free(node);
 }
 typedef struct {
@@ -441,7 +441,7 @@ static uint32_t _ORCArrayVariableBaseLength = 3;
 _ORCArrayVariable *_ORCArrayVariableConvert(ORCArrayVariable *exp, _PatchNode *patch, uint32_t *length){
     _ORCArrayVariable *node = malloc(sizeof(_ORCArrayVariable));
     memset(node, 0, sizeof(_ORCArrayVariable));
-    node->nodeType = _ORCArrayVariableNode;
+    node->nodeType = _ORCArrayVariableType;
     node->isBlock = exp.isBlock;
     node->ptCount = exp.ptCount;
     node->varname = (_StringNode *)_ORNodeConvert(exp.varname, patch, length);
@@ -483,7 +483,7 @@ static uint32_t _ORBlockNodeBaseLength = 1;
 _ORBlockNode *_ORBlockNodeConvert(ORBlockNode *exp, _PatchNode *patch, uint32_t *length){
     _ORBlockNode *node = malloc(sizeof(_ORBlockNode));
     memset(node, 0, sizeof(_ORBlockNode));
-    node->nodeType = _ORBlockNodeNode;
+    node->nodeType = _ORBlockNodeType;
     node->statements = (_ListNode *)_ORNodeConvert(exp.statements, patch, length);
     *length += _ORBlockNodeBaseLength;
     return node;
@@ -513,36 +513,36 @@ typedef struct {
     _ORNodeFields
     uint32_t value_type;
     _ORNode * value;
-}_ORValueExpression;
-static uint32_t _ORValueExpressionBaseLength = 5;
-_ORValueExpression *_ORValueExpressionConvert(ORValueExpression *exp, _PatchNode *patch, uint32_t *length){
-    _ORValueExpression *node = malloc(sizeof(_ORValueExpression));
-    memset(node, 0, sizeof(_ORValueExpression));
-    node->nodeType = _ORValueExpressionNode;
+}_ORValueNode;
+static uint32_t _ORValueNodeBaseLength = 5;
+_ORValueNode *_ORValueNodeConvert(ORValueNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORValueNode *node = malloc(sizeof(_ORValueNode));
+    memset(node, 0, sizeof(_ORValueNode));
+    node->nodeType = _ORValueNodeType;
     node->value_type = exp.value_type;
     node->value = (_ORNode *)_ORNodeConvert(exp.value, patch, length);
-    *length += _ORValueExpressionBaseLength;
+    *length += _ORValueNodeBaseLength;
     return node;
 }
-ORValueExpression *_ORValueExpressionDeConvert(_ORValueExpression *node, _PatchNode *patch){
-    ORValueExpression *exp = [ORValueExpression new];
+ORValueNode *_ORValueNodeDeConvert(_ORValueNode *node, _PatchNode *patch){
+    ORValueNode *exp = [ORValueNode new];
     exp.value_type = node->value_type;
     exp.value = (id)_ORNodeDeConvert((_ORNode *)node->value, patch);
     return exp;
 }
-void _ORValueExpressionSerailization(_ORValueExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORValueExpressionBaseLength);
-    *cursor += _ORValueExpressionBaseLength;
+void _ORValueNodeSerailization(_ORValueNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORValueNodeBaseLength);
+    *cursor += _ORValueNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->value, buffer, cursor);
 }
-_ORValueExpression *_ORValueExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORValueExpression *node = malloc(sizeof(_ORValueExpression));
-    memcpy(node, buffer + *cursor, _ORValueExpressionBaseLength);
-    *cursor += _ORValueExpressionBaseLength;
+_ORValueNode *_ORValueNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORValueNode *node = malloc(sizeof(_ORValueNode));
+    memcpy(node, buffer + *cursor, _ORValueNodeBaseLength);
+    *cursor += _ORValueNodeBaseLength;
     node->value =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORValueExpressionDestroy(_ORValueExpression *node){
+void _ORValueNodeDestroy(_ORValueNode *node){
     _ORNodeDestroy((_ORNode *)node->value);
     free(node);
 }
@@ -554,7 +554,7 @@ static uint32_t _ORIntegerValueBaseLength = 9;
 _ORIntegerValue *_ORIntegerValueConvert(ORIntegerValue *exp, _PatchNode *patch, uint32_t *length){
     _ORIntegerValue *node = malloc(sizeof(_ORIntegerValue));
     memset(node, 0, sizeof(_ORIntegerValue));
-    node->nodeType = _ORIntegerValueNode;
+    node->nodeType = _ORIntegerValueType;
     node->value = exp.value;
     *length += _ORIntegerValueBaseLength;
     return node;
@@ -588,7 +588,7 @@ static uint32_t _ORUIntegerValueBaseLength = 9;
 _ORUIntegerValue *_ORUIntegerValueConvert(ORUIntegerValue *exp, _PatchNode *patch, uint32_t *length){
     _ORUIntegerValue *node = malloc(sizeof(_ORUIntegerValue));
     memset(node, 0, sizeof(_ORUIntegerValue));
-    node->nodeType = _ORUIntegerValueNode;
+    node->nodeType = _ORUIntegerValueType;
     node->value = exp.value;
     *length += _ORUIntegerValueBaseLength;
     return node;
@@ -622,7 +622,7 @@ static uint32_t _ORDoubleValueBaseLength = 9;
 _ORDoubleValue *_ORDoubleValueConvert(ORDoubleValue *exp, _PatchNode *patch, uint32_t *length){
     _ORDoubleValue *node = malloc(sizeof(_ORDoubleValue));
     memset(node, 0, sizeof(_ORDoubleValue));
-    node->nodeType = _ORDoubleValueNode;
+    node->nodeType = _ORDoubleValueType;
     node->value = exp.value;
     *length += _ORDoubleValueBaseLength;
     return node;
@@ -656,7 +656,7 @@ static uint32_t _ORBoolValueBaseLength = 2;
 _ORBoolValue *_ORBoolValueConvert(ORBoolValue *exp, _PatchNode *patch, uint32_t *length){
     _ORBoolValue *node = malloc(sizeof(_ORBoolValue));
     memset(node, 0, sizeof(_ORBoolValue));
-    node->nodeType = _ORBoolValueNode;
+    node->nodeType = _ORBoolValueType;
     node->value = exp.value;
     *length += _ORBoolValueBaseLength;
     return node;
@@ -694,7 +694,7 @@ static uint32_t _ORMethodCallBaseLength = 3;
 _ORMethodCall *_ORMethodCallConvert(ORMethodCall *exp, _PatchNode *patch, uint32_t *length){
     _ORMethodCall *node = malloc(sizeof(_ORMethodCall));
     memset(node, 0, sizeof(_ORMethodCall));
-    node->nodeType = _ORMethodCallNode;
+    node->nodeType = _ORMethodCallType;
     node->methodOperator = exp.methodOperator;
     node->isAssignedValue = exp.isAssignedValue;
     node->caller = (_ORNode *)_ORNodeConvert(exp.caller, patch, length);
@@ -743,7 +743,7 @@ static uint32_t _ORFunctionCallBaseLength = 1;
 _ORFunctionCall *_ORFunctionCallConvert(ORFunctionCall *exp, _PatchNode *patch, uint32_t *length){
     _ORFunctionCall *node = malloc(sizeof(_ORFunctionCall));
     memset(node, 0, sizeof(_ORFunctionCall));
-    node->nodeType = _ORFunctionCallNode;
+    node->nodeType = _ORFunctionCallType;
     node->caller = (_ORNode *)_ORNodeConvert(exp.caller, patch, length);
     node->expressions = (_ListNode *)_ORNodeConvert(exp.expressions, patch, length);
     *length += _ORFunctionCallBaseLength;
@@ -778,38 +778,38 @@ typedef struct {
     _ORNodeFields
     _ORNode * declare;
     _ORNode * scopeImp;
-}_ORFunctionImp;
-static uint32_t _ORFunctionImpBaseLength = 1;
-_ORFunctionImp *_ORFunctionImpConvert(ORFunctionImp *exp, _PatchNode *patch, uint32_t *length){
-    _ORFunctionImp *node = malloc(sizeof(_ORFunctionImp));
-    memset(node, 0, sizeof(_ORFunctionImp));
-    node->nodeType = _ORFunctionImpNode;
+}_ORFunctionNode;
+static uint32_t _ORFunctionNodeBaseLength = 1;
+_ORFunctionNode *_ORFunctionNodeConvert(ORFunctionNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORFunctionNode *node = malloc(sizeof(_ORFunctionNode));
+    memset(node, 0, sizeof(_ORFunctionNode));
+    node->nodeType = _ORFunctionNodeType;
     node->declare = (_ORNode *)_ORNodeConvert(exp.declare, patch, length);
     node->scopeImp = (_ORNode *)_ORNodeConvert(exp.scopeImp, patch, length);
-    *length += _ORFunctionImpBaseLength;
+    *length += _ORFunctionNodeBaseLength;
     return node;
 }
-ORFunctionImp *_ORFunctionImpDeConvert(_ORFunctionImp *node, _PatchNode *patch){
-    ORFunctionImp *exp = [ORFunctionImp new];
+ORFunctionNode *_ORFunctionNodeDeConvert(_ORFunctionNode *node, _PatchNode *patch){
+    ORFunctionNode *exp = [ORFunctionNode new];
     exp.declare = (id)_ORNodeDeConvert((_ORNode *)node->declare, patch);
     exp.scopeImp = (id)_ORNodeDeConvert((_ORNode *)node->scopeImp, patch);
     return exp;
 }
-void _ORFunctionImpSerailization(_ORFunctionImp *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORFunctionImpBaseLength);
-    *cursor += _ORFunctionImpBaseLength;
+void _ORFunctionNodeSerailization(_ORFunctionNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORFunctionNodeBaseLength);
+    *cursor += _ORFunctionNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->declare, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->scopeImp, buffer, cursor);
 }
-_ORFunctionImp *_ORFunctionImpDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORFunctionImp *node = malloc(sizeof(_ORFunctionImp));
-    memcpy(node, buffer + *cursor, _ORFunctionImpBaseLength);
-    *cursor += _ORFunctionImpBaseLength;
+_ORFunctionNode *_ORFunctionNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORFunctionNode *node = malloc(sizeof(_ORFunctionNode));
+    memcpy(node, buffer + *cursor, _ORFunctionNodeBaseLength);
+    *cursor += _ORFunctionNodeBaseLength;
     node->declare =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->scopeImp =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORFunctionImpDestroy(_ORFunctionImp *node){
+void _ORFunctionNodeDestroy(_ORFunctionNode *node){
     _ORNodeDestroy((_ORNode *)node->declare);
     _ORNodeDestroy((_ORNode *)node->scopeImp);
     free(node);
@@ -818,38 +818,38 @@ typedef struct {
     _ORNodeFields
     _ORNode * caller;
     _ORNode * keyExp;
-}_ORSubscriptExpression;
-static uint32_t _ORSubscriptExpressionBaseLength = 1;
-_ORSubscriptExpression *_ORSubscriptExpressionConvert(ORSubscriptExpression *exp, _PatchNode *patch, uint32_t *length){
-    _ORSubscriptExpression *node = malloc(sizeof(_ORSubscriptExpression));
-    memset(node, 0, sizeof(_ORSubscriptExpression));
-    node->nodeType = _ORSubscriptExpressionNode;
+}_ORSubscriptNode;
+static uint32_t _ORSubscriptNodeBaseLength = 1;
+_ORSubscriptNode *_ORSubscriptNodeConvert(ORSubscriptNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORSubscriptNode *node = malloc(sizeof(_ORSubscriptNode));
+    memset(node, 0, sizeof(_ORSubscriptNode));
+    node->nodeType = _ORSubscriptNodeType;
     node->caller = (_ORNode *)_ORNodeConvert(exp.caller, patch, length);
     node->keyExp = (_ORNode *)_ORNodeConvert(exp.keyExp, patch, length);
-    *length += _ORSubscriptExpressionBaseLength;
+    *length += _ORSubscriptNodeBaseLength;
     return node;
 }
-ORSubscriptExpression *_ORSubscriptExpressionDeConvert(_ORSubscriptExpression *node, _PatchNode *patch){
-    ORSubscriptExpression *exp = [ORSubscriptExpression new];
+ORSubscriptNode *_ORSubscriptNodeDeConvert(_ORSubscriptNode *node, _PatchNode *patch){
+    ORSubscriptNode *exp = [ORSubscriptNode new];
     exp.caller = (id)_ORNodeDeConvert((_ORNode *)node->caller, patch);
     exp.keyExp = (id)_ORNodeDeConvert((_ORNode *)node->keyExp, patch);
     return exp;
 }
-void _ORSubscriptExpressionSerailization(_ORSubscriptExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORSubscriptExpressionBaseLength);
-    *cursor += _ORSubscriptExpressionBaseLength;
+void _ORSubscriptNodeSerailization(_ORSubscriptNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORSubscriptNodeBaseLength);
+    *cursor += _ORSubscriptNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->caller, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->keyExp, buffer, cursor);
 }
-_ORSubscriptExpression *_ORSubscriptExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORSubscriptExpression *node = malloc(sizeof(_ORSubscriptExpression));
-    memcpy(node, buffer + *cursor, _ORSubscriptExpressionBaseLength);
-    *cursor += _ORSubscriptExpressionBaseLength;
+_ORSubscriptNode *_ORSubscriptNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORSubscriptNode *node = malloc(sizeof(_ORSubscriptNode));
+    memcpy(node, buffer + *cursor, _ORSubscriptNodeBaseLength);
+    *cursor += _ORSubscriptNodeBaseLength;
     node->caller =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->keyExp =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORSubscriptExpressionDestroy(_ORSubscriptExpression *node){
+void _ORSubscriptNodeDestroy(_ORSubscriptNode *node){
     _ORNodeDestroy((_ORNode *)node->caller);
     _ORNodeDestroy((_ORNode *)node->keyExp);
     free(node);
@@ -864,7 +864,7 @@ static uint32_t _ORAssignExpressionBaseLength = 5;
 _ORAssignExpression *_ORAssignExpressionConvert(ORAssignExpression *exp, _PatchNode *patch, uint32_t *length){
     _ORAssignExpression *node = malloc(sizeof(_ORAssignExpression));
     memset(node, 0, sizeof(_ORAssignExpression));
-    node->nodeType = _ORAssignExpressionNode;
+    node->nodeType = _ORAssignExpressionType;
     node->assignType = exp.assignType;
     node->value = (_ORNode *)_ORNodeConvert(exp.value, patch, length);
     node->expression = (_ORNode *)_ORNodeConvert(exp.expression, patch, length);
@@ -906,7 +906,7 @@ static uint32_t _ORInitDeclaratorNodeBaseLength = 1;
 _ORInitDeclaratorNode *_ORInitDeclaratorNodeConvert(ORInitDeclaratorNode *exp, _PatchNode *patch, uint32_t *length){
     _ORInitDeclaratorNode *node = malloc(sizeof(_ORInitDeclaratorNode));
     memset(node, 0, sizeof(_ORInitDeclaratorNode));
-    node->nodeType = _ORInitDeclaratorNodeNode;
+    node->nodeType = _ORInitDeclaratorNodeType;
     node->declarator = (_ORNode *)_ORNodeConvert(exp.declarator, patch, length);
     node->expression = (_ORNode *)_ORNodeConvert(exp.expression, patch, length);
     *length += _ORInitDeclaratorNodeBaseLength;
@@ -946,7 +946,7 @@ static uint32_t _ORUnaryExpressionBaseLength = 5;
 _ORUnaryExpression *_ORUnaryExpressionConvert(ORUnaryExpression *exp, _PatchNode *patch, uint32_t *length){
     _ORUnaryExpression *node = malloc(sizeof(_ORUnaryExpression));
     memset(node, 0, sizeof(_ORUnaryExpression));
-    node->nodeType = _ORUnaryExpressionNode;
+    node->nodeType = _ORUnaryExpressionType;
     node->operatorType = exp.operatorType;
     node->value = (_ORNode *)_ORNodeConvert(exp.value, patch, length);
     *length += _ORUnaryExpressionBaseLength;
@@ -984,7 +984,7 @@ static uint32_t _ORBinaryExpressionBaseLength = 5;
 _ORBinaryExpression *_ORBinaryExpressionConvert(ORBinaryExpression *exp, _PatchNode *patch, uint32_t *length){
     _ORBinaryExpression *node = malloc(sizeof(_ORBinaryExpression));
     memset(node, 0, sizeof(_ORBinaryExpression));
-    node->nodeType = _ORBinaryExpressionNode;
+    node->nodeType = _ORBinaryExpressionType;
     node->operatorType = exp.operatorType;
     node->left = (_ORNode *)_ORNodeConvert(exp.left, patch, length);
     node->right = (_ORNode *)_ORNodeConvert(exp.right, patch, length);
@@ -1026,7 +1026,7 @@ static uint32_t _ORTernaryExpressionBaseLength = 1;
 _ORTernaryExpression *_ORTernaryExpressionConvert(ORTernaryExpression *exp, _PatchNode *patch, uint32_t *length){
     _ORTernaryExpression *node = malloc(sizeof(_ORTernaryExpression));
     memset(node, 0, sizeof(_ORTernaryExpression));
-    node->nodeType = _ORTernaryExpressionNode;
+    node->nodeType = _ORTernaryExpressionType;
     node->expression = (_ORNode *)_ORNodeConvert(exp.expression, patch, length);
     node->values = (_ListNode *)_ORNodeConvert(exp.values, patch, length);
     *length += _ORTernaryExpressionBaseLength;
@@ -1067,7 +1067,7 @@ static uint32_t _ORIfStatementBaseLength = 1;
 _ORIfStatement *_ORIfStatementConvert(ORIfStatement *exp, _PatchNode *patch, uint32_t *length){
     _ORIfStatement *node = malloc(sizeof(_ORIfStatement));
     memset(node, 0, sizeof(_ORIfStatement));
-    node->nodeType = _ORIfStatementNode;
+    node->nodeType = _ORIfStatementType;
     node->condition = (_ORNode *)_ORNodeConvert(exp.condition, patch, length);
     node->last = (_ORNode *)_ORNodeConvert(exp.last, patch, length);
     node->scopeImp = (_ORNode *)_ORNodeConvert(exp.scopeImp, patch, length);
@@ -1112,7 +1112,7 @@ static uint32_t _ORWhileStatementBaseLength = 1;
 _ORWhileStatement *_ORWhileStatementConvert(ORWhileStatement *exp, _PatchNode *patch, uint32_t *length){
     _ORWhileStatement *node = malloc(sizeof(_ORWhileStatement));
     memset(node, 0, sizeof(_ORWhileStatement));
-    node->nodeType = _ORWhileStatementNode;
+    node->nodeType = _ORWhileStatementType;
     node->condition = (_ORNode *)_ORNodeConvert(exp.condition, patch, length);
     node->scopeImp = (_ORNode *)_ORNodeConvert(exp.scopeImp, patch, length);
     *length += _ORWhileStatementBaseLength;
@@ -1152,7 +1152,7 @@ static uint32_t _ORDoWhileStatementBaseLength = 1;
 _ORDoWhileStatement *_ORDoWhileStatementConvert(ORDoWhileStatement *exp, _PatchNode *patch, uint32_t *length){
     _ORDoWhileStatement *node = malloc(sizeof(_ORDoWhileStatement));
     memset(node, 0, sizeof(_ORDoWhileStatement));
-    node->nodeType = _ORDoWhileStatementNode;
+    node->nodeType = _ORDoWhileStatementType;
     node->condition = (_ORNode *)_ORNodeConvert(exp.condition, patch, length);
     node->scopeImp = (_ORNode *)_ORNodeConvert(exp.scopeImp, patch, length);
     *length += _ORDoWhileStatementBaseLength;
@@ -1192,7 +1192,7 @@ static uint32_t _ORCaseStatementBaseLength = 1;
 _ORCaseStatement *_ORCaseStatementConvert(ORCaseStatement *exp, _PatchNode *patch, uint32_t *length){
     _ORCaseStatement *node = malloc(sizeof(_ORCaseStatement));
     memset(node, 0, sizeof(_ORCaseStatement));
-    node->nodeType = _ORCaseStatementNode;
+    node->nodeType = _ORCaseStatementType;
     node->value = (_ORNode *)_ORNodeConvert(exp.value, patch, length);
     node->scopeImp = (_ORNode *)_ORNodeConvert(exp.scopeImp, patch, length);
     *length += _ORCaseStatementBaseLength;
@@ -1233,7 +1233,7 @@ static uint32_t _ORSwitchStatementBaseLength = 1;
 _ORSwitchStatement *_ORSwitchStatementConvert(ORSwitchStatement *exp, _PatchNode *patch, uint32_t *length){
     _ORSwitchStatement *node = malloc(sizeof(_ORSwitchStatement));
     memset(node, 0, sizeof(_ORSwitchStatement));
-    node->nodeType = _ORSwitchStatementNode;
+    node->nodeType = _ORSwitchStatementType;
     node->value = (_ORNode *)_ORNodeConvert(exp.value, patch, length);
     node->cases = (_ListNode *)_ORNodeConvert(exp.cases, patch, length);
     node->scopeImp = (_ORNode *)_ORNodeConvert(exp.scopeImp, patch, length);
@@ -1280,7 +1280,7 @@ static uint32_t _ORForStatementBaseLength = 1;
 _ORForStatement *_ORForStatementConvert(ORForStatement *exp, _PatchNode *patch, uint32_t *length){
     _ORForStatement *node = malloc(sizeof(_ORForStatement));
     memset(node, 0, sizeof(_ORForStatement));
-    node->nodeType = _ORForStatementNode;
+    node->nodeType = _ORForStatementType;
     node->varExpressions = (_ListNode *)_ORNodeConvert(exp.varExpressions, patch, length);
     node->condition = (_ORNode *)_ORNodeConvert(exp.condition, patch, length);
     node->expressions = (_ListNode *)_ORNodeConvert(exp.expressions, patch, length);
@@ -1331,7 +1331,7 @@ static uint32_t _ORForInStatementBaseLength = 1;
 _ORForInStatement *_ORForInStatementConvert(ORForInStatement *exp, _PatchNode *patch, uint32_t *length){
     _ORForInStatement *node = malloc(sizeof(_ORForInStatement));
     memset(node, 0, sizeof(_ORForInStatement));
-    node->nodeType = _ORForInStatementNode;
+    node->nodeType = _ORForInStatementType;
     node->expression = (_ORNode *)_ORNodeConvert(exp.expression, patch, length);
     node->value = (_ORNode *)_ORNodeConvert(exp.value, patch, length);
     node->scopeImp = (_ORNode *)_ORNodeConvert(exp.scopeImp, patch, length);
@@ -1371,36 +1371,36 @@ typedef struct {
     _ORNodeFields
     uint64_t type;
     _ORNode * expression;
-}_ORControlStatement;
-static uint32_t _ORControlStatementBaseLength = 9;
-_ORControlStatement *_ORControlStatementConvert(ORControlStatement *exp, _PatchNode *patch, uint32_t *length){
-    _ORControlStatement *node = malloc(sizeof(_ORControlStatement));
-    memset(node, 0, sizeof(_ORControlStatement));
-    node->nodeType = _ORControlStatementNode;
+}_ORControlStatNode;
+static uint32_t _ORControlStatNodeBaseLength = 9;
+_ORControlStatNode *_ORControlStatNodeConvert(ORControlStatNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORControlStatNode *node = malloc(sizeof(_ORControlStatNode));
+    memset(node, 0, sizeof(_ORControlStatNode));
+    node->nodeType = _ORControlStatNodeType;
     node->type = exp.type;
     node->expression = (_ORNode *)_ORNodeConvert(exp.expression, patch, length);
-    *length += _ORControlStatementBaseLength;
+    *length += _ORControlStatNodeBaseLength;
     return node;
 }
-ORControlStatement *_ORControlStatementDeConvert(_ORControlStatement *node, _PatchNode *patch){
-    ORControlStatement *exp = [ORControlStatement new];
+ORControlStatNode *_ORControlStatNodeDeConvert(_ORControlStatNode *node, _PatchNode *patch){
+    ORControlStatNode *exp = [ORControlStatNode new];
     exp.type = node->type;
     exp.expression = (id)_ORNodeDeConvert((_ORNode *)node->expression, patch);
     return exp;
 }
-void _ORControlStatementSerailization(_ORControlStatement *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORControlStatementBaseLength);
-    *cursor += _ORControlStatementBaseLength;
+void _ORControlStatNodeSerailization(_ORControlStatNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORControlStatNodeBaseLength);
+    *cursor += _ORControlStatNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->expression, buffer, cursor);
 }
-_ORControlStatement *_ORControlStatementDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORControlStatement *node = malloc(sizeof(_ORControlStatement));
-    memcpy(node, buffer + *cursor, _ORControlStatementBaseLength);
-    *cursor += _ORControlStatementBaseLength;
+_ORControlStatNode *_ORControlStatNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORControlStatNode *node = malloc(sizeof(_ORControlStatNode));
+    memcpy(node, buffer + *cursor, _ORControlStatNodeBaseLength);
+    *cursor += _ORControlStatNodeBaseLength;
     node->expression =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORControlStatementDestroy(_ORControlStatement *node){
+void _ORControlStatNodeDestroy(_ORControlStatNode *node){
     _ORNodeDestroy((_ORNode *)node->expression);
     free(node);
 }
@@ -1408,38 +1408,38 @@ typedef struct {
     _ORNodeFields
     _ListNode * keywords;
     _ORNode * var;
-}_ORPropertyDeclare;
-static uint32_t _ORPropertyDeclareBaseLength = 1;
-_ORPropertyDeclare *_ORPropertyDeclareConvert(ORPropertyDeclare *exp, _PatchNode *patch, uint32_t *length){
-    _ORPropertyDeclare *node = malloc(sizeof(_ORPropertyDeclare));
-    memset(node, 0, sizeof(_ORPropertyDeclare));
-    node->nodeType = _ORPropertyDeclareNode;
+}_ORPropertyNode;
+static uint32_t _ORPropertyNodeBaseLength = 1;
+_ORPropertyNode *_ORPropertyNodeConvert(ORPropertyNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORPropertyNode *node = malloc(sizeof(_ORPropertyNode));
+    memset(node, 0, sizeof(_ORPropertyNode));
+    node->nodeType = _ORPropertyNodeType;
     node->keywords = (_ListNode *)_ORNodeConvert(exp.keywords, patch, length);
     node->var = (_ORNode *)_ORNodeConvert(exp.var, patch, length);
-    *length += _ORPropertyDeclareBaseLength;
+    *length += _ORPropertyNodeBaseLength;
     return node;
 }
-ORPropertyDeclare *_ORPropertyDeclareDeConvert(_ORPropertyDeclare *node, _PatchNode *patch){
-    ORPropertyDeclare *exp = [ORPropertyDeclare new];
+ORPropertyNode *_ORPropertyNodeDeConvert(_ORPropertyNode *node, _PatchNode *patch){
+    ORPropertyNode *exp = [ORPropertyNode new];
     exp.keywords = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->keywords, patch);
     exp.var = (id)_ORNodeDeConvert((_ORNode *)node->var, patch);
     return exp;
 }
-void _ORPropertyDeclareSerailization(_ORPropertyDeclare *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORPropertyDeclareBaseLength);
-    *cursor += _ORPropertyDeclareBaseLength;
+void _ORPropertyNodeSerailization(_ORPropertyNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORPropertyNodeBaseLength);
+    *cursor += _ORPropertyNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->keywords, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->var, buffer, cursor);
 }
-_ORPropertyDeclare *_ORPropertyDeclareDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORPropertyDeclare *node = malloc(sizeof(_ORPropertyDeclare));
-    memcpy(node, buffer + *cursor, _ORPropertyDeclareBaseLength);
-    *cursor += _ORPropertyDeclareBaseLength;
+_ORPropertyNode *_ORPropertyNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORPropertyNode *node = malloc(sizeof(_ORPropertyNode));
+    memcpy(node, buffer + *cursor, _ORPropertyNodeBaseLength);
+    *cursor += _ORPropertyNodeBaseLength;
     node->keywords =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->var =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORPropertyDeclareDestroy(_ORPropertyDeclare *node){
+void _ORPropertyNodeDestroy(_ORPropertyNode *node){
     _ORNodeDestroy((_ORNode *)node->keywords);
     _ORNodeDestroy((_ORNode *)node->var);
     free(node);
@@ -1451,22 +1451,22 @@ typedef struct {
     _ListNode * methodNames;
     _ListNode * parameterTypes;
     _ListNode * parameterNames;
-}_ORMethodDeclare;
-static uint32_t _ORMethodDeclareBaseLength = 2;
-_ORMethodDeclare *_ORMethodDeclareConvert(ORMethodDeclare *exp, _PatchNode *patch, uint32_t *length){
-    _ORMethodDeclare *node = malloc(sizeof(_ORMethodDeclare));
-    memset(node, 0, sizeof(_ORMethodDeclare));
-    node->nodeType = _ORMethodDeclareNode;
+}_ORMethodDeclNode;
+static uint32_t _ORMethodDeclNodeBaseLength = 2;
+_ORMethodDeclNode *_ORMethodDeclNodeConvert(ORMethodDeclNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORMethodDeclNode *node = malloc(sizeof(_ORMethodDeclNode));
+    memset(node, 0, sizeof(_ORMethodDeclNode));
+    node->nodeType = _ORMethodDeclNodeType;
     node->isClassMethod = exp.isClassMethod;
     node->returnType = (_ORNode *)_ORNodeConvert(exp.returnType, patch, length);
     node->methodNames = (_ListNode *)_ORNodeConvert(exp.methodNames, patch, length);
     node->parameterTypes = (_ListNode *)_ORNodeConvert(exp.parameterTypes, patch, length);
     node->parameterNames = (_ListNode *)_ORNodeConvert(exp.parameterNames, patch, length);
-    *length += _ORMethodDeclareBaseLength;
+    *length += _ORMethodDeclNodeBaseLength;
     return node;
 }
-ORMethodDeclare *_ORMethodDeclareDeConvert(_ORMethodDeclare *node, _PatchNode *patch){
-    ORMethodDeclare *exp = [ORMethodDeclare new];
+ORMethodDeclNode *_ORMethodDeclNodeDeConvert(_ORMethodDeclNode *node, _PatchNode *patch){
+    ORMethodDeclNode *exp = [ORMethodDeclNode new];
     exp.isClassMethod = node->isClassMethod;
     exp.returnType = (id)_ORNodeDeConvert((_ORNode *)node->returnType, patch);
     exp.methodNames = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->methodNames, patch);
@@ -1474,25 +1474,25 @@ ORMethodDeclare *_ORMethodDeclareDeConvert(_ORMethodDeclare *node, _PatchNode *p
     exp.parameterNames = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->parameterNames, patch);
     return exp;
 }
-void _ORMethodDeclareSerailization(_ORMethodDeclare *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORMethodDeclareBaseLength);
-    *cursor += _ORMethodDeclareBaseLength;
+void _ORMethodDeclNodeSerailization(_ORMethodDeclNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORMethodDeclNodeBaseLength);
+    *cursor += _ORMethodDeclNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->returnType, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->methodNames, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->parameterTypes, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->parameterNames, buffer, cursor);
 }
-_ORMethodDeclare *_ORMethodDeclareDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORMethodDeclare *node = malloc(sizeof(_ORMethodDeclare));
-    memcpy(node, buffer + *cursor, _ORMethodDeclareBaseLength);
-    *cursor += _ORMethodDeclareBaseLength;
+_ORMethodDeclNode *_ORMethodDeclNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORMethodDeclNode *node = malloc(sizeof(_ORMethodDeclNode));
+    memcpy(node, buffer + *cursor, _ORMethodDeclNodeBaseLength);
+    *cursor += _ORMethodDeclNodeBaseLength;
     node->returnType =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->methodNames =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->parameterTypes =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->parameterNames =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORMethodDeclareDestroy(_ORMethodDeclare *node){
+void _ORMethodDeclNodeDestroy(_ORMethodDeclNode *node){
     _ORNodeDestroy((_ORNode *)node->returnType);
     _ORNodeDestroy((_ORNode *)node->methodNames);
     _ORNodeDestroy((_ORNode *)node->parameterTypes);
@@ -1503,38 +1503,38 @@ typedef struct {
     _ORNodeFields
     _ORNode * declare;
     _ORNode * scopeImp;
-}_ORMethodImplementation;
-static uint32_t _ORMethodImplementationBaseLength = 1;
-_ORMethodImplementation *_ORMethodImplementationConvert(ORMethodImplementation *exp, _PatchNode *patch, uint32_t *length){
-    _ORMethodImplementation *node = malloc(sizeof(_ORMethodImplementation));
-    memset(node, 0, sizeof(_ORMethodImplementation));
-    node->nodeType = _ORMethodImplementationNode;
+}_ORMethodNode;
+static uint32_t _ORMethodNodeBaseLength = 1;
+_ORMethodNode *_ORMethodNodeConvert(ORMethodNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORMethodNode *node = malloc(sizeof(_ORMethodNode));
+    memset(node, 0, sizeof(_ORMethodNode));
+    node->nodeType = _ORMethodNodeType;
     node->declare = (_ORNode *)_ORNodeConvert(exp.declare, patch, length);
     node->scopeImp = (_ORNode *)_ORNodeConvert(exp.scopeImp, patch, length);
-    *length += _ORMethodImplementationBaseLength;
+    *length += _ORMethodNodeBaseLength;
     return node;
 }
-ORMethodImplementation *_ORMethodImplementationDeConvert(_ORMethodImplementation *node, _PatchNode *patch){
-    ORMethodImplementation *exp = [ORMethodImplementation new];
+ORMethodNode *_ORMethodNodeDeConvert(_ORMethodNode *node, _PatchNode *patch){
+    ORMethodNode *exp = [ORMethodNode new];
     exp.declare = (id)_ORNodeDeConvert((_ORNode *)node->declare, patch);
     exp.scopeImp = (id)_ORNodeDeConvert((_ORNode *)node->scopeImp, patch);
     return exp;
 }
-void _ORMethodImplementationSerailization(_ORMethodImplementation *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORMethodImplementationBaseLength);
-    *cursor += _ORMethodImplementationBaseLength;
+void _ORMethodNodeSerailization(_ORMethodNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORMethodNodeBaseLength);
+    *cursor += _ORMethodNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->declare, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->scopeImp, buffer, cursor);
 }
-_ORMethodImplementation *_ORMethodImplementationDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORMethodImplementation *node = malloc(sizeof(_ORMethodImplementation));
-    memcpy(node, buffer + *cursor, _ORMethodImplementationBaseLength);
-    *cursor += _ORMethodImplementationBaseLength;
+_ORMethodNode *_ORMethodNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORMethodNode *node = malloc(sizeof(_ORMethodNode));
+    memcpy(node, buffer + *cursor, _ORMethodNodeBaseLength);
+    *cursor += _ORMethodNodeBaseLength;
     node->declare =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->scopeImp =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORMethodImplementationDestroy(_ORMethodImplementation *node){
+void _ORMethodNodeDestroy(_ORMethodNode *node){
     _ORNodeDestroy((_ORNode *)node->declare);
     _ORNodeDestroy((_ORNode *)node->scopeImp);
     free(node);
@@ -1547,23 +1547,23 @@ typedef struct {
     _ListNode * properties;
     _ListNode * privateVariables;
     _ListNode * methods;
-}_ORClass;
-static uint32_t _ORClassBaseLength = 1;
-_ORClass *_ORClassConvert(ORClass *exp, _PatchNode *patch, uint32_t *length){
-    _ORClass *node = malloc(sizeof(_ORClass));
-    memset(node, 0, sizeof(_ORClass));
-    node->nodeType = _ORClassNode;
+}_ORClassNode;
+static uint32_t _ORClassNodeBaseLength = 1;
+_ORClassNode *_ORClassNodeConvert(ORClassNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORClassNode *node = malloc(sizeof(_ORClassNode));
+    memset(node, 0, sizeof(_ORClassNode));
+    node->nodeType = _ORClassNodeType;
     node->className = (_StringNode *)_ORNodeConvert(exp.className, patch, length);
     node->superClassName = (_StringNode *)_ORNodeConvert(exp.superClassName, patch, length);
     node->protocols = (_ListNode *)_ORNodeConvert(exp.protocols, patch, length);
     node->properties = (_ListNode *)_ORNodeConvert(exp.properties, patch, length);
     node->privateVariables = (_ListNode *)_ORNodeConvert(exp.privateVariables, patch, length);
     node->methods = (_ListNode *)_ORNodeConvert(exp.methods, patch, length);
-    *length += _ORClassBaseLength;
+    *length += _ORClassNodeBaseLength;
     return node;
 }
-ORClass *_ORClassDeConvert(_ORClass *node, _PatchNode *patch){
-    ORClass *exp = [ORClass new];
+ORClassNode *_ORClassNodeDeConvert(_ORClassNode *node, _PatchNode *patch){
+    ORClassNode *exp = [ORClassNode new];
     exp.className = (NSString *)_ORNodeDeConvert((_ORNode *)node->className, patch);
     exp.superClassName = (NSString *)_ORNodeDeConvert((_ORNode *)node->superClassName, patch);
     exp.protocols = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->protocols, patch);
@@ -1572,9 +1572,9 @@ ORClass *_ORClassDeConvert(_ORClass *node, _PatchNode *patch){
     exp.methods = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->methods, patch);
     return exp;
 }
-void _ORClassSerailization(_ORClass *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORClassBaseLength);
-    *cursor += _ORClassBaseLength;
+void _ORClassNodeSerailization(_ORClassNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORClassNodeBaseLength);
+    *cursor += _ORClassNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->className, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->superClassName, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->protocols, buffer, cursor);
@@ -1582,10 +1582,10 @@ void _ORClassSerailization(_ORClass *node, void *buffer, uint32_t *cursor){
     _ORNodeSerailization((_ORNode *)node->privateVariables, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->methods, buffer, cursor);
 }
-_ORClass *_ORClassDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORClass *node = malloc(sizeof(_ORClass));
-    memcpy(node, buffer + *cursor, _ORClassBaseLength);
-    *cursor += _ORClassBaseLength;
+_ORClassNode *_ORClassNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORClassNode *node = malloc(sizeof(_ORClassNode));
+    memcpy(node, buffer + *cursor, _ORClassNodeBaseLength);
+    *cursor += _ORClassNodeBaseLength;
     node->className =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->superClassName =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->protocols =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
@@ -1594,7 +1594,7 @@ _ORClass *_ORClassDeserialization(void *buffer, uint32_t *cursor, uint32_t buffe
     node->methods =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORClassDestroy(_ORClass *node){
+void _ORClassNodeDestroy(_ORClassNode *node){
     _ORNodeDestroy((_ORNode *)node->className);
     _ORNodeDestroy((_ORNode *)node->superClassName);
     _ORNodeDestroy((_ORNode *)node->protocols);
@@ -1609,46 +1609,46 @@ typedef struct {
     _ListNode * protocols;
     _ListNode * properties;
     _ListNode * methods;
-}_ORProtocol;
-static uint32_t _ORProtocolBaseLength = 1;
-_ORProtocol *_ORProtocolConvert(ORProtocol *exp, _PatchNode *patch, uint32_t *length){
-    _ORProtocol *node = malloc(sizeof(_ORProtocol));
-    memset(node, 0, sizeof(_ORProtocol));
-    node->nodeType = _ORProtocolNode;
+}_ORProtocolNode;
+static uint32_t _ORProtocolNodeBaseLength = 1;
+_ORProtocolNode *_ORProtocolNodeConvert(ORProtocolNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORProtocolNode *node = malloc(sizeof(_ORProtocolNode));
+    memset(node, 0, sizeof(_ORProtocolNode));
+    node->nodeType = _ORProtocolNodeType;
     node->protcolName = (_StringNode *)_ORNodeConvert(exp.protcolName, patch, length);
     node->protocols = (_ListNode *)_ORNodeConvert(exp.protocols, patch, length);
     node->properties = (_ListNode *)_ORNodeConvert(exp.properties, patch, length);
     node->methods = (_ListNode *)_ORNodeConvert(exp.methods, patch, length);
-    *length += _ORProtocolBaseLength;
+    *length += _ORProtocolNodeBaseLength;
     return node;
 }
-ORProtocol *_ORProtocolDeConvert(_ORProtocol *node, _PatchNode *patch){
-    ORProtocol *exp = [ORProtocol new];
+ORProtocolNode *_ORProtocolNodeDeConvert(_ORProtocolNode *node, _PatchNode *patch){
+    ORProtocolNode *exp = [ORProtocolNode new];
     exp.protcolName = (NSString *)_ORNodeDeConvert((_ORNode *)node->protcolName, patch);
     exp.protocols = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->protocols, patch);
     exp.properties = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->properties, patch);
     exp.methods = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->methods, patch);
     return exp;
 }
-void _ORProtocolSerailization(_ORProtocol *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORProtocolBaseLength);
-    *cursor += _ORProtocolBaseLength;
+void _ORProtocolNodeSerailization(_ORProtocolNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORProtocolNodeBaseLength);
+    *cursor += _ORProtocolNodeBaseLength;
     _ORNodeSerailization((_ORNode *)node->protcolName, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->protocols, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->properties, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->methods, buffer, cursor);
 }
-_ORProtocol *_ORProtocolDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORProtocol *node = malloc(sizeof(_ORProtocol));
-    memcpy(node, buffer + *cursor, _ORProtocolBaseLength);
-    *cursor += _ORProtocolBaseLength;
+_ORProtocolNode *_ORProtocolNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORProtocolNode *node = malloc(sizeof(_ORProtocolNode));
+    memcpy(node, buffer + *cursor, _ORProtocolNodeBaseLength);
+    *cursor += _ORProtocolNodeBaseLength;
     node->protcolName =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->protocols =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->properties =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->methods =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORProtocolDestroy(_ORProtocol *node){
+void _ORProtocolNodeDestroy(_ORProtocolNode *node){
     _ORNodeDestroy((_ORNode *)node->protcolName);
     _ORNodeDestroy((_ORNode *)node->protocols);
     _ORNodeDestroy((_ORNode *)node->properties);
@@ -1664,7 +1664,7 @@ static uint32_t _ORStructStatNodeBaseLength = 1;
 _ORStructStatNode *_ORStructStatNodeConvert(ORStructStatNode *exp, _PatchNode *patch, uint32_t *length){
     _ORStructStatNode *node = malloc(sizeof(_ORStructStatNode));
     memset(node, 0, sizeof(_ORStructStatNode));
-    node->nodeType = _ORStructStatNodeNode;
+    node->nodeType = _ORStructStatNodeType;
     node->sturctName = (_StringNode *)_ORNodeConvert(exp.sturctName, patch, length);
     node->fields = (_ListNode *)_ORNodeConvert(exp.fields, patch, length);
     *length += _ORStructStatNodeBaseLength;
@@ -1704,7 +1704,7 @@ static uint32_t _ORUnionStatNodeBaseLength = 1;
 _ORUnionStatNode *_ORUnionStatNodeConvert(ORUnionStatNode *exp, _PatchNode *patch, uint32_t *length){
     _ORUnionStatNode *node = malloc(sizeof(_ORUnionStatNode));
     memset(node, 0, sizeof(_ORUnionStatNode));
-    node->nodeType = _ORUnionStatNodeNode;
+    node->nodeType = _ORUnionStatNodeType;
     node->unionName = (_StringNode *)_ORNodeConvert(exp.unionName, patch, length);
     node->fields = (_ListNode *)_ORNodeConvert(exp.fields, patch, length);
     *length += _ORUnionStatNodeBaseLength;
@@ -1745,7 +1745,7 @@ static uint32_t _OREnumStatNodeBaseLength = 5;
 _OREnumStatNode *_OREnumStatNodeConvert(OREnumStatNode *exp, _PatchNode *patch, uint32_t *length){
     _OREnumStatNode *node = malloc(sizeof(_OREnumStatNode));
     memset(node, 0, sizeof(_OREnumStatNode));
-    node->nodeType = _OREnumStatNodeNode;
+    node->nodeType = _OREnumStatNodeType;
     node->valueType = exp.valueType;
     node->enumName = (_StringNode *)_ORNodeConvert(exp.enumName, patch, length);
     node->fields = (_ListNode *)_ORNodeConvert(exp.fields, patch, length);
@@ -1787,7 +1787,7 @@ static uint32_t _ORTypedefStatNodeBaseLength = 1;
 _ORTypedefStatNode *_ORTypedefStatNodeConvert(ORTypedefStatNode *exp, _PatchNode *patch, uint32_t *length){
     _ORTypedefStatNode *node = malloc(sizeof(_ORTypedefStatNode));
     memset(node, 0, sizeof(_ORTypedefStatNode));
-    node->nodeType = _ORTypedefStatNodeNode;
+    node->nodeType = _ORTypedefStatNodeType;
     node->expression = (_ORNode *)_ORNodeConvert(exp.expression, patch, length);
     node->typeNewName = (_StringNode *)_ORNodeConvert(exp.typeNewName, patch, length);
     *length += _ORTypedefStatNodeBaseLength;
@@ -1827,8 +1827,8 @@ _ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length){
         return (_ORNode *)_ListNodeConvert((NSArray *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORCArrayVariable class]]){
         return (_ORNode *)_ORCArrayVariableConvert((ORCArrayVariable *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORFunctionDeclarator class]]){
-        return (_ORNode *)_ORFunctionDeclaratorConvert((ORFunctionDeclarator *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORFunctionDeclNode class]]){
+        return (_ORNode *)_ORFunctionDeclNodeConvert((ORFunctionDeclNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORTypeNode class]]){
         return (_ORNode *)_ORTypeNodeConvert((ORTypeNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORVariableNode class]]){
@@ -1837,8 +1837,8 @@ _ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length){
         return (_ORNode *)_ORDeclaratorNodeConvert((ORDeclaratorNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORBlockNode class]]){
         return (_ORNode *)_ORBlockNodeConvert((ORBlockNode *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORValueExpression class]]){
-        return (_ORNode *)_ORValueExpressionConvert((ORValueExpression *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORValueNode class]]){
+        return (_ORNode *)_ORValueNodeConvert((ORValueNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORIntegerValue class]]){
         return (_ORNode *)_ORIntegerValueConvert((ORIntegerValue *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORUIntegerValue class]]){
@@ -1851,10 +1851,10 @@ _ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length){
         return (_ORNode *)_ORMethodCallConvert((ORMethodCall *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORFunctionCall class]]){
         return (_ORNode *)_ORFunctionCallConvert((ORFunctionCall *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORFunctionImp class]]){
-        return (_ORNode *)_ORFunctionImpConvert((ORFunctionImp *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORSubscriptExpression class]]){
-        return (_ORNode *)_ORSubscriptExpressionConvert((ORSubscriptExpression *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORFunctionNode class]]){
+        return (_ORNode *)_ORFunctionNodeConvert((ORFunctionNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORSubscriptNode class]]){
+        return (_ORNode *)_ORSubscriptNodeConvert((ORSubscriptNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORAssignExpression class]]){
         return (_ORNode *)_ORAssignExpressionConvert((ORAssignExpression *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORInitDeclaratorNode class]]){
@@ -1879,18 +1879,18 @@ _ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length){
         return (_ORNode *)_ORForStatementConvert((ORForStatement *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORForInStatement class]]){
         return (_ORNode *)_ORForInStatementConvert((ORForInStatement *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORControlStatement class]]){
-        return (_ORNode *)_ORControlStatementConvert((ORControlStatement *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORPropertyDeclare class]]){
-        return (_ORNode *)_ORPropertyDeclareConvert((ORPropertyDeclare *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORMethodDeclare class]]){
-        return (_ORNode *)_ORMethodDeclareConvert((ORMethodDeclare *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORMethodImplementation class]]){
-        return (_ORNode *)_ORMethodImplementationConvert((ORMethodImplementation *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORClass class]]){
-        return (_ORNode *)_ORClassConvert((ORClass *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORProtocol class]]){
-        return (_ORNode *)_ORProtocolConvert((ORProtocol *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORControlStatNode class]]){
+        return (_ORNode *)_ORControlStatNodeConvert((ORControlStatNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORPropertyNode class]]){
+        return (_ORNode *)_ORPropertyNodeConvert((ORPropertyNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORMethodDeclNode class]]){
+        return (_ORNode *)_ORMethodDeclNodeConvert((ORMethodDeclNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORMethodNode class]]){
+        return (_ORNode *)_ORMethodNodeConvert((ORMethodNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORClassNode class]]){
+        return (_ORNode *)_ORClassNodeConvert((ORClassNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORProtocolNode class]]){
+        return (_ORNode *)_ORProtocolNodeConvert((ORProtocolNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORStructStatNode class]]){
         return (_ORNode *)_ORStructStatNodeConvert((ORStructStatNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORUnionStatNode class]]){
@@ -1911,79 +1911,79 @@ id _ORNodeDeConvert(_ORNode *node, _PatchNode *patch){
         return _ListNodeDeConvert((_ListNode *)node, patch);
     }else if (node->nodeType == StringNodeType) {
         return getString((_StringNode *) node, patch);
-    }else if (node->nodeType == _ORTypeNodeNode){
+    }else if (node->nodeType == _ORTypeNodeType){
         return (ORNode *)_ORTypeNodeDeConvert((_ORTypeNode *)node, patch);
-    }else if (node->nodeType == _ORVariableNodeNode){
+    }else if (node->nodeType == _ORVariableNodeType){
         return (ORNode *)_ORVariableNodeDeConvert((_ORVariableNode *)node, patch);
-    }else if (node->nodeType == _ORDeclaratorNodeNode){
+    }else if (node->nodeType == _ORDeclaratorNodeType){
         return (ORNode *)_ORDeclaratorNodeDeConvert((_ORDeclaratorNode *)node, patch);
-    }else if (node->nodeType == _ORFunctionDeclaratorNode){
-        return (ORNode *)_ORFunctionDeclaratorDeConvert((_ORFunctionDeclarator *)node, patch);
-    }else if (node->nodeType == _ORCArrayVariableNode){
+    }else if (node->nodeType == _ORFunctionDeclNodeType){
+        return (ORNode *)_ORFunctionDeclNodeDeConvert((_ORFunctionDeclNode *)node, patch);
+    }else if (node->nodeType == _ORCArrayVariableType){
         return (ORNode *)_ORCArrayVariableDeConvert((_ORCArrayVariable *)node, patch);
-    }else if (node->nodeType == _ORBlockNodeNode){
+    }else if (node->nodeType == _ORBlockNodeType){
         return (ORNode *)_ORBlockNodeDeConvert((_ORBlockNode *)node, patch);
-    }else if (node->nodeType == _ORValueExpressionNode){
-        return (ORNode *)_ORValueExpressionDeConvert((_ORValueExpression *)node, patch);
-    }else if (node->nodeType == _ORIntegerValueNode){
+    }else if (node->nodeType == _ORValueNodeType){
+        return (ORNode *)_ORValueNodeDeConvert((_ORValueNode *)node, patch);
+    }else if (node->nodeType == _ORIntegerValueType){
         return (ORNode *)_ORIntegerValueDeConvert((_ORIntegerValue *)node, patch);
-    }else if (node->nodeType == _ORUIntegerValueNode){
+    }else if (node->nodeType == _ORUIntegerValueType){
         return (ORNode *)_ORUIntegerValueDeConvert((_ORUIntegerValue *)node, patch);
-    }else if (node->nodeType == _ORDoubleValueNode){
+    }else if (node->nodeType == _ORDoubleValueType){
         return (ORNode *)_ORDoubleValueDeConvert((_ORDoubleValue *)node, patch);
-    }else if (node->nodeType == _ORBoolValueNode){
+    }else if (node->nodeType == _ORBoolValueType){
         return (ORNode *)_ORBoolValueDeConvert((_ORBoolValue *)node, patch);
-    }else if (node->nodeType == _ORMethodCallNode){
+    }else if (node->nodeType == _ORMethodCallType){
         return (ORNode *)_ORMethodCallDeConvert((_ORMethodCall *)node, patch);
-    }else if (node->nodeType == _ORFunctionCallNode){
+    }else if (node->nodeType == _ORFunctionCallType){
         return (ORNode *)_ORFunctionCallDeConvert((_ORFunctionCall *)node, patch);
-    }else if (node->nodeType == _ORFunctionImpNode){
-        return (ORNode *)_ORFunctionImpDeConvert((_ORFunctionImp *)node, patch);
-    }else if (node->nodeType == _ORSubscriptExpressionNode){
-        return (ORNode *)_ORSubscriptExpressionDeConvert((_ORSubscriptExpression *)node, patch);
-    }else if (node->nodeType == _ORAssignExpressionNode){
+    }else if (node->nodeType == _ORFunctionNodeType){
+        return (ORNode *)_ORFunctionNodeDeConvert((_ORFunctionNode *)node, patch);
+    }else if (node->nodeType == _ORSubscriptNodeType){
+        return (ORNode *)_ORSubscriptNodeDeConvert((_ORSubscriptNode *)node, patch);
+    }else if (node->nodeType == _ORAssignExpressionType){
         return (ORNode *)_ORAssignExpressionDeConvert((_ORAssignExpression *)node, patch);
-    }else if (node->nodeType == _ORInitDeclaratorNodeNode){
+    }else if (node->nodeType == _ORInitDeclaratorNodeType){
         return (ORNode *)_ORInitDeclaratorNodeDeConvert((_ORInitDeclaratorNode *)node, patch);
-    }else if (node->nodeType == _ORUnaryExpressionNode){
+    }else if (node->nodeType == _ORUnaryExpressionType){
         return (ORNode *)_ORUnaryExpressionDeConvert((_ORUnaryExpression *)node, patch);
-    }else if (node->nodeType == _ORBinaryExpressionNode){
+    }else if (node->nodeType == _ORBinaryExpressionType){
         return (ORNode *)_ORBinaryExpressionDeConvert((_ORBinaryExpression *)node, patch);
-    }else if (node->nodeType == _ORTernaryExpressionNode){
+    }else if (node->nodeType == _ORTernaryExpressionType){
         return (ORNode *)_ORTernaryExpressionDeConvert((_ORTernaryExpression *)node, patch);
-    }else if (node->nodeType == _ORIfStatementNode){
+    }else if (node->nodeType == _ORIfStatementType){
         return (ORNode *)_ORIfStatementDeConvert((_ORIfStatement *)node, patch);
-    }else if (node->nodeType == _ORWhileStatementNode){
+    }else if (node->nodeType == _ORWhileStatementType){
         return (ORNode *)_ORWhileStatementDeConvert((_ORWhileStatement *)node, patch);
-    }else if (node->nodeType == _ORDoWhileStatementNode){
+    }else if (node->nodeType == _ORDoWhileStatementType){
         return (ORNode *)_ORDoWhileStatementDeConvert((_ORDoWhileStatement *)node, patch);
-    }else if (node->nodeType == _ORCaseStatementNode){
+    }else if (node->nodeType == _ORCaseStatementType){
         return (ORNode *)_ORCaseStatementDeConvert((_ORCaseStatement *)node, patch);
-    }else if (node->nodeType == _ORSwitchStatementNode){
+    }else if (node->nodeType == _ORSwitchStatementType){
         return (ORNode *)_ORSwitchStatementDeConvert((_ORSwitchStatement *)node, patch);
-    }else if (node->nodeType == _ORForStatementNode){
+    }else if (node->nodeType == _ORForStatementType){
         return (ORNode *)_ORForStatementDeConvert((_ORForStatement *)node, patch);
-    }else if (node->nodeType == _ORForInStatementNode){
+    }else if (node->nodeType == _ORForInStatementType){
         return (ORNode *)_ORForInStatementDeConvert((_ORForInStatement *)node, patch);
-    }else if (node->nodeType == _ORControlStatementNode){
-        return (ORNode *)_ORControlStatementDeConvert((_ORControlStatement *)node, patch);
-    }else if (node->nodeType == _ORPropertyDeclareNode){
-        return (ORNode *)_ORPropertyDeclareDeConvert((_ORPropertyDeclare *)node, patch);
-    }else if (node->nodeType == _ORMethodDeclareNode){
-        return (ORNode *)_ORMethodDeclareDeConvert((_ORMethodDeclare *)node, patch);
-    }else if (node->nodeType == _ORMethodImplementationNode){
-        return (ORNode *)_ORMethodImplementationDeConvert((_ORMethodImplementation *)node, patch);
-    }else if (node->nodeType == _ORClassNode){
-        return (ORNode *)_ORClassDeConvert((_ORClass *)node, patch);
-    }else if (node->nodeType == _ORProtocolNode){
-        return (ORNode *)_ORProtocolDeConvert((_ORProtocol *)node, patch);
-    }else if (node->nodeType == _ORStructStatNodeNode){
+    }else if (node->nodeType == _ORControlStatNodeType){
+        return (ORNode *)_ORControlStatNodeDeConvert((_ORControlStatNode *)node, patch);
+    }else if (node->nodeType == _ORPropertyNodeType){
+        return (ORNode *)_ORPropertyNodeDeConvert((_ORPropertyNode *)node, patch);
+    }else if (node->nodeType == _ORMethodDeclNodeType){
+        return (ORNode *)_ORMethodDeclNodeDeConvert((_ORMethodDeclNode *)node, patch);
+    }else if (node->nodeType == _ORMethodNodeType){
+        return (ORNode *)_ORMethodNodeDeConvert((_ORMethodNode *)node, patch);
+    }else if (node->nodeType == _ORClassNodeType){
+        return (ORNode *)_ORClassNodeDeConvert((_ORClassNode *)node, patch);
+    }else if (node->nodeType == _ORProtocolNodeType){
+        return (ORNode *)_ORProtocolNodeDeConvert((_ORProtocolNode *)node, patch);
+    }else if (node->nodeType == _ORStructStatNodeType){
         return (ORNode *)_ORStructStatNodeDeConvert((_ORStructStatNode *)node, patch);
-    }else if (node->nodeType == _ORUnionStatNodeNode){
+    }else if (node->nodeType == _ORUnionStatNodeType){
         return (ORNode *)_ORUnionStatNodeDeConvert((_ORUnionStatNode *)node, patch);
-    }else if (node->nodeType == _OREnumStatNodeNode){
+    }else if (node->nodeType == _OREnumStatNodeType){
         return (ORNode *)_OREnumStatNodeDeConvert((_OREnumStatNode *)node, patch);
-    }else if (node->nodeType == _ORTypedefStatNodeNode){
+    }else if (node->nodeType == _ORTypedefStatNodeType){
         return (ORNode *)_ORTypedefStatNodeDeConvert((_ORTypedefStatNode *)node, patch);
     }
     return [ORNode new];
@@ -1998,79 +1998,79 @@ void _ORNodeSerailization(_ORNode *node, void *buffer, uint32_t *cursor){
         _StringNodeSerailization((_StringNode *) node, buffer, cursor);
     }else if (node->nodeType == StringsNodeType) {
         _StringsNodeSerailization((_StringsNode *) node, buffer, cursor);
-    }else if (node->nodeType == _ORTypeNodeNode){
+    }else if (node->nodeType == _ORTypeNodeType){
         _ORTypeNodeSerailization((_ORTypeNode *)node, buffer, cursor);
-    }else if (node->nodeType == _ORVariableNodeNode){
+    }else if (node->nodeType == _ORVariableNodeType){
         _ORVariableNodeSerailization((_ORVariableNode *)node, buffer, cursor);
-    }else if (node->nodeType == _ORDeclaratorNodeNode){
+    }else if (node->nodeType == _ORDeclaratorNodeType){
         _ORDeclaratorNodeSerailization((_ORDeclaratorNode *)node, buffer, cursor);
-    }else if (node->nodeType == _ORFunctionDeclaratorNode){
-        _ORFunctionDeclaratorSerailization((_ORFunctionDeclarator *)node, buffer, cursor);
-    }else if (node->nodeType == _ORCArrayVariableNode){
+    }else if (node->nodeType == _ORFunctionDeclNodeType){
+        _ORFunctionDeclNodeSerailization((_ORFunctionDeclNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORCArrayVariableType){
         _ORCArrayVariableSerailization((_ORCArrayVariable *)node, buffer, cursor);
-    }else if (node->nodeType == _ORBlockNodeNode){
+    }else if (node->nodeType == _ORBlockNodeType){
         _ORBlockNodeSerailization((_ORBlockNode *)node, buffer, cursor);
-    }else if (node->nodeType == _ORValueExpressionNode){
-        _ORValueExpressionSerailization((_ORValueExpression *)node, buffer, cursor);
-    }else if (node->nodeType == _ORIntegerValueNode){
+    }else if (node->nodeType == _ORValueNodeType){
+        _ORValueNodeSerailization((_ORValueNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORIntegerValueType){
         _ORIntegerValueSerailization((_ORIntegerValue *)node, buffer, cursor);
-    }else if (node->nodeType == _ORUIntegerValueNode){
+    }else if (node->nodeType == _ORUIntegerValueType){
         _ORUIntegerValueSerailization((_ORUIntegerValue *)node, buffer, cursor);
-    }else if (node->nodeType == _ORDoubleValueNode){
+    }else if (node->nodeType == _ORDoubleValueType){
         _ORDoubleValueSerailization((_ORDoubleValue *)node, buffer, cursor);
-    }else if (node->nodeType == _ORBoolValueNode){
+    }else if (node->nodeType == _ORBoolValueType){
         _ORBoolValueSerailization((_ORBoolValue *)node, buffer, cursor);
-    }else if (node->nodeType == _ORMethodCallNode){
+    }else if (node->nodeType == _ORMethodCallType){
         _ORMethodCallSerailization((_ORMethodCall *)node, buffer, cursor);
-    }else if (node->nodeType == _ORFunctionCallNode){
+    }else if (node->nodeType == _ORFunctionCallType){
         _ORFunctionCallSerailization((_ORFunctionCall *)node, buffer, cursor);
-    }else if (node->nodeType == _ORFunctionImpNode){
-        _ORFunctionImpSerailization((_ORFunctionImp *)node, buffer, cursor);
-    }else if (node->nodeType == _ORSubscriptExpressionNode){
-        _ORSubscriptExpressionSerailization((_ORSubscriptExpression *)node, buffer, cursor);
-    }else if (node->nodeType == _ORAssignExpressionNode){
+    }else if (node->nodeType == _ORFunctionNodeType){
+        _ORFunctionNodeSerailization((_ORFunctionNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORSubscriptNodeType){
+        _ORSubscriptNodeSerailization((_ORSubscriptNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORAssignExpressionType){
         _ORAssignExpressionSerailization((_ORAssignExpression *)node, buffer, cursor);
-    }else if (node->nodeType == _ORInitDeclaratorNodeNode){
+    }else if (node->nodeType == _ORInitDeclaratorNodeType){
         _ORInitDeclaratorNodeSerailization((_ORInitDeclaratorNode *)node, buffer, cursor);
-    }else if (node->nodeType == _ORUnaryExpressionNode){
+    }else if (node->nodeType == _ORUnaryExpressionType){
         _ORUnaryExpressionSerailization((_ORUnaryExpression *)node, buffer, cursor);
-    }else if (node->nodeType == _ORBinaryExpressionNode){
+    }else if (node->nodeType == _ORBinaryExpressionType){
         _ORBinaryExpressionSerailization((_ORBinaryExpression *)node, buffer, cursor);
-    }else if (node->nodeType == _ORTernaryExpressionNode){
+    }else if (node->nodeType == _ORTernaryExpressionType){
         _ORTernaryExpressionSerailization((_ORTernaryExpression *)node, buffer, cursor);
-    }else if (node->nodeType == _ORIfStatementNode){
+    }else if (node->nodeType == _ORIfStatementType){
         _ORIfStatementSerailization((_ORIfStatement *)node, buffer, cursor);
-    }else if (node->nodeType == _ORWhileStatementNode){
+    }else if (node->nodeType == _ORWhileStatementType){
         _ORWhileStatementSerailization((_ORWhileStatement *)node, buffer, cursor);
-    }else if (node->nodeType == _ORDoWhileStatementNode){
+    }else if (node->nodeType == _ORDoWhileStatementType){
         _ORDoWhileStatementSerailization((_ORDoWhileStatement *)node, buffer, cursor);
-    }else if (node->nodeType == _ORCaseStatementNode){
+    }else if (node->nodeType == _ORCaseStatementType){
         _ORCaseStatementSerailization((_ORCaseStatement *)node, buffer, cursor);
-    }else if (node->nodeType == _ORSwitchStatementNode){
+    }else if (node->nodeType == _ORSwitchStatementType){
         _ORSwitchStatementSerailization((_ORSwitchStatement *)node, buffer, cursor);
-    }else if (node->nodeType == _ORForStatementNode){
+    }else if (node->nodeType == _ORForStatementType){
         _ORForStatementSerailization((_ORForStatement *)node, buffer, cursor);
-    }else if (node->nodeType == _ORForInStatementNode){
+    }else if (node->nodeType == _ORForInStatementType){
         _ORForInStatementSerailization((_ORForInStatement *)node, buffer, cursor);
-    }else if (node->nodeType == _ORControlStatementNode){
-        _ORControlStatementSerailization((_ORControlStatement *)node, buffer, cursor);
-    }else if (node->nodeType == _ORPropertyDeclareNode){
-        _ORPropertyDeclareSerailization((_ORPropertyDeclare *)node, buffer, cursor);
-    }else if (node->nodeType == _ORMethodDeclareNode){
-        _ORMethodDeclareSerailization((_ORMethodDeclare *)node, buffer, cursor);
-    }else if (node->nodeType == _ORMethodImplementationNode){
-        _ORMethodImplementationSerailization((_ORMethodImplementation *)node, buffer, cursor);
-    }else if (node->nodeType == _ORClassNode){
-        _ORClassSerailization((_ORClass *)node, buffer, cursor);
-    }else if (node->nodeType == _ORProtocolNode){
-        _ORProtocolSerailization((_ORProtocol *)node, buffer, cursor);
-    }else if (node->nodeType == _ORStructStatNodeNode){
+    }else if (node->nodeType == _ORControlStatNodeType){
+        _ORControlStatNodeSerailization((_ORControlStatNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORPropertyNodeType){
+        _ORPropertyNodeSerailization((_ORPropertyNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORMethodDeclNodeType){
+        _ORMethodDeclNodeSerailization((_ORMethodDeclNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORMethodNodeType){
+        _ORMethodNodeSerailization((_ORMethodNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORClassNodeType){
+        _ORClassNodeSerailization((_ORClassNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORProtocolNodeType){
+        _ORProtocolNodeSerailization((_ORProtocolNode *)node, buffer, cursor);
+    }else if (node->nodeType == _ORStructStatNodeType){
         _ORStructStatNodeSerailization((_ORStructStatNode *)node, buffer, cursor);
-    }else if (node->nodeType == _ORUnionStatNodeNode){
+    }else if (node->nodeType == _ORUnionStatNodeType){
         _ORUnionStatNodeSerailization((_ORUnionStatNode *)node, buffer, cursor);
-    }else if (node->nodeType == _OREnumStatNodeNode){
+    }else if (node->nodeType == _OREnumStatNodeType){
         _OREnumStatNodeSerailization((_OREnumStatNode *)node, buffer, cursor);
-    }else if (node->nodeType == _ORTypedefStatNodeNode){
+    }else if (node->nodeType == _ORTypedefStatNodeType){
         _ORTypedefStatNodeSerailization((_ORTypedefStatNode *)node, buffer, cursor);
     }
 }
@@ -2083,79 +2083,79 @@ _ORNode *_ORNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferL
         return (_ORNode *)_ListNodeDeserialization(buffer, cursor, bufferLength);
     }else if (nodeType == StringNodeType) {
         return (_ORNode *)_StringNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORTypeNodeNode){
+    }else if (nodeType == _ORTypeNodeType){
         return (_ORNode *)_ORTypeNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORVariableNodeNode){
+    }else if (nodeType == _ORVariableNodeType){
         return (_ORNode *)_ORVariableNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORDeclaratorNodeNode){
+    }else if (nodeType == _ORDeclaratorNodeType){
         return (_ORNode *)_ORDeclaratorNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORFunctionDeclaratorNode){
-        return (_ORNode *)_ORFunctionDeclaratorDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORCArrayVariableNode){
+    }else if (nodeType == _ORFunctionDeclNodeType){
+        return (_ORNode *)_ORFunctionDeclNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORCArrayVariableType){
         return (_ORNode *)_ORCArrayVariableDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORBlockNodeNode){
+    }else if (nodeType == _ORBlockNodeType){
         return (_ORNode *)_ORBlockNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORValueExpressionNode){
-        return (_ORNode *)_ORValueExpressionDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORIntegerValueNode){
+    }else if (nodeType == _ORValueNodeType){
+        return (_ORNode *)_ORValueNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORIntegerValueType){
         return (_ORNode *)_ORIntegerValueDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORUIntegerValueNode){
+    }else if (nodeType == _ORUIntegerValueType){
         return (_ORNode *)_ORUIntegerValueDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORDoubleValueNode){
+    }else if (nodeType == _ORDoubleValueType){
         return (_ORNode *)_ORDoubleValueDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORBoolValueNode){
+    }else if (nodeType == _ORBoolValueType){
         return (_ORNode *)_ORBoolValueDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORMethodCallNode){
+    }else if (nodeType == _ORMethodCallType){
         return (_ORNode *)_ORMethodCallDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORFunctionCallNode){
+    }else if (nodeType == _ORFunctionCallType){
         return (_ORNode *)_ORFunctionCallDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORFunctionImpNode){
-        return (_ORNode *)_ORFunctionImpDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORSubscriptExpressionNode){
-        return (_ORNode *)_ORSubscriptExpressionDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORAssignExpressionNode){
+    }else if (nodeType == _ORFunctionNodeType){
+        return (_ORNode *)_ORFunctionNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORSubscriptNodeType){
+        return (_ORNode *)_ORSubscriptNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORAssignExpressionType){
         return (_ORNode *)_ORAssignExpressionDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORInitDeclaratorNodeNode){
+    }else if (nodeType == _ORInitDeclaratorNodeType){
         return (_ORNode *)_ORInitDeclaratorNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORUnaryExpressionNode){
+    }else if (nodeType == _ORUnaryExpressionType){
         return (_ORNode *)_ORUnaryExpressionDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORBinaryExpressionNode){
+    }else if (nodeType == _ORBinaryExpressionType){
         return (_ORNode *)_ORBinaryExpressionDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORTernaryExpressionNode){
+    }else if (nodeType == _ORTernaryExpressionType){
         return (_ORNode *)_ORTernaryExpressionDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORIfStatementNode){
+    }else if (nodeType == _ORIfStatementType){
         return (_ORNode *)_ORIfStatementDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORWhileStatementNode){
+    }else if (nodeType == _ORWhileStatementType){
         return (_ORNode *)_ORWhileStatementDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORDoWhileStatementNode){
+    }else if (nodeType == _ORDoWhileStatementType){
         return (_ORNode *)_ORDoWhileStatementDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORCaseStatementNode){
+    }else if (nodeType == _ORCaseStatementType){
         return (_ORNode *)_ORCaseStatementDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORSwitchStatementNode){
+    }else if (nodeType == _ORSwitchStatementType){
         return (_ORNode *)_ORSwitchStatementDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORForStatementNode){
+    }else if (nodeType == _ORForStatementType){
         return (_ORNode *)_ORForStatementDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORForInStatementNode){
+    }else if (nodeType == _ORForInStatementType){
         return (_ORNode *)_ORForInStatementDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORControlStatementNode){
-        return (_ORNode *)_ORControlStatementDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORPropertyDeclareNode){
-        return (_ORNode *)_ORPropertyDeclareDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORMethodDeclareNode){
-        return (_ORNode *)_ORMethodDeclareDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORMethodImplementationNode){
-        return (_ORNode *)_ORMethodImplementationDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORClassNode){
-        return (_ORNode *)_ORClassDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORProtocolNode){
-        return (_ORNode *)_ORProtocolDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORStructStatNodeNode){
+    }else if (nodeType == _ORControlStatNodeType){
+        return (_ORNode *)_ORControlStatNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORPropertyNodeType){
+        return (_ORNode *)_ORPropertyNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORMethodDeclNodeType){
+        return (_ORNode *)_ORMethodDeclNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORMethodNodeType){
+        return (_ORNode *)_ORMethodNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORClassNodeType){
+        return (_ORNode *)_ORClassNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORProtocolNodeType){
+        return (_ORNode *)_ORProtocolNodeDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORStructStatNodeType){
         return (_ORNode *)_ORStructStatNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORUnionStatNodeNode){
+    }else if (nodeType == _ORUnionStatNodeType){
         return (_ORNode *)_ORUnionStatNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _OREnumStatNodeNode){
+    }else if (nodeType == _OREnumStatNodeType){
         return (_ORNode *)_OREnumStatNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORTypedefStatNodeNode){
+    }else if (nodeType == _ORTypedefStatNodeType){
         return (_ORNode *)_ORTypedefStatNodeDeserialization(buffer, cursor, bufferLength);
     }
 
@@ -2174,79 +2174,79 @@ void _ORNodeDestroy(_ORNode *node){
         _StringNodeDestroy((_StringNode *) node);
     }else if (node->nodeType == StringsNodeType) {
         _StringsNodeDestroy((_StringsNode *) node);
-    }else if (node->nodeType == _ORTypeNodeNode){
+    }else if (node->nodeType == _ORTypeNodeType){
         _ORTypeNodeDestroy((_ORTypeNode *)node);
-    }else if (node->nodeType == _ORVariableNodeNode){
+    }else if (node->nodeType == _ORVariableNodeType){
         _ORVariableNodeDestroy((_ORVariableNode *)node);
-    }else if (node->nodeType == _ORDeclaratorNodeNode){
+    }else if (node->nodeType == _ORDeclaratorNodeType){
         _ORDeclaratorNodeDestroy((_ORDeclaratorNode *)node);
-    }else if (node->nodeType == _ORFunctionDeclaratorNode){
-        _ORFunctionDeclaratorDestroy((_ORFunctionDeclarator *)node);
-    }else if (node->nodeType == _ORCArrayVariableNode){
+    }else if (node->nodeType == _ORFunctionDeclNodeType){
+        _ORFunctionDeclNodeDestroy((_ORFunctionDeclNode *)node);
+    }else if (node->nodeType == _ORCArrayVariableType){
         _ORCArrayVariableDestroy((_ORCArrayVariable *)node);
-    }else if (node->nodeType == _ORBlockNodeNode){
+    }else if (node->nodeType == _ORBlockNodeType){
         _ORBlockNodeDestroy((_ORBlockNode *)node);
-    }else if (node->nodeType == _ORValueExpressionNode){
-        _ORValueExpressionDestroy((_ORValueExpression *)node);
-    }else if (node->nodeType == _ORIntegerValueNode){
+    }else if (node->nodeType == _ORValueNodeType){
+        _ORValueNodeDestroy((_ORValueNode *)node);
+    }else if (node->nodeType == _ORIntegerValueType){
         _ORIntegerValueDestroy((_ORIntegerValue *)node);
-    }else if (node->nodeType == _ORUIntegerValueNode){
+    }else if (node->nodeType == _ORUIntegerValueType){
         _ORUIntegerValueDestroy((_ORUIntegerValue *)node);
-    }else if (node->nodeType == _ORDoubleValueNode){
+    }else if (node->nodeType == _ORDoubleValueType){
         _ORDoubleValueDestroy((_ORDoubleValue *)node);
-    }else if (node->nodeType == _ORBoolValueNode){
+    }else if (node->nodeType == _ORBoolValueType){
         _ORBoolValueDestroy((_ORBoolValue *)node);
-    }else if (node->nodeType == _ORMethodCallNode){
+    }else if (node->nodeType == _ORMethodCallType){
         _ORMethodCallDestroy((_ORMethodCall *)node);
-    }else if (node->nodeType == _ORFunctionCallNode){
+    }else if (node->nodeType == _ORFunctionCallType){
         _ORFunctionCallDestroy((_ORFunctionCall *)node);
-    }else if (node->nodeType == _ORFunctionImpNode){
-        _ORFunctionImpDestroy((_ORFunctionImp *)node);
-    }else if (node->nodeType == _ORSubscriptExpressionNode){
-        _ORSubscriptExpressionDestroy((_ORSubscriptExpression *)node);
-    }else if (node->nodeType == _ORAssignExpressionNode){
+    }else if (node->nodeType == _ORFunctionNodeType){
+        _ORFunctionNodeDestroy((_ORFunctionNode *)node);
+    }else if (node->nodeType == _ORSubscriptNodeType){
+        _ORSubscriptNodeDestroy((_ORSubscriptNode *)node);
+    }else if (node->nodeType == _ORAssignExpressionType){
         _ORAssignExpressionDestroy((_ORAssignExpression *)node);
-    }else if (node->nodeType == _ORInitDeclaratorNodeNode){
+    }else if (node->nodeType == _ORInitDeclaratorNodeType){
         _ORInitDeclaratorNodeDestroy((_ORInitDeclaratorNode *)node);
-    }else if (node->nodeType == _ORUnaryExpressionNode){
+    }else if (node->nodeType == _ORUnaryExpressionType){
         _ORUnaryExpressionDestroy((_ORUnaryExpression *)node);
-    }else if (node->nodeType == _ORBinaryExpressionNode){
+    }else if (node->nodeType == _ORBinaryExpressionType){
         _ORBinaryExpressionDestroy((_ORBinaryExpression *)node);
-    }else if (node->nodeType == _ORTernaryExpressionNode){
+    }else if (node->nodeType == _ORTernaryExpressionType){
         _ORTernaryExpressionDestroy((_ORTernaryExpression *)node);
-    }else if (node->nodeType == _ORIfStatementNode){
+    }else if (node->nodeType == _ORIfStatementType){
         _ORIfStatementDestroy((_ORIfStatement *)node);
-    }else if (node->nodeType == _ORWhileStatementNode){
+    }else if (node->nodeType == _ORWhileStatementType){
         _ORWhileStatementDestroy((_ORWhileStatement *)node);
-    }else if (node->nodeType == _ORDoWhileStatementNode){
+    }else if (node->nodeType == _ORDoWhileStatementType){
         _ORDoWhileStatementDestroy((_ORDoWhileStatement *)node);
-    }else if (node->nodeType == _ORCaseStatementNode){
+    }else if (node->nodeType == _ORCaseStatementType){
         _ORCaseStatementDestroy((_ORCaseStatement *)node);
-    }else if (node->nodeType == _ORSwitchStatementNode){
+    }else if (node->nodeType == _ORSwitchStatementType){
         _ORSwitchStatementDestroy((_ORSwitchStatement *)node);
-    }else if (node->nodeType == _ORForStatementNode){
+    }else if (node->nodeType == _ORForStatementType){
         _ORForStatementDestroy((_ORForStatement *)node);
-    }else if (node->nodeType == _ORForInStatementNode){
+    }else if (node->nodeType == _ORForInStatementType){
         _ORForInStatementDestroy((_ORForInStatement *)node);
-    }else if (node->nodeType == _ORControlStatementNode){
-        _ORControlStatementDestroy((_ORControlStatement *)node);
-    }else if (node->nodeType == _ORPropertyDeclareNode){
-        _ORPropertyDeclareDestroy((_ORPropertyDeclare *)node);
-    }else if (node->nodeType == _ORMethodDeclareNode){
-        _ORMethodDeclareDestroy((_ORMethodDeclare *)node);
-    }else if (node->nodeType == _ORMethodImplementationNode){
-        _ORMethodImplementationDestroy((_ORMethodImplementation *)node);
-    }else if (node->nodeType == _ORClassNode){
-        _ORClassDestroy((_ORClass *)node);
-    }else if (node->nodeType == _ORProtocolNode){
-        _ORProtocolDestroy((_ORProtocol *)node);
-    }else if (node->nodeType == _ORStructStatNodeNode){
+    }else if (node->nodeType == _ORControlStatNodeType){
+        _ORControlStatNodeDestroy((_ORControlStatNode *)node);
+    }else if (node->nodeType == _ORPropertyNodeType){
+        _ORPropertyNodeDestroy((_ORPropertyNode *)node);
+    }else if (node->nodeType == _ORMethodDeclNodeType){
+        _ORMethodDeclNodeDestroy((_ORMethodDeclNode *)node);
+    }else if (node->nodeType == _ORMethodNodeType){
+        _ORMethodNodeDestroy((_ORMethodNode *)node);
+    }else if (node->nodeType == _ORClassNodeType){
+        _ORClassNodeDestroy((_ORClassNode *)node);
+    }else if (node->nodeType == _ORProtocolNodeType){
+        _ORProtocolNodeDestroy((_ORProtocolNode *)node);
+    }else if (node->nodeType == _ORStructStatNodeType){
         _ORStructStatNodeDestroy((_ORStructStatNode *)node);
-    }else if (node->nodeType == _ORUnionStatNodeNode){
+    }else if (node->nodeType == _ORUnionStatNodeType){
         _ORUnionStatNodeDestroy((_ORUnionStatNode *)node);
-    }else if (node->nodeType == _OREnumStatNodeNode){
+    }else if (node->nodeType == _OREnumStatNodeType){
         _OREnumStatNodeDestroy((_OREnumStatNode *)node);
-    }else if (node->nodeType == _ORTypedefStatNodeNode){
+    }else if (node->nodeType == _ORTypedefStatNodeType){
         _ORTypedefStatNodeDestroy((_ORTypedefStatNode *)node);
     }
 }

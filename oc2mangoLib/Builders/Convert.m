@@ -15,8 +15,8 @@
         result = [self convertDeclareExp:(ORInitDeclaratorNode *)node];
     }else if ([node isKindOfClass:[ORAssignExpression class]]) {
         result = [self convertAssginExp:(ORAssignExpression *)node];
-    }else if ([node isKindOfClass:[ORValueExpression class]]){
-        result = [self convertOCValue:(ORValueExpression *)node];
+    }else if ([node isKindOfClass:[ORValueNode class]]){
+        result = [self convertOCValue:(ORValueNode *)node];
     }else if ([node isKindOfClass:[ORIntegerValue class]]){
         result = [self convertORIntegerValue:(ORIntegerValue *)node];
     }else if ([node isKindOfClass:[ORIntegerValue class]]){
@@ -31,16 +31,16 @@
         result = [self convertUnaryExp:(ORUnaryExpression *)node];
     }else if ([node isKindOfClass:[ORTernaryExpression class]]){
         result = [self convertTernaryExp:(ORTernaryExpression *)node];
-    }else if ([node isKindOfClass:[ORFunctionImp class]]){
-        result = [self convertBlockImp:(ORFunctionImp *)node];
+    }else if ([node isKindOfClass:[ORFunctionNode class]]){
+        result = [self convertBlockImp:(ORFunctionNode *)node];
     }else if ([node isKindOfClass:[ORMethodCall class]]){
         result = [self convertOCMethodCall:(ORMethodCall *)node];
     }else if ([node isKindOfClass:[ORFunctionCall class]]){
         result = [self convertFunCall:(ORFunctionCall *)node];
-    }else if ([node isKindOfClass:[ORSubscriptExpression class]]){
-        result = [self convertSubscript:(ORSubscriptExpression *)node];
-    } else if ([node isKindOfClass:[ORControlStatement class]]) {
-        result = [self convertControlStatement:(ORControlStatement *) node];
+    }else if ([node isKindOfClass:[ORSubscriptNode class]]){
+        result = [self convertSubscript:(ORSubscriptNode *)node];
+    } else if ([node isKindOfClass:[ORControlStatNode class]]) {
+        result = [self convertControlStatement:(ORControlStatNode *) node];
     }else if ([node isKindOfClass:[ORIfStatement class]]) {
         result = [self convertIfStatement:(ORIfStatement *) node];
     }else if([node isKindOfClass:[ORWhileStatement class]]){
@@ -53,25 +53,25 @@
         result = [self convertForStatement:(ORForStatement *) node];
     } else if ([node isKindOfClass:[ORForInStatement class]]) {
         result = [self convertForInStatement:(ORForInStatement *) node];
-    }else if ([node isKindOfClass:[ORClass class]]) {
-        result = [self convertOCClass:(ORClass *)node];
+    }else if ([node isKindOfClass:[ORClassNode class]]) {
+        result = [self convertOCClass:(ORClassNode *)node];
     }
     if (node.withSemicolon == YES) {
         result = [result stringByAppendingString:@";"];
     }
     return result;
 }
-- (NSString *)convertOCClass:(ORClass *)occlass{
+- (NSString *)convertOCClass:(ORClassNode *)occlass{
     NSMutableString *content = [NSMutableString string];
     [content appendFormat:@"class %@:%@",occlass.className,occlass.superClassName];
     if (occlass.protocols.count > 0) {
         [content appendFormat:@"<%@>",[occlass.protocols componentsJoinedByString:@","]];
     }
     [content appendString:@"{\n"];
-    for (ORPropertyDeclare *prop in occlass.properties) {
+    for (ORPropertyNode *prop in occlass.properties) {
         [content appendString:[self convertPropertyDeclare:prop]];
     }
-    for (ORMethodImplementation *imp in occlass.methods) {
+    for (ORMethodNode *imp in occlass.methods) {
         [content appendString:[self convertMethodImp:imp]];
     }
     [content appendString:@"\n}\n"];
@@ -123,12 +123,12 @@
     return result;
 }
 
-- (NSString *)convertPropertyDeclare:(ORPropertyDeclare *)propertyDecl{
+- (NSString *)convertPropertyDeclare:(ORPropertyNode *)propertyDecl{
     
     return [NSString stringWithFormat:@"@property(%@)%@;\n",[propertyDecl.keywords componentsJoinedByString:@","],[self convertDeclaratorNode:propertyDecl.var]];
     return @"";
 }
-- (NSString *)convertMethoDeclare:(ORMethodDeclare *)methodDecl{
+- (NSString *)convertMethoDeclare:(ORMethodDeclNode *)methodDecl{
     NSString *methodName = @"";
     if (methodDecl.parameterNames.count == 0) {
         methodName = methodDecl.methodNames.firstObject;
@@ -144,10 +144,10 @@
     }
     return [NSString stringWithFormat:@"%@(%@)%@",methodDecl.isClassMethod?@"+":@"-",[self convertDeclaratorNode:methodDecl.returnType],methodName];
 }
-- (NSString *)convertMethodImp:(ORMethodImplementation *)methodImp{
+- (NSString *)convertMethodImp:(ORMethodNode *)methodImp{
     return [NSString stringWithFormat:@"\n%@%@",[self convertMethoDeclare:methodImp.declare],[self convertScopeImp:methodImp.scopeImp]];
 }
-- (NSString *)convertFuncDeclare:(ORFunctionDeclarator *)funcDecl{
+- (NSString *)convertFuncDeclare:(ORFunctionDeclNode *)funcDecl{
     return [NSString stringWithFormat:@"%@%@",[self convertDeclaratorNode:funcDecl.returnNode],[self convertVariable:funcDecl]];;
 }
 int indentationCont = 0;
@@ -168,7 +168,7 @@ int indentationCont = 0;
     indentationCont--;
     return content;
 }
-- (NSString *)convertBlockImp:(ORFunctionImp *)imp{
+- (NSString *)convertBlockImp:(ORFunctionNode *)imp{
     NSMutableString *content = [NSMutableString string];
     if (imp.declare) {
         if (!imp.declare.isBlock) {
@@ -310,7 +310,7 @@ int indentationCont = 0;
 - (NSString *)convertORBoolValue:(ORBoolValue *)value{
     return [NSString stringWithFormat:@"%@",value.value ? @"YES" : @"NO"];
 }
-- (NSString *)convertOCValue:(ORValueExpression *)value{
+- (NSString *)convertOCValue:(ORValueNode *)value{
     switch (value.value_type){
         case OCValueSelector:
             return [NSString stringWithFormat:@"@selector(%@)",value.value];
@@ -359,7 +359,7 @@ int indentationCont = 0;
     }
     return @"";
 }
-- (NSString *)convertSubscript:(ORSubscriptExpression *)collection{
+- (NSString *)convertSubscript:(ORSubscriptNode *)collection{
     return [NSString stringWithFormat:@"%@[%@]",[self convert:collection.caller],[self convert:collection.keyExp]];
 }
 - (NSString *)convertFunCall:(ORFunctionCall *)call{
@@ -431,7 +431,7 @@ int indentationCont = 0;
 - (NSString *)convertForInStatement:(ORForInStatement *)statement{
     return [NSString stringWithFormat:@"for (%@ in %@)%@",[self convert:statement.expression],[self convert:statement.value],[self convertScopeImp:statement.scopeImp]];
 }
-- (NSString *)convertControlStatement:(ORControlStatement *)statement{
+- (NSString *)convertControlStatement:(ORControlStatNode *)statement{
     switch (statement.type) {
         case ORControlStatBreak:
             return @"break";
@@ -444,10 +444,10 @@ int indentationCont = 0;
     }
     return @"";
 }
-- (NSString *)convertBreakStatement:(ORControlStatement *) statement{
+- (NSString *)convertBreakStatement:(ORControlStatNode *) statement{
     return @"break";
 }
-- (NSString *)convertContinueStatement:(ORControlStatement *) statement{
+- (NSString *)convertContinueStatement:(ORControlStatNode *) statement{
     return @"continue";
 }
 - (NSString * )convertExpressionList:(NSArray *)list{    
@@ -462,13 +462,13 @@ int indentationCont = 0;
     for (int i = 0; i < var.ptCount; i++) {
         [result appendString:@"*"];
     }
-    if ([var isKindOfClass:[ORFunctionDeclarator class]]) {
-        ORFunctionDeclarator *funVar = (ORFunctionDeclarator *)var;
-        if (funVar.declarators.count > 0){
+    if ([var isKindOfClass:[ORFunctionDeclNode class]]) {
+        ORFunctionDeclNode *funVar = (ORFunctionDeclNode *)var;
+        if (funVar.params.count > 0){
             if (funVar.varname) {
-                [result appendFormat:@"%@(%@)",funVar.varname,[self convertDeclaratorNodes:funVar.declarators]];
+                [result appendFormat:@"%@(%@)",funVar.varname,[self convertDeclaratorNodes:funVar.params]];
             }else{
-                [result appendFormat:@"(%@)",[self convertDeclaratorNodes:funVar.declarators]];
+                [result appendFormat:@"(%@)",[self convertDeclaratorNodes:funVar.params]];
             }
         } else if (!funVar.isBlock){
             [result appendFormat:@"%@()",funVar.varname];
@@ -483,7 +483,7 @@ int indentationCont = 0;
     return [NSString stringWithFormat:@"%@%@",type,[self convertVariable:pair.var]];
 }
 - (NSString *)convertDeclaratorNode:(ORDeclaratorNode *)pair{
-    if ([pair.var isKindOfClass:[ORFunctionDeclarator class]]){
+    if ([pair.var isKindOfClass:[ORFunctionDeclNode class]]){
         if (pair.var.isBlock){
             if (pair.var.varname == nil) {
                 return @"Block";

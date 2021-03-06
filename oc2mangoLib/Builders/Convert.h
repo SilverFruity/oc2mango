@@ -11,16 +11,16 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface Convert : NSObject
 - (NSString *)convert:(id)node;
-- (NSString *)convertOCClass:(ORClass *)occlass;
+- (NSString *)convertOCClass:(ORClassNode *)occlass;
 
 - (NSString *)convertTypeNode:(ORDeclaratorNode *)type;
-- (NSString *)convertPropertyDeclare:(ORPropertyDeclare *)propertyDecl;
-- (NSString *)convertMethoDeclare:(ORMethodDeclare *)methodDecl;
-- (NSString *)convertMethodImp:(ORMethodImplementation *)methodImp;
-- (NSString *)convertFuncDeclare:(ORFunctionDeclarator *)funcDecl;
+- (NSString *)convertPropertyDeclare:(ORPropertyNode *)propertyDecl;
+- (NSString *)convertMethoDeclare:(ORMethodDeclNode *)methodDecl;
+- (NSString *)convertMethodImp:(ORMethodNode *)methodImp;
+- (NSString *)convertFuncDeclare:(ORFunctionDeclNode *)funcDecl;
 
 - (NSString *)convertAssginExp:(ORAssignExpression *)exp;
-- (NSString *)convertOCValue:(ORValueExpression *)value;
+- (NSString *)convertOCValue:(ORValueNode *)value;
 
 - (NSString *)convertIfStatement:(ORIfStatement *)statement;
 - (NSString *)convertWhileStatement:(ORWhileStatement *)statement;

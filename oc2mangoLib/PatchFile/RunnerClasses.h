@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+
 NS_ASSUME_NONNULL_BEGIN
 // MARK: - Node
 @interface ORNode: NSObject
@@ -68,10 +69,10 @@ typedef enum: uint32_t{
 @property (nonatomic, strong)ORVariableNode *var;
 @end
 
-@interface ORFunctionDeclarator: ORVariableNode
+@interface ORFunctionDeclNode: ORVariableNode
 @property(nonatomic,assign) BOOL isMultiArgs;
-@property(nonatomic,strong) ORDeclaratorNode *returnNode;
-@property(nonatomic,strong) NSMutableArray <ORDeclaratorNode *> *declarators;
+@property(nonatomic,strong, nullable) ORDeclaratorNode *returnNode;
+@property(nonatomic,strong) NSMutableArray <ORDeclaratorNode *> *params;
 @end
 
 @interface ORCArrayVariable: ORVariableNode
@@ -96,10 +97,10 @@ typedef enum: uint32_t{
     OCValueString, // value: NSString
     OCValueCString, // value: NSString
     OCValueNil, //  value: nil
-    OCValueNULL, //  value: nil
+    OCValueNULL //  value: nil
 }OC_VALUE_TYPE;
 
-@interface ORValueExpression: ORNode
+@interface ORValueNode: ORNode
 @property (nonatomic,assign)OC_VALUE_TYPE value_type;
 @property (nonatomic,strong)id value;
 @end
@@ -137,19 +138,19 @@ typedef enum: uint8_t{
 @end
 
 @interface ORFunctionCall: ORNode
-@property (nonatomic, strong)ORValueExpression *caller;
+@property (nonatomic, strong)ORNode *caller;
 @property (nonatomic, strong)NSMutableArray <ORNode *>*expressions;
 @end
 
 
-@interface ORFunctionImp: ORNode
-@property(nonatomic,strong) ORFunctionDeclarator *declare;
+@interface ORFunctionNode: ORNode
+@property(nonatomic,strong) ORFunctionDeclNode *declare;
 @property(nonatomic,strong) ORBlockNode *scopeImp;
 - (instancetype)normalFunctionImp;
 - (BOOL)isBlockImp;
 @end
 
-@interface ORSubscriptExpression: ORNode
+@interface ORSubscriptNode: ORNode
 @property (nonatomic, strong)ORNode * caller;
 @property (nonatomic, strong)ORNode * keyExp;
 @end
@@ -272,10 +273,10 @@ typedef enum: uint32_t{
 typedef enum: uint32_t{
     ORControlStatReturn,
     ORControlStatBreak,
-    ORControlStatContinue,
+    ORControlStatContinue
 }ORControlStateType;
 
-@interface ORControlStatement: ORNode
+@interface ORControlStatNode: ORNode
 @property (nonatomic,assign)NSUInteger type;
 @property (nonatomic,strong)ORNode * expression;
 @end
@@ -293,13 +294,13 @@ typedef enum: uint32_t{
     MFPropertyModifierNonatomic =  0x10,
     MFPropertyModifierAtomicMask = 0xF0
 }MFPropertyModifier;
-@interface ORPropertyDeclare: ORNode
+@interface ORPropertyNode: ORNode
 @property(nonatomic, assign, readonly) MFPropertyModifier modifier;
 @property(nonatomic,strong) NSMutableArray *keywords;
 @property(nonatomic,strong) ORDeclaratorNode * var;
 @end
 
-@interface ORMethodDeclare: ORNode
+@interface ORMethodDeclNode: ORNode
 @property(nonatomic,assign) BOOL isClassMethod;
 @property(nonatomic,strong) ORDeclaratorNode * returnType;
 @property(nonatomic,strong) NSMutableArray *methodNames;
@@ -308,27 +309,27 @@ typedef enum: uint32_t{
 - (NSString *)selectorName;
 @end
 
-@interface ORMethodImplementation: ORNode
-@property (nonatomic,strong) ORMethodDeclare * declare;
+@interface ORMethodNode: ORNode
+@property (nonatomic,strong) ORMethodDeclNode * declare;
 @property (nonatomic,strong) ORBlockNode *scopeImp;
 @end
 
-@interface ORClass: ORNode
+@interface ORClassNode: ORNode
 @property (nonatomic,copy)NSString *className;
 @property (nonatomic,copy)NSString *superClassName;
 @property (nonatomic,strong)NSMutableArray <NSString *>*protocols;
-@property (nonatomic,strong)NSMutableArray <ORPropertyDeclare *>*properties;
+@property (nonatomic,strong)NSMutableArray <ORPropertyNode *>*properties;
 @property (nonatomic,strong)NSMutableArray <ORDeclaratorNode *>*privateVariables;
-@property (nonatomic,strong)NSMutableArray <ORMethodImplementation *>*methods;
-+ (instancetype)classWithClassName:(NSString *)className;
-- (void)merge:(ORClass *)target key:(NSString *)key;
+@property (nonatomic,strong)NSMutableArray <ORMethodNode *>*methods;
++ (instancetype)classNodeWithClassName:(NSString *)className;
+- (void)merge:(ORClassNode *)target key:(NSString *)key;
 @end
 
-@interface ORProtocol: ORNode
+@interface ORProtocolNode: ORNode
 @property (nonatomic,copy)NSString *protcolName;
 @property (nonatomic,strong,nullable)NSMutableArray <NSString *>*protocols;
-@property (nonatomic,strong)NSMutableArray <ORPropertyDeclare *>*properties;
-@property (nonatomic,strong)NSMutableArray <ORMethodDeclare *>*methods;
+@property (nonatomic,strong)NSMutableArray <ORPropertyNode *>*properties;
+@property (nonatomic,strong)NSMutableArray <ORMethodDeclNode *>*methods;
 + (instancetype)protcolWithProtcolName:(NSString *)protcolName;
 @end
 

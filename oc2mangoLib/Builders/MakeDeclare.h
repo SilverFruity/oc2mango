@@ -16,16 +16,17 @@ ORTypeNode *makeTypeNode(TypeKind type) __attribute__((overloadable)) ;
 extern ORVariableNode *makeVarNode(NSString *name, NSUInteger ptCount);
 extern ORVariableNode *makeVarNode(NSString *name) __attribute__((overloadable)) ;
 
-extern ORClass *makeOCClass(NSString *className);
-extern ORProtocol *makeORProtcol(NSString *protocolName);
-extern ORPropertyDeclare *makePropertyDeclare(NSMutableArray *keywords, ORDeclaratorNode *var);
-extern ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORDeclaratorNode *returnType);
-extern ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare, ORBlockNode *scopeImp);
-extern ORFunctionDeclarator *makeFunctionSignNode(void);
+extern ORClassNode *makeOCClass(NSString *className);
+extern ORProtocolNode *makeORProtcol(NSString *protocolName);
+extern ORPropertyNode *makePropertyDeclare(NSMutableArray *keywords, ORDeclaratorNode *var);
+extern ORMethodDeclNode *makeMethodDeclare(BOOL isClassMethod, ORDeclaratorNode *returnType);
+extern ORMethodNode *makeMethodImplementation(ORMethodDeclNode *declare, ORBlockNode *scopeImp);
+extern ORFunctionDeclNode *makeFunctionSignNode(void);
 extern ORMethodCall *makeMethodCall(void);
 
-extern ORValueExpression *makeValue(OC_VALUE_TYPE type, id value);
-extern ORValueExpression *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
+extern ORValueNode *makeValue(OC_VALUE_TYPE type, id value);
+extern ORValueNode *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
+
 extern ORBlockNode *makeScopeImp(void);
 extern ORFunctionCall *makeFuncCall(ORNode *caller, NSMutableArray *expressions);
 extern ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type);
@@ -35,19 +36,19 @@ extern ORAssignExpression *makeAssignExpression(AssignOperatorType type);
 
 extern ORDeclaratorNode *makeDeclaratorNode(ORTypeNode *type,ORVariableNode *var);
 extern ORInitDeclaratorNode *makeInitDeclaratorNode(ORDeclaratorNode *declarator,ORNode * exp);
-extern ORFunctionDeclarator *makeFunctionDeclarator(void);
-extern ORSubscriptExpression *makeSubscriptNode(ORNode *caller, ORNode *key);
+extern ORFunctionDeclNode *makeFunctionDeclarator(void);
+extern ORSubscriptNode *makeSubscriptNode(ORNode *caller, ORNode *key);
 
-extern ORFunctionImp *makeFunctionNode(ORFunctionDeclarator *decl, ORBlockNode *block);
+extern ORFunctionNode *makeFunctionNode(ORFunctionDeclNode *decl, ORBlockNode *block);
 extern ORIfStatement *makeIfStatement(ORNode *judgement, ORBlockNode *imp);
 extern ORWhileStatement *makeWhileStatement(ORNode *judgement, ORBlockNode *imp);
 extern ORDoWhileStatement *makeDoWhileStatement(ORNode *judgement, ORBlockNode *imp);
-extern ORCaseStatement *makeCaseStatement(ORValueExpression *value);
-extern ORSwitchStatement *makeSwitchStatement(ORValueExpression *value);
+extern ORCaseStatement *makeCaseStatement(ORValueNode *value);
+extern ORSwitchStatement *makeSwitchStatement(ORValueNode *value);
 extern ORForStatement *makeForStatement(ORBlockNode *imp);
 extern ORForInStatement *makeForInStatement(ORBlockNode *imp);
 
-extern ORControlStatement *makeControlStatement(ORControlStateType type,ORNode * expression);
+extern ORControlStatNode *makeControlStatement(ORControlStateType type,ORNode * expression);
 
 extern ORTypedefStatNode *makeTypedefExp(id exp,NSString *newName);
 extern ORStructStatNode *makeStructExp(NSString *name, NSMutableArray *fields);

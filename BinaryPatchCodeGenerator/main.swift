@@ -10,7 +10,7 @@ import Foundation
 let filepath = CommandLine.arguments[1]
 let resultDir = CommandLine.arguments[2]
 
-let parser = Parser()
+let parser = Parser.shared()
 let source = CodeSource.init(filePath: filepath)
 let ast = parser.parseCodeSource(source)
 
@@ -99,16 +99,19 @@ void _PatchNodeDestroy(_PatchNode *node);
 ORPatchFile *_PatchNodeGenerateCheckFile(void *buffer, uint32_t bufferLength);
 """
 
+func StructTypeGenerator(_ structName: String)->String{
+    return "\(structName)Type"
+}
 var NodeTypeEnums = ""
 var enumIndex = 5
 for node in ast.nodes{
-    guard let classNode = node as? ORClass else {
+    guard let classNode = node as? ORClassNode else {
         continue
     }
     if classNode.className == "ORNode" {
         continue
     }
-    NodeTypeEnums += "    _\(classNode.className)Node = \(enumIndex),\n"
+    NodeTypeEnums += "    \(StructTypeGenerator("_\(classNode.className)")) = \(enumIndex),\n"
     enumIndex += 1
 }
 NodeTypeEnums =
@@ -417,7 +420,7 @@ class ClassContent{
         \(structName) *\(structName)Convert(\(className) *exp, _PatchNode *patch, uint32_t *length){
             \(structName) *node = malloc(sizeof(\(structName)));
             memset(node, 0, sizeof(\(structName)));
-            node->nodeType = \(structName)Node;\(withSemicolonConvertExp)
+            node->nodeType = \(StructTypeGenerator(structName));\(withSemicolonConvertExp)
             \(convertExps.joined(separator: "\n    "))
             *length += \(structName)BaseLength;
             return node;
@@ -484,11 +487,11 @@ class ClassContent{
     }
 }
 for node in ast.nodes{
-    guard let classNode = node as? ORClass, classNode.className != "ORNode" else {
+    guard let classNode = node as? ORClassNode, classNode.className != "ORNode" else {
         continue
     }
     let item = ClassContent(className: classNode.className, superClassName:classNode.superClassName)
-    let properties = classNode.properties as! [ORPropertyDeclare]
+    let properties = classNode.properties as! [ORPropertyNode]
     for prop in properties{
         if prop.keywords.contains("readonly"){
             continue
@@ -577,7 +580,7 @@ var serializationExps = [String]()
 var deserializationExps = [String]()
 var destoryExps = [String]()
 for node in ast.nodes{
-    guard let classNode = node as? ORClass else {
+    guard let classNode = node as? ORClassNode else {
         continue
     }
     if classNode.className == "ORNode" {
@@ -598,25 +601,25 @@ for node in ast.nodes{
     
     deConvertExps.append(
     """
-    else if (node->nodeType == \(structName)Node){
+    else if (node->nodeType == \(StructTypeGenerator(structName))){
             return (ORNode *)\(structName)DeConvert((\(structName) *)node, patch);
         }
     """)
     serializationExps.append(
     """
-    else if (node->nodeType == \(structName)Node){
+    else if (node->nodeType == \(StructTypeGenerator(structName))){
             \(structName)Serailization((\(structName) *)node, buffer, cursor);
         }
     """)
     deserializationExps.append(
     """
-    else if (nodeType == \(structName)Node){
+    else if (nodeType == \(StructTypeGenerator(structName))){
             return (_ORNode *)\(structName)Deserialization(buffer, cursor, bufferLength);
         }
     """)
     destoryExps.append(
     """
-    else if (node->nodeType == \(structName)Node){
+    else if (node->nodeType == \(StructTypeGenerator(structName))){
             \(structName)Destroy((\(structName) *)node);
         }
     """

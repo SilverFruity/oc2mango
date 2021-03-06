@@ -24,11 +24,11 @@
     return new;
 }
 @end
-@implementation ORFunctionDeclarator
+@implementation ORFunctionDeclNode
 @end
 @implementation ORNode
 @end
-@implementation ORValueExpression
+@implementation ORValueNode
 @end
 
 @implementation ORIntegerValue
@@ -80,9 +80,9 @@
 }
 
 @end
-@implementation ORFunctionImp
+@implementation ORFunctionNode
 - (instancetype)normalFunctionImp{
-    ORFunctionImp *imp = [ORFunctionImp new];
+    ORFunctionNode *imp = [ORFunctionNode new];
     imp.declare = [self.declare copy];
     imp.scopeImp = self.scopeImp;
     imp.declare.isBlock = NO;
@@ -92,12 +92,12 @@
     return self.declare.isBlock;
 }
 @end
-@implementation ORSubscriptExpression
+@implementation ORSubscriptNode
 @end
 @implementation ORAssignExpression
 - (NSString *)varname{
-    if ([self.value isKindOfClass:[ORValueExpression class]]) {
-        return [(ORValueExpression *)self.value value];
+    if ([self.value isKindOfClass:[ORValueNode class]]) {
+        return [(ORValueNode *)self.value value];
     }
     return nil;
 }
@@ -146,10 +146,10 @@
 @end
 @implementation ORForInStatement
 @end
-@implementation ORControlStatement
+@implementation ORControlStatNode
 @end
 
-@implementation ORPropertyDeclare
+@implementation ORPropertyNode
 - (MFPropertyModifier)modifier{
     NSDictionary *cache = @{
         @"strong":@(MFPropertyModifierMemStrong),
@@ -171,14 +171,14 @@
 - (NSUInteger)hash{
     return [self.var hash];
 }
-- (BOOL)isEqual:(ORPropertyDeclare *)object{
+- (BOOL)isEqual:(ORPropertyNode *)object{
     return [self hash] == [object hash];
 }
 @end
-@interface ORMethodDeclare()
+@interface ORMethodDeclNode()
 @property (nonatomic, copy)NSString *selectorName;
 @end
-@implementation ORMethodDeclare
+@implementation ORMethodDeclNode
 - (NSString *)selectorName{
     if (_selectorName == nil){
         NSMutableArray *names = [self.methodNames mutableCopy];
@@ -190,7 +190,7 @@
     return _selectorName;
 }
 @end
-@implementation ORMethodImplementation
+@implementation ORMethodNode
 - (NSUInteger)hash{
     return [[self.declare selectorName] stringByAppendingFormat:@"%d",self.declare.isClassMethod].hash;
 }
@@ -198,9 +198,9 @@
     return [self hash] == [object hash];
 }
 @end
-@implementation ORClass
-+ (instancetype)classWithClassName:(NSString *)className{
-    ORClass *class = [ORClass new];
+@implementation ORClassNode
++ (instancetype)classNodeWithClassName:(NSString *)className{
+    ORClassNode *class = [ORClassNode new];
     class.className = className;
     return class;
 }
@@ -214,7 +214,7 @@
     
     return self;
 }
-- (void)merge:(ORClass *)target key:(nonnull NSString *)key{
+- (void)merge:(ORClassNode *)target key:(nonnull NSString *)key{
     NSMutableSet *sourceSet = [NSMutableSet setWithArray:[self valueForKey:key]];
     NSMutableSet *compredSet = [NSMutableSet setWithArray:[target valueForKey:key]];
     [compredSet unionSet:sourceSet];
@@ -223,9 +223,9 @@
     [array addObjectsFromArray:compredSet.allObjects];
 }
 @end
-@implementation ORProtocol
+@implementation ORProtocolNode
 + (instancetype)protcolWithProtcolName:(NSString *)protcolName{
-    ORProtocol *protcol = [ORProtocol new];
+    ORProtocolNode *protcol = [ORProtocolNode new];
     protcol.protcolName = protcolName;
     return protcol;
 }

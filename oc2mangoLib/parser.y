@@ -142,7 +142,7 @@ expression_statement
 | declarator_type declarator LC function_implementation RC
 {
     ORDeclaratorNode *returnType = makeDeclaratorNode($1, nil);
-    ORFunctionDeclarator *declare = $2;
+    ORFunctionDeclNode *declare = $2;
     declare.returnNode = returnType;
     [GlobalAst addGlobalStatements:makeFunctionNode(declare, $4)];
 }
@@ -263,7 +263,7 @@ declarator_type declarator
 protocol_declare:
 PROTOCOL IDENTIFIER CHILD_COLLECTION_OPTIONAL
 {
-    ORProtocol *orprotcol = [GlobalAst protcolForName:$2];
+    ORProtocolNode *orprotcol = [GlobalAst protcolForName:$2];
     NSString *supers = $3;
     if (supers != nil){
         NSArray *protocols = [supers componentsSeparatedByString:@","];
@@ -273,13 +273,13 @@ PROTOCOL IDENTIFIER CHILD_COLLECTION_OPTIONAL
 }
 | protocol_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
 {
-    ORProtocol *orprotcol = $1;
+    ORProtocolNode *orprotcol = $1;
     [orprotcol.properties addObject:makePropertyDeclare($3, $4)];
     $$ = orprotcol;
 }
 | protocol_declare method_declare SEMICOLON
 {
-    ORProtocol *orprotcol =  $1;
+    ORProtocolNode *orprotcol =  $1;
     [orprotcol.methods addObject: $2];
     $$ = orprotcol;
 }
@@ -290,7 +290,7 @@ class_declare:
 //
 INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
 {
-    ORClass *occlass = [GlobalAst classForName:$2];
+    ORClassNode *occlass = [GlobalAst classForName:$2];
     occlass.superClassName = $4;
     NSArray *protocols = [$5 componentsSeparatedByString:@","];
     occlass.protocols = [protocols mutableCopy];
@@ -299,27 +299,27 @@ INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
 // category
 | INTERFACE IDENTIFIER LP IDENTIFIER RP CHILD_COLLECTION_OPTIONAL
 {
-    ORClass *occlass = [GlobalAst classForName:$2];
+    ORClassNode *occlass = [GlobalAst classForName:$2];
     NSArray *protocols = [$6 componentsSeparatedByString:@","];
     occlass.protocols = [protocols mutableCopy];
     $$ = occlass;
 }
 | INTERFACE IDENTIFIER LP RP CHILD_COLLECTION_OPTIONAL
 {
-    ORClass *occlass = [GlobalAst classForName:$2];
+    ORClassNode *occlass = [GlobalAst classForName:$2];
     NSArray *protocols = [$5 componentsSeparatedByString:@","];
     occlass.protocols = [protocols mutableCopy];
     $$ = occlass;
 }
 | class_declare LC class_private_varibale_declare RC
 {
-    ORClass *occlass =  $1;
+    ORClassNode *occlass =  $1;
     [occlass.privateVariables addObjectsFromArray: $3];
     $$ = occlass;
 }
 | class_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
 {
-    ORClass *occlass =  $1;
+    ORClassNode *occlass =  $1;
     [occlass.properties addObject:makePropertyDeclare($3, $4)];
     $$ = occlass;
 }
@@ -332,7 +332,7 @@ INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
 class_implementation:
 IMPLEMENTATION IDENTIFIER class_private_list
 {
-    ORClass *occlass = [GlobalAst classForName:$2];
+    ORClassNode *occlass = [GlobalAst classForName:$2];
     [occlass.privateVariables addObjectsFromArray: $3];
     $$ = occlass;
 }
@@ -343,8 +343,8 @@ IMPLEMENTATION IDENTIFIER class_private_list
 }
 | class_implementation method_declare LC function_implementation RC
 {
-    ORMethodImplementation *imp = makeMethodImplementation( $2,  $4);
-    ORClass *occlass =  $1;
+    ORMethodNode *imp = makeMethodImplementation( $2,  $4);
+    ORClassNode *occlass =  $1;
     [occlass.methods addObject:imp];
     $$ = occlass;
 }
@@ -417,14 +417,14 @@ SUB LP parameter_declaration RP
 }
 | method_declare IDENTIFIER
 {
-    ORMethodDeclare *method = $$;
+    ORMethodDeclNode *method = $$;
     [method.methodNames addObject: $2];
     $$ = method;
 }
 | method_declare IDENTIFIER COLON LP parameter_declaration RP IDENTIFIER
 {
     ORDeclaratorNode *pair = $5;
-    ORMethodDeclare *method = $$;
+    ORMethodDeclNode *method = $$;
     [method.methodNames addObject: $2];
     [method.parameterTypes addObject:pair];
     [method.parameterNames addObject: $7];
@@ -467,7 +467,7 @@ objc_method_call:
 | LB postfix_expression objc_method_call_pramameters RB
 {
      ORMethodCall *methodcall = makeMethodCall();
-     ORValueExpression *caller = $2;
+     ORValueNode *caller = $2;
      methodcall.caller =  caller;
      NSArray *params = $3;
      methodcall.names = params[0];
@@ -495,8 +495,8 @@ block_implementation:
 POWER declarator_type_opt pointer_optional block_parameters_optinal LC function_implementation RC
 {
     ORDeclaratorNode *returnNode = makeDeclaratorNode($2, makeVarNode(nil,$3));
-    ORFunctionDeclarator *declare = makeFunctionDeclarator();
-    declare.declarators = $4;
+    ORFunctionDeclNode *declare = makeFunctionDeclarator();
+    declare.params = $4;
     declare.isBlock = YES;
     declare.returnNode = returnNode;
     $$ = makeFunctionNode(declare, $6);;
@@ -1297,13 +1297,13 @@ IDENTIFIER
 }
 | direct_declarator LP parameter_type_list RP
 {
-    ORFunctionDeclarator *funVar = [ORFunctionDeclarator copyFromVar:$1];
+    ORFunctionDeclNode *funVar = [ORFunctionDeclNode copyFromVar:$1];
     NSMutableArray *pairs = $3;
     if ([pairs lastObject] == [NSNull null]) {
         funVar.isMultiArgs = YES;
         [pairs removeLastObject];
     }
-    funVar.declarators = pairs;
+    funVar.params = pairs;
     $$ = funVar;
 }
 | direct_declarator LB expression_optional RB
