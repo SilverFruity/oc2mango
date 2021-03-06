@@ -51,7 +51,7 @@ if (x >= 0 ){
         
         
         // if ()
-        let condition = ifS?.condition as? ORBinaryExpression
+        let condition = ifS?.condition as? ORBinaryNode
         XCTAssert(condition?.operatorType == BinaryOperatorGE)
         let left1 = condition?.left as? ORValueNode
         let right1 = condition?.right as? ORIntegerValue
@@ -61,7 +61,7 @@ if (x >= 0 ){
         let condition1 = elseif1?.condition as? ORValueNode
         XCTAssert(condition1?.value as! String == "x")
         
-        let condition2 = elseif2?.condition as? ORBinaryExpression
+        let condition2 = elseif2?.condition as? ORBinaryNode
         XCTAssert(condition2?.operatorType == BinaryOperatorEqual)
 
         

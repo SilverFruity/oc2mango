@@ -168,7 +168,7 @@ typedef enum: uint32_t{
     AssignOperatorAssignShiftRight
 }AssignOperatorType;
 
-@interface ORAssignExpression: ORNode
+@interface ORAssignNode: ORNode
 @property (nonatomic,assign)AssignOperatorType assignType;
 @property (nonatomic,strong)ORNode * value;
 @property (nonatomic,strong)ORNode * expression;
@@ -192,7 +192,7 @@ typedef enum: uint32_t{
     UnaryOperatorAdressPoint,
     UnaryOperatorAdressValue
 }UnaryOperatorType;
-@interface ORUnaryExpression: ORNode
+@interface ORUnaryNode: ORNode
 @property (nonatomic,assign)UnaryOperatorType operatorType;
 @property (nonatomic,strong)ORNode * value;
 @end
@@ -218,13 +218,13 @@ typedef enum: uint32_t{
     BinaryOperatorLOGIC_OR
 }BinaryOperatorType;
 
-@interface ORBinaryExpression: ORNode
+@interface ORBinaryNode: ORNode
 @property (nonatomic,assign)BinaryOperatorType operatorType;
 @property (nonatomic,strong)ORNode * left;
 @property (nonatomic,strong)ORNode * right;
 @end
 
-@interface ORTernaryExpression: ORNode
+@interface ORTernaryNode: ORNode
 @property (nonatomic,strong)ORNode * expression;
 @property (nonatomic,strong)NSMutableArray <ORNode *>*values;
 @end

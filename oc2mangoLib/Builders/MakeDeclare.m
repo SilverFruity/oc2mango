@@ -75,10 +75,15 @@ ORValueNode *makeValue(OC_VALUE_TYPE type, id value){
 ORValueNode *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
     return makeValue(type, nil);
 }
-
-ORBlockNode *makeScopeImp(){
-    __autoreleasing ORBlockNode *node = [[ORBlockNode alloc] init];
+ORBlockNode *makeScopeImp(NSMutableArray *stats){
+    __autoreleasing ORBlockNode *node = [ORBlockNode new];
+    if (stats) {
+        node.statements = stats;
+    }
     return node;
+}
+ORBlockNode *makeScopeImp(void) __attribute__((overloadable)){
+    return makeScopeImp(nil);
 }
 ORFunctionCall *makeFuncCall(ORValueNode *caller, NSMutableArray *expressions){
     __autoreleasing ORFunctionCall *call = [ORFunctionCall new];
@@ -86,24 +91,26 @@ ORFunctionCall *makeFuncCall(ORValueNode *caller, NSMutableArray *expressions){
     call.expressions = expressions;
     return call;
 }
-ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type){
-    __autoreleasing ORUnaryExpression *expression = [ORUnaryExpression  new];
+ORUnaryNode *makeUnaryExpression(UnaryOperatorType type, ORNode *node){
+    __autoreleasing ORUnaryNode *expression = [ORUnaryNode  new];
     expression.operatorType = type;
+    expression.value = node;
     return expression;
 }
-ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type)
-{
-    __autoreleasing ORBinaryExpression *expression = [ORBinaryExpression new];
+ORBinaryNode *makeBinaryExpression(BinaryOperatorType type, ORNode *left, ORNode *right){
+    __autoreleasing ORBinaryNode *expression = [ORBinaryNode new];
     expression.operatorType = type;
+    expression.left = left;
+    expression.right = right;
     return expression;
 }
-ORTernaryExpression *makeTernaryExpression(){
-    __autoreleasing ORTernaryExpression *node = [ORTernaryExpression new];
+ORTernaryNode *makeTernaryExpression(){
+    __autoreleasing ORTernaryNode *node = [ORTernaryNode new];
     return node;
 }
 
-ORAssignExpression *makeAssignExpression(AssignOperatorType type){
-    __autoreleasing ORAssignExpression *expression = [ORAssignExpression new];
+ORAssignNode *makeAssignExpression(AssignOperatorType type){
+    __autoreleasing ORAssignNode *expression = [ORAssignNode new];
     expression.assignType = type;
     return expression;
 }
@@ -115,6 +122,7 @@ ORDeclaratorNode *makeDeclaratorNode(ORTypeNode *type,ORVariableNode *var){
 }
 
 ORInitDeclaratorNode *makeInitDeclaratorNode(ORDeclaratorNode *declarator,ORNode * exp){
+    
     __autoreleasing ORInitDeclaratorNode *declare = [ORInitDeclaratorNode new];
     declare.declarator = declarator;
     declare.expression = exp;

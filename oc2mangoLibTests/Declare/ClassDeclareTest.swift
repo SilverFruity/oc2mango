@@ -165,16 +165,15 @@ void func(NSString *a, int *b){
         """
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let exp = ast.globalStatements[0] as! ORInitDeclaratorNode
-        XCTAssert(exp.declarator.type.type == TypeInt)
-        XCTAssert(exp.declarator.var.varname == "a")
-        XCTAssert(exp.declarator.var.ptCount == 0)
-        XCTAssert(exp.declarator is ORCArrayDeclNode)
-        XCTAssert(((exp.declarator as! ORCArrayDeclNode).capacity as! ORIntegerValue).value == 100)
-        let exp1 = ast.globalStatements[2] as! ORInitDeclaratorNode
-        XCTAssert(exp1.declarator.type.type == TypeInt)
-        XCTAssert(exp1.declarator.var.varname == "a")
-        XCTAssert(exp1.declarator.var.ptCount == 1)
+        let exp = ast.globalStatements[0] as! ORCArrayDeclNode
+        XCTAssert(exp.type.type == TypeInt)
+        XCTAssert(exp.var.varname == "a")
+        XCTAssert(exp.var.ptCount == 0)
+        XCTAssert((exp.capacity as! ORIntegerValue).value == 100)
+        let exp1 = ast.globalStatements[2] as! ORDeclaratorNode
+        XCTAssert(exp1.type.type == TypeInt)
+        XCTAssert(exp1.var.varname == "a")
+        XCTAssert(exp1.var.ptCount == 1)
     }
     func testUnionDeclare(){
         let source =
@@ -190,12 +189,12 @@ void func(NSString *a, int *b){
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let exp = ast.globalStatements.firstObject as! ORUnionStatNode
-        let fields = exp.fields as! [ORInitDeclaratorNode]
+        let fields = exp.fields as! [ORDeclaratorNode]
         XCTAssert(fields.count == 2)
-        XCTAssert(fields[0].declarator.type.type == TypeDouble)
-        XCTAssert(fields[1].declarator.type.type == TypeDouble)
-        XCTAssert(fields[0].declarator.var.varname == "x")
-        XCTAssert(fields[1].declarator.var.varname == "y")
+        XCTAssert(fields[0].type.type == TypeDouble)
+        XCTAssert(fields[1].type.type == TypeDouble)
+        XCTAssert(fields[0].var.varname == "x")
+        XCTAssert(fields[1].var.varname == "y")
     }
     func testStructExpression(){
         let source =
@@ -211,12 +210,12 @@ void func(NSString *a, int *b){
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let exp = ast.globalStatements.firstObject as! ORStructStatNode
-        let fields = exp.fields as! [ORInitDeclaratorNode]
+        let fields = exp.fields as! [ORDeclaratorNode]
         XCTAssert(fields.count == 2)
-        XCTAssert(fields[0].declarator.type.type == TypeDouble)
-        XCTAssert(fields[1].declarator.type.type == TypeDouble)
-        XCTAssert(fields[0].declarator.var.varname == "x")
-        XCTAssert(fields[1].declarator.var.varname == "y")
+        XCTAssert(fields[0].type.type == TypeDouble)
+        XCTAssert(fields[1].type.type == TypeDouble)
+        XCTAssert(fields[0].var.varname == "x")
+        XCTAssert(fields[1].var.varname == "y")
     }
     func testTypeDefExpression(){
         var source =
@@ -243,12 +242,12 @@ void func(NSString *a, int *b){
         let structTypeDef = ast.globalStatements.firstObject as! ORTypedefStatNode
         XCTAssert(structTypeDef.typeNewName == "Point")
         let structExp = structTypeDef.expression as! ORStructStatNode
-        let fields = structExp.fields as! [ORInitDeclaratorNode]
+        let fields = structExp.fields as! [ORDeclaratorNode]
         XCTAssert(fields.count == 2)
-        XCTAssert(fields[0].declarator.type.type == TypeDouble)
-        XCTAssert(fields[1].declarator.type.type == TypeDouble)
-        XCTAssert(fields[0].declarator.var.varname == "x")
-        XCTAssert(fields[1].declarator.var.varname == "y")
+        XCTAssert(fields[0].type.type == TypeDouble)
+        XCTAssert(fields[1].type.type == TypeDouble)
+        XCTAssert(fields[0].var.varname == "x")
+        XCTAssert(fields[1].var.varname == "y")
         
         
         source =
@@ -280,7 +279,7 @@ void func(NSString *a, int *b){
         let enumTypeDef = ast.globalStatements.firstObject as! ORTypedefStatNode
         XCTAssert(enumTypeDef.typeNewName == "UIControlEvents")
         let enumExp = enumTypeDef.expression as! OREnumStatNode
-        let enumFields = enumExp.fields as! [ORAssignExpression]
+        let enumFields = enumExp.fields as! [ORAssignNode]
         XCTAssert(enumFields[0].varname() == "UIControlEventTouchDown")
         XCTAssert(enumFields[1].varname() == "UIControlEventTouchDownRepeat")
         XCTAssert(enumFields[2].varname() == "UIControlEventTouchDragInside")
@@ -310,10 +309,9 @@ void func(NSString *a, int *b){
         """
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        let declare = ast.globalStatements.firstObject as! ORInitDeclaratorNode
-        let funcVar = declare.declarator as! ORFunctionDeclNode
-        XCTAssert(funcVar.var.varname == "NSLog")
-        XCTAssert(funcVar.isMultiArgs)
+        let declare = ast.globalStatements.firstObject as! ORFunctionDeclNode
+        XCTAssert(declare.var.varname == "NSLog")
+        XCTAssert(declare.isMultiArgs)
     }
     
     func testDeclareProtcol(){

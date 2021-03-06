@@ -79,7 +79,7 @@ control_statement // return / break / continue
 
 %type <object>
 expression
-expression_optional
+expression_opt
 assign_expression
 ternary_expression
 logic_or_expression
@@ -211,8 +211,7 @@ NS_ENUM LP declarator_type COMMA IDENTIFIER RP enum_declare
 }
 | _enum enum_declare
 {
-    OREnumStatNode *exp = $2;
-    $$ = exp;
+    $$ = $2;
 }
 | LC enum_field_list RC
 {
@@ -231,9 +230,8 @@ assign_expression
 }
 | enum_field_list COMMA assign_expression
 {
-    NSMutableArray *list = $1;
-    [list addObject:$3];
-    $$ = list;
+    [$1 addObject:$3];
+    $$ = $1;
 }
 ;
 
@@ -505,9 +503,9 @@ POWER declarator_type_opt pointer_optional block_parameters_optinal LC function_
 
 
 expression: assign_expression;
-expression_optional:
+expression_opt:
 {
-    $$ = NULL;
+    $$ = nil;
 }
 |assign_expression;
 
@@ -526,13 +524,7 @@ assign_expression SEMICOLON
     }
     $$ = declares;
 }
-|_return SEMICOLON
-{
-    ORNode *node = makeControlStatement(ORControlStatReturn,nil);
-    node.withSemicolon = YES;
-    $$ = node;
-}
-| _return expression SEMICOLON
+| _return expression_opt SEMICOLON
 {
     ORNode *node = makeControlStatement(ORControlStatReturn,$2);
     node.withSemicolon = YES;
@@ -555,21 +547,15 @@ assign_expression SEMICOLON
 if_statement:
 IF LP expression RP expression_statement
 {
-    ORBlockNode *imp = makeScopeImp();
-    [imp addStatements: $5];
-    ORIfStatement *statement = makeIfStatement( $3,imp);
-    $$ = statement;
+    $$ = makeIfStatement( $3, makeScopeImp($5));
 }
 | IF LP expression RP LC function_implementation RC
 {
-    ORIfStatement *statement = makeIfStatement( $3,$6);
-    $$ = statement;
+    $$ = makeIfStatement( $3, $6);;
 }
 | if_statement _else IF LP expression RP expression_statement
 {
-    ORBlockNode *imp = makeScopeImp();
-    [imp addStatements: $7];
-    ORIfStatement *elseIfStatement = makeIfStatement( $5,imp);
+    ORIfStatement *elseIfStatement = makeIfStatement( $5, makeScopeImp($7));
     elseIfStatement.last = $1;
     $$  = elseIfStatement;
 }
@@ -581,9 +567,7 @@ IF LP expression RP expression_statement
 }
 | if_statement _else expression_statement
 {
-    ORBlockNode *imp = makeScopeImp();
-    [imp addStatements: $3];
-    ORIfStatement *elseStatement = makeIfStatement(nil,imp);
+    ORIfStatement *elseStatement = makeIfStatement(nil, makeScopeImp($3));
     elseStatement.last = $1;
     $$  = elseStatement;
 }
@@ -598,40 +582,32 @@ IF LP expression RP expression_statement
 dowhile_statement: 
 _do LC function_implementation RC _while LP expression RP
 {
-    ORDoWhileStatement *statement = makeDoWhileStatement($7,$3);
-    $$ = statement;
+    $$ = makeDoWhileStatement($7,$3);
 }
 ;
 while_statement:
 _while LP expression RP LC function_implementation RC
 {
-    ORWhileStatement *statement = makeWhileStatement($3,$6);
-    $$ = statement;
+    $$ = makeWhileStatement($3,$6);
 }
 ;
 
 case_statement:
 _case primary_expression COLON
 {
-     ORCaseStatement *statement = makeCaseStatement($2);
-    $$ = statement;
+    $$ = makeCaseStatement($2);
 }
 | _default COLON
 {
-    ORCaseStatement *statement = makeCaseStatement(nil);
-    $$ = statement;
+    $$ = makeCaseStatement(nil);
 }
 | case_statement expression_statement
 {
-    ORCaseStatement *statement =  $1;
-    [statement.scopeImp addStatements:$2];
-    $$ = statement;
+    [[$1 scopeImp] addStatements:$2];
 }
 | case_statement LC function_implementation RC
 {
-    ORCaseStatement *statement =  $1;
-    statement.scopeImp =  $3;
-    $$ = statement;
+    [$1 setScopeImp:$3];
 }
 ;
 case_statement_list:
@@ -641,7 +617,6 @@ case_statement_list:
 | case_statement_list case_statement
 {
     [$1 addObject: $2];
-    $$ = $1;
 }
 ;
 switch_statement:
@@ -656,15 +631,11 @@ switch_statement:
 for_statement_var_list:
 | primary_expression
 {
-    NSMutableArray *list = makeMutableArray(nil);
-    [list addObject:$1];
-    $$ = list;
+    $$ = makeMutableArray($1);
 }
 | for_statement_var_list COMMA primary_expression
 {
-    NSMutableArray *list = $1;
-    [list addObject: $3];
-    $$ = list;
+    [$1 addObject: $3];
 }
 
 for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
@@ -676,13 +647,13 @@ for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_lis
     $$ = statement;
 }
 |  _for LP for_statement_var_list SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
-       {
-           ORForStatement* statement = makeForStatement( $10);
-           statement.varExpressions = $3;
-           statement.condition = $5;
-           statement.expressions = $7;
-           $$ = statement;
-       }
+{
+   ORForStatement* statement = makeForStatement( $10);
+   statement.varExpressions = $3;
+   statement.condition = $5;
+   statement.expressions = $7;
+   $$ = statement;
+}
 ;
 
 forin_statement: _for LP declaration _in expression RP LC function_implementation RC
@@ -712,15 +683,11 @@ function_implementation:
 }
 | function_implementation expression_statement
 {
-    ORBlockNode *imp = $1;
-    [imp addStatements: $2];
-    $$ = imp;
+    [$1 addStatements: $2];
 }
 | function_implementation control_statement
 {
-    ORBlockNode *imp = $1;
-    [imp addStatements: $2];
-    $$ = imp;
+    [$1 addStatements: $2];
 }
 ;
         
@@ -731,15 +698,11 @@ expression_list:
 }
 | expression
 {
-    NSMutableArray *list = makeMutableArray(nil);
-    [list addObject:$1];
-    $$ = list;
+    $$ = makeMutableArray($1);
 }
 | expression_list COMMA expression
 {
-    NSMutableArray *list = $1;
-    [list addObject: $3];
-    $$ = list;
+    [$1 addObject: $3];
 }
 ;
 
@@ -786,7 +749,7 @@ ASSIGN
 assign_expression: ternary_expression
 | unary_expression assign_operator assign_expression
 {
-    ORAssignExpression *expression = makeAssignExpression($2);
+    ORAssignNode *expression = makeAssignExpression($2);
     expression.expression =  $3;
     expression.value = $1;
     $$ = expression;
@@ -797,7 +760,7 @@ assign_expression: ternary_expression
 ternary_expression: logic_or_expression
 | logic_or_expression QUESTION ternary_expression COLON ternary_expression
 {
-    ORTernaryExpression *expression = makeTernaryExpression();
+    ORTernaryNode *expression = makeTernaryExpression();
     expression.expression = $1;
     [expression.values addObject:$3];
     [expression.values addObject:$5];
@@ -805,7 +768,7 @@ ternary_expression: logic_or_expression
 }
 | logic_or_expression QUESTION COLON ternary_expression
 {
-    ORTernaryExpression *expression = makeTernaryExpression();
+    ORTernaryNode *expression = makeTernaryExpression();
     expression.expression = $1;
     [expression.values addObject:$4];
     $$ = expression;
@@ -817,10 +780,7 @@ ternary_expression: logic_or_expression
 logic_or_expression: logic_and_expression
 | logic_or_expression LOGIC_OR logic_or_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorLOGIC_OR);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorLOGIC_OR, $1, $3);
 }
 ;
 
@@ -828,30 +788,21 @@ logic_or_expression: logic_and_expression
 logic_and_expression: bite_or_expression
 | logic_and_expression LOGIC_AND bite_or_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorLOGIC_AND);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorLOGIC_AND, $1, $3);
 }
 ;
 // |
 bite_or_expression: bite_xor_expression
 | bite_or_expression OR bite_xor_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorOr);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorOr, $1, $3);
 }
 ;
 // ^
 bite_xor_expression: bite_and_expression
 | bite_xor_expression POWER bite_and_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorXor);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorXor, $1, $3);
 }
 ;
 
@@ -859,10 +810,7 @@ bite_xor_expression: bite_and_expression
 bite_and_expression: equality_expression
 | bite_and_expression AND equality_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorAnd);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorAnd, $1, $3);
 }
 ;
 
@@ -870,82 +818,52 @@ bite_and_expression: equality_expression
 equality_expression: relational_expression
 | equality_expression EQ relational_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorEqual);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorEqual, $1, $3);
 }
 | equality_expression NE relational_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorNotEqual);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorNotEqual, $1, $3);
 }
 ;
 // < <= > >=
 relational_expression: bite_shift_expression
 | relational_expression LT bite_shift_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorLT);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorLT, $1, $3);;
 }
 | relational_expression LE bite_shift_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorLE);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorLE, $1, $3);
 }
 | relational_expression GT bite_shift_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorGT);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorGT, $1, $3);
 }
 | relational_expression GE bite_shift_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorGE);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorGE, $1, $3);
 }
 ;
 // >> <<
 bite_shift_expression: additive_expression
 | bite_shift_expression SHIFTLEFT additive_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorShiftLeft);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorShiftLeft, $1, $3);
 }
 | bite_shift_expression SHIFTRIGHT additive_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorShiftRight);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorShiftRight, $1, $3);
 }
 ;
 // + -
 additive_expression: multiplication_expression
 | additive_expression ADD multiplication_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorAdd);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorAdd, $1, $3);
 }
 | additive_expression SUB multiplication_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorSub);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorSub, $1, $3);
 }
 ;
 
@@ -953,24 +871,15 @@ additive_expression: multiplication_expression
 multiplication_expression: unary_expression
 | multiplication_expression ASTERISK unary_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorMulti);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorMulti, $1, $3);
 }
 | multiplication_expression DIV unary_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorDiv);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorDiv, $1, $3);
 }
 | multiplication_expression MOD unary_expression
 {
-    ORBinaryExpression *exp = makeBinaryExpression(BinaryOperatorMod);
-    exp.left =  $1;
-    exp.right =  $3;
-    $$ = exp;
+    $$ = makeBinaryExpression(BinaryOperatorMod, $1, $3);
 }
 ;
 
@@ -978,27 +887,19 @@ multiplication_expression: unary_expression
 unary_expression: postfix_expression
 | unary_operator unary_expression
 {
-    ORUnaryExpression *exp = makeUnaryExpression($1);
-    exp.value = $2;
-    $$ = exp;
+    $$ = makeUnaryExpression($1, $2);;
 }
 | _sizeof unary_expression
 {
-    ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorSizeOf);
-    exp.value = $2;
-    $$ = exp;
+    $$ = makeUnaryExpression(UnaryOperatorSizeOf, $2);
 }
 | INCREMENT unary_expression
 {
-    ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorIncrementPrefix);
-    exp.value = $2;
-    $$ = exp;
+    $$ = makeUnaryExpression(UnaryOperatorIncrementPrefix, $2);
 }
 | DECREMENT unary_expression
 {
-    ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementPrefix);
-    exp.value = $2;
-    $$ = exp;
+    $$ = makeUnaryExpression(UnaryOperatorDecrementPrefix, $2);
 }
 ;
 
@@ -1039,15 +940,11 @@ bridge_set_optional:
 postfix_expression: primary_expression
 | postfix_expression INCREMENT
 {
-    ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorIncrementSuffix);
-    exp.value = $1;
-    $$ = exp;
+    $$ = makeUnaryExpression(UnaryOperatorIncrementSuffix, $1);
 }
 | postfix_expression DECREMENT
 {
-    ORUnaryExpression *exp = makeUnaryExpression(UnaryOperatorDecrementSuffix);
-    exp.value = $1;
-    $$ = exp;
+    $$ = makeUnaryExpression(UnaryOperatorDecrementSuffix, $1);
 }
 | postfix_expression DOT IDENTIFIER
 {
@@ -1097,14 +994,12 @@ INTETER_LITERAL
 ;
 dict_entrys:
 {
-    NSMutableArray *array = makeMutableArray(nil);
-    $$ = array;
+    $$ = makeMutableArray(nil);
 }
 | dict_entrys expression COLON expression
 {
-    NSMutableArray *array = $1;
-    [array addObject:@[$2,$4]];
-    $$ = array;
+    [$1 addObject:@[$2,$4]];
+    $$ = $1;
 }
 | dict_entrys COMMA
 {
@@ -1214,17 +1109,26 @@ declaration:
 declaration_modifier declarator_type init_declarator_list
 {
     NSMutableArray *array = $3;
-    for (ORInitDeclaratorNode *declare in array){
-        declare.declarator.type = $2;
-        declare.declarator.type.modifier = $1;
+    for (id declare in array){
+        if ([declare isKindOfClass:[ORInitDeclaratorNode class]]){
+            [declare declarator].type = $2;
+            [declare declarator].type.modifier = $1;
+        }else{
+            [(ORDeclaratorNode *)declare setType:$2];
+            [[(ORDeclaratorNode *)declare type] setModifier:$1];
+        }
     }
     $$ = array;
 }
 | declarator_type init_declarator_list
 {
     NSMutableArray *array = $2;
-    for (ORInitDeclaratorNode *declare in array){
-        declare.declarator.type = $1;
+    for (id declare in array){
+        if ([declare isKindOfClass:[ORInitDeclaratorNode class]]){
+            [declare declarator].type = $1;
+        }else{
+            [(ORDeclaratorNode *)declare setType:$1];
+        }
     }
     $$ = array;
 }
@@ -1236,7 +1140,7 @@ init_declarator
 }
 | init_declarator_list COMMA init_declarator
 {
-    [(NSMutableArray *)$1 addObject: $3];
+    [$1 addObject: $3];
     $$ = $1;
 }
 ;
@@ -1244,7 +1148,7 @@ init_declarator
 init_declarator:
 declarator
 {
-    $$ = makeInitDeclaratorNode($1, nil);
+    $$ = $1;
 }
 | declarator ASSIGN assign_expression
 {
@@ -1304,7 +1208,7 @@ IDENTIFIER
     funcDecl.params = pairs;
     $$ = funcDecl;
 }
-| direct_declarator LB expression_optional RB
+| direct_declarator LB expression_opt RB
 {
     ORDeclaratorNode *node = $1;
     if ($3 == NULL){
@@ -1350,15 +1254,11 @@ parameter_list: /* empty */
 }
 | parameter_declaration
 {
-    NSMutableArray *array = makeMutableArray(nil);
-    [array addObject:$1];
-    $$ = array;
+    $$ = makeMutableArray($1);
 }
 | parameter_list COMMA parameter_declaration
 {
-    NSMutableArray *array = $1;
-    [array addObject: $3];
-    $$ = array;
+    [$1 addObject: $3];
 }
 ;
 

@@ -87,7 +87,7 @@
 @end
 @implementation ORSubscriptNode
 @end
-@implementation ORAssignExpression
+@implementation ORAssignNode
 - (NSString *)varname{
     if ([self.value isKindOfClass:[ORValueNode class]]) {
         return [(ORValueNode *)self.value value];
@@ -112,11 +112,11 @@
 @implementation ORInitDeclaratorNode
 @end
 
-@implementation ORUnaryExpression
+@implementation ORUnaryNode
 @end
-@implementation ORBinaryExpression
+@implementation ORBinaryNode
 @end
-@implementation ORTernaryExpression
+@implementation ORTernaryNode
 - (instancetype)init
 {
     self = [super init];

@@ -27,9 +27,9 @@ class ExpressionTest: XCTestCase {
         float c = 0.111;
         """
         let ast = ocparser.parseSource(source)
-        let assign = ast.globalStatements[0] as? ORInitDeclaratorNode
-        XCTAssert(assign?.declarator.var.ptCount == 3)
-        XCTAssert(assign?.declarator.var.varname == "a",assign?.declarator.var.varname ?? "")
+        let assign = ast.globalStatements[0] as? ORDeclaratorNode
+        XCTAssert(assign?.var.ptCount == 3)
+        XCTAssert(assign?.var.varname == "a",assign?.var.varname ?? "")
     }
     func testDeclareExpression(){
         source =
@@ -71,58 +71,58 @@ class ExpressionTest: XCTestCase {
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
 
-        let assign = ast.globalStatements[0] as? ORInitDeclaratorNode;
-        XCTAssert(assign?.declarator.type.type == TypeInt)
-        XCTAssert(assign?.declarator.var.varname == "a")
+        let assign = ast.globalStatements[0] as? ORDeclaratorNode;
+        XCTAssert(assign?.type.type == TypeInt)
+        XCTAssert(assign?.var.varname == "a")
         
-        let assign1 = ast.globalStatements[1] as? ORInitDeclaratorNode;
-        XCTAssert(assign1?.declarator.type.type == TypeInt)
+        let assign1 = ast.globalStatements[1] as? ORDeclaratorNode;
+        XCTAssert(assign1?.type.type == TypeInt)
 
 
-        let assign2 = ast.globalStatements[2] as? ORInitDeclaratorNode;
-        XCTAssert(assign2?.declarator.type.type == TypeUInt)
+        let assign2 = ast.globalStatements[2] as? ORDeclaratorNode;
+        XCTAssert(assign2?.type.type == TypeUInt)
         
-        let assign3 = ast.globalStatements[3] as? ORInitDeclaratorNode;
-        XCTAssert(assign3?.declarator.type.type == TypeChar)
+        let assign3 = ast.globalStatements[3] as? ORDeclaratorNode;
+        XCTAssert(assign3?.type.type == TypeChar)
         
-        let assign4 = ast.globalStatements[4] as? ORInitDeclaratorNode;
-        XCTAssert(assign4?.declarator.type.type == TypeUChar)
+        let assign4 = ast.globalStatements[4] as? ORDeclaratorNode;
+        XCTAssert(assign4?.type.type == TypeUChar)
         
-        let assign5 = ast.globalStatements[5] as? ORInitDeclaratorNode;
-        XCTAssert(assign5?.declarator.type.type == TypeLong)
+        let assign5 = ast.globalStatements[5] as? ORDeclaratorNode;
+        XCTAssert(assign5?.type.type == TypeLong)
         
-        let assign6 = ast.globalStatements[6] as? ORInitDeclaratorNode;
-        XCTAssert(assign6?.declarator.type.type == TypeULong)
+        let assign6 = ast.globalStatements[6] as? ORDeclaratorNode;
+        XCTAssert(assign6?.type.type == TypeULong)
         
-        let assign7 = ast.globalStatements[7] as? ORInitDeclaratorNode;
-        XCTAssert(assign7?.declarator.type.type == TypeLongLong)
+        let assign7 = ast.globalStatements[7] as? ORDeclaratorNode;
+        XCTAssert(assign7?.type.type == TypeLongLong)
         
-        let assign8 = ast.globalStatements[8] as? ORInitDeclaratorNode;
-        XCTAssert(assign8?.declarator.type.type == TypeULongLong)
+        let assign8 = ast.globalStatements[8] as? ORDeclaratorNode;
+        XCTAssert(assign8?.type.type == TypeULongLong)
         
-        let assign9 = ast.globalStatements[9] as? ORInitDeclaratorNode;
-        XCTAssert(assign9?.declarator.type.type == TypeLongLong)
+        let assign9 = ast.globalStatements[9] as? ORDeclaratorNode;
+        XCTAssert(assign9?.type.type == TypeLongLong)
         
-        let assign10 = ast.globalStatements[10] as? ORInitDeclaratorNode;
-        XCTAssert(assign10?.declarator.type.type == TypeULongLong)
+        let assign10 = ast.globalStatements[10] as? ORDeclaratorNode;
+        XCTAssert(assign10?.type.type == TypeULongLong)
         
-        let assign11 = ast.globalStatements[11] as? ORInitDeclaratorNode;
-        XCTAssert(assign11?.declarator.type.type == TypeUInt)
+        let assign11 = ast.globalStatements[11] as? ORDeclaratorNode;
+        XCTAssert(assign11?.type.type == TypeUInt)
         
-        let assign12 = ast.globalStatements[12] as? ORInitDeclaratorNode
-        XCTAssert(assign12?.declarator.var.isBlock == true)
-        XCTAssert(assign12?.declarator.var.varname == "block")
+        let assign12 = ast.globalStatements[12] as? ORDeclaratorNode
+        XCTAssert(assign12?.var.isBlock == true)
+        XCTAssert(assign12?.var.varname == "block")
         
-        let assign13 = ast.globalStatements[13] as? ORInitDeclaratorNode
-        XCTAssert(assign13?.declarator.type.type == TypeObject,"\(assign13?.declarator.type.type)")
+        let assign13 = ast.globalStatements[13] as? ORDeclaratorNode
+        XCTAssert(assign13?.type.type == TypeObject,"\(assign13?.type.type)")
         
-        let assign14 = ast.globalStatements[14] as? ORInitDeclaratorNode
-        XCTAssert(assign14?.declarator.type.type == TypeObject)
-        XCTAssert(assign14?.declarator.type.name == "NSObject")
+        let assign14 = ast.globalStatements[14] as? ORDeclaratorNode
+        XCTAssert(assign14?.type.type == TypeObject)
+        XCTAssert(assign14?.type.name == "NSObject")
         
-        let assign15 = ast.globalStatements[15] as? ORInitDeclaratorNode
-        XCTAssert(assign15?.declarator.type.type == TypeObject)
-        XCTAssert(assign15?.declarator.type.name == "NSMutableArray")
+        let assign15 = ast.globalStatements[15] as? ORDeclaratorNode
+        XCTAssert(assign15?.type.type == TypeObject)
+        XCTAssert(assign15?.type.name == "NSMutableArray")
         
         let assign16 = ast.globalStatements[16] as? ORInitDeclaratorNode
         XCTAssert(assign16?.declarator.type.type == TypeObject)
@@ -130,9 +130,9 @@ class ExpressionTest: XCTestCase {
         XCTAssert(expresssion16?.value_type == OCValueString)
         XCTAssert(expresssion16?.value as? String == "123")
         
-        let assign17 = ast.globalStatements[17] as? ORInitDeclaratorNode
-        XCTAssert(assign17?.declarator.var.ptCount == 1)
-        XCTAssert(assign17?.declarator.var.varname == "a",assign17?.declarator.var.varname ?? "")
+        let assign17 = ast.globalStatements[17] as? ORDeclaratorNode
+        XCTAssert(assign17?.var.ptCount == 1)
+        XCTAssert(assign17?.var.varname == "a",assign17?.var.varname ?? "")
     }
     
     func testIgnoreTypePropertyKeyworkd(){
@@ -252,20 +252,20 @@ class ExpressionTest: XCTestCase {
         """
         let ast = ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
-        let exps = ast.globalStatements as! [ORBinaryExpression]
+        let exps = ast.globalStatements as! [ORBinaryNode]
         XCTAssert(exps[0].operatorType == BinaryOperatorLT)
         let exp2 = exps[1]
         XCTAssert(exp2.operatorType == BinaryOperatorLOGIC_AND)
-        let exp2Left = exp2.left as? ORBinaryExpression
-        let exp2Rigth = exp2.right as? ORBinaryExpression
+        let exp2Left = exp2.left as? ORBinaryNode
+        let exp2Rigth = exp2.right as? ORBinaryNode
         XCTAssert(exp2Left?.operatorType == BinaryOperatorLT)
         XCTAssert(exp2Rigth?.operatorType == BinaryOperatorGT)
         
         let exp3 = exps[2]
         XCTAssert(exp3.operatorType == BinaryOperatorLOGIC_OR)
         
-        let exp3l = exp3.left as? ORBinaryExpression
-        let exp3r = exp3.right as? ORBinaryExpression
+        let exp3l = exp3.left as? ORBinaryNode
+        let exp3r = exp3.right as? ORBinaryNode
         
         XCTAssert(exp3l?.operatorType == BinaryOperatorLOGIC_AND)
         XCTAssert(exp3r?.operatorType == BinaryOperatorLOGIC_AND)
@@ -318,7 +318,7 @@ class ExpressionTest: XCTestCase {
         let call1 = call.first! as! ORFunctionCall
         XCTAssert((call1.caller as! ORValueNode) .value as! String == "func")
         XCTAssert(call1.expressions.count == 1)
-        let binary = call1.expressions[0] as! ORBinaryExpression
+        let binary = call1.expressions[0] as! ORBinaryNode
         XCTAssert(binary.operatorType == BinaryOperatorMulti)
     }
     func testBlock(){
@@ -345,10 +345,9 @@ class ExpressionTest: XCTestCase {
         """
         let ast = ocparser.parseSource(source);
         XCTAssert(ocparser.isSuccess())
-        let node = (ast.globalStatements as! [Any]).first! as! ORInitDeclaratorNode
-        XCTAssert(node.declarator.var.isBlock)
-        let block = node.declarator as! ORFunctionDeclNode
-        XCTAssert(node.declarator.type.type == TypeInt)
+        let node = (ast.globalStatements as! [Any]).first! as! ORFunctionDeclNode
+        XCTAssert(node.var.isBlock)
+        XCTAssert(node.type.type == TypeInt)
     }
 
 }

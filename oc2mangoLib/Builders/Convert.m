@@ -12,10 +12,12 @@ BOOL is_left_value = true;
 @implementation Convert
 - (NSString *)convert:(ORNode *)node{
     NSString *result = @"";
-    if ([node isKindOfClass:[ORInitDeclaratorNode class]]) {
-        result = [self convertDeclareExp:(ORInitDeclaratorNode *)node];
-    }else if ([node isKindOfClass:[ORAssignExpression class]]) {
-        result = [self convertAssginExp:(ORAssignExpression *)node];
+    if ([node isKindOfClass:[ORDeclaratorNode class]]){
+        result = [self convertDeclaratorNode:(ORDeclaratorNode *)node];
+    }else if ([node isKindOfClass:[ORInitDeclaratorNode class]]) {
+        result = [self convertInitDeclareExp:(ORInitDeclaratorNode *)node];
+    }else if ([node isKindOfClass:[ORAssignNode class]]) {
+        result = [self convertAssginExp:(ORAssignNode *)node];
     }else if ([node isKindOfClass:[ORValueNode class]]){
         result = [self convertOCValue:(ORValueNode *)node];
     }else if ([node isKindOfClass:[ORIntegerValue class]]){
@@ -26,12 +28,12 @@ BOOL is_left_value = true;
         result = [self convertORDoubleValue:(ORDoubleValue *)node];
     }else if ([node isKindOfClass:[ORBoolValue class]]){
         result = [self convertORBoolValue:(ORBoolValue *)node];
-    }else if ([node isKindOfClass:[ORBinaryExpression class]]){
-        result = [self convertBinaryExp:(ORBinaryExpression *)node];
-    }else if ([node isKindOfClass:[ORUnaryExpression class]]){
-        result = [self convertUnaryExp:(ORUnaryExpression *)node];
-    }else if ([node isKindOfClass:[ORTernaryExpression class]]){
-        result = [self convertTernaryExp:(ORTernaryExpression *)node];
+    }else if ([node isKindOfClass:[ORBinaryNode class]]){
+        result = [self convertBinaryExp:(ORBinaryNode *)node];
+    }else if ([node isKindOfClass:[ORUnaryNode class]]){
+        result = [self convertUnaryExp:(ORUnaryNode *)node];
+    }else if ([node isKindOfClass:[ORTernaryNode class]]){
+        result = [self convertTernaryExp:(ORTernaryNode *)node];
     }else if ([node isKindOfClass:[ORFunctionNode class]]){
         result = [self convertBlockImp:(ORFunctionNode *)node];
     }else if ([node isKindOfClass:[ORMethodCall class]]){
@@ -183,7 +185,7 @@ int indentationCont = 0;
     [content appendString:[self convertScopeImp:imp.scopeImp]];
     return content;
 }
-- (NSString *)convertBinaryExp:(ORBinaryExpression *)exp{
+- (NSString *)convertBinaryExp:(ORBinaryNode *)exp{
     NSString *operator = @"";
     switch (exp.operatorType) {
         case BinaryOperatorAdd:
@@ -243,7 +245,7 @@ int indentationCont = 0;
     }
     return [NSString stringWithFormat:@"%@ %@ %@",[self convert:exp.left],operator,[self convert:exp.right]];
 }
-- (NSString *)convertUnaryExp:(ORUnaryExpression *)exp{
+- (NSString *)convertUnaryExp:(ORUnaryNode *)exp{
     NSString *format = @"%@";
     switch (exp.operatorType) {
             
@@ -280,14 +282,14 @@ int indentationCont = 0;
     }
     return [NSString stringWithFormat:format,[self convert:exp.value]];
 }
-- (NSString *)convertTernaryExp:(ORTernaryExpression *)exp{
+- (NSString *)convertTernaryExp:(ORTernaryNode *)exp{
     if (exp.values.count == 1) {
         return [NSString stringWithFormat:@"%@ ?: %@",[self convert:exp.expression],[self convert:exp.values.firstObject]];
     }else{
         return [NSString stringWithFormat:@"%@ ? %@ : %@",[self convert:exp.expression],[self convert:exp.values.firstObject],[self convert:exp.values.lastObject]];
     }
 }
-- (NSString *)convertDeclareExp:(ORInitDeclaratorNode *)exp{
+- (NSString *)convertInitDeclareExp:(ORInitDeclaratorNode *)exp{
     if (exp.expression) {
         NSMutableString *str = [NSMutableString string];
         is_left_value = true;
@@ -303,7 +305,7 @@ int indentationCont = 0;
     }
     return @"";
 }
-- (NSString *)convertAssginExp:(ORAssignExpression *)exp{
+- (NSString *)convertAssginExp:(ORAssignNode *)exp{
     NSMutableString *str = [NSMutableString string];
     is_left_value = true;
     [str appendString:[self convert:exp.value]];

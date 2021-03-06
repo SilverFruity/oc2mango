@@ -27,12 +27,13 @@ extern ORMethodCall *makeMethodCall(void);
 extern ORValueNode *makeValue(OC_VALUE_TYPE type, id value);
 extern ORValueNode *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
 
-extern ORBlockNode *makeScopeImp(void);
+extern ORBlockNode *makeScopeImp(NSMutableArray *stats);
+extern ORBlockNode *makeScopeImp(void) __attribute__((overloadable));
 extern ORFunctionCall *makeFuncCall(ORNode *caller, NSMutableArray *expressions);
-extern ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type);
-extern ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type);
-extern ORTernaryExpression *makeTernaryExpression(void);
-extern ORAssignExpression *makeAssignExpression(AssignOperatorType type);
+extern ORUnaryNode *makeUnaryExpression(UnaryOperatorType type, ORNode *node);
+extern ORBinaryNode *makeBinaryExpression(BinaryOperatorType type, ORNode *left, ORNode *right);
+extern ORTernaryNode *makeTernaryExpression(void);
+extern ORAssignNode *makeAssignExpression(AssignOperatorType type);
 
 extern ORDeclaratorNode *makeDeclaratorNode(ORTypeNode *type, ORVariableNode *var);
 extern ORFunctionDeclNode *makeFunctionDeclNode(void);
