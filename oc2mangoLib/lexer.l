@@ -14,7 +14,6 @@
     // 替换宏定义 YY_INPUT DriveData->项目名/*/*.yy.c 修改文件输入流
     #undef YY_INPUT
     #define YY_INPUT(buf, result, max_size) (result = string_input(buf, result,max_size))
-    #define TypeReturn(OMType) yylval.identifier =(__bridge_retained void *)[NSString stringWithFormat:@"%@",@#OMType]; return _##OMType;
     #define smaller(a, b) ((a) < (b) ? (a) : (b))
     #define larger(a, b) ((a) > (b) ? (a) : (b))
     char const *st_source_string;
@@ -41,7 +40,17 @@
         st_current_char_index += len;
         return (int)len;
     }
-
+    unsigned long long str2Int(char *text){
+        NSString *value = [NSString stringWithUTF8String:text];
+        if ([value hasPrefix:@"0x"]) {
+            return strtoull(value.UTF8String, NULL, 16);
+        }else{
+            return strtoull(value.UTF8String, NULL, 0);
+        }
+    }
+    double str2double(char *text){
+        return [NSString stringWithUTF8String:text].doubleValue;
+    }
 %}
 
 %start C_COMMENT CC_COMMENT STRING_LITERAL_STATE POUNDKEY CHILD_COLLECTION_STATE POINT_STATE PROTOCOL_CHECK POINT_CHECK ASSING_POINT_CHECK
@@ -49,8 +58,6 @@
 <INITIAL>"#" { BEGIN POUNDKEY; }
 <POUNDKEY>.* ;
 <POUNDKEY>\n { BEGIN INITIAL; }
-<INITIAL>"NS_ASSUME_NONNULL_BEGIN" ;
-<INITIAL>"NS_ASSUME_NONNULL_END" ;
 <INITIAL>"," { is_variable = false; return COMMA ;}
 <INITIAL>";" { is_variable = false; return SEMICOLON; }
 <INITIAL>"(" { is_variable = false; return LP; }
@@ -105,113 +112,115 @@
 <INITIAL>"@end" { return END; }
 <INITIAL>"@class" { return CLASS_DECLARE; }
 
-<INITIAL>"@property" {  return PROPERTY; }
-<INITIAL>"@dynamic" {  return DYNAMIC; }
-<INITIAL>"nonnull" { yylval.identifier =(__bridge_retained void *)@"nonnull"; return NONNULL; }
-<INITIAL>"nullable" { yylval.identifier =(__bridge_retained void *)@"nullable"; return NULLABLE; }
+<INITIAL>"@property" return PROPERTY;
+<INITIAL>"@dynamic" return DYNAMIC;
+<INITIAL>"nonnull" return NONNULL;
+<INITIAL>"nullable" return NULLABLE;
 
 
+<INITIAL>"NS_ASSUME_NONNULL_BEGIN" ;
+<INITIAL>"NS_ASSUME_NONNULL_END" ;
 <INITIAL>"UI_APPEARANCE_SELECTOR" ;
 <INITIAL>"IBInspectable" ;
 <INITIAL>"extern" ;
-<INITIAL>"static" return STATIC;
 <INITIAL>"const" ;
 <INITIAL>"_Nonnull" ;
 <INITIAL>"_Nullable" ;
 <INITIAL>"__autoreleasing" ;
-
-<INITIAL>"__strong" return _STRONG;
-<INITIAL>"__weak"  return _WEAK;
 <INITIAL>"__block" ;
-<INITIAL>"__bridge" return __BRIDGE ;
 <INITIAL>"__bridge_transfer" ;
 <INITIAL>"__bridge_retained" ;
 <INITIAL>"__unused" ;
-
 <INITIAL>"@required" ;
 <INITIAL>"@optional" ;
 <INITIAL>"@public" ;
 <INITIAL>"@private" ;
 <INITIAL>"@protected" ;
 
+<INITIAL>"static" return STATIC;
+<INITIAL>"__strong" return _STRONG;
+<INITIAL>"__weak"  return _WEAK;
+<INITIAL>"__bridge" return __BRIDGE ;
+
+
 <INITIAL>"@selector\("[^()]*"\)" {yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];  return SELECTOR; }
-<INITIAL>"SEL" { TypeReturn(SEL); }
-<INITIAL>"Class" { TypeReturn(Class);}
-<INITIAL>"BOOL" { TypeReturn(BOOL); }
-<INITIAL>"bool" { TypeReturn(BOOL); }
-<INITIAL>"void" { TypeReturn(void); }
-<INITIAL>"instancetype" { TypeReturn(instancetype); }
+<INITIAL>"SEL" { return _SEL; }
+<INITIAL>"Class" { return _Class;}
+<INITIAL>"BOOL" { return _BOOL; }
+<INITIAL>"bool" { return _BOOL; }
+<INITIAL>"void" { return _void; }
+<INITIAL>"instancetype" { return _instancetype; }
 
 
-<INITIAL>"return" { TypeReturn(return); }
-<INITIAL>"for" { TypeReturn(for); }
-<INITIAL>"in" { TypeReturn(in); }
-<INITIAL>"break" { TypeReturn(break); }
-<INITIAL>"continue" { TypeReturn(continue); }
-<INITIAL>"goto" { TypeReturn(goto); }
+<INITIAL>"return" { return _return; }
+<INITIAL>"for" { return _for; }
+<INITIAL>"in" { return _in; }
+<INITIAL>"break" { return _break; }
+<INITIAL>"continue" { return _continue; }
+<INITIAL>"goto" { return _goto; }
 <INITIAL>"if" { return IF; }
-<INITIAL>"else" { TypeReturn(else); }
-<INITIAL>"do" { TypeReturn(do); }
-<INITIAL>"while" { TypeReturn(while); }
-<INITIAL>"switch" { TypeReturn(switch); }
-<INITIAL>"case" { TypeReturn(case); }
-<INITIAL>"default" { TypeReturn(default); }
+<INITIAL>"else" { return _else; }
+<INITIAL>"do" { return _do; }
+<INITIAL>"while" { return _while; }
+<INITIAL>"switch" { return _switch; }
+<INITIAL>"case" { return _case; }
+<INITIAL>"default" { return _default; }
 <INITIAL>"typedef" { return TYPEDEF;}
-<INITIAL>"struct" { TypeReturn(struct); }
-<INITIAL>"union" { TypeReturn(union); }
-<INITIAL>"enum" { TypeReturn(enum); }
+<INITIAL>"struct" { return _struct; }
+<INITIAL>"union" { return _union; }
+<INITIAL>"enum" { return _enum; }
 <INITIAL>"NS_ENUM" { return NS_ENUM; }
 <INITIAL>"NS_OPTIONS" { return NS_OPTIONS; }
 
 
-<INITIAL>"self" { is_variable = true; TypeReturn(self); }
-<INITIAL>"super" {is_variable = true; TypeReturn(super); }
-<INITIAL>"nil" { is_variable = true; TypeReturn(nil); }
-<INITIAL>"NULL" { is_variable = true; TypeReturn(NULL); }
-<INITIAL>"YES" { is_variable = true; TypeReturn(YES); }
-<INITIAL>"NO" { is_variable = true; TypeReturn(NO); }
+<INITIAL>"self"  { is_variable = true; return _self; }
+<INITIAL>"super" { is_variable = true; return _super; }
+<INITIAL>"nil"   { is_variable = true; return _nil; }
+<INITIAL>"NULL"  { is_variable = true; return _NULL; }
+<INITIAL>"YES"   { is_variable = true; return _YES; }
+<INITIAL>"NO"    { is_variable = true; return _NO; }
 
-<INITIAL>"unsigned char" { TypeReturn(UCHAR); }
-<INITIAL>"unsigned short" { TypeReturn(USHORT); }
-<INITIAL>"unsigned int" { TypeReturn(UINT); }
-<INITIAL>"unsigned long" { TypeReturn(ULONG); }
-<INITIAL>"unsigned long long" { TypeReturn(ULLONG); }
-<INITIAL>"NSUInteger" { TypeReturn(ULLONG); }
+<INITIAL>"unsigned char"      { return _UCHAR; }
+<INITIAL>"unsigned short"     { return _USHORT; }
+<INITIAL>"unsigned int"       { return _UINT; }
+<INITIAL>"unsigned long"      { return _ULONG; }
+<INITIAL>"unsigned long long" { return _ULLONG; }
+<INITIAL>"NSUInteger"         { return _ULLONG; }
 
-<INITIAL>"sizeof" { is_variable = true; TypeReturn(sizeof); }
-<INITIAL>"typeof" { return TYPEOF; }
+<INITIAL>"sizeof"     { is_variable = true; return _sizeof; }
+<INITIAL>"typeof"     { return TYPEOF; }
 <INITIAL>"__typeof__" { return TYPEOF; }
-<INITIAL>"__typeof" { return TYPEOF; }
+<INITIAL>"__typeof"   { return TYPEOF; }
 
-<INITIAL>"char" { TypeReturn(CHAR); }
-<INITIAL>"id" { TypeReturn(id); }
-<INITIAL>"..."  {return ELLIPSIS;}
-<INITIAL>"short" { TypeReturn(SHORT); }
-<INITIAL>"int" { TypeReturn(INT); }
-<INITIAL>"long" { TypeReturn(LONG); }
-<INITIAL>"long long" { TypeReturn(LLONG); }
-<INITIAL>"NSInteger" { TypeReturn(LLONG); }
+<INITIAL>"char"      { return _CHAR; }
+<INITIAL>"id"        { return _id; }
+<INITIAL>"..."       { return ELLIPSIS;}
+<INITIAL>"short"     { return _SHORT; }
+<INITIAL>"int"       { return _INT; }
+<INITIAL>"long"      { return _LONG; }
+<INITIAL>"long long" { return _LLONG; }
+<INITIAL>"NSInteger" { return _LLONG; }
 
-<INITIAL>"int8_t" { TypeReturn(CHAR); }
-<INITIAL>"int16_t" { TypeReturn(SHORT); }
-<INITIAL>"int32_t" { TypeReturn(INT); }
-<INITIAL>"int64_t" { TypeReturn(LLONG); }
+<INITIAL>"int8_t"   { return _CHAR; }
+<INITIAL>"int16_t"  { return _SHORT; }
+<INITIAL>"int32_t"  { return _INT; }
+<INITIAL>"int64_t"  { return _LLONG; }
 
-<INITIAL>"uint8" { TypeReturn(UCHAR); }
-<INITIAL>"uint16" { TypeReturn(USHORT); }
-<INITIAL>"uint32" { TypeReturn(UINT); }
-<INITIAL>"uint64" { TypeReturn(ULLONG); }
-<INITIAL>"uint8_t" { TypeReturn(UCHAR); }
-<INITIAL>"uint16_t" { TypeReturn(USHORT); }
-<INITIAL>"uint32_t" { TypeReturn(UINT); }
-<INITIAL>"uint64_t" { TypeReturn(ULLONG); }
+<INITIAL>"uint8"    { return _UCHAR; }
+<INITIAL>"uint16"   { return _USHORT; }
+<INITIAL>"uint32"   { return _UINT; }
+<INITIAL>"uint64"   { return _ULLONG; }
+<INITIAL>"uint8_t"  { return _UCHAR; }
+<INITIAL>"uint16_t" { return _USHORT; }
+<INITIAL>"uint32_t" { return _UINT; }
+<INITIAL>"uint64_t" { return _ULLONG; }
 
-<INITIAL>"size_t" { TypeReturn(UINT); }
+<INITIAL>"size_t" { return _UINT; }
 
 <INITIAL>"NSTimeInterval" {return _DOUBLE; }
-<INITIAL>"double" { TypeReturn(DOUBLE); }
-<INITIAL>"float" { TypeReturn(FLOAT); }
-<INITIAL>"CGFloat" { return _DOUBLE; }
+<INITIAL>"double"   { return _DOUBLE; }
+<INITIAL>"float"    { return _FLOAT; }
+<INITIAL>"CGFloat"  { return _DOUBLE; }
 
 <INITIAL>__attribute__[ ]*\(.*?\){2,} ;
 <INITIAL>__attribute__[ ]*\(.*?\){2,} ;
@@ -225,34 +234,34 @@
 
 <INITIAL>[1-9][0-9]* {
     is_variable = true;
-    yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];    
-    return INTETER_LITERAL; 
+    yylval.intValue = str2Int(yytext);
+    return INTETER_LITERAL;
 }
 
 <INITIAL>"0"[xX][0-9a-fA-F]+ {
     is_variable = true;
-    yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];
+    yylval.intValue = str2Int(yytext);
     return INTETER_LITERAL; 
 }
 
 
 <INITIAL>"0" {
     is_variable = true;
-    yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];
+    yylval.intValue = 0;
     return INTETER_LITERAL; 
 }
 
 
 <INITIAL>[0-9]+\.[0-9]+ {
     is_variable = true;
-    yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];
+    yylval.doubleValue = str2double(yytext);
     return DOUBLE_LITERAL; 
 }
 <INITIAL>[0-9]+\.[0-9]+f {
     is_variable = true;
     NSString *string = [NSString stringWithUTF8String:yytext];
     string = [string substringWithRange:NSMakeRange(0, [string length] - 1)];
-    yylval.identifier =(__bridge_retained void *)string;
+    yylval.doubleValue = string.doubleValue;
     return DOUBLE_LITERAL;
 }
 

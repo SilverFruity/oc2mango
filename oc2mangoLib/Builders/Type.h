@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <ORPatchFile/RunnerClasses.h>
 
 NS_ASSUME_NONNULL_BEGIN
 typedef enum: char {

@@ -41,7 +41,6 @@
 		EE4F367C24F9251C00F685AF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4F367B24F9251C00F685AF /* main.swift */; };
 		EE4F368024F9254400F685AF /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
 		EE4F368124F9254400F685AF /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
-		EE4F368324F9254400F685AF /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE4F368424F9254400F685AF /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE4F368524F9254400F685AF /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
 		EE4F368624F9254400F685AF /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
@@ -65,7 +64,6 @@
 		EE66C18624FEC14A00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		EE66C18824FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
-		EE66C18B24FEC14A00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
@@ -651,8 +649,6 @@
 				EE4F368524F9254400F685AF /* MakeDeclare.m in Sources */,
 				EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */,
 				EE4F367C24F9251C00F685AF /* main.swift in Sources */,
-				EE4F368324F9254400F685AF /* Convert.m in Sources */,
-				EE66C18B24FEC14A00C85B31 /* ORPatchFile.m in Sources */,
 				EE4F368624F9254400F685AF /* lexer.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

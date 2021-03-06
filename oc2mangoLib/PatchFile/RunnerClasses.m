@@ -17,7 +17,7 @@
 @end
 @implementation ORVariableNode
 + (instancetype)copyFromVar:(ORVariableNode *)var{
-    ORVariableNode *new = [[self class] new];
+    __autoreleasing ORVariableNode *new = [[self class] new];
     new.ptCount = var.ptCount;
     new.varname = var.varname;
     new.isBlock = var.isBlock;

@@ -18,9 +18,11 @@ extern ORVariableNode *makeVarNode(NSString *name) __attribute__((overloadable))
 
 extern ORClass *makeOCClass(NSString *className);
 extern ORProtocol *makeORProtcol(NSString *protocolName);
+extern ORPropertyDeclare *makePropertyDeclare(NSMutableArray *keywords, ORDeclaratorNode *var);
 extern ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORDeclaratorNode *returnType);
 extern ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare, ORBlockNode *scopeImp);
 extern ORFunctionDeclarator *makeFunctionSignNode(void);
+extern ORMethodCall *makeMethodCall(void);
 
 extern ORValueExpression *makeValue(OC_VALUE_TYPE type, id value);
 extern ORValueExpression *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
@@ -33,8 +35,10 @@ extern ORAssignExpression *makeAssignExpression(AssignOperatorType type);
 
 extern ORDeclaratorNode *makeDeclaratorNode(ORTypeNode *type,ORVariableNode *var);
 extern ORInitDeclaratorNode *makeInitDeclaratorNode(ORDeclaratorNode *declarator,ORNode * exp);
+extern ORFunctionDeclarator *makeFunctionDeclarator(void);
+extern ORSubscriptExpression *makeSubscriptNode(ORNode *caller, ORNode *key);
 
-
+extern ORFunctionImp *makeFunctionNode(ORFunctionDeclarator *decl, ORBlockNode *block);
 extern ORIfStatement *makeIfStatement(ORNode *judgement, ORBlockNode *imp);
 extern ORWhileStatement *makeWhileStatement(ORNode *judgement, ORBlockNode *imp);
 extern ORDoWhileStatement *makeDoWhileStatement(ORNode *judgement, ORBlockNode *imp);
@@ -58,3 +62,5 @@ void startStringBuffer(void);
 char *endStringBuffer(void);
 void stringBufferAppendCharacter(char chr);
 void stringBufferAppendString(char *str);
+
+NSMutableArray *makeMutableArray(id object);

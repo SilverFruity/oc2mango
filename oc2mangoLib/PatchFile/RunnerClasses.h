@@ -49,9 +49,9 @@ typedef enum: uint32_t{
 }DeclarationModifier;
 
 @interface ORTypeNode: ORNode
-@property (nonatomic, assign) TypeKind type;
+@property (nonatomic, assign)TypeKind type;
 @property (nonatomic, nullable, copy) NSString * name;
-@property (nonatomic,assign)DeclarationModifier modifier;
+@property (nonatomic, assign)DeclarationModifier modifier;
 + (instancetype)specialWithType:(TypeKind)type name:(nullable NSString *)name;
 @end
 
@@ -150,7 +150,7 @@ typedef enum: uint8_t{
 @end
 
 @interface ORSubscriptExpression: ORNode
-@property (nonatomic, strong)ORValueExpression * caller;
+@property (nonatomic, strong)ORNode * caller;
 @property (nonatomic, strong)ORNode * keyExp;
 @end
 
