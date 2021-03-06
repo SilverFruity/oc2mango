@@ -394,36 +394,15 @@ let source =
     func testMangoBlockTypeAdapt(){
         let source =
         """
-        @interface SFHTTPClient: NSObject
-        @property (nonatomic,readonly) void(^a)(NSString *name);
-        @end
-        @implementation SFHTTPClient
-        + (instancetype)imageMakerWithProcessHandler:(UIImage * (^)(UIImage *image))processHandler isEnableHandler:(BOOL (^)(void))isEnableHandler identifierHandler:(NSString *(^)(void))identifierHandler{
-
-        }
-        @end
         void(^a)(NSString *name) = nil;
-        void(*a)(NSString *name) = nil;
+        //void(*a)(NSString *name) = nil;
         """
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
-        
-        let result = convert.convert(ast.class(forName: "SFHTTPClient") as Any)
-        XCTAssert(result ==
-            """
-            class SFHTTPClient:NSObject{
-            @property(nonatomic,readonly)Block a;
-
-            +(id )imageMakerWithProcessHandler:(Block)processHandler isEnableHandler:(Block)isEnableHandler identifierHandler:(Block)identifierHandler{
-            }
-            }
-
-            ""","\n"+result)
-        
         let result1 = convert.convert(ast.globalStatements[0] as Any)
         XCTAssert(result1 == "Block a = nil;","\n"+result1)
-        let result2 = convert.convert(ast.globalStatements[1] as Any)
-        XCTAssert(result2 == "Point a = nil;","\n"+result2)
+//        let result2 = convert.convert(ast.globalStatements[1] as Any)
+//        XCTAssert(result2 == "Point a = nil;","\n"+result2)
         
     }
     func testMethodDeclare(){

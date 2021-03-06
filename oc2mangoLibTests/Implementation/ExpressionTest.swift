@@ -333,8 +333,8 @@ class ExpressionTest: XCTestCase {
         XCTAssert(ocparser.isSuccess())
         let call = (ast.globalStatements as! [Any]).first! as! ORFunctionCall
         let param2 = call.expressions[2] as! ORFunctionNode
-        XCTAssert(param2.declare.isBlock == true)
-        XCTAssert(param2.declare.returnNode?.type.type == TypeVoid)
+        XCTAssert(param2.declare.var.isBlock == true)
+        XCTAssert(param2.declare.type.type == TypeVoid)
         XCTAssert(param2.declare.params.count == 0)
     }
     
@@ -347,7 +347,7 @@ class ExpressionTest: XCTestCase {
         XCTAssert(ocparser.isSuccess())
         let node = (ast.globalStatements as! [Any]).first! as! ORInitDeclaratorNode
         XCTAssert(node.declarator.var.isBlock)
-        let block = node.declarator.var as! ORFunctionDeclNode
+        let block = node.declarator as! ORFunctionDeclNode
         XCTAssert(node.declarator.type.type == TypeInt)
     }
 

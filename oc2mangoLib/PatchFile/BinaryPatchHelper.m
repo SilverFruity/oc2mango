@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1615026459
+//  Created by Jiang on 1615033892
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -14,7 +14,7 @@ typedef enum: uint8_t{
     _ORVariableNodeType = 6,
     _ORDeclaratorNodeType = 7,
     _ORFunctionDeclNodeType = 8,
-    _ORCArrayVariableType = 9,
+    _ORCArrayDeclNodeType = 9,
     _ORBlockNodeType = 10,
     _ORValueNodeType = 11,
     _ORIntegerValueType = 12,
@@ -378,100 +378,92 @@ void _ORDeclaratorNodeDestroy(_ORDeclaratorNode *node){
 }
 typedef struct {
     _ORNodeFields
-    BOOL isBlock;
-    uint8_t ptCount;
     BOOL isMultiArgs;
-    _StringNode * varname;
-    _ORNode * returnNode;
+    _ORNode * type;
+    _ORNode * var;
     _ListNode * params;
 }_ORFunctionDeclNode;
-static uint32_t _ORFunctionDeclNodeBaseLength = 4;
+static uint32_t _ORFunctionDeclNodeBaseLength = 2;
 _ORFunctionDeclNode *_ORFunctionDeclNodeConvert(ORFunctionDeclNode *exp, _PatchNode *patch, uint32_t *length){
     _ORFunctionDeclNode *node = malloc(sizeof(_ORFunctionDeclNode));
     memset(node, 0, sizeof(_ORFunctionDeclNode));
     node->nodeType = _ORFunctionDeclNodeType;
-    node->isBlock = exp.isBlock;
-    node->ptCount = exp.ptCount;
-    node->varname = (_StringNode *)_ORNodeConvert(exp.varname, patch, length);
+    node->type = (_ORNode *)_ORNodeConvert(exp.type, patch, length);
+    node->var = (_ORNode *)_ORNodeConvert(exp.var, patch, length);
     node->isMultiArgs = exp.isMultiArgs;
-    node->returnNode = (_ORNode *)_ORNodeConvert(exp.returnNode, patch, length);
     node->params = (_ListNode *)_ORNodeConvert(exp.params, patch, length);
     *length += _ORFunctionDeclNodeBaseLength;
     return node;
 }
 ORFunctionDeclNode *_ORFunctionDeclNodeDeConvert(_ORFunctionDeclNode *node, _PatchNode *patch){
     ORFunctionDeclNode *exp = [ORFunctionDeclNode new];
-    exp.isBlock = node->isBlock;
-    exp.ptCount = node->ptCount;
-    exp.varname = (NSString *)_ORNodeDeConvert((_ORNode *)node->varname, patch);
+    exp.type = (id)_ORNodeDeConvert((_ORNode *)node->type, patch);
+    exp.var = (id)_ORNodeDeConvert((_ORNode *)node->var, patch);
     exp.isMultiArgs = node->isMultiArgs;
-    exp.returnNode = (id)_ORNodeDeConvert((_ORNode *)node->returnNode, patch);
     exp.params = (NSMutableArray *)_ORNodeDeConvert((_ORNode *)node->params, patch);
     return exp;
 }
 void _ORFunctionDeclNodeSerailization(_ORFunctionDeclNode *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, _ORFunctionDeclNodeBaseLength);
     *cursor += _ORFunctionDeclNodeBaseLength;
-    _ORNodeSerailization((_ORNode *)node->varname, buffer, cursor);
-    _ORNodeSerailization((_ORNode *)node->returnNode, buffer, cursor);
+    _ORNodeSerailization((_ORNode *)node->type, buffer, cursor);
+    _ORNodeSerailization((_ORNode *)node->var, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->params, buffer, cursor);
 }
 _ORFunctionDeclNode *_ORFunctionDeclNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
     _ORFunctionDeclNode *node = malloc(sizeof(_ORFunctionDeclNode));
     memcpy(node, buffer + *cursor, _ORFunctionDeclNodeBaseLength);
     *cursor += _ORFunctionDeclNodeBaseLength;
-    node->varname =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
-    node->returnNode =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
+    node->type =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
+    node->var =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->params =(_ListNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
 void _ORFunctionDeclNodeDestroy(_ORFunctionDeclNode *node){
-    _ORNodeDestroy((_ORNode *)node->returnNode);
     _ORNodeDestroy((_ORNode *)node->params);
     free(node);
 }
 typedef struct {
     _ORNodeFields
-    BOOL isBlock;
-    uint8_t ptCount;
-    _StringNode * varname;
+    _ORNode * type;
+    _ORNode * var;
     _ORNode * capacity;
-}_ORCArrayVariable;
-static uint32_t _ORCArrayVariableBaseLength = 3;
-_ORCArrayVariable *_ORCArrayVariableConvert(ORCArrayVariable *exp, _PatchNode *patch, uint32_t *length){
-    _ORCArrayVariable *node = malloc(sizeof(_ORCArrayVariable));
-    memset(node, 0, sizeof(_ORCArrayVariable));
-    node->nodeType = _ORCArrayVariableType;
-    node->isBlock = exp.isBlock;
-    node->ptCount = exp.ptCount;
-    node->varname = (_StringNode *)_ORNodeConvert(exp.varname, patch, length);
+}_ORCArrayDeclNode;
+static uint32_t _ORCArrayDeclNodeBaseLength = 1;
+_ORCArrayDeclNode *_ORCArrayDeclNodeConvert(ORCArrayDeclNode *exp, _PatchNode *patch, uint32_t *length){
+    _ORCArrayDeclNode *node = malloc(sizeof(_ORCArrayDeclNode));
+    memset(node, 0, sizeof(_ORCArrayDeclNode));
+    node->nodeType = _ORCArrayDeclNodeType;
+    node->type = (_ORNode *)_ORNodeConvert(exp.type, patch, length);
+    node->var = (_ORNode *)_ORNodeConvert(exp.var, patch, length);
     node->capacity = (_ORNode *)_ORNodeConvert(exp.capacity, patch, length);
-    *length += _ORCArrayVariableBaseLength;
+    *length += _ORCArrayDeclNodeBaseLength;
     return node;
 }
-ORCArrayVariable *_ORCArrayVariableDeConvert(_ORCArrayVariable *node, _PatchNode *patch){
-    ORCArrayVariable *exp = [ORCArrayVariable new];
-    exp.isBlock = node->isBlock;
-    exp.ptCount = node->ptCount;
-    exp.varname = (NSString *)_ORNodeDeConvert((_ORNode *)node->varname, patch);
+ORCArrayDeclNode *_ORCArrayDeclNodeDeConvert(_ORCArrayDeclNode *node, _PatchNode *patch){
+    ORCArrayDeclNode *exp = [ORCArrayDeclNode new];
+    exp.type = (id)_ORNodeDeConvert((_ORNode *)node->type, patch);
+    exp.var = (id)_ORNodeDeConvert((_ORNode *)node->var, patch);
     exp.capacity = (id)_ORNodeDeConvert((_ORNode *)node->capacity, patch);
     return exp;
 }
-void _ORCArrayVariableSerailization(_ORCArrayVariable *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ORCArrayVariableBaseLength);
-    *cursor += _ORCArrayVariableBaseLength;
-    _ORNodeSerailization((_ORNode *)node->varname, buffer, cursor);
+void _ORCArrayDeclNodeSerailization(_ORCArrayDeclNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, _ORCArrayDeclNodeBaseLength);
+    *cursor += _ORCArrayDeclNodeBaseLength;
+    _ORNodeSerailization((_ORNode *)node->type, buffer, cursor);
+    _ORNodeSerailization((_ORNode *)node->var, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->capacity, buffer, cursor);
 }
-_ORCArrayVariable *_ORCArrayVariableDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ORCArrayVariable *node = malloc(sizeof(_ORCArrayVariable));
-    memcpy(node, buffer + *cursor, _ORCArrayVariableBaseLength);
-    *cursor += _ORCArrayVariableBaseLength;
-    node->varname =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
+_ORCArrayDeclNode *_ORCArrayDeclNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    _ORCArrayDeclNode *node = malloc(sizeof(_ORCArrayDeclNode));
+    memcpy(node, buffer + *cursor, _ORCArrayDeclNodeBaseLength);
+    *cursor += _ORCArrayDeclNodeBaseLength;
+    node->type =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
+    node->var =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->capacity =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORCArrayVariableDestroy(_ORCArrayVariable *node){
+void _ORCArrayDeclNodeDestroy(_ORCArrayDeclNode *node){
     _ORNodeDestroy((_ORNode *)node->capacity);
     free(node);
 }
@@ -1825,8 +1817,8 @@ _ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length){
         return (_ORNode *)saveNewString((NSString *)exp, patch, length);
     }else if ([exp isKindOfClass:[NSArray class]]) {
         return (_ORNode *)_ListNodeConvert((NSArray *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORCArrayVariable class]]){
-        return (_ORNode *)_ORCArrayVariableConvert((ORCArrayVariable *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORCArrayDeclNode class]]){
+        return (_ORNode *)_ORCArrayDeclNodeConvert((ORCArrayDeclNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORFunctionDeclNode class]]){
         return (_ORNode *)_ORFunctionDeclNodeConvert((ORFunctionDeclNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORTypeNode class]]){
@@ -1919,8 +1911,8 @@ id _ORNodeDeConvert(_ORNode *node, _PatchNode *patch){
         return (ORNode *)_ORDeclaratorNodeDeConvert((_ORDeclaratorNode *)node, patch);
     }else if (node->nodeType == _ORFunctionDeclNodeType){
         return (ORNode *)_ORFunctionDeclNodeDeConvert((_ORFunctionDeclNode *)node, patch);
-    }else if (node->nodeType == _ORCArrayVariableType){
-        return (ORNode *)_ORCArrayVariableDeConvert((_ORCArrayVariable *)node, patch);
+    }else if (node->nodeType == _ORCArrayDeclNodeType){
+        return (ORNode *)_ORCArrayDeclNodeDeConvert((_ORCArrayDeclNode *)node, patch);
     }else if (node->nodeType == _ORBlockNodeType){
         return (ORNode *)_ORBlockNodeDeConvert((_ORBlockNode *)node, patch);
     }else if (node->nodeType == _ORValueNodeType){
@@ -2006,8 +1998,8 @@ void _ORNodeSerailization(_ORNode *node, void *buffer, uint32_t *cursor){
         _ORDeclaratorNodeSerailization((_ORDeclaratorNode *)node, buffer, cursor);
     }else if (node->nodeType == _ORFunctionDeclNodeType){
         _ORFunctionDeclNodeSerailization((_ORFunctionDeclNode *)node, buffer, cursor);
-    }else if (node->nodeType == _ORCArrayVariableType){
-        _ORCArrayVariableSerailization((_ORCArrayVariable *)node, buffer, cursor);
+    }else if (node->nodeType == _ORCArrayDeclNodeType){
+        _ORCArrayDeclNodeSerailization((_ORCArrayDeclNode *)node, buffer, cursor);
     }else if (node->nodeType == _ORBlockNodeType){
         _ORBlockNodeSerailization((_ORBlockNode *)node, buffer, cursor);
     }else if (node->nodeType == _ORValueNodeType){
@@ -2091,8 +2083,8 @@ _ORNode *_ORNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferL
         return (_ORNode *)_ORDeclaratorNodeDeserialization(buffer, cursor, bufferLength);
     }else if (nodeType == _ORFunctionDeclNodeType){
         return (_ORNode *)_ORFunctionDeclNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == _ORCArrayVariableType){
-        return (_ORNode *)_ORCArrayVariableDeserialization(buffer, cursor, bufferLength);
+    }else if (nodeType == _ORCArrayDeclNodeType){
+        return (_ORNode *)_ORCArrayDeclNodeDeserialization(buffer, cursor, bufferLength);
     }else if (nodeType == _ORBlockNodeType){
         return (_ORNode *)_ORBlockNodeDeserialization(buffer, cursor, bufferLength);
     }else if (nodeType == _ORValueNodeType){
@@ -2182,8 +2174,8 @@ void _ORNodeDestroy(_ORNode *node){
         _ORDeclaratorNodeDestroy((_ORDeclaratorNode *)node);
     }else if (node->nodeType == _ORFunctionDeclNodeType){
         _ORFunctionDeclNodeDestroy((_ORFunctionDeclNode *)node);
-    }else if (node->nodeType == _ORCArrayVariableType){
-        _ORCArrayVariableDestroy((_ORCArrayVariable *)node);
+    }else if (node->nodeType == _ORCArrayDeclNodeType){
+        _ORCArrayDeclNodeDestroy((_ORCArrayDeclNode *)node);
     }else if (node->nodeType == _ORBlockNodeType){
         _ORBlockNodeDestroy((_ORBlockNode *)node);
     }else if (node->nodeType == _ORValueNodeType){

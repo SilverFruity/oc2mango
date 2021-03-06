@@ -169,8 +169,8 @@ void func(NSString *a, int *b){
         XCTAssert(exp.declarator.type.type == TypeInt)
         XCTAssert(exp.declarator.var.varname == "a")
         XCTAssert(exp.declarator.var.ptCount == 0)
-        XCTAssert(exp.declarator.var is ORCArrayVariable)
-        XCTAssert(((exp.declarator.var as! ORCArrayVariable).capacity as! ORIntegerValue).value == 100)
+        XCTAssert(exp.declarator is ORCArrayDeclNode)
+        XCTAssert(((exp.declarator as! ORCArrayDeclNode).capacity as! ORIntegerValue).value == 100)
         let exp1 = ast.globalStatements[2] as! ORInitDeclaratorNode
         XCTAssert(exp1.declarator.type.type == TypeInt)
         XCTAssert(exp1.declarator.var.varname == "a")
@@ -311,8 +311,8 @@ void func(NSString *a, int *b){
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let declare = ast.globalStatements.firstObject as! ORInitDeclaratorNode
-        let funcVar = declare.declarator.var as! ORFunctionDeclNode
-        XCTAssert(funcVar.varname == "NSLog")
+        let funcVar = declare.declarator as! ORFunctionDeclNode
+        XCTAssert(funcVar.var.varname == "NSLog")
         XCTAssert(funcVar.isMultiArgs)
     }
     

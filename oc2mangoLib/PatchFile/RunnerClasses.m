@@ -16,13 +16,6 @@
 }
 @end
 @implementation ORVariableNode
-+ (instancetype)copyFromVar:(ORVariableNode *)var{
-    __autoreleasing ORVariableNode *new = [[self class] new];
-    new.ptCount = var.ptCount;
-    new.varname = var.varname;
-    new.isBlock = var.isBlock;
-    return new;
-}
 @end
 @implementation ORFunctionDeclNode
 @end
@@ -85,11 +78,11 @@
     ORFunctionNode *imp = [ORFunctionNode new];
     imp.declare = [self.declare copy];
     imp.scopeImp = self.scopeImp;
-    imp.declare.isBlock = NO;
+    imp.declare.var.isBlock = NO;
     return imp;
 }
 - (BOOL)isBlockImp{
-    return self.declare.isBlock;
+    return self.declare.var.isBlock;
 }
 @end
 @implementation ORSubscriptNode
@@ -108,6 +101,12 @@
 }
 - (BOOL)isEqual:(id)object{
     return [self hash] == [object hash];
+}
++ (instancetype)copyFromDecl:(ORDeclaratorNode *)var{
+    __autoreleasing ORDeclaratorNode *new = [[self class] new];
+    new.type = var.type;
+    new.var = var.var;
+    return new;
 }
 @end
 @implementation ORInitDeclaratorNode
@@ -255,6 +254,6 @@
 
 @end
 
-@implementation ORCArrayVariable
+@implementation ORCArrayDeclNode
 
 @end

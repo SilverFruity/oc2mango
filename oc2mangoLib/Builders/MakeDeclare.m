@@ -121,7 +121,7 @@ ORInitDeclaratorNode *makeInitDeclaratorNode(ORDeclaratorNode *declarator,ORNode
     return declare;
 }
 
-ORFunctionDeclNode *makeFunctionDeclarator(void){
+ORFunctionDeclNode *makeFunctionDeclNode(void){
     __autoreleasing ORFunctionDeclNode *node = [ORFunctionDeclNode new];
     return node;
 }

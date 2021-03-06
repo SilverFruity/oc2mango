@@ -13,11 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)convert:(id)node;
 - (NSString *)convertOCClass:(ORClassNode *)occlass;
 
-- (NSString *)convertTypeNode:(ORDeclaratorNode *)type;
+- (NSString *)convertTypeNode:(ORTypeNode *)type;
 - (NSString *)convertPropertyDeclare:(ORPropertyNode *)propertyDecl;
 - (NSString *)convertMethoDeclare:(ORMethodDeclNode *)methodDecl;
 - (NSString *)convertMethodImp:(ORMethodNode *)methodImp;
-- (NSString *)convertFuncDeclare:(ORFunctionDeclNode *)funcDecl;
 
 - (NSString *)convertAssginExp:(ORAssignExpression *)exp;
 - (NSString *)convertOCValue:(ORValueNode *)value;

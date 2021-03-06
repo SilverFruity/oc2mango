@@ -34,9 +34,9 @@ extern ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type);
 extern ORTernaryExpression *makeTernaryExpression(void);
 extern ORAssignExpression *makeAssignExpression(AssignOperatorType type);
 
-extern ORDeclaratorNode *makeDeclaratorNode(ORTypeNode *type,ORVariableNode *var);
+extern ORDeclaratorNode *makeDeclaratorNode(ORTypeNode *type, ORVariableNode *var);
+extern ORFunctionDeclNode *makeFunctionDeclNode(void);
 extern ORInitDeclaratorNode *makeInitDeclaratorNode(ORDeclaratorNode *declarator,ORNode * exp);
-extern ORFunctionDeclNode *makeFunctionDeclarator(void);
 extern ORSubscriptNode *makeSubscriptNode(ORNode *caller, ORNode *key);
 
 extern ORFunctionNode *makeFunctionNode(ORFunctionDeclNode *decl, ORBlockNode *block);

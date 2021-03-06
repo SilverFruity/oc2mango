@@ -61,21 +61,20 @@ typedef enum: uint32_t{
 @property (nonatomic, assign) BOOL isBlock;
 @property (nonatomic, assign) uint8_t ptCount;
 @property (nonatomic, nullable, copy) NSString * varname;
-+ (instancetype)copyFromVar:(ORVariableNode *)var;
 @end
 
 @interface ORDeclaratorNode: ORNode
 @property (nonatomic, strong)ORTypeNode *type;
 @property (nonatomic, strong)ORVariableNode *var;
++ (instancetype)copyFromDecl:(ORDeclaratorNode *)decl;
 @end
 
-@interface ORFunctionDeclNode: ORVariableNode
+@interface ORFunctionDeclNode: ORDeclaratorNode
 @property(nonatomic,assign) BOOL isMultiArgs;
-@property(nonatomic,strong, nullable) ORDeclaratorNode *returnNode;
 @property(nonatomic,strong) NSMutableArray <ORDeclaratorNode *> *params;
 @end
 
-@interface ORCArrayVariable: ORVariableNode
+@interface ORCArrayDeclNode: ORDeclaratorNode
 @property (nonatomic,strong)ORNode *capacity;
 @end
 

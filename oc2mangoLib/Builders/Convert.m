@@ -8,6 +8,7 @@
 
 #import "Convert.h"
 #import "MakeDeclare.h"
+BOOL is_left_value = true;
 @implementation Convert
 - (NSString *)convert:(ORNode *)node{
     NSString *result = @"";
@@ -79,6 +80,9 @@
 }
 
 - (NSString *)convertTypeNode:(ORTypeNode *)typeSpecial{
+    if (typeSpecial == nil) {
+        return @"void ";
+    }
     NSMutableString *result = [NSMutableString string];
     switch (typeSpecial.type){
         case TypeUChar:
@@ -147,9 +151,6 @@
 - (NSString *)convertMethodImp:(ORMethodNode *)methodImp{
     return [NSString stringWithFormat:@"\n%@%@",[self convertMethoDeclare:methodImp.declare],[self convertScopeImp:methodImp.scopeImp]];
 }
-- (NSString *)convertFuncDeclare:(ORFunctionDeclNode *)funcDecl{
-    return [NSString stringWithFormat:@"%@%@",[self convertDeclaratorNode:funcDecl.returnNode],[self convertVariable:funcDecl]];;
-}
 int indentationCont = 0;
 - (NSString *)convertScopeImp:(ORBlockNode *)imp{
     NSMutableString *content = [NSMutableString string];
@@ -171,12 +172,12 @@ int indentationCont = 0;
 - (NSString *)convertBlockImp:(ORFunctionNode *)imp{
     NSMutableString *content = [NSMutableString string];
     if (imp.declare) {
-        if (!imp.declare.isBlock) {
+        if (!imp.declare.var.isBlock) {
             // void x(int y){ }
-            [content appendFormat:@"%@", [self convertFuncDeclare:imp.declare]];
+            [content appendFormat:@"%@", [self convertDeclaratorNode:imp.declare]];
         }else{
             // ^void (int x){ }
-            [content appendFormat:@"^%@", [self convertFuncDeclare:imp.declare]];
+            [content appendFormat:@"^%@", [self convertDeclaratorNode:imp.declare]];
         }
     }
     [content appendString:[self convertScopeImp:imp.scopeImp]];
@@ -288,15 +289,28 @@ int indentationCont = 0;
 }
 - (NSString *)convertDeclareExp:(ORInitDeclaratorNode *)exp{
     if (exp.expression) {
-        return [NSString stringWithFormat:@"%@ = %@",[self convertDeclaratorNode:exp.declarator],[self convert:exp.expression]];
+        NSMutableString *str = [NSMutableString string];
+        is_left_value = true;
+        [str appendString:[self convertDeclaratorNode:exp.declarator]];
+        is_left_value = false;
+        [str appendString:@" = "];
+        
+        [str appendString:[self convert:exp.expression]];
+        
+        return str;
     }else{
         return [NSString stringWithFormat:@"%@",[self convertDeclaratorNode:exp.declarator]];
     }
     return @"";
 }
 - (NSString *)convertAssginExp:(ORAssignExpression *)exp{
-    NSString *operator = @"=";
-    return [NSString stringWithFormat:@"%@ %@ %@",[self convert:exp.value],operator,[self convert:exp.expression]];
+    NSMutableString *str = [NSMutableString string];
+    is_left_value = true;
+    [str appendString:[self convert:exp.value]];
+    is_left_value = false;
+    [str appendString:@" = "];
+    [str appendString:[self convert:exp.expression]];
+    return str;
 }
 - (NSString *)convertORIntegerValue:(ORIntegerValue *)value{
     return [NSString stringWithFormat:@"%lld",value.value];
@@ -462,18 +476,7 @@ int indentationCont = 0;
     for (int i = 0; i < var.ptCount; i++) {
         [result appendString:@"*"];
     }
-    if ([var isKindOfClass:[ORFunctionDeclNode class]]) {
-        ORFunctionDeclNode *funVar = (ORFunctionDeclNode *)var;
-        if (funVar.params.count > 0){
-            if (funVar.varname) {
-                [result appendFormat:@"%@(%@)",funVar.varname,[self convertDeclaratorNodes:funVar.params]];
-            }else{
-                [result appendFormat:@"(%@)",[self convertDeclaratorNodes:funVar.params]];
-            }
-        } else if (!funVar.isBlock){
-            [result appendFormat:@"%@()",funVar.varname];
-        }
-    }else if (var.varname){
+    if (var.varname){
         [result appendString:var.varname];
     }
     return result;
@@ -483,38 +486,49 @@ int indentationCont = 0;
     return [NSString stringWithFormat:@"%@%@",type,[self convertVariable:pair.var]];
 }
 - (NSString *)convertDeclaratorNode:(ORDeclaratorNode *)pair{
-    if ([pair.var isKindOfClass:[ORFunctionDeclNode class]]){
-        if (pair.var.isBlock){
+    if ([pair isKindOfClass:[ORFunctionDeclNode class]]){
+        ORFunctionDeclNode *funVar = (ORFunctionDeclNode *)pair;
+        if (is_left_value && pair.var.isBlock){
             if (pair.var.varname == nil) {
                 return @"Block";
             }
             return [NSString stringWithFormat:@"Block %@", pair.var.varname];
+//            else{
+//                return [NSString stringWithFormat:@"Point %@", pair.var.varname];
+//            }
         }else{
-            return [NSString stringWithFormat:@"Point %@", pair.var.varname];
-        }
-    }else{
-        switch (pair.type.type){
-            case TypeUChar:
-            case TypeUShort:
-            case TypeUInt:
-            case TypeULong:
-            case TypeULongLong:
-            case TypeChar:
-            case TypeShort:
-            case TypeInt:
-            case TypeLong:
-            case TypeFloat:
-            case TypeDouble:
-            case TypeBOOL:
-            case TypeLongLong:{
-                if (pair.var.ptCount > 0){
-                    return [NSString stringWithFormat:@"Point %@",pair.var.varname];
-                }
-                break;
+            NSMutableString *result = [@"" mutableCopy];
+            if (funVar.params.count > 0){
+                [result appendFormat:@"%@%@(%@)",[self convertTypeNode:funVar.type],[self convertVariable:funVar.var],[self convertDeclaratorNodes:funVar.params]];
+            } else if (!funVar.var.isBlock){
+                [result appendFormat:@"%@%@()",[self convertTypeNode:funVar.type],[self convertVariable:funVar.var]];
+            } else if (funVar.var.isBlock){
+                [result appendFormat:@"%@%@",[self convertTypeNode:funVar.type],[self convertVariable:funVar.var]];
             }
-            default:
-                break;
+            return result;
         }
+    }
+    switch (pair.type.type){
+        case TypeUChar:
+        case TypeUShort:
+        case TypeUInt:
+        case TypeULong:
+        case TypeULongLong:
+        case TypeChar:
+        case TypeShort:
+        case TypeInt:
+        case TypeLong:
+        case TypeFloat:
+        case TypeDouble:
+        case TypeBOOL:
+        case TypeLongLong:{
+            if (pair.var.ptCount > 0){
+                return [NSString stringWithFormat:@"Point %@",pair.var.varname];
+            }
+            break;
+        }
+        default:
+            break;
     }
     return [self convertTypeVarPair:pair];
 }

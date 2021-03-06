@@ -141,9 +141,8 @@ expression_statement
 | PROTOCOL IDENTIFIER SEMICOLON
 | declarator_type declarator LC function_implementation RC
 {
-    ORDeclaratorNode *returnType = makeDeclaratorNode($1, nil);
     ORFunctionDeclNode *declare = $2;
-    declare.returnNode = returnType;
+    declare.type = $1;
     [GlobalAst addGlobalStatements:makeFunctionNode(declare, $4)];
 }
 | struct_declare SEMICOLON
@@ -242,7 +241,8 @@ assign_expression
 typedef_declare:
 declarator_type declarator
 {
-    ORDeclaratorNode *pair = makeDeclaratorNode($1, $2);
+    ORDeclaratorNode *pair = $2;
+    pair.type = $1;
     $$ = makeTypedefExp(pair, pair.var.varname);
 }
 //for NS_ENUM NS_OPTIONS
@@ -494,11 +494,11 @@ block_implementation:
 //^returnType(optional) parameters(optional){ }
 POWER declarator_type_opt pointer_optional block_parameters_optinal LC function_implementation RC
 {
-    ORDeclaratorNode *returnNode = makeDeclaratorNode($2, makeVarNode(nil,$3));
-    ORFunctionDeclNode *declare = makeFunctionDeclarator();
+    ORFunctionDeclNode *declare = makeFunctionDeclNode();
+    declare.type = $2;
+    declare.var = makeVarNode(nil,$3);
     declare.params = $4;
-    declare.isBlock = YES;
-    declare.returnNode = returnNode;
+    declare.var.isBlock = YES;
     $$ = makeFunctionNode(declare, $6);;
 }
 ;
@@ -1244,20 +1244,18 @@ init_declarator
 init_declarator:
 declarator
 {
-    ORDeclaratorNode *node = makeDeclaratorNode(nil, $1);
-    $$ = makeInitDeclaratorNode(node, nil);
+    $$ = makeInitDeclaratorNode($1, nil);
 }
 | declarator ASSIGN assign_expression
 {
-    ORDeclaratorNode *node = makeDeclaratorNode(nil, $1);
-    $$ = makeInitDeclaratorNode(node, $3);
+    $$ = makeInitDeclaratorNode($1, $3);
 }
 ;
 
 
 declarator_optional:
 {
-    $$ = makeVarNode(nil);
+    $$ = makeDeclaratorNode(nil, makeVarNode(nil));
 }
 | declarator
 ;
@@ -1266,22 +1264,22 @@ declarator:
 direct_declarator
 | POWER direct_declarator_optional
 {
-    ORVariableNode *var = $2;
-    var.isBlock = YES;
-    $$ = var;
+    ORDeclaratorNode *decl = $2;
+    decl.var.isBlock = YES;
+    $$ = decl;
 }
 | pointer direct_declarator_optional
 {
-    ORVariableNode *var = $2;
-    var.ptCount = $1;
-    $$ = var;
+    ORDeclaratorNode *decl = $2;
+    decl.var.ptCount = $1;
+    $$ = decl;
 }
 
 ;
 
 direct_declarator_optional:
 {
-    $$ = makeVarNode(nil);
+    $$ = makeDeclaratorNode(nil, makeVarNode(nil));
 }
 | direct_declarator
 ;
@@ -1289,7 +1287,7 @@ direct_declarator_optional:
 direct_declarator:
 IDENTIFIER
 {
-    $$ = makeVarNode($1);
+    $$ = makeDeclaratorNode(nil, makeVarNode($1));
 }
 | LP declarator RP
 {
@@ -1297,26 +1295,26 @@ IDENTIFIER
 }
 | direct_declarator LP parameter_type_list RP
 {
-    ORFunctionDeclNode *funVar = [ORFunctionDeclNode copyFromVar:$1];
+    ORFunctionDeclNode *funcDecl = [ORFunctionDeclNode copyFromDecl:$1];
     NSMutableArray *pairs = $3;
     if ([pairs lastObject] == [NSNull null]) {
-        funVar.isMultiArgs = YES;
+        funcDecl.isMultiArgs = YES;
         [pairs removeLastObject];
     }
-    funVar.params = pairs;
-    $$ = funVar;
+    funcDecl.params = pairs;
+    $$ = funcDecl;
 }
 | direct_declarator LB expression_optional RB
 {
-    ORVariableNode *var = $1;
+    ORDeclaratorNode *node = $1;
     if ($3 == NULL){
-        var.ptCount += 1;
-        $$ = var;
+        node.var.ptCount += 1;
+        $$ = node;
     }else{
-        ORCArrayVariable *arrayVar = [ORCArrayVariable copyFromVar:var];
+        ORCArrayDeclNode *arrayVar = [ORCArrayDeclNode copyFromDecl:node];
         arrayVar.capacity = $3;
         $$ = arrayVar;
-    }
+   }
 }
 ;
 
@@ -1367,7 +1365,9 @@ parameter_list: /* empty */
 parameter_declaration: 
 declare_left_attribute declarator_type declarator_optional
 {
-    $$ = makeDeclaratorNode($2, $3);
+    ORDeclaratorNode *node = $3;
+    node.type = $2;
+    $$ = node;
 };
 
 parameter_declaration_optional:
