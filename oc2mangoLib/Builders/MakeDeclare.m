@@ -233,11 +233,9 @@ char *endStringBuffer(void){
     return str;
 }
 void stringBufferAppendCharacter(char chr){
-   if (string_buffer_index >= string_buffer_size) {
+    if (string_buffer_index >= string_buffer_size) {
         string_buffer_size +=  STRING_BUFFER_ALLOC_SIZE;
-        void *new_pointer = realloc(string_buffer, string_buffer_size);
-        free(string_buffer);
-        string_buffer = new_pointer;
+        string_buffer = realloc(string_buffer, string_buffer_size);
     }
     string_buffer[string_buffer_index] = chr;
     string_buffer_index++;
@@ -246,9 +244,7 @@ void stringBufferAppendString(char *str){
     size_t len = strlen(str);
     if (string_buffer_index + len > string_buffer_size) {
          string_buffer_size +=  STRING_BUFFER_ALLOC_SIZE;
-         void *new_pointer = realloc(string_buffer, string_buffer_size);
-         free(string_buffer);
-         string_buffer = new_pointer;
+         string_buffer = realloc(string_buffer, string_buffer_size);
     }
     strncpy(string_buffer+string_buffer_index, str, len);
     string_buffer_index += len;
