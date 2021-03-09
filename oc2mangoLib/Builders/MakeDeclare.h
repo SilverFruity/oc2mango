@@ -11,8 +11,8 @@
 #import "RunnerClasses.h"
 
 
-ORTypeNode *makeTypeNode(TypeKind type, NSString *name);
-ORTypeNode *makeTypeNode(TypeKind type) __attribute__((overloadable)) ;
+extern ORTypeNode *makeTypeNode(OCType type, NSString *name);
+extern ORTypeNode *makeTypeNode(OCType type) __attribute__((overloadable)) ;
 extern ORVariableNode *makeVarNode(NSString *name, NSUInteger ptCount);
 extern ORVariableNode *makeVarNode(NSString *name) __attribute__((overloadable)) ;
 

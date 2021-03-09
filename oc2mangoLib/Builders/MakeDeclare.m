@@ -7,13 +7,12 @@
 //
 
 #import "MakeDeclare.h"
-
-
-ORTypeNode *makeTypeNode(TypeKind type ,NSString *name){
+#import "Env.h"
+ORTypeNode *makeTypeNode(OCType type ,NSString *name){
     __autoreleasing ORTypeNode *node = [ORTypeNode specialWithType:type name:name];
     return node;
 }
-ORTypeNode *makeTypeNode(TypeKind type) __attribute__((overloadable)){
+ORTypeNode *makeTypeNode(OCType type) __attribute__((overloadable)){
     return makeTypeNode(type, nil);
 }
 ORVariableNode *makeVarNode(NSString *name, NSUInteger ptCount){

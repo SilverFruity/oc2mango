@@ -16,31 +16,72 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 // MARK: - Base
-typedef enum: uint32_t{
-    TypeVoid = 0x00,
-    TypeUChar = 0x01,
-    TypeUInt,
-    TypeUShort,
-    TypeULong,
-    TypeULongLong,
-    TypeBOOL,
-    TypeChar,
-    TypeShort,
-    TypeInt,
-    TypeLong,
-    TypeLongLong,
-    TypeFloat,
-    TypeDouble,
-    TypeBaseMask = 0x0F,
-    TypeUnion = 0x10,
-    TypeStruct = 0x20,
-    TypeSEL = 0x30,
-    TypeClass = 0x40,
-    TypeObject = 0x50,
-    TypeBlock = 0x60,
-    TypeId = 0x70,
-    TypeUnKnown = 0xF0
-}TypeKind;
+typedef enum: uint32_t {
+    OCTypeChar = 'c',
+    OCTypeShort = 's',
+    OCTypeInt = 'i',
+    OCTypeLong = 'l',
+    OCTypeLongLong = 'q',
+
+    OCTypeUChar = 'C',
+    OCTypeUShort = 'S',
+    OCTypeUInt = 'I',
+    OCTypeULong = 'L',
+    OCTypeULongLong = 'Q',
+    OCTypeBOOL = 'B',
+
+    OCTypeFloat = 'f',
+    OCTypeDouble = 'd',
+
+    OCTypeVoid = 'v',
+    OCTypeCString = '*',
+    OCTypeObject = '@',
+    OCTypeClass = '#',
+    OCTypeSEL = ':',
+
+    OCTypeArray = '[',
+    OCTypeStruct = '{',
+    OCTypeUnion = '(',
+    OCTypeBit = 'b',
+
+    OCTypePointer = '^',
+    OCTypeUnknown = '?'
+}OCType;
+
+#define ExternOCTypeString(Type) static const char OCTypeString##Type[2] = {OCType##Type, '\0'};
+ExternOCTypeString(Char)
+ExternOCTypeString(Short)
+ExternOCTypeString(Int)
+ExternOCTypeString(Long)
+ExternOCTypeString(LongLong)
+
+ExternOCTypeString(UChar)
+ExternOCTypeString(UShort)
+ExternOCTypeString(UInt)
+ExternOCTypeString(ULong)
+ExternOCTypeString(ULongLong)
+ExternOCTypeString(BOOL)
+
+ExternOCTypeString(Float)
+ExternOCTypeString(Double)
+ExternOCTypeString(Void)
+ExternOCTypeString(CString)
+ExternOCTypeString(Object)
+ExternOCTypeString(Class)
+ExternOCTypeString(SEL)
+
+ExternOCTypeString(Array)
+ExternOCTypeString(Struct)
+ExternOCTypeString(Union)
+ExternOCTypeString(Bit)
+
+ExternOCTypeString(Pointer)
+ExternOCTypeString(Unknown)
+
+//NOTE: ignore bit 'b'
+#define TypeEncodeIsBaseType(code) (('a'<= *code && *code <= 'z') || ('A'<= *code && *code <= 'Z'))
+
+static const char *OCTypeStringBlock = "@?";
 
 typedef enum: uint32_t{
     DeclarationModifierNone       = 1,
@@ -50,10 +91,10 @@ typedef enum: uint32_t{
 }DeclarationModifier;
 
 @interface ORTypeNode: ORNode
-@property (nonatomic, assign)TypeKind type;
+@property (nonatomic, assign)OCType type;
 @property (nonatomic, nullable, copy) NSString * name;
 @property (nonatomic, assign)DeclarationModifier modifier;
-+ (instancetype)specialWithType:(TypeKind)type name:(nullable NSString *)name;
++ (instancetype)specialWithType:(OCType)type name:(nullable NSString *)name;
 @end
 
 
@@ -344,7 +385,7 @@ typedef enum: uint32_t{
 @end
 
 @interface OREnumStatNode: ORNode
-@property (nonatomic,assign)TypeKind valueType;
+@property (nonatomic,assign)OCType valueType;
 @property (nonatomic,copy)NSString *enumName;
 @property (nonatomic,strong)NSMutableArray *fields;
 @end

@@ -8,6 +8,7 @@
 
 #import "Parser.h"
 #import "RunnerClasses.h"
+#import "Env.h"
 @implementation CodeSource
 - (instancetype)initWithFilePath:(NSString *)filePath{
     self = [super init];
@@ -46,6 +47,7 @@
     extern int yyparse(void);
     self.source = source;
     yy_set_source_string([source.source UTF8String]);
+    pushEnv();
     if (yyparse()) {
         yyrestart(NULL);
         NSLog(@"\n----Error: \n  PATH: %@\n  INFO:%@",self.source.filePath,self.error);

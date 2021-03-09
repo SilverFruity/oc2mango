@@ -11,7 +11,12 @@
 NS_ASSUME_NONNULL_BEGIN
 @class AST;
 int startClassProrityDetect(AST *ast, ORClassNode *class);
-
+extern ORClassNode *curClassNode;
+extern ORProtocolNode *curProtocolNode;
+void handlePrivateVarDecls(NSArray *decls);
+void handlePropertyDecls(ORPropertyNode *node);
+void handleMethodDecl(ORMethodDeclNode *node);
+void handleMethodImp(ORMethodNode *node);
 extern AST *GlobalAst;
 @interface AST : NSObject
 @property(nonatomic,nonnull,strong)NSMutableArray *nodes;

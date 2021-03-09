@@ -87,37 +87,33 @@ BOOL is_left_value = true;
     }
     NSMutableString *result = [NSMutableString string];
     switch (typeSpecial.type){
-        case TypeUChar:
-        case TypeUShort:
-        case TypeUInt:
-        case TypeULong:
-        case TypeULongLong:
+        case OCTypeUChar:
+        case OCTypeUShort:
+        case OCTypeUInt:
+        case OCTypeULong:
+        case OCTypeULongLong:
             [result appendString:@"uint"]; break;
-        case TypeChar:
-        case TypeShort:
-        case TypeInt:
-        case TypeLong:
-        case TypeLongLong:
+        case OCTypeChar:
+        case OCTypeShort:
+        case OCTypeInt:
+        case OCTypeLong:
+        case OCTypeLongLong:
             [result appendString:@"int"]; break;
-        case TypeDouble:
-        case TypeFloat:
+        case OCTypeDouble:
+        case OCTypeFloat:
             [result appendString:@"double"]; break;
-        case TypeVoid:
+        case OCTypeVoid:
             [result appendString:@"void"]; break;
-        case TypeSEL:
+        case OCTypeSEL:
             [result appendString:@"SEL"]; break;
-        case TypeClass:
+        case OCTypeClass:
             [result appendString:@"Class"]; break;
-        case TypeBOOL:
+        case OCTypeBOOL:
             [result appendString:@"BOOL"]; break;
-        case TypeId:
-            [result appendString:@"id"]; break;
-        case TypeObject:
+        case OCTypeObject:
             [result appendString:typeSpecial.name]; break;
-        case TypeBlock:
-            [result appendString:@"Block"]; break;
             
-        case TypeStruct:
+        case OCTypeStruct:
             [result appendString:typeSpecial.name]; break;
             break;
         default:
@@ -511,19 +507,19 @@ int indentationCont = 0;
         }
     }
     switch (pair.type.type){
-        case TypeUChar:
-        case TypeUShort:
-        case TypeUInt:
-        case TypeULong:
-        case TypeULongLong:
-        case TypeChar:
-        case TypeShort:
-        case TypeInt:
-        case TypeLong:
-        case TypeFloat:
-        case TypeDouble:
-        case TypeBOOL:
-        case TypeLongLong:{
+        case OCTypeUChar:
+        case OCTypeUShort:
+        case OCTypeUInt:
+        case OCTypeULong:
+        case OCTypeULongLong:
+        case OCTypeChar:
+        case OCTypeShort:
+        case OCTypeInt:
+        case OCTypeLong:
+        case OCTypeFloat:
+        case OCTypeDouble:
+        case OCTypeBOOL:
+        case OCTypeLongLong:{
             if (pair.var.ptCount > 0){
                 return [NSString stringWithFormat:@"Point %@",pair.var.varname];
             }

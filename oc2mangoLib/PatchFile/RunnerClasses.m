@@ -8,7 +8,7 @@
 
 #import "RunnerClasses.h"
 @implementation ORTypeNode
-+ (instancetype)specialWithType:(TypeKind)type name:(NSString *)name{
++ (instancetype)specialWithType:(OCType)type name:(NSString *)name{
     ORTypeNode *s = [ORTypeNode new];
     s.type = type;
     s.name = name;

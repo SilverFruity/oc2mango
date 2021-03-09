@@ -8,12 +8,33 @@
 
 #import "AST.h"
 #import "MakeDeclare.h"
+ORClassNode *curClassNode = nil;
+ORProtocolNode *curProtocolNode = nil;
+
 NSArray *SupplementarySetArray(NSArray *source, NSArray *compared){
     NSMutableSet *sourceSet = [NSMutableSet setWithArray:source];
     NSMutableSet *compredSet = [NSMutableSet setWithArray:compared];
     [compredSet unionSet:sourceSet];
     [compredSet minusSet:sourceSet];
     return  compredSet.allObjects;
+}
+void handlePrivateVarDecls(NSArray *decls){
+    if (curClassNode)
+        [curClassNode.privateVariables addObjectsFromArray:decls];
+}
+void handlePropertyDecls(ORPropertyNode *node){
+    if (curClassNode)
+        [curClassNode.properties addObject:node];
+    if (curProtocolNode)
+        [curProtocolNode.properties addObject:node];
+}
+void handleMethodDecl(ORMethodDeclNode *node){
+    if (curProtocolNode)
+        [curProtocolNode.methods addObject:node];
+}
+void handleMethodImp(ORMethodNode *node){
+    if (curClassNode)
+        [curClassNode.methods addObject:node];
 }
 AST *GlobalAst = nil;
 void classProrityDetect(AST *ast,ORClassNode *class, int *level){

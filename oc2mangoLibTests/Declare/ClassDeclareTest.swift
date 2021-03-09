@@ -55,12 +55,12 @@ void func(NSString *a, int *b){
         let methodImp = ast.class(forName: "Demo").methods[0] as? ORMethodNode
         XCTAssert(methodImp?.declare.methodNames == ["initWithBaseUrl"])
         XCTAssert(methodImp?.declare.isClassMethod == false)
-        XCTAssert(methodImp?.declare.returnType.type.type == TypeObject)
+        XCTAssert(methodImp?.declare.returnType.type.type == OCTypeObject)
         
         var methodImp1 = ast.class(forName: "Demo").methods[1] as? ORMethodNode
         XCTAssert(methodImp1?.declare.methodNames == ["method2"])
         XCTAssert(methodImp1?.declare.isClassMethod == false)
-        XCTAssert(methodImp1?.declare.returnType.type.type == TypeObject)
+        XCTAssert(methodImp1?.declare.returnType.type.type == OCTypeObject)
     }
     
     func testCategoryDeclare(){
@@ -84,7 +84,7 @@ void func(NSString *a, int *b){
         let prop = occlass.properties.firstObject as! ORPropertyNode
         XCTAssert(ocparser.isSuccess())
         //        XCTAssert(prop.var.name == "className")
-        //        XCTAssert(prop.var.type.type == TypeObject)
+        //        XCTAssert(prop.var.type.type == OCTypeObject)
         //        XCTAssert(prop.keywords == ["nonatomic","atomic"])
     }
     func testClassConfirmProtocol(){
@@ -113,7 +113,7 @@ void func(NSString *a, int *b){
         var ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let exp = ast.globalStatements.firstObject as! OREnumStatNode
-        XCTAssert(exp.valueType == TypeInt)
+        XCTAssert(exp.valueType == OCTypeInt)
         XCTAssert(exp.fields.count == 3)
         XCTAssert(exp.fields[0] is ORValueNode)
         XCTAssert(exp.fields[1] is ORValueNode)
@@ -131,7 +131,7 @@ void func(NSString *a, int *b){
         ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let secondExp = ast.globalStatements.firstObject as! OREnumStatNode
-        XCTAssert(secondExp.valueType == TypeULongLong)
+        XCTAssert(secondExp.valueType == OCTypeULongLong)
         XCTAssert(secondExp.enumName == "Test")
         XCTAssert(secondExp.fields.count == 3)
         XCTAssert(secondExp.fields[0] is ORValueNode)
@@ -149,7 +149,7 @@ void func(NSString *a, int *b){
         ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let thirdExp = ast.globalStatements.firstObject as! OREnumStatNode
-        XCTAssert(thirdExp.valueType == TypeULongLong)
+        XCTAssert(thirdExp.valueType == OCTypeULongLong)
         XCTAssert(thirdExp.enumName == "")
         XCTAssert(thirdExp.fields.count == 3)
         XCTAssert(thirdExp.fields[0] is ORValueNode)
@@ -166,14 +166,14 @@ void func(NSString *a, int *b){
         let ast = ocparser.parseSource(source)
         XCTAssert(ocparser.isSuccess())
         let exp = ast.globalStatements[0] as! ORCArrayDeclNode
-        XCTAssert(exp.type.type == TypeInt)
+        XCTAssert(exp.type.type == OCTypeInt)
         XCTAssert(exp.var.varname == "a")
         XCTAssert(exp.var.ptCount == 0)
         XCTAssert((exp.capacity as! ORIntegerValue).value == 100)
         let exp1 = ast.globalStatements[2] as! ORDeclaratorNode
-        XCTAssert(exp1.type.type == TypeInt)
+        XCTAssert(exp1.type.type == OCTypeInt)
         XCTAssert(exp1.var.varname == "a")
-        XCTAssert(exp1.var.ptCount == 1)
+        XCTAssert(exp1.var.ptCount == 1, "ptCount \(exp1.var.ptCount)")
     }
     func testUnionDeclare(){
         let source =
@@ -191,8 +191,8 @@ void func(NSString *a, int *b){
         let exp = ast.globalStatements.firstObject as! ORUnionStatNode
         let fields = exp.fields as! [ORDeclaratorNode]
         XCTAssert(fields.count == 2)
-        XCTAssert(fields[0].type.type == TypeDouble)
-        XCTAssert(fields[1].type.type == TypeDouble)
+        XCTAssert(fields[0].type.type == OCTypeDouble)
+        XCTAssert(fields[1].type.type == OCTypeDouble)
         XCTAssert(fields[0].var.varname == "x")
         XCTAssert(fields[1].var.varname == "y")
     }
@@ -212,8 +212,8 @@ void func(NSString *a, int *b){
         let exp = ast.globalStatements.firstObject as! ORStructStatNode
         let fields = exp.fields as! [ORDeclaratorNode]
         XCTAssert(fields.count == 2)
-        XCTAssert(fields[0].type.type == TypeDouble)
-        XCTAssert(fields[1].type.type == TypeDouble)
+        XCTAssert(fields[0].type.type == OCTypeDouble)
+        XCTAssert(fields[1].type.type == OCTypeDouble)
         XCTAssert(fields[0].var.varname == "x")
         XCTAssert(fields[1].var.varname == "y")
     }
@@ -227,7 +227,7 @@ void func(NSString *a, int *b){
         let exp = ast.globalStatements.firstObject as! ORTypedefStatNode
         XCTAssert(exp.typeNewName == "value")
         let typepair = exp.expression as! ORDeclaratorNode
-        XCTAssert(typepair.type.type == TypeInt)
+        XCTAssert(typepair.type.type == OCTypeInt)
         
         
         source =
@@ -244,8 +244,8 @@ void func(NSString *a, int *b){
         let structExp = structTypeDef.expression as! ORStructStatNode
         let fields = structExp.fields as! [ORDeclaratorNode]
         XCTAssert(fields.count == 2)
-        XCTAssert(fields[0].type.type == TypeDouble)
-        XCTAssert(fields[1].type.type == TypeDouble)
+        XCTAssert(fields[0].type.type == OCTypeDouble)
+        XCTAssert(fields[1].type.type == OCTypeDouble)
         XCTAssert(fields[0].var.varname == "x")
         XCTAssert(fields[1].var.varname == "y")
         

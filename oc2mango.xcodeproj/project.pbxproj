@@ -13,16 +13,16 @@
 		04815F8325F0EAB000342ADA /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
 		04815F8425F0EAB000342ADA /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
-		04C447C925F0CF6000E3F443 /* Symbol.h in Headers */ = {isa = PBXBuildFile; fileRef = 04C447C725F0CF6000E3F443 /* Symbol.h */; };
-		04C447CA25F0CF6000E3F443 /* Symbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C447C825F0CF6000E3F443 /* Symbol.m */; };
-		04C447D225F0CF6700E3F443 /* Type.h in Headers */ = {isa = PBXBuildFile; fileRef = 04C447D025F0CF6700E3F443 /* Type.h */; };
-		04C447D325F0CF6700E3F443 /* Type.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C447D125F0CF6700E3F443 /* Type.m */; };
 		04C447E825F0D72200E3F443 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		04C4481B25F0E2F600E3F443 /* ORPatchFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16224FEB62C00C85B31 /* ORPatchFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		04C4483225F0E95C00E3F443 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		04C4483325F0E95C00E3F443 /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		04E05E2A25F5FB6E0047442D /* Env.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E2825F5FB6D0047442D /* Env.h */; };
+		04E05E2B25F5FB6E0047442D /* Env.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E2925F5FB6E0047442D /* Env.m */; };
+		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
+		04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E3725F6174D0047442D /* GlobalTypeTable.m */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
@@ -137,10 +137,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		04C447C725F0CF6000E3F443 /* Symbol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Symbol.h; sourceTree = "<group>"; };
-		04C447C825F0CF6000E3F443 /* Symbol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Symbol.m; sourceTree = "<group>"; };
-		04C447D025F0CF6700E3F443 /* Type.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Type.h; sourceTree = "<group>"; };
-		04C447D125F0CF6700E3F443 /* Type.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Type.m; sourceTree = "<group>"; };
+		04E05E2825F5FB6D0047442D /* Env.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Env.h; sourceTree = "<group>"; };
+		04E05E2925F5FB6E0047442D /* Env.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Env.m; sourceTree = "<group>"; };
+		04E05E3625F6174D0047442D /* GlobalTypeTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalTypeTable.h; sourceTree = "<group>"; };
+		04E05E3725F6174D0047442D /* GlobalTypeTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalTypeTable.m; sourceTree = "<group>"; };
 		32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClassSecretKeyMap.h; path = oc2mangoLib/PatchFile/ClassSecretKeyMap.h; sourceTree = SOURCE_ROOT; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
@@ -351,10 +351,10 @@
 				EE5534CE2290032700A4B32E /* AST.m */,
 				EE982F05226CB443008712C2 /* MakeDeclare.h */,
 				EE982F06226CB4E4008712C2 /* MakeDeclare.m */,
-				04C447C725F0CF6000E3F443 /* Symbol.h */,
-				04C447C825F0CF6000E3F443 /* Symbol.m */,
-				04C447D025F0CF6700E3F443 /* Type.h */,
-				04C447D125F0CF6700E3F443 /* Type.m */,
+				04E05E3625F6174D0047442D /* GlobalTypeTable.h */,
+				04E05E3725F6174D0047442D /* GlobalTypeTable.m */,
+				04E05E2825F5FB6D0047442D /* Env.h */,
+				04E05E2925F5FB6E0047442D /* Env.m */,
 			);
 			path = Builders;
 			sourceTree = "<group>";
@@ -418,10 +418,10 @@
 			files = (
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
-				04C447D225F0CF6700E3F443 /* Type.h in Headers */,
+				04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */,
+				04E05E2A25F5FB6E0047442D /* Env.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
-				04C447C925F0CF6000E3F443 /* Symbol.h in Headers */,
 				EE5534D32290053800A4B32E /* Convert.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -707,12 +707,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
-				04C447CA25F0CF6000E3F443 /* Symbol.m in Sources */,
+				04E05E2B25F5FB6E0047442D /* Env.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* parser.y in Sources */,
-				04C447D325F0CF6700E3F443 /* Type.m in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
+				04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */,
 				04C447E825F0D72200E3F443 /* Convert.m in Sources */,
 				EE4BAFE624364CAA00A2A080 /* lexer.l in Sources */,
 			);

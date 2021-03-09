@@ -4,6 +4,7 @@
 #import <Foundation/Foundation.h>
 #import "Log.h"
 #import "MakeDeclare.h"
+#import "Env.h"
 extern int yylex (void);
 extern void yyerror(const char *s);
 extern bool is_variable;
@@ -43,30 +44,35 @@ parameter_list
 CHILD_COLLECTION_OPTIONAL
 declare_left_attribute
 
-%type  <object>
-class_declare
+%type <object>
+start_class_interface
+class_interface
+start_protocol_declare
 protocol_declare
+start_class_implementation
 class_implementation
+class_content
+class_content_list
 method_declare
 class_property_type
 class_property_declare
 property_list
-class_private_varibale_declare
-class_private_list
+END
 
 %type  <object>
 objc_method_call_pramameters
 objc_method_call
 primary_expression
 numerical_value_type
-block_implementation
-function_implementation
+oc_block_imp
+statement_list
 expression_list
 unary_expression
 postfix_expression
 
 %type <object>
-expression_statement
+ast_block_imp
+expression_stats
 if_statement // if / else if / else
 while_statement // while(){}
 dowhile_statement // do{}while()
@@ -104,7 +110,6 @@ declarator_optional
 direct_declarator
 direct_declarator_optional
 block_parameters_optinal
-parameter_type_list
 declarator_type_opt
 
 %type <object>
@@ -124,7 +129,7 @@ definition_list: definition
 ;
 definition:
 global_define
-| class_declare
+| class_interface
 | protocol_declare
 | class_implementation
 | control_statement
@@ -133,17 +138,18 @@ global_define
 }
 ;
 global_define:
-expression_statement
+expression_stats
 {
     [GlobalAst addGlobalStatements:$1];
 }
 | CLASS_DECLARE IDENTIFIER SEMICOLON
 | PROTOCOL IDENTIFIER SEMICOLON
-| declarator_type declarator LC function_implementation RC
+| declarator_type declarator ast_block_imp
 {
     ORFunctionDeclNode *declare = $2;
     declare.type = $1;
-    [GlobalAst addGlobalStatements:makeFunctionNode(declare, $4)];
+    EnvAddDecl(declare);
+    [GlobalAst addGlobalStatements:makeFunctionNode(declare, $3)];
 }
 | struct_declare SEMICOLON
 {
@@ -215,7 +221,7 @@ NS_ENUM LP declarator_type COMMA IDENTIFIER RP enum_declare
 }
 | LC enum_field_list RC
 {
-    $$ = makeEnumExp(@"",makeTypeNode(TypeInt), $2);
+    $$ = makeEnumExp(@"",makeTypeNode(OCTypeInt), $2);
 }
 | COLON declarator_type LC enum_field_list RC
 {
@@ -224,14 +230,13 @@ NS_ENUM LP declarator_type COMMA IDENTIFIER RP enum_declare
 ;
 
 enum_field_list:
-assign_expression
+expression
 {
     $$ = makeMutableArray($1);
 }
-| enum_field_list COMMA assign_expression
+| enum_field_list COMMA expression
 {
     [$1 addObject:$3];
-    $$ = $1;
 }
 ;
 
@@ -258,118 +263,93 @@ declarator_type declarator
 }
 ;
 
-protocol_declare:
-PROTOCOL IDENTIFIER CHILD_COLLECTION_OPTIONAL
-{
-    ORProtocolNode *orprotcol = [GlobalAst protcolForName:$2];
-    NSString *supers = $3;
-    if (supers != nil){
-        NSArray *protocols = [supers componentsSeparatedByString:@","];
-        orprotcol.protocols = [protocols mutableCopy];
-    }
-    $$ = orprotcol;
-}
-| protocol_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
-{
-    ORProtocolNode *orprotcol = $1;
-    [orprotcol.properties addObject:makePropertyDeclare($3, $4)];
-    $$ = orprotcol;
-}
-| protocol_declare method_declare SEMICOLON
-{
-    ORProtocolNode *orprotcol =  $1;
-    [orprotcol.methods addObject: $2];
-    $$ = orprotcol;
-}
-| protocol_declare END
+IDENTIFIER_OPT:
+| IDENTIFIER
 ;
 
-class_declare:
-//
-INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
+start_protocol_declare:
+PROTOCOL IDENTIFIER
 {
-    ORClassNode *occlass = [GlobalAst classForName:$2];
-    occlass.superClassName = $4;
-    NSArray *protocols = [$5 componentsSeparatedByString:@","];
-    occlass.protocols = [protocols mutableCopy];
-    $$ = occlass;
+    curProtocolNode = [GlobalAst protcolForName:$2];
+}
+protocol_declare:
+start_protocol_declare CHILD_COLLECTION_OPTIONAL class_content_list END
+{
+    if ($2 != nil){
+        NSArray *protocols = [$2 componentsSeparatedByString:@","];
+        curProtocolNode.protocols = [protocols mutableCopy];
+    }
+}
+;
+
+start_class_interface:
+INTERFACE IDENTIFIER
+{
+    curClassNode = [GlobalAst classForName:$2];
+    $$ = curClassNode;
+}
+;
+
+class_interface:
+start_class_interface COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL class_private_ivars_opt class_content_list END
+{
+    curClassNode.superClassName = $3;
+    NSArray *protocols = [$4 componentsSeparatedByString:@","];
+    curClassNode.protocols = [protocols mutableCopy];
 }
 // category
-| INTERFACE IDENTIFIER LP IDENTIFIER RP CHILD_COLLECTION_OPTIONAL
+| start_class_interface LP IDENTIFIER_OPT RP CHILD_COLLECTION_OPTIONAL class_content_list END
 {
-    ORClassNode *occlass = [GlobalAst classForName:$2];
-    NSArray *protocols = [$6 componentsSeparatedByString:@","];
-    occlass.protocols = [protocols mutableCopy];
-    $$ = occlass;
-}
-| INTERFACE IDENTIFIER LP RP CHILD_COLLECTION_OPTIONAL
-{
-    ORClassNode *occlass = [GlobalAst classForName:$2];
     NSArray *protocols = [$5 componentsSeparatedByString:@","];
-    occlass.protocols = [protocols mutableCopy];
-    $$ = occlass;
+    curClassNode.protocols = [protocols mutableCopy];
 }
-| class_declare LC class_private_varibale_declare RC
-{
-    ORClassNode *occlass =  $1;
-    [occlass.privateVariables addObjectsFromArray: $3];
-    $$ = occlass;
-}
-| class_declare PROPERTY class_property_declare parameter_declaration SEMICOLON
-{
-    ORClassNode *occlass =  $1;
-    [occlass.properties addObject:makePropertyDeclare($3, $4)];
-    $$ = occlass;
-}
-// 方法声明，不做处理
-| class_declare method_declare SEMICOLON
-| class_declare END
 ;
 
+start_class_implementation:
+IMPLEMENTATION IDENTIFIER
+{
+    curClassNode = [GlobalAst classForName:$2];
+    $$ = curClassNode;
+}
+// category
+| start_class_implementation LP IDENTIFIER RP
+;
 
 class_implementation:
-IMPLEMENTATION IDENTIFIER class_private_list
-{
-    ORClassNode *occlass = [GlobalAst classForName:$2];
-    [occlass.privateVariables addObjectsFromArray: $3];
-    $$ = occlass;
-}
-// category
-| IMPLEMENTATION IDENTIFIER LP IDENTIFIER RP
-{
-    $$ = [GlobalAst classForName:$2];
-}
-| class_implementation method_declare LC function_implementation RC
-{
-    ORMethodNode *imp = makeMethodImplementation( $2,  $4);
-    ORClassNode *occlass =  $1;
-    [occlass.methods addObject:imp];
-    $$ = occlass;
-}
-| class_implementation global_define
-| class_implementation END
+start_class_implementation class_private_ivars_opt class_imp_content END
 ;
 
-class_private_list:
-{
-    $$ = makeMutableArray(nil);;
-}
-| LC class_private_varibale_declare RC
-{
-    $$ = $2;
-}
+class_imp_content:
+| class_content_list
+| global_define
+;
 
-class_private_varibale_declare: // empty
+class_content_list:
+| class_content
+| class_content_list class_content
+
+class_private_ivars_opt:
+| ast_block_imp
 {
-    $$ = makeMutableArray(nil);;
-}
-| class_private_varibale_declare parameter_declaration SEMICOLON
-{
-    NSMutableArray *list =  $1;
-    [list addObject: $2];
-    $$ = list;
+    handlePrivateVarDecls([$1 statements]);
 }
 ;
+
+class_content:
+PROPERTY class_property_declare parameter_declaration SEMICOLON
+{
+    handlePropertyDecls(makePropertyDeclare($2, $3));
+}
+| method_declare SEMICOLON
+{
+    handleMethodDecl($1);
+}
+| method_declare ast_block_imp
+{
+    handleMethodImp(makeMethodImplementation($1, $2));
+}
+;
+
 
 class_property_type:
   IDENTIFIER
@@ -385,7 +365,6 @@ class_property_type
 | property_list COMMA class_property_type
 {
     [$1 addObject:$3];
-    $$ = $1;
 }
 ;
 
@@ -484,20 +463,20 @@ block_parameters_optinal:
 ;
 declarator_type_opt:
 {
-    $$ = nil;
+    $$ = makeTypeNode(OCTypeVoid);
 }
 | declarator_type
         
-block_implementation:
+oc_block_imp:
 //^returnType(optional) parameters(optional){ }
-POWER declarator_type_opt pointer_optional block_parameters_optinal LC function_implementation RC
+POWER declarator_type_opt pointer_optional block_parameters_optinal ast_block_imp
 {
     ORFunctionDeclNode *declare = makeFunctionDeclNode();
     declare.type = $2;
     declare.var = makeVarNode(nil,$3);
     declare.params = $4;
     declare.var.isBlock = YES;
-    $$ = makeFunctionNode(declare, $6);;
+    $$ = makeFunctionNode(declare, $5);;
 }
 ;
 
@@ -507,10 +486,10 @@ expression_opt:
 {
     $$ = nil;
 }
-|assign_expression;
+| expression;
 
-expression_statement:
-assign_expression SEMICOLON
+expression_stats:
+expression SEMICOLON
 {
     ORNode *node =  $1;
     node.withSemicolon = YES;
@@ -545,50 +524,50 @@ assign_expression SEMICOLON
 ;
 
 if_statement:
-IF LP expression RP expression_statement
+IF LP expression RP expression_stats
 {
     $$ = makeIfStatement( $3, makeScopeImp($5));
 }
-| IF LP expression RP LC function_implementation RC
+| IF LP expression RP ast_block_imp
 {
-    $$ = makeIfStatement( $3, $6);;
+    $$ = makeIfStatement( $3, $5);;
 }
-| if_statement _else IF LP expression RP expression_statement
+| if_statement _else IF LP expression RP expression_stats
 {
     ORIfStatement *elseIfStatement = makeIfStatement( $5, makeScopeImp($7));
     elseIfStatement.last = $1;
     $$  = elseIfStatement;
 }
-| if_statement _else IF LP expression RP LC function_implementation RC
+| if_statement _else IF LP expression RP ast_block_imp
 {
-    ORIfStatement *elseIfStatement = makeIfStatement( $5,$8);
+    ORIfStatement *elseIfStatement = makeIfStatement($5, $7);
     elseIfStatement.last = $1;
     $$  = elseIfStatement;
 }
-| if_statement _else expression_statement
+| if_statement _else expression_stats
 {
     ORIfStatement *elseStatement = makeIfStatement(nil, makeScopeImp($3));
     elseStatement.last = $1;
     $$  = elseStatement;
 }
-| if_statement _else LC function_implementation RC
+| if_statement _else ast_block_imp
 {
-    ORIfStatement *elseStatement = makeIfStatement(nil,$4);
+    ORIfStatement *elseStatement = makeIfStatement(nil, $3);
     elseStatement.last = $1;
     $$  = elseStatement;
 }
 ;
 
 dowhile_statement: 
-_do LC function_implementation RC _while LP expression RP
+_do ast_block_imp _while LP expression RP
 {
-    $$ = makeDoWhileStatement($7,$3);
+    $$ = makeDoWhileStatement($5,$2);
 }
 ;
 while_statement:
-_while LP expression RP LC function_implementation RC
+_while LP expression RP ast_block_imp
 {
-    $$ = makeWhileStatement($3,$6);
+    $$ = makeWhileStatement($3, $5);
 }
 ;
 
@@ -601,13 +580,13 @@ _case primary_expression COLON
 {
     $$ = makeCaseStatement(nil);
 }
-| case_statement expression_statement
+| case_statement expression_stats
 {
     [[$1 scopeImp] addStatements:$2];
 }
-| case_statement LC function_implementation RC
+| case_statement ast_block_imp
 {
-    [$1 setScopeImp:$3];
+    [$1 setScopeImp:$2];
 }
 ;
 case_statement_list:
@@ -638,17 +617,17 @@ for_statement_var_list:
     [$1 addObject: $3];
 }
 
-for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
+for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP ast_block_imp
 {
-    ORForStatement* statement = makeForStatement( $10);
+    ORForStatement* statement = makeForStatement($9);
     statement.varExpressions = $3;
     statement.condition = $5;
     statement.expressions = $7;
     $$ = statement;
 }
-|  _for LP for_statement_var_list SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
+|  _for LP for_statement_var_list SEMICOLON expression SEMICOLON expression_list RP ast_block_imp
 {
-   ORForStatement* statement = makeForStatement( $10);
+   ORForStatement* statement = makeForStatement($9);
    statement.varExpressions = $3;
    statement.condition = $5;
    statement.expressions = $7;
@@ -656,9 +635,9 @@ for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_lis
 }
 ;
 
-forin_statement: _for LP declaration _in expression RP LC function_implementation RC
+forin_statement: _for LP declaration _in expression RP ast_block_imp
 {
-    ORForInStatement * statement = makeForInStatement($8);
+    ORForInStatement * statement = makeForInStatement($7);
     NSArray *exps = $3;
     statement.expression = exps[0];
     statement.value = $5;
@@ -676,18 +655,31 @@ if_statement
 | forin_statement
 ;
 
+ast_block_imp:
+LC  { pushEnv(); } statement_list RC {
+    ORBlockNode *node = makeScopeImp();
+    node.statements = $3;
+    popEnv();
+    $$ = node;
+}
+;
 
-function_implementation:
+statement_list:
 {
-    $$ = makeScopeImp();
+    $$ = makeMutableArray(nil);
 }
-| function_implementation expression_statement
+| statement_list expression_stats
 {
-    [$1 addStatements: $2];
+    if([$2 isKindOfClass:[NSArray class]]){
+        [$1 addObjectsFromArray:$2];
+    }else{
+        [$1 addObject:$2];
+    }
 }
-| function_implementation control_statement
+| statement_list control_statement
 {
-    [$1 addStatements: $2];
+    log($2);
+    [$1 addObject:$2];
 }
 ;
         
@@ -1066,7 +1058,7 @@ IDENTIFIER
 {
     $$ = makeValue(OCValueCString,$1);
 }
-| block_implementation
+| oc_block_imp
 | numerical_value_type
 | _nil
 {
@@ -1113,9 +1105,11 @@ declaration_modifier declarator_type init_declarator_list
         if ([declare isKindOfClass:[ORInitDeclaratorNode class]]){
             [declare declarator].type = $2;
             [declare declarator].type.modifier = $1;
+            EnvAddDecl([declare declarator]);
         }else{
             [(ORDeclaratorNode *)declare setType:$2];
             [[(ORDeclaratorNode *)declare type] setModifier:$1];
+            EnvAddDecl(declare);
         }
     }
     $$ = array;
@@ -1126,8 +1120,10 @@ declaration_modifier declarator_type init_declarator_list
     for (id declare in array){
         if ([declare isKindOfClass:[ORInitDeclaratorNode class]]){
             [declare declarator].type = $1;
+            EnvAddDecl([declare declarator]);
         }else{
             [(ORDeclaratorNode *)declare setType:$1];
+            EnvAddDecl(declare);
         }
     }
     $$ = array;
@@ -1150,7 +1146,7 @@ declarator
 {
     $$ = $1;
 }
-| declarator ASSIGN assign_expression
+| declarator ASSIGN expression
 {
     $$ = makeInitDeclaratorNode($1, $3);
 }
@@ -1197,7 +1193,7 @@ IDENTIFIER
 {
     $$ = $2;
 }
-| direct_declarator LP parameter_type_list RP
+| direct_declarator LP parameter_list RP
 {
     ORFunctionDeclNode *funcDecl = [ORFunctionDeclNode copyFromDecl:$1];
     NSMutableArray *pairs = $3;
@@ -1239,15 +1235,6 @@ pointer_optional:
 }
 | pointer;
 
-parameter_type_list:
- parameter_list
-| parameter_list COMMA ELLIPSIS
-{
-    [$1 addObject:[NSNull null]];
-    $$ = $1;
-}
-;
-
 parameter_list: /* empty */
 {
     $$ = makeMutableArray(nil);
@@ -1259,6 +1246,11 @@ parameter_list: /* empty */
 | parameter_list COMMA parameter_declaration
 {
     [$1 addObject: $3];
+}
+| parameter_list COMMA ELLIPSIS
+{
+    [$1 addObject:[NSNull null]];
+    $$ = $1;
 }
 ;
 
@@ -1283,91 +1275,91 @@ CHILD_COLLECTION_OPTIONAL:
 declarator_type:
 IDENTIFIER CHILD_COLLECTION_OPTIONAL
 {
-    $$ = makeTypeNode(TypeObject, $1);
+    $$ = makeTypeNode(OCTypeObject, $1);
 }
 | _struct IDENTIFIER
 {
-    $$ = makeTypeNode(TypeStruct, $2);
+    $$ = makeTypeNode(OCTypeStruct, $2);
 }
 | _union IDENTIFIER
 {
-    $$ = makeTypeNode(TypeUnion, $2);
+    $$ = makeTypeNode(OCTypeUnion, $2);
 }
 | _id CHILD_COLLECTION_OPTIONAL
 {
-    $$ = makeTypeNode(TypeObject,@"id");
+    $$ = makeTypeNode(OCTypeObject,@"id");
 }
 | TYPEOF LP expression RP
 {
-    $$ = makeTypeNode(TypeObject,@"typeof");
+    $$ = makeTypeNode(OCTypeObject,@"typeof");
 }
 | _UCHAR
 {
-    $$ = makeTypeNode(TypeUChar);
+    $$ = makeTypeNode(OCTypeUChar);
 }
 | _USHORT
 {
-    $$ = makeTypeNode(TypeUShort);
+    $$ = makeTypeNode(OCTypeUShort);
 }
 | _UINT
 {
-    $$ = makeTypeNode(TypeUInt);
+    $$ = makeTypeNode(OCTypeUInt);
 }
 | _ULONG
 {
-    $$ = makeTypeNode(TypeULong);
+    $$ = makeTypeNode(OCTypeULong);
 }
 | _ULLONG
 {
-    $$ = makeTypeNode(TypeULongLong);
+    $$ = makeTypeNode(OCTypeULongLong);
 }
 | _CHAR
 {
-    $$ = makeTypeNode(TypeChar);
+    $$ = makeTypeNode(OCTypeChar);
 }
 | _SHORT
 {
-    $$ = makeTypeNode(TypeShort);
+    $$ = makeTypeNode(OCTypeShort);
 }
 | _INT
 {
-    $$ = makeTypeNode(TypeInt);
+    $$ = makeTypeNode(OCTypeInt);
 }
 | _LONG
 {
-    $$ = makeTypeNode(TypeLong);
+    $$ = makeTypeNode(OCTypeLong);
 }
 | _LLONG
 {
-    $$ = makeTypeNode(TypeLongLong);
+    $$ = makeTypeNode(OCTypeLongLong);
 }
 | _DOUBLE
 {
-    $$ = makeTypeNode(TypeDouble);
+    $$ = makeTypeNode(OCTypeDouble);
 }
 | _FLOAT
 {
-    $$ = makeTypeNode(TypeFloat);
+    $$ = makeTypeNode(OCTypeFloat);
 }
 | _Class
 {
-    $$ = makeTypeNode(TypeClass);
+    $$ = makeTypeNode(OCTypeClass);
 }
 | _BOOL
 {
-    $$ = makeTypeNode(TypeBOOL);
+    $$ = makeTypeNode(OCTypeBOOL);
 }
 | _SEL
 {
-    $$ = makeTypeNode(TypeSEL);
+    $$ = makeTypeNode(OCTypeSEL);
 }
 | _void
 {
-    $$ = makeTypeNode(TypeVoid);
+    $$ = makeTypeNode(OCTypeVoid);
 }
 | _instancetype
 {
-    $$ = makeTypeNode(TypeObject,@"id");
+    $$ = makeTypeNode(OCTypeObject,@"id");
 }
 ;
 
