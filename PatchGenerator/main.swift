@@ -43,10 +43,14 @@ enum Options: String{
     case type = "-type"
     case h = "-h"
     case help = "-help"
+    case osVersion = "-osVersion"
+    case appVersion = "-appVersion"
 }
 class CheckArgs{
     var inputFilePaths = [String]()
     var refrencePaths = [String]()
+    var osVersion = "*"
+    var appVersion = "*"
     var output = ""
     var type: PatchType = .binary
     var isHelp = false
@@ -74,6 +78,12 @@ class CheckArgs{
                     self.type = type
                 }
                 break
+            case .appVersion:
+                self.appVersion = arg
+                break
+            case .osVersion:
+                self.osVersion = arg
+                break
             default:
                 break
             }
@@ -87,9 +97,10 @@ class CheckArgs{
         -files: Objective-C source files.
         -refs: same as header files, include C function declare, struct, enum, inline function etc..
         -output: output patch file path.
-
         optional:
         -type: json or binary. default is binary.
+        -osVersion: patch for iOS version
+        -appVersion: patch for application version
 
         For example:
 
@@ -136,6 +147,8 @@ func main(){
     let refNodes = parser.parseSource(reference).nodes as! [Any]
     let inputNodes = parser.parseSource(input).nodes as! [Any]
     let patchFile = ORPatchFile.init(nodes: refNodes + inputNodes)
+    patchFile.appVersion = result.appVersion
+    patchFile.osVersion = result.osVersion
     switch result.type {
     case .binary:
         patchFile.dump(asBinaryPatch: result.output)

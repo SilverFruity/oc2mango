@@ -53,7 +53,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-files /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/ViewController1 -refs  /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle -output /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/binarypatch"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-files /user/mac/files -refs /user/mac/headers -output /usr/mac/binarypatch"
@@ -66,6 +66,10 @@
          <CommandLineArgument
             argument = "-h"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-appVersion 1.1.* -osVersion 14.* -files /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/ViewController1 -refs  /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle -output /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/binarypatch"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
