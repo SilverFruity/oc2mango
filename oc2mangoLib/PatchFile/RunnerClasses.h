@@ -7,13 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-
 NS_ASSUME_NONNULL_BEGIN
-// MARK: - Node
-@interface ORNode: NSObject
-@property (nonatomic, assign)BOOL withSemicolon;
-@end
 
 // MARK: - Base
 typedef enum: uint32_t {
@@ -83,6 +77,52 @@ ExternOCTypeString(Unknown)
 
 static const char *OCTypeStringBlock = "@?";
 
+//VSCode正则: @interface (.*)?:[.\w\W]*?@end
+#define NODE_LIST(V)\
+V(TypeNode)\
+V(VariableNode)\
+V(DeclaratorNode)\
+V(FunctionDeclNode)\
+V(CArrayDeclNode)\
+V(BlockNode)\
+V(ValueNode)\
+V(IntegerValue)\
+V(UIntegerValue)\
+V(DoubleValue)\
+V(BoolValue)\
+V(MethodCall)\
+V(FunctionCall)\
+V(FunctionNode)\
+V(SubscriptNode)\
+V(AssignNode)\
+V(InitDeclaratorNode)\
+V(UnaryNode)\
+V(BinaryNode)\
+V(TernaryNode)\
+V(IfStatement)\
+V(WhileStatement)\
+V(DoWhileStatement)\
+V(CaseStatement)\
+V(SwitchStatement)\
+V(ForStatement)\
+V(ForInStatement)\
+V(ControlStatNode)\
+V(PropertyNode)\
+V(MethodDeclNode)\
+V(MethodNode)\
+V(ClassNode)\
+V(ProtocolNode)\
+V(StructStatNode)\
+V(UnionStatNode)\
+V(EnumStatNode)\
+V(TypedefStatNode)\
+
+
+// MARK: - Node
+@interface ORNode: NSObject
+@property (nonatomic, assign)BOOL withSemicolon;
+@end
+
 typedef enum: uint32_t{
     DeclarationModifierNone       = 1,
     DeclarationModifierStrong     = 1 << 1,
@@ -137,7 +177,8 @@ typedef enum: uint32_t{
     OCValueString, // value: NSString
     OCValueCString, // value: NSString
     OCValueNil, //  value: nil
-    OCValueNULL //  value: nil
+    OCValueNULL, //  value: nil
+    OCValueClass,
 }OC_VALUE_TYPE;
 
 @interface ORValueNode: ORNode
@@ -393,5 +434,16 @@ typedef enum: uint32_t{
 @interface ORTypedefStatNode: ORNode
 @property (nonatomic,strong)ORNode *expression;
 @property (nonatomic,copy)NSString *typeNewName;
+@end
+
+
+
+@interface ORVisitor : NSObject
+- (void)visitAllNode:(ORNode *)node;
+
+#define VISITOR_METHOD(node_name)\
+- (void)visit##node_name:(OR##node_name *)node;
+NODE_LIST(VISITOR_METHOD);
+#undef VISITOR_METHOD
 @end
 NS_ASSUME_NONNULL_END

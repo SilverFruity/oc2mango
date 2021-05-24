@@ -19,8 +19,6 @@
 		04C4483225F0E95C00E3F443 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		04C4483325F0E95C00E3F443 /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		04E05E2A25F5FB6E0047442D /* Env.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E2825F5FB6D0047442D /* Env.h */; };
-		04E05E2B25F5FB6E0047442D /* Env.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E2925F5FB6E0047442D /* Env.m */; };
 		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
 		04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E3725F6174D0047442D /* GlobalTypeTable.m */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
@@ -137,8 +135,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		04E05E2825F5FB6D0047442D /* Env.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Env.h; sourceTree = "<group>"; };
-		04E05E2925F5FB6E0047442D /* Env.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Env.m; sourceTree = "<group>"; };
 		04E05E3625F6174D0047442D /* GlobalTypeTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalTypeTable.h; sourceTree = "<group>"; };
 		04E05E3725F6174D0047442D /* GlobalTypeTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalTypeTable.m; sourceTree = "<group>"; };
 		32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClassSecretKeyMap.h; path = oc2mangoLib/PatchFile/ClassSecretKeyMap.h; sourceTree = SOURCE_ROOT; };
@@ -353,8 +349,6 @@
 				EE982F06226CB4E4008712C2 /* MakeDeclare.m */,
 				04E05E3625F6174D0047442D /* GlobalTypeTable.h */,
 				04E05E3725F6174D0047442D /* GlobalTypeTable.m */,
-				04E05E2825F5FB6D0047442D /* Env.h */,
-				04E05E2925F5FB6E0047442D /* Env.m */,
 			);
 			path = Builders;
 			sourceTree = "<group>";
@@ -419,7 +413,6 @@
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
 				04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */,
-				04E05E2A25F5FB6E0047442D /* Env.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
 				EE5534D32290053800A4B32E /* Convert.h in Headers */,
@@ -707,7 +700,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
-				04E05E2B25F5FB6E0047442D /* Env.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* parser.y in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,

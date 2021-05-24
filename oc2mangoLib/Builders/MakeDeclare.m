@@ -7,7 +7,7 @@
 //
 
 #import "MakeDeclare.h"
-#import "Env.h"
+
 ORTypeNode *makeTypeNode(OCType type ,NSString *name){
     __autoreleasing ORTypeNode *node = [ORTypeNode specialWithType:type name:name];
     return node;

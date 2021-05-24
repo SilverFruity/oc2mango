@@ -7,7 +7,7 @@
 //
 
 #import "GlobalTypeTable.h"
-#import "Env.h"
+
 @implementation GlobalTypeItem
 + (instancetype)itemWithName:(NSString *)name type:(GlobalType)type node:(id)node{
     GlobalTypeItem *item = [GlobalTypeItem new];

@@ -4,7 +4,7 @@
 #import <Foundation/Foundation.h>
 #import "Log.h"
 #import "MakeDeclare.h"
-#import "Env.h"
+
 extern int yylex (void);
 extern void yyerror(const char *s);
 extern bool is_variable;
@@ -148,7 +148,6 @@ expression_stats
 {
     ORFunctionDeclNode *declare = $2;
     declare.type = $1;
-    EnvAddDecl(declare);
     [GlobalAst addGlobalStatements:makeFunctionNode(declare, $3)];
 }
 | struct_declare SEMICOLON
@@ -656,10 +655,11 @@ if_statement
 ;
 
 ast_block_imp:
-LC  { pushEnv(); } statement_list RC {
+LC  {
+    
+} statement_list RC {
     ORBlockNode *node = makeScopeImp();
     node.statements = $3;
-    popEnv();
     $$ = node;
 }
 ;
@@ -1105,11 +1105,9 @@ declaration_modifier declarator_type init_declarator_list
         if ([declare isKindOfClass:[ORInitDeclaratorNode class]]){
             [declare declarator].type = $2;
             [declare declarator].type.modifier = $1;
-            EnvAddDecl([declare declarator]);
         }else{
             [(ORDeclaratorNode *)declare setType:$2];
             [[(ORDeclaratorNode *)declare type] setModifier:$1];
-            EnvAddDecl(declare);
         }
     }
     $$ = array;
@@ -1120,10 +1118,8 @@ declaration_modifier declarator_type init_declarator_list
     for (id declare in array){
         if ([declare isKindOfClass:[ORInitDeclaratorNode class]]){
             [declare declarator].type = $1;
-            EnvAddDecl([declare declarator]);
         }else{
             [(ORDeclaratorNode *)declare setType:$1];
-            EnvAddDecl(declare);
         }
     }
     $$ = array;
