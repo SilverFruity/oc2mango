@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		180B68C82660B386001173FB /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
+		180B68C92660B386001173FB /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
@@ -52,8 +54,6 @@
 		EE66C16E24FEB62C00C85B31 /* RunnerClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16424FEB62C00C85B31 /* RunnerClasses.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C16F24FEB62C00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE66C17124FEB62C00C85B31 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE66C17224FEB64900C85B31 /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
-		EE66C17324FEB64900C85B31 /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EE66C18524FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EE66C18624FEC14A00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
@@ -79,7 +79,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		EE66C17424FEB64900C85B31 /* PBXContainerItemProxy */ = {
+		180B68CA2660B386001173FB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
 			proxyType = 1;
@@ -96,6 +96,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		180B68CC2660B386001173FB /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				180B68C92660B386001173FB /* ORPatchFile.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EE4F367724F9251C00F685AF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -113,17 +124,6 @@
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
-		};
-		EE66C17624FEB64900C85B31 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				EE66C17324FEB64900C85B31 /* ORPatchFile.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EE6E6CCD225E488000616C7E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -218,7 +218,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE66C17224FEB64900C85B31 /* ORPatchFile.framework in Frameworks */,
+				180B68C82660B386001173FB /* ORPatchFile.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -497,12 +497,12 @@
 				EED67A6A2270AE0E0015AC02 /* Sources */,
 				EED67A6B2270AE0E0015AC02 /* Frameworks */,
 				EED67A6C2270AE0E0015AC02 /* Resources */,
-				EE66C17624FEB64900C85B31 /* Embed Frameworks */,
+				180B68CC2660B386001173FB /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EE66C17524FEB64900C85B31 /* PBXTargetDependency */,
+				180B68CB2660B386001173FB /* PBXTargetDependency */,
 			);
 			name = oc2mangoLib;
 			productName = oc2mangoLib;
@@ -727,10 +727,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		EE66C17524FEB64900C85B31 /* PBXTargetDependency */ = {
+		180B68CB2660B386001173FB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
-			targetProxy = EE66C17424FEB64900C85B31 /* PBXContainerItemProxy */;
+			targetProxy = 180B68CA2660B386001173FB /* PBXContainerItemProxy */;
 		};
 		EED67A792270AE0F0015AC02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -747,7 +747,7 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
@@ -763,7 +763,7 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
@@ -779,7 +779,7 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
@@ -795,7 +795,7 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
@@ -977,6 +977,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -986,6 +987,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

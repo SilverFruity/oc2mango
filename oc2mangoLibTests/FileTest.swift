@@ -9,7 +9,7 @@
 import XCTest
 
 class FileTest: XCTestCase {
-    let ocparser = Parser.shared()
+    let parser = Parser()
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -24,8 +24,8 @@ class FileTest: XCTestCase {
         let path = bundle.path(forResource: "TestSource", ofType: "imp")
         let data = try? Data.init(contentsOf:URL.init(fileURLWithPath: path!))
         let source = String.init(data: data ?? Data.init(), encoding: .utf8)
-        ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess(),ocparser.error!)
+        parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
     }
 
 

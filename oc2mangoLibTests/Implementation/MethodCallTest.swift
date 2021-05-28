@@ -9,7 +9,7 @@
 import XCTest
 
 class MethodCallTest: XCTestCase {
-    let ocparser = Parser.shared()
+    let parser = Parser()
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -46,8 +46,8 @@ completion(httpReponse,result,error);
     make.height.equalTo(@(240));
 }];
 """
-        ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
     }
 
     func testClassCacheSort(){

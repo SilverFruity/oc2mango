@@ -8,6 +8,7 @@
 
 #import "Parser.h"
 #import "RunnerClasses.h"
+Parser *OCParser = nil;
 @implementation CodeSource
 - (instancetype)initWithFilePath:(NSString *)filePath{
     self = [super init];
@@ -41,6 +42,7 @@
     }
     self.error = nil;
     GlobalAst = [AST new];
+    OCParser = self;
     extern void yy_set_source_string(char const *source);
     extern void yyrestart (FILE * input_file );
     extern int yyparse(void);
@@ -48,6 +50,8 @@
     yy_set_source_string([source.source UTF8String]);
     if (yyparse()) {
         yyrestart(NULL);
+    }
+    if (self.error) {
         NSLog(@"\n----Error: \n  PATH: %@\n  INFO:%@",self.source.filePath,self.error);
     }
     

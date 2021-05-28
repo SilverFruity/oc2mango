@@ -51,6 +51,7 @@ extern ORStructExpressoin *makeStructExp(NSString *name, NSMutableArray *fields)
 extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArray *fields);
 
 extern ORNode *makeIntegerValue(uint64_t value);
+extern ORNode *makeNegativeIntegerValue(int64_t value);
 extern ORDoubleValue *makeDoubleValue(double value);
 extern ORBoolValue *makeBoolValue(BOOL value);
 

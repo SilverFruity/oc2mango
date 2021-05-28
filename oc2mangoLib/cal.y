@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "Log.h"
 #import "MakeDeclare.h"
+#import "Parser.h"
 extern int yylex (void);
 extern void yyerror(const char *s);
 extern bool is_variable;
@@ -559,7 +560,7 @@ while_statement:
         ;
 
 case_statement:
-        _case primary_expression COLON
+        _case unary_expression COLON
         {
              ORCaseStatement *statement = makeCaseStatement(_typeId $2);
             $$ = _vretained statement;

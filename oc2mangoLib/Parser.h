@@ -10,8 +10,9 @@
 #import "AST.h"
 #import "ORPatchFile.h"
 #import "BinaryPatchHelper.h"
-#define OCParser [Parser shared]
 NS_ASSUME_NONNULL_BEGIN
+@class Parser;
+extern Parser *OCParser;
 @interface CodeSource: NSObject
 @property(nonatomic,nullable,copy)NSString *source;
 @property(nonatomic,nullable,copy)NSString *filePath;

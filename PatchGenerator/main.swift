@@ -126,27 +126,19 @@ func main(){
     for path in result.refrencePaths{
         inputRefrenceFiles.append(contentsOf: recursiveSanFiles(path: path))
     }
-    
-    var input = ""
-    print("InputFiles:\n\(inputSourceFiles)")
-    for path in inputSourceFiles{
-        let data = NSData.init(contentsOfFile: path)! as Data
-        input += String.init(data: data, encoding: .utf8)!
-    }
-    
-    var reference = ""
-    print("References:\n\(inputRefrenceFiles)")
-    for path in inputRefrenceFiles{
-        let data = NSData.init(contentsOfFile: path)! as Data
-        reference += String.init(data: data, encoding: .utf8)!
-    }
-    
     let parser = Parser()
-    
+    print("References:\(inputRefrenceFiles.reduce("   ", { $0 + "\n   " + $1}))")
+    var refsNodes = [Any]()
     // for refs:
-    let refNodes = parser.parseSource(reference).nodes as! [Any]
-    let inputNodes = parser.parseSource(input).nodes as! [Any]
-    let patchFile = ORPatchFile.init(nodes: refNodes + inputNodes)
+    for path in inputRefrenceFiles{
+        refsNodes += parser.parseCodeSource(CodeSource(filePath: path)).nodes
+    }
+    print("InputFiles:\(inputSourceFiles.reduce("   ", { $0 + "\n   " + $1}))")
+    var inputNodes = [Any]()
+    for path in inputSourceFiles{
+        inputNodes += parser.parseCodeSource(CodeSource(filePath: path)).nodes
+    }
+    let patchFile = ORPatchFile.init(nodes: refsNodes + inputNodes)
     patchFile.appVersion = result.appVersion
     patchFile.osVersion = result.osVersion
     switch result.type {

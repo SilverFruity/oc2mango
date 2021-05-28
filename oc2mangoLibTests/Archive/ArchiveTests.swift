@@ -9,7 +9,7 @@
 import XCTest
 
 class ArchiveTests: XCTestCase {
-    let ocparser = Parser.shared()
+    let parser = Parser()
     let convert = Convert()
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -27,7 +27,7 @@ class ArchiveTests: XCTestCase {
     func testArchive(){
         let sourceData = loadFileData(traget: ArchiveTests.classForCoder(), filename: "TestSource.imp")
         let source = String.init(data: sourceData ?? Data.init(), encoding: .utf8)
-        let ast = ocparser.parseSource(source)
+        let ast = parser.parseSource(source)
         var result = ""
         for node in ast.nodes {
             result.append(convert.convert(node))

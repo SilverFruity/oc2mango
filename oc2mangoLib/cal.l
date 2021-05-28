@@ -227,7 +227,12 @@
     yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];    
     return INTETER_LITERAL; 
 }
-
+<INITIAL>'.' {
+    is_variable = true;
+    char value = *(char *)(yytext + 1);
+    yylval.identifier =(__bridge_retained void *)@(value).stringValue;
+    return INTETER_LITERAL;
+}
 <INITIAL>"0"[xX][0-9a-fA-F]+ {
     is_variable = true;
     yylval.identifier =(__bridge_retained void *)[NSString stringWithUTF8String:yytext];
@@ -308,13 +313,11 @@ BEGIN STRING_LITERAL_STATE;
 
 <C_COMMENT>\n;
 <C_COMMENT>. ;
-<C_COMMENT>"*/"    { BEGIN INITIAL; }
+<C_COMMENT>"*/"    { yycolumn = 0; BEGIN INITIAL; }
 <C_COMMENT><<EOF>>   ;
 
 <CC_COMMENT>.    ;
-<CC_COMMENT>\n    {
-    BEGIN INITIAL;
-}
+<CC_COMMENT>\n     { yycolumn = 0; BEGIN INITIAL; }
 <CC_COMMENT><<EOF>> { BEGIN INITIAL; }
 
 

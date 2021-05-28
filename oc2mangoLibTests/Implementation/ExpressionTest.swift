@@ -9,7 +9,7 @@
 import XCTest
 
 class ExpressionTest: XCTestCase {
-    let ocparser = Parser.shared()
+    let parser = Parser()
     var source = ""
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -26,8 +26,8 @@ class ExpressionTest: XCTestCase {
         float b = 0.1f;
         float c = 0.111;
         """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let assign = ast.globalStatements[0] as? ORDeclareExpression
         XCTAssert(assign?.pair.var.ptCount == 3)
         XCTAssert(assign?.pair.var.varname == "a",assign?.pair.var.varname ?? "")
@@ -69,8 +69,8 @@ class ExpressionTest: XCTestCase {
         
         };
         """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
 
         let assign = ast.globalStatements[0] as? ORDeclareExpression;
         XCTAssert(assign?.pair.type.type == TypeInt)
@@ -155,8 +155,8 @@ class ExpressionTest: XCTestCase {
         int * __autoreleasing a;
         int * _Nullable a;
         """
-        let ast = ocparser.parseSource(source);
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source);
+        XCTAssert(parser.isSuccess())
     }
     func testPointExpression(){
         source = """
@@ -172,8 +172,8 @@ class ExpressionTest: XCTestCase {
         a = x * b;
         a = (*x) * (*b);
         """
-        let ast = ocparser.parseSource(source);
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source);
+        XCTAssert(parser.isSuccess())
         let convert = Convert()
         let result = convert.convert(ast.globalStatements[7] as Any)
         XCTAssert(result == "a = x * c * 1;",result)
@@ -190,8 +190,8 @@ class ExpressionTest: XCTestCase {
         x < a++;
         (x < 1 && x > 1) || ( x > 1 && x <= 1);
         """
-        let ast = ocparser.parseSource(source);
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source);
+        XCTAssert(parser.isSuccess())
     }
     
       func testPrimaryExpression(){
@@ -228,8 +228,8 @@ class ExpressionTest: XCTestCase {
         @[value1,value2];
         
         """ 
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
     }
     func testAssignExpression(){
         
@@ -251,8 +251,8 @@ class ExpressionTest: XCTestCase {
         (y - 1) * 2;
         x->a - 1 + 2;
         """
-        let ast = ocparser.parseSource(source);
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source);
+        XCTAssert(parser.isSuccess())
         let exps = ast.globalStatements as! [ORBinaryExpression]
         XCTAssert(exps[0].operatorType == BinaryOperatorLT)
         let exp2 = exps[1]
@@ -283,8 +283,8 @@ class ExpressionTest: XCTestCase {
         int x = y == nil ? 0 : 1;
         x = y?:1;
         """
-        let ast = ocparser.parseSource(source);
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source);
+        XCTAssert(parser.isSuccess())
         
         
     }
@@ -313,8 +313,8 @@ class ExpressionTest: XCTestCase {
         CGSizeMake([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 0.666);
         CGPointMake(CGRectGetMaxX(pathRect) * cLocations * 1, CGRectGetMidY(pathRect));
         """
-        let ast = ocparser.parseSource(source);
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source);
+        XCTAssert(parser.isSuccess())
         let call = ast.globalStatements as! [Any]
         let call1 = call.first! as! ORCFuncCall
         XCTAssert(call1.caller.value as! String == "func")
@@ -330,8 +330,8 @@ class ExpressionTest: XCTestCase {
             dispatch_semaphore_signal(semaphore);
         });
         """
-        let ast = ocparser.parseSource(source);
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source);
+        XCTAssert(parser.isSuccess())
         let call = (ast.globalStatements as! [Any]).first! as! ORCFuncCall
         let param2 = call.expressions[2] as! ORFunctionImp
         XCTAssert(param2.declare.funVar.isBlock == true)

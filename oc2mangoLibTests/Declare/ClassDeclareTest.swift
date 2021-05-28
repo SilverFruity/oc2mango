@@ -9,7 +9,7 @@
 import XCTest
 
 class ClassDeclareTest: XCTestCase {
-    let ocparser = Parser.shared()
+    let parser = Parser()
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -18,13 +18,23 @@ class ClassDeclareTest: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         
     }
+    func testCharValue(){
+        let source =
+        """
+        char value = 'A';
+        """
+        let ast = parser.parseSource(source)
+        let value = ast.globalStatements[0] as! ORDeclareExpression
+        let result = (value.expression as! ORIntegerValue).value
+        XCTAssert(result == 65,"\(result)")
+    }
     func testIntegerValue(){
         let source =
         """
         long long value = 0xFFFFFFFF;
         unsigned long long value1 = 0xFFFFFFFFFFFFFFFF;
         """
-        let ast = ocparser.parseSource(source)
+        let ast = parser.parseSource(source)
         let value = ast.globalStatements[0] as! ORDeclareExpression
         let value1 = ast.globalStatements[1] as! ORDeclareExpression
         XCTAssert((value.expression as! ORIntegerValue).value == UINT32_MAX)
@@ -35,11 +45,10 @@ class ClassDeclareTest: XCTestCase {
         """
 void (*func)(NSString a, int b);
 void func(NSString *a, int *b){
-
 }
 """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         
     }
     func testNormalDeclare(){
@@ -50,8 +59,8 @@ void func(NSString *a, int *b){
 - (NSString *)method2:(void(^)(NSString *name))callback{ }
 @end
 """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let methodImp = ast.class(forName: "Demo").methods[0] as? ORMethodImplementation
         XCTAssert(methodImp?.declare.methodNames == ["initWithBaseUrl"])
         XCTAssert(methodImp?.declare.isClassMethod == false)
@@ -69,7 +78,7 @@ void func(NSString *a, int *b){
 @interface Demo (Category)
 @end
 """
-        let ast = ocparser.parseSource(source)
+        let ast = parser.parseSource(source)
     }
     func testPropertyDeclare(){
         let source =
@@ -79,10 +88,10 @@ void func(NSString *a, int *b){
 @property (nonatomic,atomic) void (^name)(void);
 @end
 """
-        let ast = ocparser.parseSource(source)
+        let ast = parser.parseSource(source)
         let occlass = ast.class(forName: "Demo")
         let prop = occlass.properties.firstObject as! ORPropertyDeclare
-        XCTAssert(ocparser.isSuccess())
+        XCTAssert(parser.isSuccess())
         //        XCTAssert(prop.var.name == "className")
         //        XCTAssert(prop.var.type.type == TypeObject)
         //        XCTAssert(prop.keywords == ["nonatomic","atomic"])
@@ -95,8 +104,8 @@ void func(NSString *a, int *b){
         @property (nonatomic,atomic) void (^name)(void);
         @end
         """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let classes = ast.classCache["Demo"] as! ORClass
         XCTAssert(classes.protocols == ["NSObject", "NSObject"])
     }
@@ -110,8 +119,8 @@ void func(NSString *a, int *b){
             Value3
         };
         """
-        var ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        var ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let exp = ast.globalStatements.firstObject as! OREnumExpressoin
         XCTAssert(exp.valueType == TypeInt)
         XCTAssert(exp.fields.count == 3)
@@ -128,8 +137,8 @@ void func(NSString *a, int *b){
         Value3
         };
         """
-        ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let secondExp = ast.globalStatements.firstObject as! OREnumExpressoin
         XCTAssert(secondExp.valueType == TypeULongLong)
         XCTAssert(secondExp.enumName == "Test")
@@ -146,8 +155,8 @@ void func(NSString *a, int *b){
         Value3
         };
         """
-        ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let thirdExp = ast.globalStatements.firstObject as! OREnumExpressoin
         XCTAssert(thirdExp.valueType == TypeULongLong)
         XCTAssert(thirdExp.enumName == "")
@@ -168,8 +177,8 @@ void func(NSString *a, int *b){
             CGFloat x,y;
         };
         """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let exp = ast.globalStatements.firstObject as! ORStructExpressoin
         let fields = exp.fields as! [ORDeclareExpression]
         XCTAssert(fields.count == 2)
@@ -183,8 +192,8 @@ void func(NSString *a, int *b){
         """
         typedef int * value;
         """
-        var ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        var ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let exp = ast.globalStatements.firstObject as! ORTypedefExpressoin
         XCTAssert(exp.typeNewName == "value")
         let typepair = exp.expression as! ORTypeVarPair
@@ -198,8 +207,8 @@ void func(NSString *a, int *b){
         CGFloat y;
         }Point;
         """
-        ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let structTypeDef = ast.globalStatements.firstObject as! ORTypedefExpressoin
         XCTAssert(structTypeDef.typeNewName == "Point")
         let structExp = structTypeDef.expression as! ORStructExpressoin
@@ -235,8 +244,8 @@ void func(NSString *a, int *b){
         UIControlEventAllEvents                                         = 0xFFFFFFFF
         }UIControlEvents;
         """
-        ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let enumTypeDef = ast.globalStatements.firstObject as! ORTypedefExpressoin
         XCTAssert(enumTypeDef.typeNewName == "UIControlEvents")
         let enumExp = enumTypeDef.expression as! OREnumExpressoin
@@ -267,8 +276,8 @@ void func(NSString *a, int *b){
         """
         void NSLog(NSString *format,...);
         """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let declare = ast.globalStatements.firstObject as! ORDeclareExpression
         let funcVar = declare.pair.var as! ORFuncVariable
         XCTAssert(funcVar.varname == "NSLog")
@@ -284,8 +293,8 @@ void func(NSString *a, int *b){
         @property (nonatomic,atomic) void (^name)(void);
         @end
         """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let value = ast.protcolCache["Demo"] as! ORProtocol
         XCTAssert(value.protocols == ["NSObject","Test"])
     }

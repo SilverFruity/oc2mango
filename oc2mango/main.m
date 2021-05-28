@@ -82,8 +82,9 @@ int main(int argc, const char * argv[]) {
     
     recursiveLookupCompileFiles(inputDir, dirs, files);
     AST *result = [AST new];
+    Parser *parser = [Parser new];
     for (NSString *path in files) {
-        AST *ast = [OCParser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
+        AST *ast = [parser parseCodeSource:[[CodeSource alloc] initWithFilePath:path]];
         [result merge:ast.nodes];
     }
     endDate = [NSDate new];
