@@ -27,6 +27,7 @@ class ExpressionTest: XCTestCase {
         float c = 0.111;
         """
         let ast = ocparser.parseSource(source)
+        XCTAssert(ocparser.isSuccess())
         let assign = ast.globalStatements[0] as? ORDeclareExpression
         XCTAssert(assign?.pair.var.ptCount == 3)
         XCTAssert(assign?.pair.var.varname == "a",assign?.pair.var.varname ?? "")
