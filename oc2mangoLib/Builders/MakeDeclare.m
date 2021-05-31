@@ -228,6 +228,11 @@ ORNode *makeIntegerValue(uint64_t value){
         return uvalue;
     }
 }
+ORNode *makeNegativeIntegerValue(int64_t value){
+    ORIntegerValue *ivalue = [ORIntegerValue new];
+    ivalue.value = value;
+    return ivalue;
+}
 
 ORDoubleValue *makeDoubleValue(double value){
     __autoreleasing ORDoubleValue *dvalue = [ORDoubleValue new];

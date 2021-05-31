@@ -5,7 +5,7 @@
     #include "y.tab.h"
     #import "MakeDeclare.h"
     #import "Log.h"
-    unsigned long yycolumn = 1;
+    unsigned long yycolumn = 0;
     unsigned long yylen = 0;
     char linebuf[500];
     #define YY_USER_ACTION yycolumn += yyleng; yylen = yyleng;
@@ -237,7 +237,12 @@
     yylval.intValue = str2Int(yytext);
     return INTETER_LITERAL;
 }
-
+<INITIAL>'.' {
+    is_variable = true;
+    char value = *(char *)(yytext + 1);
+    yylval.identifier =(__bridge_retained void *)@(value).stringValue;
+    return INTETER_LITERAL;
+}
 <INITIAL>"0"[xX][0-9a-fA-F]+ {
     is_variable = true;
     yylval.intValue = str2Int(yytext);
@@ -310,22 +315,19 @@ BEGIN STRING_LITERAL_STATE;
 }
 
 <INITIAL>[\t] ;
-<INITIAL>[\n] { yycolumn = 1; };
+<INITIAL>[\n] ;
 
 <INITIAL>"/*" {  BEGIN C_COMMENT; }
 <INITIAL>"//" {  BEGIN CC_COMMENT; }
 <INITIAL>. ;
 
-<C_COMMENT>\n { yycolumn = 1; };
+<C_COMMENT>\n;
 <C_COMMENT>. ;
-<C_COMMENT>"*/"    { BEGIN INITIAL; }
+<C_COMMENT>"*/"    { yycolumn = 0; BEGIN INITIAL; }
 <C_COMMENT><<EOF>>   ;
 
 <CC_COMMENT>.    ;
-<CC_COMMENT>\n    {
-    yycolumn = 1;
-    BEGIN INITIAL;
-}
+<CC_COMMENT>\n     { yycolumn = 0; BEGIN INITIAL; }
 <CC_COMMENT><<EOF>> { BEGIN INITIAL; }
 
 
@@ -351,6 +353,7 @@ BEGIN STRING_LITERAL_STATE;
 
 <INITIAL>\n.* {
     strncpy(linebuf,yytext + 1,sizeof(linebuf));
+    if(strlen(linebuf) > 0) yycolumn = 0;
     yyless(1);
 }
 %%

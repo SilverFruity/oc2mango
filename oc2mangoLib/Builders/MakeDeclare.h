@@ -57,6 +57,7 @@ extern ORUnionStatNode *makeUnionExp(NSString *name, NSMutableArray *fields);
 extern OREnumStatNode *makeEnumExp(NSString *name, ORTypeNode *type, NSMutableArray *fields);
 
 extern ORNode *makeIntegerValue(uint64_t value);
+extern ORNode *makeNegativeIntegerValue(int64_t value);
 extern ORDoubleValue *makeDoubleValue(double value);
 extern ORBoolValue *makeBoolValue(BOOL value);
 

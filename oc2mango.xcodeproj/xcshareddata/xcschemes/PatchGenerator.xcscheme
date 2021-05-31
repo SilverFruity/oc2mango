@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-files /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/ViewController1 -refs  /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle -output /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/binarypatch"
+            argument = "-files /Users/apple/Downloads/ZYGLogicManager.m  -refs /Users/apple/Desktop/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle  -output /Users/apple/Downloads/binarypatch"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -65,6 +65,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-h"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-appVersion 1.1.* -osVersion 14.* -files /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/ViewController1 -refs  /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle -output /Users/jiang/Downloads/OCRunner/OCRunnerDemo/OCRunnerDemo/binarypatch"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

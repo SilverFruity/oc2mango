@@ -571,7 +571,7 @@ _while LP expression RP ast_block_imp
 ;
 
 case_statement:
-_case primary_expression COLON
+_case unary_expression COLON
 {
     $$ = makeCaseStatement($2);
 }
@@ -1364,20 +1364,13 @@ void yyerror(const char *s){
     extern unsigned long yylineno , yycolumn , yylen;
     extern char linebuf[500];
     extern char *yytext;
-    NSString *text = [NSString stringWithUTF8String:yytext];
-    NSString *line = [NSString stringWithUTF8String:linebuf];
-    NSRange range = [line rangeOfString:text];
     NSMutableString *str = [NSMutableString string];
-    if(range.location != NSNotFound){
-        for (int i = 0; i < range.location; i++){
-            [str appendString:@" "];
-        }
-        for (int i = 0; i < range.length; i++){
-            [str appendString:@"^"];
-        }
-    }else{
-        str = [text mutableCopy];
+    for (int i = 0; i < yycolumn - yylen; i++){
+        [str appendString:@" "];
     }
-    NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\nline: %lu\n%@\n%@\nerror: %s\n-------------------\n",yylineno + 1,line,str,s];
+    for (int i = 0; i < yylen; i++){
+        [str appendString:@"^"];
+    }
+    NSString *errorInfo = [NSString stringWithFormat:@"\n------yyerror------\nline: %lu\n%s\n%@\nerror: %s\n-------------------\n",yylineno + 1,linebuf,str,s];
     OCParser.error = errorInfo;
 }

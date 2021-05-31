@@ -9,7 +9,7 @@
 import XCTest
 
 class StatementTest: XCTestCase {
-    let ocparser = Parser.shared()
+    let parser = Parser()
     override func setUp() {
         
     }
@@ -31,8 +31,8 @@ if (x >= 0 ){
     
 }
 """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let state = ast.globalStatements.firstObject as! ORIfStatement
         XCTAssert(state.condition == nil)
         XCTAssert(state.scopeImp != nil)
@@ -75,8 +75,8 @@ do{
 }while(x > 0 && x < 0)
 
 """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let state = ast.globalStatements.firstObject as! ORDoWhileStatement
         XCTAssert(state.scopeImp != nil)
         XCTAssert(state.condition != nil)
@@ -88,8 +88,8 @@ while(x > 0 && x < 0){
 
 }
 """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let state = ast.globalStatements.firstObject as! ORWhileStatement
         XCTAssert(state.scopeImp != nil)
         XCTAssert(state.condition != nil)
@@ -98,6 +98,15 @@ while(x > 0 && x < 0){
     func testSwitchStatement(){
         let source =
 """
+switch (x) {
+    case -1: { }
+    case 'A': { }
+    default:
+    {
+        NSString *name;
+        break;
+    }
+}
 switch (x) {
     case 1:
     {
@@ -130,8 +139,8 @@ switch (x) {
         break;
 }
 """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess());
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess());
         let state1 = ast.globalStatements.firstObject as! ORSwitchStatement
         XCTAssert(state1.value != nil)
         XCTAssert(state1.cases.count == 3)
@@ -153,8 +162,8 @@ for (int x = 0, b = 0; x < 1 && b < 20; x++, b++) {
 
 }
 """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess());
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess());
         
     }
     
@@ -167,8 +176,8 @@ for (UIView *view in self.view.subviews) {
 }
 
 """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess());
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess());
         
     }
 }
