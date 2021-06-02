@@ -163,19 +163,25 @@ ORContinueStatement *makeContinueStatement(void){
     return [ORContinueStatement new];
 }
 
-extern ORTypedefExpressoin *makeTypedefExp(id exp,NSString *newName){
+ORTypedefExpressoin *makeTypedefExp(id exp,NSString *newName){
     ORTypedefExpressoin *typedefExp = [[ORTypedefExpressoin alloc] init];
     typedefExp.expression = exp;
     typedefExp.typeNewName = newName;
     return typedefExp;
 }
-extern ORStructExpressoin *makeStructExp(NSString *name, NSMutableArray *fields){
+ORStructExpressoin *makeStructExp(NSString *name, NSMutableArray *fields){
     ORStructExpressoin *exp = [[ORStructExpressoin alloc] init];
     exp.sturctName = name;
     exp.fields = fields;
     return exp;
 }
-extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArray *fields){
+ORUnionExpressoin *makeUnionExp(NSString *name, NSMutableArray *fields){
+    ORUnionExpressoin *exp = [[ORUnionExpressoin alloc] init];
+    exp.unionName = name;
+    exp.fields = fields;
+    return exp;
+}
+OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArray *fields){
     OREnumExpressoin *exp = [[OREnumExpressoin alloc] init];
     exp.enumName = name;
     exp.valueType = type.type;

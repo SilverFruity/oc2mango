@@ -369,7 +369,7 @@ int indentationCont = 0;
 - (NSString *)convertFunCall:(ORCFuncCall *)call{
     // FIX: make.left.equalTo(superview.mas_left) to make.left.equalTo()(superview.mas_left)
     // FIX: x.left(a) to x.left()(a)
-    if ([call.caller isKindOfClass:[ORMethodCall class]] && [(ORMethodCall *)call.caller isDot]){
+    if ([call.caller isKindOfClass:[ORMethodCall class]] && [(ORMethodCall *)call.caller methodOperator]){
         return [NSString stringWithFormat:@"%@()(%@)",[self convert:call.caller],[self convertExpressionList:call.expressions]];
     }
     return [NSString stringWithFormat:@"%@(%@)",[self convert:call.caller],[self convertExpressionList:call.expressions]];
@@ -378,7 +378,7 @@ int indentationCont = 0;
     NSMutableString *methodName = [[call.names componentsJoinedByString:@":"] mutableCopy];
     NSString *sel;
     if (call.values.count == 0) {
-        if (call.isDot) {
+        if (call.methodOperator) {
             sel = [NSString stringWithFormat:@".%@",methodName];
         }else{
             sel = [NSString stringWithFormat:@".%@()",methodName];

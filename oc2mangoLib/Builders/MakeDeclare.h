@@ -48,6 +48,7 @@ extern ORContinueStatement *makeContinueStatement(void);
 
 extern ORTypedefExpressoin *makeTypedefExp(id exp,NSString *newName);
 extern ORStructExpressoin *makeStructExp(NSString *name, NSMutableArray *fields);
+extern ORUnionExpressoin *makeUnionExp(NSString *name, NSMutableArray *fields);
 extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArray *fields);
 
 extern ORNode *makeIntegerValue(uint64_t value);

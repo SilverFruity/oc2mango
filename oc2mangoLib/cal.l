@@ -158,6 +158,7 @@
 <INITIAL>"default" { TypeReturn(default); }
 <INITIAL>"typedef" { return TYPEDEF;}
 <INITIAL>"struct" { TypeReturn(struct); }
+<INITIAL>"union" { TypeReturn(union); }
 <INITIAL>"enum" { TypeReturn(enum); }
 <INITIAL>"NS_ENUM" { return NS_ENUM; }
 <INITIAL>"NS_OPTIONS" { return NS_OPTIONS; }
