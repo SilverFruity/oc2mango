@@ -31,13 +31,13 @@ typedef enum: uint32_t{
     TypeFloat,
     TypeDouble,
     TypeBaseMask = 0x0F,
-    TypeUnion = 0x10,
-    TypeStruct = 0x20,
-    TypeSEL = 0x30,
-    TypeClass = 0x40,
-    TypeObject = 0x50,
-    TypeBlock = 0x60,
-    TypeId = 0x70,
+    TypeStruct = 0x10,
+    TypeSEL = 0x20,
+    TypeClass = 0x30,
+    TypeObject = 0x40,
+    TypeBlock = 0x50,
+    TypeId = 0x60,
+    TypeUnion = 0x70,
     TypeUnKnown = 0xF0
 }TypeKind;
 
@@ -63,10 +63,6 @@ typedef enum: uint32_t{
 @interface ORFuncVariable: ORVariable
 @property(nonatomic,assign) BOOL isMultiArgs;
 @property(nonatomic,strong) NSMutableArray <ORTypeVarPair *> *pairs;
-@end
-
-@interface ORCArrayVariable: ORVariable
-@property (nonatomic,strong)ORNode *capacity;
 @end
 
 @interface ORFuncDeclare: ORNode
@@ -343,11 +339,6 @@ typedef enum: uint32_t{
 @property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*fields;
 @end
 
-@interface ORUnionExpressoin: ORNode
-@property (nonatomic,copy)NSString *unionName;
-@property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*fields;
-@end
-
 @interface OREnumExpressoin: ORNode
 @property (nonatomic,assign)TypeKind valueType;
 @property (nonatomic,copy)NSString *enumName;
@@ -357,5 +348,14 @@ typedef enum: uint32_t{
 @interface ORTypedefExpressoin: ORNode
 @property (nonatomic,strong)ORNode *expression;
 @property (nonatomic,copy)NSString *typeNewName;
+@end
+
+@interface ORCArrayVariable: ORVariable
+@property (nonatomic,strong)ORNode *capacity;
+@end
+
+@interface ORUnionExpressoin: ORNode
+@property (nonatomic,copy)NSString *unionName;
+@property (nonatomic,strong)NSMutableArray <ORDeclareExpression *>*fields;
 @end
 NS_ASSUME_NONNULL_END
