@@ -143,7 +143,7 @@ typedef enum: uint8_t{
 @end
 
 @interface ORSubscriptExpression: ORNode
-@property (nonatomic, strong)ORValueExpression * caller;
+@property (nonatomic, strong)ORNode * caller;
 @property (nonatomic, strong)ORNode * keyExp;
 @end
 
