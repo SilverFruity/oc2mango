@@ -263,5 +263,11 @@
 @end
 
 @implementation ORCArrayVariable
-
++ (instancetype)copyFromVar:(ORVariable *)var{
+    ORCArrayVariable *array  = [super copyFromVar:var];
+    if ([var isKindOfClass:[ORCArrayVariable class]]) {
+        array.prev = (ORCArrayVariable *)var;
+    }
+    return array;
+}
 @end

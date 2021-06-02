@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1622599829
+//  Created by Jiang on 1622609307
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -1840,6 +1840,7 @@ typedef struct {
     BOOL isBlock;
     uint8_t ptCount;
     _StringNode * varname;
+    _ORNode * prev;
     _ORNode * capacity;
 }_ORCArrayVariable;
 static uint32_t _ORCArrayVariableBaseLength = 3;
@@ -1850,6 +1851,7 @@ _ORCArrayVariable *_ORCArrayVariableConvert(ORCArrayVariable *exp, _PatchNode *p
     node->isBlock = exp.isBlock;
     node->ptCount = exp.ptCount;
     node->varname = (_StringNode *)_ORNodeConvert(exp.varname, patch, length);
+    node->prev = (_ORNode *)_ORNodeConvert(exp.prev, patch, length);
     node->capacity = (_ORNode *)_ORNodeConvert(exp.capacity, patch, length);
     *length += _ORCArrayVariableBaseLength;
     return node;
@@ -1859,6 +1861,7 @@ ORCArrayVariable *_ORCArrayVariableDeConvert(_ORCArrayVariable *node, _PatchNode
     exp.isBlock = node->isBlock;
     exp.ptCount = node->ptCount;
     exp.varname = (NSString *)_ORNodeDeConvert((_ORNode *)node->varname, patch);
+    exp.prev = (id)_ORNodeDeConvert((_ORNode *)node->prev, patch);
     exp.capacity = (id)_ORNodeDeConvert((_ORNode *)node->capacity, patch);
     return exp;
 }
@@ -1866,6 +1869,7 @@ void _ORCArrayVariableSerailization(_ORCArrayVariable *node, void *buffer, uint3
     memcpy(buffer + *cursor, node, _ORCArrayVariableBaseLength);
     *cursor += _ORCArrayVariableBaseLength;
     _ORNodeSerailization((_ORNode *)node->varname, buffer, cursor);
+    _ORNodeSerailization((_ORNode *)node->prev, buffer, cursor);
     _ORNodeSerailization((_ORNode *)node->capacity, buffer, cursor);
 }
 _ORCArrayVariable *_ORCArrayVariableDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
@@ -1873,10 +1877,12 @@ _ORCArrayVariable *_ORCArrayVariableDeserialization(void *buffer, uint32_t *curs
     memcpy(node, buffer + *cursor, _ORCArrayVariableBaseLength);
     *cursor += _ORCArrayVariableBaseLength;
     node->varname =(_StringNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
+    node->prev =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     node->capacity =(_ORNode *) _ORNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
 void _ORCArrayVariableDestroy(_ORCArrayVariable *node){
+    _ORNodeDestroy((_ORNode *)node->prev);
     _ORNodeDestroy((_ORNode *)node->capacity);
     free(node);
 }

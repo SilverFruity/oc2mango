@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1622599829
+//  Created by Jiang on 1622609307
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>

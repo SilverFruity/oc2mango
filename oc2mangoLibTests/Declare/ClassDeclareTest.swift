@@ -171,9 +171,10 @@ void func(NSString *a, int *b){
         int a[100];
         int b[a.x];
         int a[];
+        int d[100][10];
         """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let exp = ast.globalStatements[0] as! ORDeclareExpression
         XCTAssert(exp.pair.type.type == TypeInt)
         XCTAssert(exp.pair.var.varname == "a")
@@ -184,6 +185,12 @@ void func(NSString *a, int *b){
         XCTAssert(exp1.pair.type.type == TypeInt)
         XCTAssert(exp1.pair.var.varname == "a")
         XCTAssert(exp1.pair.var.ptCount == 1)
+        let exp2 = ast.globalStatements[3] as! ORDeclareExpression
+        XCTAssert(exp2.pair.type.type == TypeInt)
+        XCTAssert(exp2.pair.var.varname == "d")
+        XCTAssert(((exp2.pair.var as! ORCArrayVariable).capacity as! ORIntegerValue).value == 10)
+        XCTAssert(((exp2.pair.var as! ORCArrayVariable).prev.capacity as! ORIntegerValue).value == 100)
+        XCTAssert((exp2.pair.var as! ORCArrayVariable).prev.varname == "d")
     }
     func testUnionDeclare(){
         let source =
@@ -196,8 +203,8 @@ void func(NSString *a, int *b){
             CGFloat x,y;
         };
         """
-        let ast = ocparser.parseSource(source)
-        XCTAssert(ocparser.isSuccess())
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
         let exp = ast.globalStatements.firstObject as! ORUnionExpressoin
         let fields = exp.fields as! [ORDeclareExpression]
         XCTAssert(fields.count == 2)

@@ -351,6 +351,7 @@ typedef enum: uint32_t{
 @end
 
 @interface ORCArrayVariable: ORVariable
+@property (nonatomic,strong)ORCArrayVariable *prev;
 @property (nonatomic,strong)ORNode *capacity;
 @end
 
