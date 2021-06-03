@@ -41,7 +41,8 @@ let _doubleLength = 8
 let EnumValueType = "uint8_t"
 
 var enumVarDecls = [String]()
-for (i, node) in ast.nodes.enumerated(){
+var enumStartIndex = 5;
+for node in ast.nodes{
     guard let classNode = node as? ORClass else {
         continue
     }
@@ -49,7 +50,8 @@ for (i, node) in ast.nodes.enumerated(){
         continue
     }
     let generator = ClassCodeGenerator.init(className: classNode.className, superClassName: classNode.superClassName)
-    enumVarDecls.append("    \(generator.enumName) = \(i + 5),")
+    enumVarDecls.append("    \(generator.enumName) = \(enumStartIndex),")
+    enumStartIndex += 1;
 }
 let AstEnums =
 """
