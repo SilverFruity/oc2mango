@@ -70,7 +70,7 @@ Parser *OCParser = nil;
     
 #ifndef PATCH_FILE_CODE_GEN
     
-#define BINARY_PATCH_TEST
+//#define BINARY_PATCH_TEST
 #ifdef BINARY_PATCH_TEST
     do {
         NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
