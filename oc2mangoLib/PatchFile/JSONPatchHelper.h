@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface JSONPatchHelper : NSObject
 + (NSDictionary *)archivePatch:(ORPatchFile *)patch;
-+ (ORPatchFile *)unArchivePatch:(NSDictionary *)patch;
++ (void)unArchivePatch:(ORPatchFile *)file object:(NSDictionary *)patch;
 #if DEBUG
 + (NSArray <ORNode *>*)patchFileTest:(NSArray <ORNode *>*)nodes;
 #endif

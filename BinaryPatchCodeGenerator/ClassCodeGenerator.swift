@@ -24,6 +24,7 @@ class ClassCodeGenerator{
     var serializationExps = [String]()
     var deserializationExps = [String]()
     var destoryExps = [String]()
+    var baseLengthCode = ""
     var baseLength = 0
     func addStructNodeField(type: String, varname: String){
         self.structNodeFiels.append("\(type) \(varname);")
@@ -38,19 +39,19 @@ class ClassCodeGenerator{
         self.convertExps.append("node->\(varname) = exp.\(varname);")
     }
     func addNodeDeconvertExp(varname: String, className:String){
-        self.deConvertExps.append("exp.\(varname) = (\(className))AstNodeDeConvert((AstNode *)node->\(varname), patch);")
+        self.deConvertExps.append("exp.\(varname) = (\(className))AstNodeDeConvert((AstEmptyNode *)node->\(varname), patch);")
     }
     func addBaseDeconvertExp(varname: String){
         self.deConvertExps.append("exp.\(varname) = node->\(varname);")
     }
     func addSerializationExp(varname: String){
-        self.serializationExps.append("AstNodeSerailization((AstNode *)node->\(varname), buffer, cursor);");
+        self.serializationExps.append("AstNodeSerailization((AstEmptyNode *)node->\(varname), buffer, cursor);");
     }
     func addDeserializationExp(varname: String, nodeName:String){
         deserializationExps.append("node->\(varname) =(\(nodeName) *) AstNodeDeserialization(buffer, cursor, bufferLength);");
     }
     func addDestroyExp(varname: String){
-        destoryExps.append("AstNodeDestroy((AstNode *)node->\(varname));")
+        destoryExps.append("AstNodeDestroy((AstEmptyNode *)node->\(varname));")
     }
     init(className: String, superClassName: String) {
         self.className = className
@@ -69,12 +70,17 @@ class ClassCodeGenerator{
             baseLength += superContent.baseLength
         }
         let structFiels = baseFiels + nodeFiles
+        baseLengthCode =
+        """
+        static \(_uintType) \(structName)BaseLength = \(baseLength);\n
+        """
         return """
+
         typedef struct {
             \(NodeDefine)
             \(structFiels.joined(separator: "\n    "))
         }\(structName);
-        static \(_uintType) \(structName)BaseLength = \(baseLength);\n
+
         """
     }
     //TODO: Convert

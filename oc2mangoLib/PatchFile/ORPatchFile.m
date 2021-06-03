@@ -41,7 +41,7 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     self = [super init];
     if (self) {
         self.appVersion = @"*";
-        self.osVersion = @"*";
+        self.patchInternalVersion = OCPatchFileInternalVersion;
         self.strings = [NSMutableArray array];
         self.nodes = [NSMutableArray array];
         self.enable = YES;
@@ -54,13 +54,14 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     }
     BOOL useable = YES;
     useable &= ORPatchFileVersionCompare([[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"], self.appVersion);
-    #if !TARGET_OS_OSX
-    useable &= ORPatchFileVersionCompare([[UIDevice currentDevice] systemVersion], self.osVersion);
-    #else
-    NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
-    NSString *osVersion = [NSString stringWithFormat:@"%lu.%lu.%lu", version.majorVersion, version.minorVersion, version.patchVersion];
-    useable &= ORPatchFileVersionCompare(osVersion, self.osVersion);
-    #endif
+    
+    // 针对 1.1.0 之前的版本特殊支持，1.0.4及以前默认为 *
+    if ([self.patchInternalVersion isEqualToString:@"*"]) {
+        useable &= YES;
+    }else{
+        //补丁文件的内部版本号是否 <= 当前ORPatchFile的内部版本号
+        useable &= ORPatchFileVersionCompare(self.patchInternalVersion, [NSString stringWithFormat:@"<=%@",OCPatchFileInternalVersion]);
+    }
     return useable;
 }
 - (instancetype)initWithNodes:(NSArray *)nodes{
@@ -69,6 +70,10 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     return self;
 }
 + (instancetype)loadBinaryPatch:(NSString *)patchPath{
+    if ([[patchPath pathExtension] isEqualToString:@"ocrr"] == NO) {
+        NSLog(@"OCRunner: 补丁仅支持.ocrr文件类型，file path:%@", patchPath);
+        return nil;
+    }
     NSData *data = [[NSData alloc] initWithContentsOfFile:patchPath];
     if (data == nil) {
         return nil;
@@ -84,7 +89,7 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     AstPatchFileDestroy(node);
     return file;
 }
-- (void)dumpAsBinaryPatch:(NSString *)patchPath{
+- (NSString *)dumpAsBinaryPatch:(NSString *)patchPath{
     uint32_t length = 0;
     AstPatchFile *node = AstPatchFileConvert(self, &length);
     void *buffer = malloc(length);
@@ -92,9 +97,14 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     AstPatchFileSerialization(node, buffer, &cursor);
     AstPatchFileDestroy(node);
     NSData *data = [[NSData alloc]initWithBytes:buffer length:length];
-    NSLog(@"%@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+    NSString *fileExtension = [patchPath pathExtension];
+    if (fileExtension.length == 0) {
+        patchPath = [patchPath stringByAppendingString:@".ocrr"];
+    }else if ([fileExtension isEqualToString:@"ocrr"] == NO) {
+        patchPath = [patchPath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@".%@",fileExtension] withString:@".ocrr"];
+    }
     [data writeToFile:patchPath atomically:YES];
-    return;
+    return patchPath;
 }
 + (instancetype)loadJsonPatch:(NSString *)patchPatch {
     NSData *fileData = [[NSData alloc] initWithContentsOfFile:patchPatch];
@@ -119,17 +129,24 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
         return nil;
     }
     NSLog(@"json file length %.2f KB", (double)fileData.length / 1000.0);
-    return [JSONPatchHelper unArchivePatch:jsonDict];
+    ORPatchFile *file = [ORPatchFile new];
+    [file setValuesForKeysWithDictionary:jsonDict];
+    if (file.canUseable == NO) {
+        return nil;
+    }
+    [JSONPatchHelper unArchivePatch:file object:jsonDict];
+    return file;
 }
-- (void)dumpAsJsonPatch:(NSString *)patchPath {
+- (NSString *)dumpAsJsonPatch:(NSString *)patchPath{
     NSDictionary *dictionary = [JSONPatchHelper archivePatch:self];
-    if (!dictionary) { return; }
+    if (!dictionary) { return @"json empty error"; }
     NSError *error = nil;
     NSData *data = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
     if (error) {
         NSLog(@"%@",error);
-        return;
+        return error.localizedDescription;
     }
     [data writeToFile:patchPath atomically:YES];
+    return patchPath;
 }
 @end

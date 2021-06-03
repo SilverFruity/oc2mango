@@ -18,7 +18,7 @@ let NodeDefine = "AstNodeFields"
 let PatchFileClass = "ORPatchFile"
 let resultFileName = "BinaryPatchHelper"
 
-let forUnitTest = true
+let forUnitTest = false
 let withSemicolon =  forUnitTest ? "\nuint8_t withSemicolon;\\" : ""
 let setNodeTypeWhileDeconvert = "\n    exp.nodeType = node->nodeType;"
 let withSemicolonConvertExp =  forUnitTest ? "\n    node->withSemicolon = exp.withSemicolon;" : ""
@@ -83,14 +83,14 @@ var headerSource =
 #pragma pack(show)
 typedef struct {
     \(NodeDefine)
-}AstNode;
+}AstEmptyNode;
 
-static \(_uintType) AstNodeLength = \(AstEmptyNodeLength);
+static \(_uintType) AstEmptyNodeLength = \(AstEmptyNodeLength);
 
 typedef struct {
     \(NodeDefine)
     \(_uintType) count;
-    AstNode **nodes;
+    AstEmptyNode **nodes;
 }AstNodeList;
 static uint32_t AstNodeListBaseLength = \(AstEmptyNodeLength + _uintLength);
 
@@ -98,22 +98,22 @@ typedef struct {
     \(NodeDefine)
     \(_uintType) offset;
     \(_uintType) strLen;
-}ORStringCursor;
-static \(_uintType) ORStringCursorBaseLength = \(AstEmptyNodeLength + _uintLength * 2);
+}AstStringCursor;
+static \(_uintType) AstStringCursorBaseLength = \(AstEmptyNodeLength + _uintLength * 2);
 
 typedef struct {
     \(NodeDefine)
     \(_uintType) cursor;
     char *buffer;
-}ORStringBufferNode;
-static \(_uintType) ORStringBufferNodeBaseLength = \(AstEmptyNodeLength + _uintLength);
+}AstStringBufferNode;
+static \(_uintType) AstStringBufferNodeBaseLength = \(AstEmptyNodeLength + _uintLength);
 
 typedef struct {
     \(NodeDefine)
     BOOL enable;
-    ORStringBufferNode *strings;
-    ORStringCursor *appVersion;
-    ORStringCursor *osVersion;
+    AstStringBufferNode *strings;
+    AstStringCursor *appVersion;
+    AstStringCursor *osVersion;
     AstNodeList *nodes;
 }AstPatchFile;
 static \(_uintType) AstPatchFileBaseLength = \(AstEmptyNodeLength + 1);
@@ -136,15 +136,16 @@ var impSource = """
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "\(resultFileName).h"
 #import "\(PatchFileClass).h"
+
 """
 
 impSource +=
 """
-#pragma pack(1)
-#pragma pack(show)
 
-AstNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length);
-id AstNodeDeConvert(AstNode *node, AstPatchFile *patch);
+AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length);
+id AstNodeDeConvert(AstEmptyNode *node, AstPatchFile *patch);
+
+#pragma mark - Base Data Struct
 
 AstNodeList *AstNodeListConvert(NSArray *array, AstPatchFile *patch, uint32_t *length){
     AstNodeList *node = malloc(sizeof(AstNodeList));
@@ -153,7 +154,7 @@ AstNodeList *AstNodeListConvert(NSArray *array, AstPatchFile *patch, uint32_t *l
     node->nodeType = AstEnumListNode;
     *length += AstNodeListBaseLength;
     for (id object in array) {
-        AstNode *element = AstNodeConvert(object, patch, length);;
+        AstEmptyNode *element = AstNodeConvert(object, patch, length);;
         node->nodes[node->count] = element;
         node->count++;
     }
@@ -170,14 +171,14 @@ NSMutableArray *AstNodeListDeConvert(AstNodeList *node, AstPatchFile *patch){
 }
 
 static NSMutableDictionary *_stringMap = nil;
-ORStringCursor *createStringCursor(NSString *string, AstPatchFile *patch, uint32_t *length){
-    ORStringCursor * strNode = malloc(sizeof(ORStringCursor));
-    memset(strNode, 0, sizeof(ORStringCursor));
+AstStringCursor *createStringCursor(NSString *string, AstPatchFile *patch, uint32_t *length){
+    AstStringCursor * strNode = malloc(sizeof(AstStringCursor));
+    memset(strNode, 0, sizeof(AstStringCursor));
     const char *str = string.UTF8String;
     size_t len = strlen(str);
     strNode->strLen = (unsigned int)len;
     strNode->nodeType = AstEnumStringCursorNode;
-    *length += ORStringCursorBaseLength;
+    *length += AstStringCursorBaseLength;
     if (_stringMap[string]) {
         \(_uintType) offset = [_stringMap[string] unsignedIntValue];
         strNode->offset = offset;
@@ -207,7 +208,7 @@ ORStringCursor *createStringCursor(NSString *string, AstPatchFile *patch, uint32
     return strNode;
 }
 
-NSString *getNSStringWithStringCursor(ORStringCursor *node, AstPatchFile *patch){
+NSString *getNSStringWithStringCursor(AstStringCursor *node, AstPatchFile *patch){
     char *cursor = patch->strings->buffer + node->offset;
     char *buffer = alloca(node->strLen + 1);
     memcpy(buffer, cursor, node->strLen);
@@ -221,23 +222,23 @@ AstPatchFile *AstPatchFileConvert(\(PatchFileClass) *patch, uint32_t *length){
     memset(node, 0, sizeof(AstPatchFile));
     *length += AstPatchFileBaseLength;
 
-    node->strings = malloc(sizeof(ORStringBufferNode));
-    memset(node->strings, 0, sizeof(ORStringBufferNode));
+    node->strings = malloc(sizeof(AstStringBufferNode));
+    memset(node->strings, 0, sizeof(AstStringBufferNode));
     node->strings->nodeType = AstEnumStringBufferNode;
-    *length += ORStringBufferNodeBaseLength;
+    *length += AstStringBufferNodeBaseLength;
     
     node->nodeType = AstEnumPatchFile;
     node->enable = patch.enable;
-    node->appVersion = (ORStringCursor *)AstNodeConvert(patch.appVersion, node, length);
-    node->osVersion = (ORStringCursor *)AstNodeConvert(patch.osVersion, node, length);
+    node->appVersion = (AstStringCursor *)AstNodeConvert(patch.appVersion, node, length);
+    node->osVersion = (AstStringCursor *)AstNodeConvert(patch.patchInternalVersion, node, length);
     node->nodes = (AstNodeList *)AstNodeConvert(patch.nodes, node, length);
     return node;
 }
 
 \(PatchFileClass) *AstPatchFileDeConvert(AstPatchFile *patch){
     \(PatchFileClass) *file = [\(PatchFileClass) new];
-    file.appVersion = AstNodeDeConvert((AstNode *)patch->appVersion, patch);
-    file.osVersion = AstNodeDeConvert((AstNode *)patch->osVersion, patch);
+    file.appVersion = AstNodeDeConvert((AstEmptyNode *)patch->appVersion, patch);
+    file.patchInternalVersion = AstNodeDeConvert((AstEmptyNode *)patch->osVersion, patch);
     file.enable = patch->enable;
     NSMutableArray *nodes = [NSMutableArray array];
     for (int i = 0; i < patch->nodes->count; i++) {
@@ -247,10 +248,10 @@ AstPatchFile *AstPatchFileConvert(\(PatchFileClass) *patch, uint32_t *length){
     return file;
 }
 
-void AstNodeSerailization(AstNode *node, void *buffer, uint32_t *cursor);
-void ORStringCursorSerailization(ORStringCursor *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, ORStringCursorBaseLength);
-    *cursor += ORStringCursorBaseLength;
+void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor);
+void AstStringCursorSerailization(AstStringCursor *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstStringCursorBaseLength);
+    *cursor += AstStringCursorBaseLength;
 }
 void AstNodeListSerailization(AstNodeList *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, AstNodeListBaseLength);
@@ -259,26 +260,26 @@ void AstNodeListSerailization(AstNodeList *node, void *buffer, uint32_t *cursor)
         AstNodeSerailization(node->nodes[i], buffer, cursor);
     }
 }
-void ORStringBufferNodeSerailization(ORStringBufferNode *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, ORStringBufferNodeBaseLength);
-    *cursor += ORStringBufferNodeBaseLength;
+void AstStringBufferNodeSerailization(AstStringBufferNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstStringBufferNodeBaseLength);
+    *cursor += AstStringBufferNodeBaseLength;
     memcpy(buffer + *cursor, node->buffer, node->cursor);
     *cursor += node->cursor;
 }
 void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, AstPatchFileBaseLength);
     *cursor += AstPatchFileBaseLength;
-    AstNodeSerailization((AstNode *)node->strings, buffer, cursor);
-    AstNodeSerailization((AstNode *)node->appVersion, buffer, cursor);
-    AstNodeSerailization((AstNode *)node->osVersion, buffer, cursor);
-    AstNodeSerailization((AstNode *)node->nodes, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->strings, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->appVersion, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->osVersion, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->nodes, buffer, cursor);
 }
 
-AstNode *AstNodeDeserialization(void *buffer, uint32_t *cursor,uint32_t bufferLength);
-ORStringCursor * ORStringCursorDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    ORStringCursor *node = malloc(sizeof(ORStringCursor));
-    memcpy(node, buffer + *cursor, ORStringCursorBaseLength);
-    *cursor += ORStringCursorBaseLength;
+AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor,uint32_t bufferLength);
+AstStringCursor * AstStringCursorDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstStringCursor *node = malloc(sizeof(AstStringCursor));
+    memcpy(node, buffer + *cursor, AstStringCursorBaseLength);
+    *cursor += AstStringCursorBaseLength;
     return node;
 }
 AstNodeList *AstNodeListDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
@@ -291,10 +292,10 @@ AstNodeList *AstNodeListDeserialization(void *buffer, uint32_t *cursor, uint32_t
     }
     return node;
 }
-ORStringBufferNode *ORStringBufferNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    ORStringBufferNode *node = malloc(sizeof(ORStringBufferNode));
-    memcpy(node, buffer + *cursor, ORStringBufferNodeBaseLength);
-    *cursor += ORStringBufferNodeBaseLength;
+AstStringBufferNode *AstStringBufferNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstStringBufferNode *node = malloc(sizeof(AstStringBufferNode));
+    memcpy(node, buffer + *cursor, AstStringBufferNodeBaseLength);
+    *cursor += AstStringBufferNodeBaseLength;
     node->buffer = malloc(node->cursor);
     memcpy(node->buffer, buffer + *cursor, node->cursor);
     *cursor += node->cursor;
@@ -305,13 +306,13 @@ ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength){
     AstPatchFile *node = malloc(sizeof(AstPatchFile));
     memcpy(node, buffer + cursor, AstPatchFileBaseLength);
     cursor += AstPatchFileBaseLength;
-    node->strings = (ORStringBufferNode *)ORStringBufferNodeDeserialization(buffer, &cursor, bufferLength);
-    node->appVersion = (ORStringCursor *)AstNodeDeserialization(buffer, &cursor, bufferLength);
-    node->osVersion = (ORStringCursor *)AstNodeDeserialization(buffer, &cursor, bufferLength);
+    node->strings = (AstStringBufferNode *)AstStringBufferNodeDeserialization(buffer, &cursor, bufferLength);
+    node->appVersion = (AstStringCursor *)AstNodeDeserialization(buffer, &cursor, bufferLength);
+    node->osVersion = (AstStringCursor *)AstNodeDeserialization(buffer, &cursor, bufferLength);
     node->nodes = NULL;
     ORPatchFile *file = [ORPatchFile new];
     file.appVersion = getNSStringWithStringCursor(node->appVersion, node);
-    file.osVersion = getNSStringWithStringCursor(node->osVersion, node);
+    file.patchInternalVersion = getNSStringWithStringCursor(node->osVersion, node);
     file.enable = node->enable;
     AstPatchFileDestroy(node);
     return file;
@@ -320,14 +321,14 @@ AstPatchFile *AstPatchFileDeserialization(void *buffer, uint32_t *cursor, uint32
     AstPatchFile *node = malloc(sizeof(AstPatchFile));
     memcpy(node, buffer + *cursor, AstPatchFileBaseLength);
     *cursor += AstPatchFileBaseLength;
-    node->strings = (ORStringBufferNode *)ORStringBufferNodeDeserialization(buffer, cursor, bufferLength);
-    node->appVersion = (ORStringCursor *)AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->osVersion = (ORStringCursor *)AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->strings = (AstStringBufferNode *)AstStringBufferNodeDeserialization(buffer, cursor, bufferLength);
+    node->appVersion = (AstStringCursor *)AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->osVersion = (AstStringCursor *)AstNodeDeserialization(buffer, cursor, bufferLength);
     node->nodes = (AstNodeList *)AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void AstNodeDestroy(AstNode *node);
-void ORStringCursorDestroy(ORStringCursor *node){
+void AstNodeDestroy(AstEmptyNode *node);
+void AstStringCursorDestroy(AstStringCursor *node){
     free(node);
 }
 void AstNodeListDestroy(AstNodeList *node){
@@ -336,25 +337,25 @@ void AstNodeListDestroy(AstNodeList *node){
     }
     free(node);
 }
-void ORStringBufferNodeDestroy(ORStringBufferNode *node){
+void AstStringBufferNodeDestroy(AstStringBufferNode *node){
     free(node->buffer);
     free(node);
 }
 void AstPatchFileDestroy(AstPatchFile *node){
-    AstNodeDestroy((AstNode *)node->strings);
-    AstNodeDestroy((AstNode *)node->appVersion);
-    AstNodeDestroy((AstNode *)node->osVersion);
-    AstNodeDestroy((AstNode *)node->nodes);
+    AstNodeDestroy((AstEmptyNode *)node->strings);
+    AstNodeDestroy((AstEmptyNode *)node->appVersion);
+    AstNodeDestroy((AstEmptyNode *)node->osVersion);
+    AstNodeDestroy((AstEmptyNode *)node->nodes);
     free(node);
 }
 
 """
-
+var generators = [ClassCodeGenerator]()
 for node in ast.nodes{
     guard let classNode = node as? ORClass, classNode.className != "ORNode" else {
         continue
     }
-    let item = ClassCodeGenerator(className: classNode.className, superClassName:classNode.superClassName)
+    let generator = ClassCodeGenerator(className: classNode.className, superClassName:classNode.superClassName)
     let properties = classNode.properties as! [ORPropertyDeclare]
     for prop in properties{
         if prop.keywords.contains("readonly"){
@@ -363,81 +364,134 @@ for node in ast.nodes{
         let varname = prop.var.var.varname ?? ""
         if let typename = prop.var.type.name{
             if typename == "NSMutableArray" {
-                item.addStructNodeField(type: "AstNodeList *", varname: varname)
-                item.addNodeConvertExp(varname: varname, nodeName: "AstNodeList")
-                item.addNodeDeconvertExp(varname: varname, className: "NSMutableArray *")
-                item.addSerializationExp(varname: varname)
-                item.addDeserializationExp(varname: varname, nodeName: "AstNodeList")
-                item.addDestroyExp(varname: varname)
+                generator.addStructNodeField(type: "AstNodeList *", varname: varname)
+                generator.addNodeConvertExp(varname: varname, nodeName: "AstNodeList")
+                generator.addNodeDeconvertExp(varname: varname, className: "NSMutableArray *")
+                generator.addSerializationExp(varname: varname)
+                generator.addDeserializationExp(varname: varname, nodeName: "AstNodeList")
+                generator.addDestroyExp(varname: varname)
             }else if typename.hasPrefix("OR") || typename == "id"{
-                item.addStructNodeField(type: "AstNode *", varname: varname)
-                item.addNodeConvertExp(varname: varname, nodeName: "AstNode")
-                item.addNodeDeconvertExp(varname: varname, className: "id")
-                item.addSerializationExp(varname: varname)
-                item.addDeserializationExp(varname: varname, nodeName: "AstNode")
-                item.addDestroyExp(varname: varname)
+                generator.addStructNodeField(type: "AstEmptyNode *", varname: varname)
+                generator.addNodeConvertExp(varname: varname, nodeName: "AstEmptyNode")
+                generator.addNodeDeconvertExp(varname: varname, className: "id")
+                generator.addSerializationExp(varname: varname)
+                generator.addDeserializationExp(varname: varname, nodeName: "AstEmptyNode")
+                generator.addDestroyExp(varname: varname)
             }else if typename == "NSString"{
-                item.addStructNodeField(type: "ORStringCursor *", varname: varname)
-                item.addNodeConvertExp(varname: varname, nodeName: "ORStringCursor")
-                item.addNodeDeconvertExp(varname: varname, className: "NSString *")
-                item.addSerializationExp(varname: varname)
-                item.addDeserializationExp(varname: varname, nodeName: "ORStringCursor")
-                item.addDestroyExp(varname: varname)
+                generator.addStructNodeField(type: "AstStringCursor *", varname: varname)
+                generator.addNodeConvertExp(varname: varname, nodeName: "AstStringCursor")
+                generator.addNodeDeconvertExp(varname: varname, className: "NSString *")
+                generator.addSerializationExp(varname: varname)
+                generator.addDeserializationExp(varname: varname, nodeName: "AstStringCursor")
+                generator.addDestroyExp(varname: varname)
             }else{
-                item.addStructNodeField(type: _uintType, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _uintLength
+                generator.addStructNodeField(type: _uintType, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _uintLength
             }
             
         }else{
             if prop.var.type.type == TypeBOOL {
-                item.addStructBaseFiled(type: "BOOL", varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += 1
+                generator.addStructBaseFiled(type: "BOOL", varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += 1
             }else if prop.var.type.type == TypeUChar{
-                item.addStructBaseFiled(type: _byteType, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _byteLength
+                generator.addStructBaseFiled(type: _byteType, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _byteLength
             }else if prop.var.type.type == TypeLongLong{
-                item.addStructBaseFiled(type: _int64Type, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _int64Length
+                generator.addStructBaseFiled(type: _int64Type, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _int64Length
             }else if prop.var.type.type == TypeULongLong{
-                item.addStructBaseFiled(type: _uint64Type, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _uint64Length
+                generator.addStructBaseFiled(type: _uint64Type, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _uint64Length
             }else if prop.var.type.type == TypeDouble{
-                item.addStructBaseFiled(type: _doubleType, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _doubleLength
+                generator.addStructBaseFiled(type: _doubleType, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _doubleLength
             }
         }
     }
-    impSource += item.structDeclareSource()
-    
-    impSource += item.convertFunctionSource()
-    
-    impSource += item.deconvertFunctionSource()
-    
-    impSource += item.serailizationFunctionSource()
-    
-    impSource += item.deserializationFunctionSource()
-    
-    impSource += item.destoryFunctionSource()
+    generators.append(generator)
 }
-
-impSource +=
+headerSource +=
 """
+
+#pragma pack(1)
+
+"""
+_ = generators.map({ headerSource += $0.structDeclareSource() })
+
+headerSource +=
+"""
+
 #pragma pack()
 #pragma pack(show)
 
 """
+
+impSource +=
+"""
+
+#pragma mark - Struct BaseLength
+
+"""
+
+_ = generators.map({ impSource += $0.baseLengthCode })
+
+impSource +=
+"""
+
+#pragma mark - Class Convert To Struct
+
+"""
+
+_ = generators.map({ impSource += $0.convertFunctionSource() })
+
+impSource +=
+"""
+
+#pragma mark - Struct Convert To Class
+
+"""
+
+_ = generators.map({ impSource += $0.deconvertFunctionSource() })
+
+impSource +=
+"""
+
+#pragma mark - Struct Write To Buffer
+
+"""
+
+_ = generators.map({ impSource += $0.serailizationFunctionSource() })
+
+impSource +=
+"""
+
+#pragma mark - Buffer Data Convert To Struct
+
+"""
+
+_ = generators.map({ impSource += $0.deserializationFunctionSource() })
+
+impSource +=
+"""
+
+#pragma mark - Free Struct Memory
+
+"""
+
+_ = generators.map({ impSource += $0.destoryFunctionSource() })
+
 var convertExps = [String]()
 var deConvertExps = [String]()
 var serializationExps = [String]()
@@ -457,7 +511,7 @@ for node in ast.nodes{
     let convertExp =
     """
     else if ([exp isKindOfClass:[\(className) class]]){
-            return (AstNode *)\(structName)Convert((\(className) *)exp, patch, length);
+            return (AstEmptyNode *)\(structName)Convert((\(className) *)exp, patch, length);
         }
     """
     if classNode.superClassName.hasPrefix("OR") && classNode.superClassName != "ORNode"{
@@ -481,7 +535,7 @@ for node in ast.nodes{
     deserializationExps.append(
     """
             case \(enumName):
-                return (AstNode *)\(structName)Deserialization(buffer, cursor, bufferLength);
+                return (AstEmptyNode *)\(structName)Deserialization(buffer, cursor, bufferLength);
     
     """)
     destoryExps.append(
@@ -496,14 +550,21 @@ for node in ast.nodes{
 
 impSource +=
 """
-AstNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
+
+#pragma mark - Dispatch
+
+"""
+
+impSource +=
+"""
+AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
     if ([exp isKindOfClass:[NSString class]]) {
-        return (AstNode *)createStringCursor((NSString *)exp, patch, length);
+        return (AstEmptyNode *)createStringCursor((NSString *)exp, patch, length);
     }else if ([exp isKindOfClass:[NSArray class]]) {
-        return (AstNode *)AstNodeListConvert((NSArray *)exp, patch, length);
+        return (AstEmptyNode *)AstNodeListConvert((NSArray *)exp, patch, length);
     }\(convertExps.joined(separator: ""))
-    AstNode *node = malloc(sizeof(AstNode));
-    memset(node, 0, sizeof(AstNode));
+    AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
+    memset(node, 0, sizeof(AstEmptyNode));
     *length += \(AstEmptyNodeLength);
     return node;
 }
@@ -511,14 +572,14 @@ AstNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
 """
 impSource +=
 """
-id AstNodeDeConvert(AstNode *node, AstPatchFile *patch){
+id AstNodeDeConvert(AstEmptyNode *node, AstPatchFile *patch){
     switch(node->nodeType){
         case AstEnumEmptyNode:
             return nil;
         case AstEnumListNode:
             return AstNodeListDeConvert((AstNodeList *)node, patch);
         case AstEnumStringCursorNode:
-            return getNSStringWithStringCursor((ORStringCursor *) node, patch);
+            return getNSStringWithStringCursor((AstStringCursor *) node, patch);
 \(deConvertExps.joined(separator: ""))
         default: return [ORNode new];
     }
@@ -528,7 +589,7 @@ id AstNodeDeConvert(AstNode *node, AstPatchFile *patch){
 """
 impSource +=
 """
-void AstNodeSerailization(AstNode *node, void *buffer, uint32_t *cursor){
+void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor){
     switch(node->nodeType){
         case AstEnumEmptyNode: {
             memcpy(buffer + *cursor, node, \(AstEmptyNodeLength));
@@ -538,9 +599,9 @@ void AstNodeSerailization(AstNode *node, void *buffer, uint32_t *cursor){
         case AstEnumListNode:
             AstNodeListSerailization((AstNodeList *)node, buffer, cursor); break;
         case AstEnumStringCursorNode:
-            ORStringCursorSerailization((ORStringCursor *) node, buffer, cursor); break;
+            AstStringCursorSerailization((AstStringCursor *) node, buffer, cursor); break;
         case AstEnumStringBufferNode:
-            ORStringBufferNodeSerailization((ORStringBufferNode *) node, buffer, cursor);break;
+            AstStringBufferNodeSerailization((AstStringBufferNode *) node, buffer, cursor);break;
 \(serializationExps.joined(separator: ""))
         default: break;
     }
@@ -549,20 +610,20 @@ void AstNodeSerailization(AstNode *node, void *buffer, uint32_t *cursor){
 """
 impSource +=
 """
-AstNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
     AstEnum nodeType = AstEnumEmptyNode;
     if (*cursor < bufferLength) {
         nodeType = *(AstEnum *)(buffer + *cursor);
     }
     switch(nodeType){
         case AstEnumListNode:
-            return (AstNode *)AstNodeListDeserialization(buffer, cursor, bufferLength);
+            return (AstEmptyNode *)AstNodeListDeserialization(buffer, cursor, bufferLength);
         case AstEnumStringCursorNode:
-            return (AstNode *)ORStringCursorDeserialization(buffer, cursor, bufferLength);
+            return (AstEmptyNode *)AstStringCursorDeserialization(buffer, cursor, bufferLength);
 \(deserializationExps.joined(separator: ""))
         default:{
-            AstNode *node = malloc(sizeof(AstNode));
-            memset(node, 0, sizeof(AstNode));
+            AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
+            memset(node, 0, sizeof(AstEmptyNode));
             *cursor += \(AstEmptyNodeLength);
             return node;
         }
@@ -572,7 +633,7 @@ AstNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferL
 """
 impSource +=
 """
-void AstNodeDestroy(AstNode *node){
+void AstNodeDestroy(AstEmptyNode *node){
     if(node == NULL) return;
     switch(node->nodeType){
         case AstEnumEmptyNode:
@@ -580,9 +641,9 @@ void AstNodeDestroy(AstNode *node){
         case AstEnumListNode:
             AstNodeListDestroy((AstNodeList *)node); break;
         case AstEnumStringCursorNode:
-            ORStringCursorDestroy((ORStringCursor *) node); break;
+            AstStringCursorDestroy((AstStringCursor *) node); break;
         case AstEnumStringBufferNode:
-            ORStringBufferNodeDestroy((ORStringBufferNode *) node); break;
+            AstStringBufferNodeDestroy((AstStringBufferNode *) node); break;
     \(destoryExps.joined(separator: ""))
         default: break;
     }

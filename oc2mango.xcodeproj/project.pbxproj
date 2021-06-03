@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		180B68C82660B386001173FB /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
-		180B68C92660B386001173FB /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
@@ -25,6 +23,8 @@
 		EE4BAFEC24364CEA00A2A080 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
 		EE4BAFF424364CEA00A2A080 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
 		EE4BAFF524364CEA00A2A080 /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
+		EE4ED3662668FFF40035F134 /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
+		EE4ED3672668FFF40035F134 /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EE4F367C24F9251C00F685AF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4F367B24F9251C00F685AF /* main.swift */; };
 		EE4F368024F9254400F685AF /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
 		EE4F368124F9254400F685AF /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
@@ -67,7 +67,8 @@
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
-		EED67A772270AE0F0015AC02 /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
+		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
+		EEC088712669015800538E9A /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
 		EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67A702270AE0E0015AC02 /* oc2mangoLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67A972270B0CA0015AC02 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
 		EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
@@ -77,7 +78,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		180B68CA2660B386001173FB /* PBXContainerItemProxy */ = {
+		EE4ED3682668FFF40035F134 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
 			proxyType = 1;
@@ -94,13 +95,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		180B68CC2660B386001173FB /* Embed Frameworks */ = {
+		EE4ED36A2668FFF40035F134 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				180B68C92660B386001173FB /* ORPatchFile.framework in Embed Frameworks */,
+				EE4ED3672668FFF40035F134 /* ORPatchFile.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -217,7 +218,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				180B68C82660B386001173FB /* ORPatchFile.framework in Frameworks */,
+				EE4ED3662668FFF40035F134 /* ORPatchFile.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -225,7 +226,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EED67A772270AE0F0015AC02 /* oc2mangoLib.framework in Frameworks */,
+				EEC088712669015800538E9A /* ORPatchFile.framework in Frameworks */,
+				EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -497,12 +499,12 @@
 				EED67A6A2270AE0E0015AC02 /* Sources */,
 				EED67A6B2270AE0E0015AC02 /* Frameworks */,
 				EED67A6C2270AE0E0015AC02 /* Resources */,
-				180B68CC2660B386001173FB /* Embed Frameworks */,
+				EE4ED36A2668FFF40035F134 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				180B68CB2660B386001173FB /* PBXTargetDependency */,
+				EE4ED3692668FFF40035F134 /* PBXTargetDependency */,
 			);
 			name = oc2mangoLib;
 			productName = oc2mangoLib;
@@ -725,10 +727,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		180B68CB2660B386001173FB /* PBXTargetDependency */ = {
+		EE4ED3692668FFF40035F134 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
-			targetProxy = 180B68CA2660B386001173FB /* PBXContainerItemProxy */;
+			targetProxy = EE4ED3682668FFF40035F134 /* PBXContainerItemProxy */;
 		};
 		EED67A792270AE0F0015AC02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -745,6 +747,11 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"PATCH_FILE_CODE_GEN=1",
+					"$(inherited)",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -824,6 +831,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -852,6 +860,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";

@@ -83,6 +83,7 @@ class CheckArgs{
                 break
             case .osVersion:
                 self.osVersion = arg
+                print("Not Support Argument: \(osVersion)")
                 break
             default:
                 break
@@ -92,6 +93,7 @@ class CheckArgs{
     func showHelp(){
         print(
         """
+        PatchGenerator: 1.1.0
 
         required:
         -files: Objective-C source files.
@@ -99,7 +101,7 @@ class CheckArgs{
         -output: output patch file path.
         optional:
         -type: json or binary. default is binary.
-        -osVersion: patch for iOS version
+        -osVersion: ORPatchFile 1.1.0 Not Support
         -appVersion: patch for application version
 
         For example:
@@ -140,13 +142,14 @@ func main(){
     }
     let patchFile = ORPatchFile.init(nodes: refsNodes + inputNodes)
     patchFile.appVersion = result.appVersion
-    patchFile.osVersion = result.osVersion
     switch result.type {
     case .binary:
-        patchFile.dump(asBinaryPatch: result.output)
+        let dst = patchFile.dump(asBinaryPatch: result.output)
+        print("Save Binary File: \(dst)")
         break
     case .json:
-        patchFile.dump(asJsonPatch: result.output)
+        let dst = patchFile.dump(asJsonPatch: result.output)
+        print("Save Json File: \(dst)")
         break
     }
     

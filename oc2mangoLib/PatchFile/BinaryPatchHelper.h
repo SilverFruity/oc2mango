@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1622714604
+//  Created by Jiang on 1622729423
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
@@ -57,46 +57,45 @@ typedef enum: uint8_t{
 
 #define AstNodeFields \
 uint8_t nodeType;\
-uint8_t withSemicolon;\
 
 #pragma pack(1)
 #pragma pack(show)
 typedef struct {
     AstNodeFields
-}AstNode;
+}AstEmptyNode;
 
-static uint32_t AstNodeLength = 2;
+static uint32_t AstEmptyNodeLength = 1;
 
 typedef struct {
     AstNodeFields
     uint32_t count;
-    AstNode **nodes;
+    AstEmptyNode **nodes;
 }AstNodeList;
-static uint32_t AstNodeListBaseLength = 6;
+static uint32_t AstNodeListBaseLength = 5;
 
 typedef struct {
     AstNodeFields
     uint32_t offset;
     uint32_t strLen;
-}ORStringCursor;
-static uint32_t ORStringCursorBaseLength = 10;
+}AstStringCursor;
+static uint32_t AstStringCursorBaseLength = 9;
 
 typedef struct {
     AstNodeFields
     uint32_t cursor;
     char *buffer;
-}ORStringBufferNode;
-static uint32_t ORStringBufferNodeBaseLength = 6;
+}AstStringBufferNode;
+static uint32_t AstStringBufferNodeBaseLength = 5;
 
 typedef struct {
     AstNodeFields
     BOOL enable;
-    ORStringBufferNode *strings;
-    ORStringCursor *appVersion;
-    ORStringCursor *osVersion;
+    AstStringBufferNode *strings;
+    AstStringCursor *appVersion;
+    AstStringCursor *osVersion;
     AstNodeList *nodes;
 }AstPatchFile;
-static uint32_t AstPatchFileBaseLength = 3;
+static uint32_t AstPatchFileBaseLength = 2;
 
 #pragma pack()
 #pragma pack(show)
@@ -107,3 +106,267 @@ void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *curso
 AstPatchFile *AstPatchFileDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
 void AstPatchFileDestroy(AstPatchFile *node);
 ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength);
+#pragma pack(1)
+
+typedef struct {
+    AstNodeFields
+    uint32_t type;
+    AstStringCursor * name;
+}AstTypeSpecial;
+
+typedef struct {
+    AstNodeFields
+    BOOL isBlock;
+    uint8_t ptCount;
+    AstStringCursor * varname;
+}AstVariable;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * type;
+    AstEmptyNode * var;
+}AstTypeVarPair;
+
+typedef struct {
+    AstNodeFields
+    BOOL isBlock;
+    uint8_t ptCount;
+    BOOL isMultiArgs;
+    AstStringCursor * varname;
+    AstNodeList * pairs;
+}AstFuncVariable;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * returnType;
+    AstEmptyNode * funVar;
+}AstFuncDeclare;
+
+typedef struct {
+    AstNodeFields
+    AstNodeList * statements;
+}AstScopeImp;
+
+typedef struct {
+    AstNodeFields
+    uint32_t value_type;
+    AstEmptyNode * value;
+}AstValueExpression;
+
+typedef struct {
+    AstNodeFields
+    int64_t value;
+}AstIntegerValue;
+
+typedef struct {
+    AstNodeFields
+    uint64_t value;
+}AstUIntegerValue;
+
+typedef struct {
+    AstNodeFields
+    double value;
+}AstDoubleValue;
+
+typedef struct {
+    AstNodeFields
+    BOOL value;
+}AstBoolValue;
+
+typedef struct {
+    AstNodeFields
+    uint8_t methodOperator;
+    BOOL isAssignedValue;
+    AstEmptyNode * caller;
+    AstNodeList * names;
+    AstNodeList * values;
+}AstMethodCall;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * caller;
+    AstNodeList * expressions;
+}AstCFuncCall;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * declare;
+    AstEmptyNode * scopeImp;
+}AstFunctionImp;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * caller;
+    AstEmptyNode * keyExp;
+}AstSubscriptExpression;
+
+typedef struct {
+    AstNodeFields
+    uint32_t assignType;
+    AstEmptyNode * value;
+    AstEmptyNode * expression;
+}AstAssignExpression;
+
+typedef struct {
+    AstNodeFields
+    uint32_t modifier;
+    AstEmptyNode * pair;
+    AstEmptyNode * expression;
+}AstDeclareExpression;
+
+typedef struct {
+    AstNodeFields
+    uint32_t operatorType;
+    AstEmptyNode * value;
+}AstUnaryExpression;
+
+typedef struct {
+    AstNodeFields
+    uint32_t operatorType;
+    AstEmptyNode * left;
+    AstEmptyNode * right;
+}AstBinaryExpression;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * expression;
+    AstNodeList * values;
+}AstTernaryExpression;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * condition;
+    AstEmptyNode * last;
+    AstEmptyNode * scopeImp;
+}AstIfStatement;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * condition;
+    AstEmptyNode * scopeImp;
+}AstWhileStatement;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * condition;
+    AstEmptyNode * scopeImp;
+}AstDoWhileStatement;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * value;
+    AstEmptyNode * scopeImp;
+}AstCaseStatement;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * value;
+    AstNodeList * cases;
+    AstEmptyNode * scopeImp;
+}AstSwitchStatement;
+
+typedef struct {
+    AstNodeFields
+    AstNodeList * varExpressions;
+    AstEmptyNode * condition;
+    AstNodeList * expressions;
+    AstEmptyNode * scopeImp;
+}AstForStatement;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * expression;
+    AstEmptyNode * value;
+    AstEmptyNode * scopeImp;
+}AstForInStatement;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * expression;
+}AstReturnStatement;
+
+typedef struct {
+    AstNodeFields
+    
+}AstBreakStatement;
+
+typedef struct {
+    AstNodeFields
+    
+}AstContinueStatement;
+
+typedef struct {
+    AstNodeFields
+    AstNodeList * keywords;
+    AstEmptyNode * var;
+}AstPropertyDeclare;
+
+typedef struct {
+    AstNodeFields
+    BOOL isClassMethod;
+    AstEmptyNode * returnType;
+    AstNodeList * methodNames;
+    AstNodeList * parameterTypes;
+    AstNodeList * parameterNames;
+}AstMethodDeclare;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * declare;
+    AstEmptyNode * scopeImp;
+}AstMethodImplementation;
+
+typedef struct {
+    AstNodeFields
+    AstStringCursor * className;
+    AstStringCursor * superClassName;
+    AstNodeList * protocols;
+    AstNodeList * properties;
+    AstNodeList * privateVariables;
+    AstNodeList * methods;
+}AstClass;
+
+typedef struct {
+    AstNodeFields
+    AstStringCursor * protcolName;
+    AstNodeList * protocols;
+    AstNodeList * properties;
+    AstNodeList * methods;
+}AstProtocol;
+
+typedef struct {
+    AstNodeFields
+    AstStringCursor * sturctName;
+    AstNodeList * fields;
+}AstStructExpressoin;
+
+typedef struct {
+    AstNodeFields
+    uint32_t valueType;
+    AstStringCursor * enumName;
+    AstNodeList * fields;
+}AstEnumExpressoin;
+
+typedef struct {
+    AstNodeFields
+    AstEmptyNode * expression;
+    AstStringCursor * typeNewName;
+}AstTypedefExpressoin;
+
+typedef struct {
+    AstNodeFields
+    BOOL isBlock;
+    uint8_t ptCount;
+    AstStringCursor * varname;
+    AstEmptyNode * prev;
+    AstEmptyNode * capacity;
+}AstCArrayVariable;
+
+typedef struct {
+    AstNodeFields
+    AstStringCursor * unionName;
+    AstNodeList * fields;
+}AstUnionExpressoin;
+
+#pragma pack()
+#pragma pack(show)

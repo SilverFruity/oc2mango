@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name         = "oc2mangoLib"
-s.version      = "1.0.4"
+s.version      = "1.1.0"
 s.summary      = "oc2mangoLib"
 s.description  = <<-DESC
 oc2mangoLib is a framework that parse Objective-C code into abstract syntax tree.
