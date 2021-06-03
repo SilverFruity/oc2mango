@@ -76,22 +76,23 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     NSLog(@"binary file length %.2f KB", (double)data.length / 1000.0);
     void *buffer = (void *)[data bytes];
     uint32_t cursor = 0;
-    if (_PatchNodeGenerateCheckFile(buffer, (uint32_t)data.length).canUseable == NO) {
+    if (AstPatchFileGenerateCheckFile(buffer, (uint32_t)data.length).canUseable == NO) {
         return nil;
     }
-    _PatchNode *node = _PatchNodeDeserialization(buffer, &cursor, (uint32_t)data.length);
-    ORPatchFile *file = _PatchNodeDeConvert(node);
-    _PatchNodeDestroy(node);
+    AstPatchFile *node = AstPatchFileDeserialization(buffer, &cursor, (uint32_t)data.length);
+    ORPatchFile *file = AstPatchFileDeConvert(node);
+    AstPatchFileDestroy(node);
     return file;
 }
 - (void)dumpAsBinaryPatch:(NSString *)patchPath{
     uint32_t length = 0;
-    _PatchNode *node = _PatchNodeConvert(self, &length);
+    AstPatchFile *node = AstPatchFileConvert(self, &length);
     void *buffer = malloc(length);
     uint32_t cursor = 0;
-    _PatchNodeSerialization(node, buffer, &cursor);
-    _PatchNodeDestroy(node);
+    AstPatchFileSerialization(node, buffer, &cursor);
+    AstPatchFileDestroy(node);
     NSData *data = [[NSData alloc]initWithBytes:buffer length:length];
+    NSLog(@"%@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
     [data writeToFile:patchPath atomically:YES];
     return;
 }

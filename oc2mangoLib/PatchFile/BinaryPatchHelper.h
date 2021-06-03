@@ -1,58 +1,109 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1622609307
+//  Created by Jiang on 1622714604
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
 @class ORPatchFile;
-#define _ORNodeFields \
+
+typedef enum: uint8_t{
+    AstEnumEmptyNode = 0,
+    AstEnumPatchFile = 1,
+    AstEnumStringCursorNode = 2,
+    AstEnumStringBufferNode = 3,
+    AstEnumListNode = 4,
+    AstEnumTypeSpecial = 7,
+    AstEnumVariable = 8,
+    AstEnumTypeVarPair = 9,
+    AstEnumFuncVariable = 10,
+    AstEnumFuncDeclare = 11,
+    AstEnumScopeImp = 12,
+    AstEnumValueExpression = 14,
+    AstEnumIntegerValue = 15,
+    AstEnumUIntegerValue = 16,
+    AstEnumDoubleValue = 17,
+    AstEnumBoolValue = 18,
+    AstEnumMethodCall = 20,
+    AstEnumCFuncCall = 21,
+    AstEnumFunctionImp = 22,
+    AstEnumSubscriptExpression = 23,
+    AstEnumAssignExpression = 25,
+    AstEnumDeclareExpression = 27,
+    AstEnumUnaryExpression = 29,
+    AstEnumBinaryExpression = 31,
+    AstEnumTernaryExpression = 32,
+    AstEnumIfStatement = 33,
+    AstEnumWhileStatement = 34,
+    AstEnumDoWhileStatement = 35,
+    AstEnumCaseStatement = 36,
+    AstEnumSwitchStatement = 37,
+    AstEnumForStatement = 38,
+    AstEnumForInStatement = 39,
+    AstEnumReturnStatement = 40,
+    AstEnumBreakStatement = 41,
+    AstEnumContinueStatement = 42,
+    AstEnumPropertyDeclare = 44,
+    AstEnumMethodDeclare = 45,
+    AstEnumMethodImplementation = 46,
+    AstEnumClass = 47,
+    AstEnumProtocol = 48,
+    AstEnumStructExpressoin = 49,
+    AstEnumEnumExpressoin = 50,
+    AstEnumTypedefExpressoin = 51,
+    AstEnumCArrayVariable = 52,
+    AstEnumUnionExpressoin = 53,
+}AstEnum;
+
+
+#define AstNodeFields \
 uint8_t nodeType;\
+uint8_t withSemicolon;\
 
 #pragma pack(1)
 #pragma pack(show)
 typedef struct {
-    _ORNodeFields
-}_ORNode;
+    AstNodeFields
+}AstNode;
 
-static uint32_t _ORNodeLength = 1;
+static uint32_t AstNodeLength = 2;
 
 typedef struct {
-    _ORNodeFields
+    AstNodeFields
     uint32_t count;
-    _ORNode **nodes;
-}_ListNode;
-static uint32_t _ListNodeBaseLength = 5;
+    AstNode **nodes;
+}AstNodeList;
+static uint32_t AstNodeListBaseLength = 6;
 
 typedef struct {
-    _ORNodeFields
+    AstNodeFields
     uint32_t offset;
     uint32_t strLen;
-}_StringNode;
-static uint32_t _StringNodeBaseLength = 9;
+}ORStringCursor;
+static uint32_t ORStringCursorBaseLength = 10;
 
 typedef struct {
-    _ORNodeFields
+    AstNodeFields
     uint32_t cursor;
     char *buffer;
-}_StringsNode;
-static uint32_t _StringsNodeBaseLength = 5;
+}ORStringBufferNode;
+static uint32_t ORStringBufferNodeBaseLength = 6;
 
 typedef struct {
-    _ORNodeFields
+    AstNodeFields
     BOOL enable;
-    _StringsNode *strings;
-    _StringNode *appVersion;
-    _StringNode *osVersion;
-    _ListNode *nodes;
-}_PatchNode;
-static uint32_t _PatchNodeBaseLength = 2;
+    ORStringBufferNode *strings;
+    ORStringCursor *appVersion;
+    ORStringCursor *osVersion;
+    AstNodeList *nodes;
+}AstPatchFile;
+static uint32_t AstPatchFileBaseLength = 3;
 
 #pragma pack()
 #pragma pack(show)
 
-_PatchNode *_PatchNodeConvert(ORPatchFile *patch, uint32_t *length);
-ORPatchFile *_PatchNodeDeConvert(_PatchNode *node);
-void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor);
-_PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
-void _PatchNodeDestroy(_PatchNode *node);
-ORPatchFile *_PatchNodeGenerateCheckFile(void *buffer, uint32_t bufferLength);
+AstPatchFile *AstPatchFileConvert(ORPatchFile *patch, uint32_t *length);
+ORPatchFile *AstPatchFileDeConvert(AstPatchFile *node);
+void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *cursor);
+AstPatchFile *AstPatchFileDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
+void AstPatchFileDestroy(AstPatchFile *node);
+ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength);

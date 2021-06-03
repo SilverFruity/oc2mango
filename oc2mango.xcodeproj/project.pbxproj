@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		180B68C82660B386001173FB /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
 		180B68C92660B386001173FB /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
@@ -58,9 +59,6 @@
 		EE66C18624FEC14A00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		EE66C18824FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
-		EE66C18924FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
-		EE66C18A24FEC14A00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
-		EE66C18B24FEC14A00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE66C19124FEC14B00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EE66C19224FEC14B00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
@@ -137,6 +135,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassCodeGenerator.swift; sourceTree = "<group>"; };
 		32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClassSecretKeyMap.h; path = oc2mangoLib/PatchFile/ClassSecretKeyMap.h; sourceTree = SOURCE_ROOT; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
@@ -256,6 +255,7 @@
 			children = (
 				EE4F368824F9259D00F685AF /* BinaryPatchCodeGenerator-Bridging-Header.h */,
 				EE4F367B24F9251C00F685AF /* main.swift */,
+				185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */,
 			);
 			path = BinaryPatchCodeGenerator;
 			sourceTree = "<group>";
@@ -635,14 +635,12 @@
 				EE4F368424F9254400F685AF /* AST.m in Sources */,
 				EE4F368124F9254400F685AF /* Log.m in Sources */,
 				EE4F368024F9254400F685AF /* Parser.m in Sources */,
+				185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */,
 				EE4F368724F9254400F685AF /* cal.y in Sources */,
-				EE66C18924FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */,
 				EE4F368524F9254400F685AF /* MakeDeclare.m in Sources */,
 				EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */,
 				EE4F367C24F9251C00F685AF /* main.swift in Sources */,
 				EE4F368324F9254400F685AF /* Convert.m in Sources */,
-				EE66C18B24FEC14A00C85B31 /* ORPatchFile.m in Sources */,
-				EE66C18A24FEC14A00C85B31 /* JSONPatchHelper.m in Sources */,
 				EE4F368624F9254400F685AF /* cal.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

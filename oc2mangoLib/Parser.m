@@ -68,7 +68,7 @@ Parser *OCParser = nil;
     } while (0);
 #endif
     
-//#define BINARY_PATCH_TEST
+#define BINARY_PATCH_TEST
 #ifdef BINARY_PATCH_TEST
     do {
         NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
