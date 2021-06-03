@@ -12,6 +12,6 @@ s.ios.deployment_target = "9.0"
 s.source       = { :git => "https://github.com/SilverFruity/oc2mango.git", :tag => "#{s.version}" }
 s.pod_target_xcconfig = { 'GCC_INPUT_FILETYPE' => 'sourcecode.c.objc' }
 s.source_files  = "oc2mangoLib/*.{h,m,c,y,l}", "oc2mangoLib/Builders/*.{h,m,c,y,l}"
-s.dependency "ORPatchFile", "1.0.4"
+s.dependency "ORPatchFile", "1.1.0"
 end
 
