@@ -149,4 +149,7 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     [data writeToFile:patchPath atomically:YES];
     return patchPath;
 }
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key{
+    
+}
 @end
