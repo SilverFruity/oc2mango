@@ -98,6 +98,7 @@
     ORFunctionImp *imp = [ORFunctionImp new];
     imp.declare = [self.declare copy];
     imp.scopeImp = self.scopeImp;
+    imp.parentNode = self.parentNode;
     imp.declare.funVar.isBlock = NO;
     return imp;
 }

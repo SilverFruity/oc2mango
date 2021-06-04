@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 // MARK: - Node
 @interface ORNode: NSObject
+@property (nonatomic, weak)ORNode *parentNode;
 @property (nonatomic, assign)AstEnum nodeType;
 @property (nonatomic, assign)BOOL withSemicolon;
 @end

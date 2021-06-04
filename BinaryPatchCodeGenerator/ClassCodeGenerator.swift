@@ -39,7 +39,7 @@ class ClassCodeGenerator{
         self.convertExps.append("node->\(varname) = exp.\(varname);")
     }
     func addNodeDeconvertExp(varname: String, className:String){
-        self.deConvertExps.append("exp.\(varname) = (\(className))AstNodeDeConvert((AstEmptyNode *)node->\(varname), patch);")
+        self.deConvertExps.append("exp.\(varname) = (\(className))AstNodeDeConvert(exp, (AstEmptyNode *)node->\(varname), patch);")
     }
     func addBaseDeconvertExp(varname: String){
         self.deConvertExps.append("exp.\(varname) = node->\(varname);")
@@ -108,8 +108,9 @@ class ClassCodeGenerator{
             deConvertExps = superContent.deConvertExps + deConvertExps
         }
         return """
-        \(className) *\(structName)DeConvert(\(structName) *node, AstPatchFile *patch){
-            \(className) *exp = [\(className) new];\(withSemicolonDeconvertExp)
+        \(className) *\(structName)DeConvert(ORNode *parent, \(structName) *node, AstPatchFile *patch){
+            \(className) *exp = [\(className) new];
+            exp.parentNode = parent;\(withSemicolonDeconvertExp)
             \(deConvertExps.joined(separator: "\n    "))
             return exp;
         }

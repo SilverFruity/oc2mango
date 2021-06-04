@@ -1,12 +1,12 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1622731638
+//  Created by Jiang on 1622786569
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
 
 AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length);
-id AstNodeDeConvert(AstEmptyNode *node, AstPatchFile *patch);
+id AstNodeDeConvert(ORNode *parent, AstEmptyNode *node, AstPatchFile *patch);
 
 #pragma mark - Base Data Struct
 
@@ -24,10 +24,10 @@ AstNodeList *AstNodeListConvert(NSArray *array, AstPatchFile *patch, uint32_t *l
     return node;
 }
 
-NSMutableArray *AstNodeListDeConvert(AstNodeList *node, AstPatchFile *patch){
+NSMutableArray *AstNodeListDeConvert(ORNode *parent,AstNodeList *node, AstPatchFile *patch){
     NSMutableArray *array = [NSMutableArray array];
     for (int i = 0; i < node->count; i++) {
-        id result = AstNodeDeConvert(node->nodes[i], patch);
+        id result = AstNodeDeConvert(parent, node->nodes[i], patch);
         [array addObject:result];
     }
     return array;
@@ -100,12 +100,12 @@ AstPatchFile *AstPatchFileConvert(ORPatchFile *patch, uint32_t *length){
 
 ORPatchFile *AstPatchFileDeConvert(AstPatchFile *patch){
     ORPatchFile *file = [ORPatchFile new];
-    file.appVersion = AstNodeDeConvert((AstEmptyNode *)patch->appVersion, patch);
-    file.patchInternalVersion = AstNodeDeConvert((AstEmptyNode *)patch->osVersion, patch);
+    file.appVersion = AstNodeDeConvert(nil, (AstEmptyNode *)patch->appVersion, patch);
+    file.patchInternalVersion = AstNodeDeConvert(nil, (AstEmptyNode *)patch->osVersion, patch);
     file.enable = patch->enable;
     NSMutableArray *nodes = [NSMutableArray array];
     for (int i = 0; i < patch->nodes->count; i++) {
-        [nodes addObject:AstNodeDeConvert(patch->nodes->nodes[i], patch)];
+        [nodes addObject:AstNodeDeConvert(nil, patch->nodes->nodes[i], patch)];
     }
     file.nodes = nodes;
     return file;
@@ -637,304 +637,344 @@ AstUnionExpressoin *AstUnionExpressoinConvert(ORUnionExpressoin *exp, AstPatchFi
 }
 
 #pragma mark - Struct Convert To Class
-ORTypeSpecial *AstTypeSpecialDeConvert(AstTypeSpecial *node, AstPatchFile *patch){
+ORTypeSpecial *AstTypeSpecialDeConvert(ORNode *parent, AstTypeSpecial *node, AstPatchFile *patch){
     ORTypeSpecial *exp = [ORTypeSpecial new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.type = node->type;
-    exp.name = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->name, patch);
+    exp.name = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->name, patch);
     return exp;
 }
-ORVariable *AstVariableDeConvert(AstVariable *node, AstPatchFile *patch){
+ORVariable *AstVariableDeConvert(ORNode *parent, AstVariable *node, AstPatchFile *patch){
     ORVariable *exp = [ORVariable new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.isBlock = node->isBlock;
     exp.ptCount = node->ptCount;
-    exp.varname = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->varname, patch);
+    exp.varname = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->varname, patch);
     return exp;
 }
-ORTypeVarPair *AstTypeVarPairDeConvert(AstTypeVarPair *node, AstPatchFile *patch){
+ORTypeVarPair *AstTypeVarPairDeConvert(ORNode *parent, AstTypeVarPair *node, AstPatchFile *patch){
     ORTypeVarPair *exp = [ORTypeVarPair new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.type = (id)AstNodeDeConvert((AstEmptyNode *)node->type, patch);
-    exp.var = (id)AstNodeDeConvert((AstEmptyNode *)node->var, patch);
+    exp.type = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->type, patch);
+    exp.var = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->var, patch);
     return exp;
 }
-ORFuncVariable *AstFuncVariableDeConvert(AstFuncVariable *node, AstPatchFile *patch){
+ORFuncVariable *AstFuncVariableDeConvert(ORNode *parent, AstFuncVariable *node, AstPatchFile *patch){
     ORFuncVariable *exp = [ORFuncVariable new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.isBlock = node->isBlock;
     exp.ptCount = node->ptCount;
-    exp.varname = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->varname, patch);
+    exp.varname = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->varname, patch);
     exp.isMultiArgs = node->isMultiArgs;
-    exp.pairs = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->pairs, patch);
+    exp.pairs = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->pairs, patch);
     return exp;
 }
-ORFuncDeclare *AstFuncDeclareDeConvert(AstFuncDeclare *node, AstPatchFile *patch){
+ORFuncDeclare *AstFuncDeclareDeConvert(ORNode *parent, AstFuncDeclare *node, AstPatchFile *patch){
     ORFuncDeclare *exp = [ORFuncDeclare new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.returnType = (id)AstNodeDeConvert((AstEmptyNode *)node->returnType, patch);
-    exp.funVar = (id)AstNodeDeConvert((AstEmptyNode *)node->funVar, patch);
+    exp.returnType = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->returnType, patch);
+    exp.funVar = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->funVar, patch);
     return exp;
 }
-ORScopeImp *AstScopeImpDeConvert(AstScopeImp *node, AstPatchFile *patch){
+ORScopeImp *AstScopeImpDeConvert(ORNode *parent, AstScopeImp *node, AstPatchFile *patch){
     ORScopeImp *exp = [ORScopeImp new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.statements = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->statements, patch);
+    exp.statements = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->statements, patch);
     return exp;
 }
-ORValueExpression *AstValueExpressionDeConvert(AstValueExpression *node, AstPatchFile *patch){
+ORValueExpression *AstValueExpressionDeConvert(ORNode *parent, AstValueExpression *node, AstPatchFile *patch){
     ORValueExpression *exp = [ORValueExpression new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.value_type = node->value_type;
-    exp.value = (id)AstNodeDeConvert((AstEmptyNode *)node->value, patch);
+    exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
     return exp;
 }
-ORIntegerValue *AstIntegerValueDeConvert(AstIntegerValue *node, AstPatchFile *patch){
+ORIntegerValue *AstIntegerValueDeConvert(ORNode *parent, AstIntegerValue *node, AstPatchFile *patch){
     ORIntegerValue *exp = [ORIntegerValue new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.value = node->value;
     return exp;
 }
-ORUIntegerValue *AstUIntegerValueDeConvert(AstUIntegerValue *node, AstPatchFile *patch){
+ORUIntegerValue *AstUIntegerValueDeConvert(ORNode *parent, AstUIntegerValue *node, AstPatchFile *patch){
     ORUIntegerValue *exp = [ORUIntegerValue new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.value = node->value;
     return exp;
 }
-ORDoubleValue *AstDoubleValueDeConvert(AstDoubleValue *node, AstPatchFile *patch){
+ORDoubleValue *AstDoubleValueDeConvert(ORNode *parent, AstDoubleValue *node, AstPatchFile *patch){
     ORDoubleValue *exp = [ORDoubleValue new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.value = node->value;
     return exp;
 }
-ORBoolValue *AstBoolValueDeConvert(AstBoolValue *node, AstPatchFile *patch){
+ORBoolValue *AstBoolValueDeConvert(ORNode *parent, AstBoolValue *node, AstPatchFile *patch){
     ORBoolValue *exp = [ORBoolValue new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.value = node->value;
     return exp;
 }
-ORMethodCall *AstMethodCallDeConvert(AstMethodCall *node, AstPatchFile *patch){
+ORMethodCall *AstMethodCallDeConvert(ORNode *parent, AstMethodCall *node, AstPatchFile *patch){
     ORMethodCall *exp = [ORMethodCall new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.methodOperator = node->methodOperator;
     exp.isAssignedValue = node->isAssignedValue;
-    exp.caller = (id)AstNodeDeConvert((AstEmptyNode *)node->caller, patch);
-    exp.names = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->names, patch);
-    exp.values = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->values, patch);
+    exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
+    exp.names = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->names, patch);
+    exp.values = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->values, patch);
     return exp;
 }
-ORCFuncCall *AstCFuncCallDeConvert(AstCFuncCall *node, AstPatchFile *patch){
+ORCFuncCall *AstCFuncCallDeConvert(ORNode *parent, AstCFuncCall *node, AstPatchFile *patch){
     ORCFuncCall *exp = [ORCFuncCall new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.caller = (id)AstNodeDeConvert((AstEmptyNode *)node->caller, patch);
-    exp.expressions = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->expressions, patch);
+    exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
+    exp.expressions = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->expressions, patch);
     return exp;
 }
-ORFunctionImp *AstFunctionImpDeConvert(AstFunctionImp *node, AstPatchFile *patch){
+ORFunctionImp *AstFunctionImpDeConvert(ORNode *parent, AstFunctionImp *node, AstPatchFile *patch){
     ORFunctionImp *exp = [ORFunctionImp new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.declare = (id)AstNodeDeConvert((AstEmptyNode *)node->declare, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.declare = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->declare, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORSubscriptExpression *AstSubscriptExpressionDeConvert(AstSubscriptExpression *node, AstPatchFile *patch){
+ORSubscriptExpression *AstSubscriptExpressionDeConvert(ORNode *parent, AstSubscriptExpression *node, AstPatchFile *patch){
     ORSubscriptExpression *exp = [ORSubscriptExpression new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.caller = (id)AstNodeDeConvert((AstEmptyNode *)node->caller, patch);
-    exp.keyExp = (id)AstNodeDeConvert((AstEmptyNode *)node->keyExp, patch);
+    exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
+    exp.keyExp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->keyExp, patch);
     return exp;
 }
-ORAssignExpression *AstAssignExpressionDeConvert(AstAssignExpression *node, AstPatchFile *patch){
+ORAssignExpression *AstAssignExpressionDeConvert(ORNode *parent, AstAssignExpression *node, AstPatchFile *patch){
     ORAssignExpression *exp = [ORAssignExpression new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.assignType = node->assignType;
-    exp.value = (id)AstNodeDeConvert((AstEmptyNode *)node->value, patch);
-    exp.expression = (id)AstNodeDeConvert((AstEmptyNode *)node->expression, patch);
+    exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
+    exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
     return exp;
 }
-ORDeclareExpression *AstDeclareExpressionDeConvert(AstDeclareExpression *node, AstPatchFile *patch){
+ORDeclareExpression *AstDeclareExpressionDeConvert(ORNode *parent, AstDeclareExpression *node, AstPatchFile *patch){
     ORDeclareExpression *exp = [ORDeclareExpression new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.modifier = node->modifier;
-    exp.pair = (id)AstNodeDeConvert((AstEmptyNode *)node->pair, patch);
-    exp.expression = (id)AstNodeDeConvert((AstEmptyNode *)node->expression, patch);
+    exp.pair = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->pair, patch);
+    exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
     return exp;
 }
-ORUnaryExpression *AstUnaryExpressionDeConvert(AstUnaryExpression *node, AstPatchFile *patch){
+ORUnaryExpression *AstUnaryExpressionDeConvert(ORNode *parent, AstUnaryExpression *node, AstPatchFile *patch){
     ORUnaryExpression *exp = [ORUnaryExpression new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.operatorType = node->operatorType;
-    exp.value = (id)AstNodeDeConvert((AstEmptyNode *)node->value, patch);
+    exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
     return exp;
 }
-ORBinaryExpression *AstBinaryExpressionDeConvert(AstBinaryExpression *node, AstPatchFile *patch){
+ORBinaryExpression *AstBinaryExpressionDeConvert(ORNode *parent, AstBinaryExpression *node, AstPatchFile *patch){
     ORBinaryExpression *exp = [ORBinaryExpression new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.operatorType = node->operatorType;
-    exp.left = (id)AstNodeDeConvert((AstEmptyNode *)node->left, patch);
-    exp.right = (id)AstNodeDeConvert((AstEmptyNode *)node->right, patch);
+    exp.left = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->left, patch);
+    exp.right = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->right, patch);
     return exp;
 }
-ORTernaryExpression *AstTernaryExpressionDeConvert(AstTernaryExpression *node, AstPatchFile *patch){
+ORTernaryExpression *AstTernaryExpressionDeConvert(ORNode *parent, AstTernaryExpression *node, AstPatchFile *patch){
     ORTernaryExpression *exp = [ORTernaryExpression new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.expression = (id)AstNodeDeConvert((AstEmptyNode *)node->expression, patch);
-    exp.values = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->values, patch);
+    exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
+    exp.values = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->values, patch);
     return exp;
 }
-ORIfStatement *AstIfStatementDeConvert(AstIfStatement *node, AstPatchFile *patch){
+ORIfStatement *AstIfStatementDeConvert(ORNode *parent, AstIfStatement *node, AstPatchFile *patch){
     ORIfStatement *exp = [ORIfStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.condition = (id)AstNodeDeConvert((AstEmptyNode *)node->condition, patch);
-    exp.last = (id)AstNodeDeConvert((AstEmptyNode *)node->last, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.condition = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->condition, patch);
+    exp.last = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->last, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORWhileStatement *AstWhileStatementDeConvert(AstWhileStatement *node, AstPatchFile *patch){
+ORWhileStatement *AstWhileStatementDeConvert(ORNode *parent, AstWhileStatement *node, AstPatchFile *patch){
     ORWhileStatement *exp = [ORWhileStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.condition = (id)AstNodeDeConvert((AstEmptyNode *)node->condition, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.condition = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->condition, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORDoWhileStatement *AstDoWhileStatementDeConvert(AstDoWhileStatement *node, AstPatchFile *patch){
+ORDoWhileStatement *AstDoWhileStatementDeConvert(ORNode *parent, AstDoWhileStatement *node, AstPatchFile *patch){
     ORDoWhileStatement *exp = [ORDoWhileStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.condition = (id)AstNodeDeConvert((AstEmptyNode *)node->condition, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.condition = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->condition, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORCaseStatement *AstCaseStatementDeConvert(AstCaseStatement *node, AstPatchFile *patch){
+ORCaseStatement *AstCaseStatementDeConvert(ORNode *parent, AstCaseStatement *node, AstPatchFile *patch){
     ORCaseStatement *exp = [ORCaseStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.value = (id)AstNodeDeConvert((AstEmptyNode *)node->value, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORSwitchStatement *AstSwitchStatementDeConvert(AstSwitchStatement *node, AstPatchFile *patch){
+ORSwitchStatement *AstSwitchStatementDeConvert(ORNode *parent, AstSwitchStatement *node, AstPatchFile *patch){
     ORSwitchStatement *exp = [ORSwitchStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.value = (id)AstNodeDeConvert((AstEmptyNode *)node->value, patch);
-    exp.cases = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->cases, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
+    exp.cases = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->cases, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORForStatement *AstForStatementDeConvert(AstForStatement *node, AstPatchFile *patch){
+ORForStatement *AstForStatementDeConvert(ORNode *parent, AstForStatement *node, AstPatchFile *patch){
     ORForStatement *exp = [ORForStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.varExpressions = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->varExpressions, patch);
-    exp.condition = (id)AstNodeDeConvert((AstEmptyNode *)node->condition, patch);
-    exp.expressions = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->expressions, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.varExpressions = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->varExpressions, patch);
+    exp.condition = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->condition, patch);
+    exp.expressions = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->expressions, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORForInStatement *AstForInStatementDeConvert(AstForInStatement *node, AstPatchFile *patch){
+ORForInStatement *AstForInStatementDeConvert(ORNode *parent, AstForInStatement *node, AstPatchFile *patch){
     ORForInStatement *exp = [ORForInStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.expression = (id)AstNodeDeConvert((AstEmptyNode *)node->expression, patch);
-    exp.value = (id)AstNodeDeConvert((AstEmptyNode *)node->value, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
+    exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORReturnStatement *AstReturnStatementDeConvert(AstReturnStatement *node, AstPatchFile *patch){
+ORReturnStatement *AstReturnStatementDeConvert(ORNode *parent, AstReturnStatement *node, AstPatchFile *patch){
     ORReturnStatement *exp = [ORReturnStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.expression = (id)AstNodeDeConvert((AstEmptyNode *)node->expression, patch);
+    exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
     return exp;
 }
-ORBreakStatement *AstBreakStatementDeConvert(AstBreakStatement *node, AstPatchFile *patch){
+ORBreakStatement *AstBreakStatementDeConvert(ORNode *parent, AstBreakStatement *node, AstPatchFile *patch){
     ORBreakStatement *exp = [ORBreakStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     
     return exp;
 }
-ORContinueStatement *AstContinueStatementDeConvert(AstContinueStatement *node, AstPatchFile *patch){
+ORContinueStatement *AstContinueStatementDeConvert(ORNode *parent, AstContinueStatement *node, AstPatchFile *patch){
     ORContinueStatement *exp = [ORContinueStatement new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     
     return exp;
 }
-ORPropertyDeclare *AstPropertyDeclareDeConvert(AstPropertyDeclare *node, AstPatchFile *patch){
+ORPropertyDeclare *AstPropertyDeclareDeConvert(ORNode *parent, AstPropertyDeclare *node, AstPatchFile *patch){
     ORPropertyDeclare *exp = [ORPropertyDeclare new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.keywords = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->keywords, patch);
-    exp.var = (id)AstNodeDeConvert((AstEmptyNode *)node->var, patch);
+    exp.keywords = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->keywords, patch);
+    exp.var = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->var, patch);
     return exp;
 }
-ORMethodDeclare *AstMethodDeclareDeConvert(AstMethodDeclare *node, AstPatchFile *patch){
+ORMethodDeclare *AstMethodDeclareDeConvert(ORNode *parent, AstMethodDeclare *node, AstPatchFile *patch){
     ORMethodDeclare *exp = [ORMethodDeclare new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.isClassMethod = node->isClassMethod;
-    exp.returnType = (id)AstNodeDeConvert((AstEmptyNode *)node->returnType, patch);
-    exp.methodNames = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->methodNames, patch);
-    exp.parameterTypes = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->parameterTypes, patch);
-    exp.parameterNames = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->parameterNames, patch);
+    exp.returnType = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->returnType, patch);
+    exp.methodNames = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->methodNames, patch);
+    exp.parameterTypes = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->parameterTypes, patch);
+    exp.parameterNames = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->parameterNames, patch);
     return exp;
 }
-ORMethodImplementation *AstMethodImplementationDeConvert(AstMethodImplementation *node, AstPatchFile *patch){
+ORMethodImplementation *AstMethodImplementationDeConvert(ORNode *parent, AstMethodImplementation *node, AstPatchFile *patch){
     ORMethodImplementation *exp = [ORMethodImplementation new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.declare = (id)AstNodeDeConvert((AstEmptyNode *)node->declare, patch);
-    exp.scopeImp = (id)AstNodeDeConvert((AstEmptyNode *)node->scopeImp, patch);
+    exp.declare = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->declare, patch);
+    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORClass *AstClassDeConvert(AstClass *node, AstPatchFile *patch){
+ORClass *AstClassDeConvert(ORNode *parent, AstClass *node, AstPatchFile *patch){
     ORClass *exp = [ORClass new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.className = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->className, patch);
-    exp.superClassName = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->superClassName, patch);
-    exp.protocols = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->protocols, patch);
-    exp.properties = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->properties, patch);
-    exp.privateVariables = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->privateVariables, patch);
-    exp.methods = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->methods, patch);
+    exp.className = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->className, patch);
+    exp.superClassName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->superClassName, patch);
+    exp.protocols = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->protocols, patch);
+    exp.properties = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->properties, patch);
+    exp.privateVariables = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->privateVariables, patch);
+    exp.methods = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->methods, patch);
     return exp;
 }
-ORProtocol *AstProtocolDeConvert(AstProtocol *node, AstPatchFile *patch){
+ORProtocol *AstProtocolDeConvert(ORNode *parent, AstProtocol *node, AstPatchFile *patch){
     ORProtocol *exp = [ORProtocol new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.protcolName = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->protcolName, patch);
-    exp.protocols = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->protocols, patch);
-    exp.properties = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->properties, patch);
-    exp.methods = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->methods, patch);
+    exp.protcolName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->protcolName, patch);
+    exp.protocols = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->protocols, patch);
+    exp.properties = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->properties, patch);
+    exp.methods = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->methods, patch);
     return exp;
 }
-ORStructExpressoin *AstStructExpressoinDeConvert(AstStructExpressoin *node, AstPatchFile *patch){
+ORStructExpressoin *AstStructExpressoinDeConvert(ORNode *parent, AstStructExpressoin *node, AstPatchFile *patch){
     ORStructExpressoin *exp = [ORStructExpressoin new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.sturctName = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->sturctName, patch);
-    exp.fields = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->fields, patch);
+    exp.sturctName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->sturctName, patch);
+    exp.fields = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->fields, patch);
     return exp;
 }
-OREnumExpressoin *AstEnumExpressoinDeConvert(AstEnumExpressoin *node, AstPatchFile *patch){
+OREnumExpressoin *AstEnumExpressoinDeConvert(ORNode *parent, AstEnumExpressoin *node, AstPatchFile *patch){
     OREnumExpressoin *exp = [OREnumExpressoin new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.valueType = node->valueType;
-    exp.enumName = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->enumName, patch);
-    exp.fields = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->fields, patch);
+    exp.enumName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->enumName, patch);
+    exp.fields = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->fields, patch);
     return exp;
 }
-ORTypedefExpressoin *AstTypedefExpressoinDeConvert(AstTypedefExpressoin *node, AstPatchFile *patch){
+ORTypedefExpressoin *AstTypedefExpressoinDeConvert(ORNode *parent, AstTypedefExpressoin *node, AstPatchFile *patch){
     ORTypedefExpressoin *exp = [ORTypedefExpressoin new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.expression = (id)AstNodeDeConvert((AstEmptyNode *)node->expression, patch);
-    exp.typeNewName = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->typeNewName, patch);
+    exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
+    exp.typeNewName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->typeNewName, patch);
     return exp;
 }
-ORCArrayVariable *AstCArrayVariableDeConvert(AstCArrayVariable *node, AstPatchFile *patch){
+ORCArrayVariable *AstCArrayVariableDeConvert(ORNode *parent, AstCArrayVariable *node, AstPatchFile *patch){
     ORCArrayVariable *exp = [ORCArrayVariable new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.isBlock = node->isBlock;
     exp.ptCount = node->ptCount;
-    exp.varname = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->varname, patch);
-    exp.prev = (id)AstNodeDeConvert((AstEmptyNode *)node->prev, patch);
-    exp.capacity = (id)AstNodeDeConvert((AstEmptyNode *)node->capacity, patch);
+    exp.varname = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->varname, patch);
+    exp.prev = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->prev, patch);
+    exp.capacity = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->capacity, patch);
     return exp;
 }
-ORUnionExpressoin *AstUnionExpressoinDeConvert(AstUnionExpressoin *node, AstPatchFile *patch){
+ORUnionExpressoin *AstUnionExpressoinDeConvert(ORNode *parent, AstUnionExpressoin *node, AstPatchFile *patch){
     ORUnionExpressoin *exp = [ORUnionExpressoin new];
+    exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.unionName = (NSString *)AstNodeDeConvert((AstEmptyNode *)node->unionName, patch);
-    exp.fields = (NSMutableArray *)AstNodeDeConvert((AstEmptyNode *)node->fields, patch);
+    exp.unionName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->unionName, patch);
+    exp.fields = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->fields, patch);
     return exp;
 }
 
@@ -1803,94 +1843,94 @@ AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
     *length += 1;
     return node;
 }
-id AstNodeDeConvert(AstEmptyNode *node, AstPatchFile *patch){
+id AstNodeDeConvert(ORNode *parent,AstEmptyNode *node, AstPatchFile *patch){
     switch(node->nodeType){
         case AstEnumEmptyNode:
             return nil;
         case AstEnumListNode:
-            return AstNodeListDeConvert((AstNodeList *)node, patch);
+            return AstNodeListDeConvert(parent, (AstNodeList *)node, patch);
         case AstEnumStringCursorNode:
             return getNSStringWithStringCursor((AstStringCursor *) node, patch);
         case AstEnumTypeSpecial:
-            return (ORNode *)AstTypeSpecialDeConvert((AstTypeSpecial *)node, patch);
+            return (ORNode *)AstTypeSpecialDeConvert(parent, (AstTypeSpecial *)node, patch);
         case AstEnumVariable:
-            return (ORNode *)AstVariableDeConvert((AstVariable *)node, patch);
+            return (ORNode *)AstVariableDeConvert(parent, (AstVariable *)node, patch);
         case AstEnumTypeVarPair:
-            return (ORNode *)AstTypeVarPairDeConvert((AstTypeVarPair *)node, patch);
+            return (ORNode *)AstTypeVarPairDeConvert(parent, (AstTypeVarPair *)node, patch);
         case AstEnumFuncVariable:
-            return (ORNode *)AstFuncVariableDeConvert((AstFuncVariable *)node, patch);
+            return (ORNode *)AstFuncVariableDeConvert(parent, (AstFuncVariable *)node, patch);
         case AstEnumFuncDeclare:
-            return (ORNode *)AstFuncDeclareDeConvert((AstFuncDeclare *)node, patch);
+            return (ORNode *)AstFuncDeclareDeConvert(parent, (AstFuncDeclare *)node, patch);
         case AstEnumScopeImp:
-            return (ORNode *)AstScopeImpDeConvert((AstScopeImp *)node, patch);
+            return (ORNode *)AstScopeImpDeConvert(parent, (AstScopeImp *)node, patch);
         case AstEnumValueExpression:
-            return (ORNode *)AstValueExpressionDeConvert((AstValueExpression *)node, patch);
+            return (ORNode *)AstValueExpressionDeConvert(parent, (AstValueExpression *)node, patch);
         case AstEnumIntegerValue:
-            return (ORNode *)AstIntegerValueDeConvert((AstIntegerValue *)node, patch);
+            return (ORNode *)AstIntegerValueDeConvert(parent, (AstIntegerValue *)node, patch);
         case AstEnumUIntegerValue:
-            return (ORNode *)AstUIntegerValueDeConvert((AstUIntegerValue *)node, patch);
+            return (ORNode *)AstUIntegerValueDeConvert(parent, (AstUIntegerValue *)node, patch);
         case AstEnumDoubleValue:
-            return (ORNode *)AstDoubleValueDeConvert((AstDoubleValue *)node, patch);
+            return (ORNode *)AstDoubleValueDeConvert(parent, (AstDoubleValue *)node, patch);
         case AstEnumBoolValue:
-            return (ORNode *)AstBoolValueDeConvert((AstBoolValue *)node, patch);
+            return (ORNode *)AstBoolValueDeConvert(parent, (AstBoolValue *)node, patch);
         case AstEnumMethodCall:
-            return (ORNode *)AstMethodCallDeConvert((AstMethodCall *)node, patch);
+            return (ORNode *)AstMethodCallDeConvert(parent, (AstMethodCall *)node, patch);
         case AstEnumCFuncCall:
-            return (ORNode *)AstCFuncCallDeConvert((AstCFuncCall *)node, patch);
+            return (ORNode *)AstCFuncCallDeConvert(parent, (AstCFuncCall *)node, patch);
         case AstEnumFunctionImp:
-            return (ORNode *)AstFunctionImpDeConvert((AstFunctionImp *)node, patch);
+            return (ORNode *)AstFunctionImpDeConvert(parent, (AstFunctionImp *)node, patch);
         case AstEnumSubscriptExpression:
-            return (ORNode *)AstSubscriptExpressionDeConvert((AstSubscriptExpression *)node, patch);
+            return (ORNode *)AstSubscriptExpressionDeConvert(parent, (AstSubscriptExpression *)node, patch);
         case AstEnumAssignExpression:
-            return (ORNode *)AstAssignExpressionDeConvert((AstAssignExpression *)node, patch);
+            return (ORNode *)AstAssignExpressionDeConvert(parent, (AstAssignExpression *)node, patch);
         case AstEnumDeclareExpression:
-            return (ORNode *)AstDeclareExpressionDeConvert((AstDeclareExpression *)node, patch);
+            return (ORNode *)AstDeclareExpressionDeConvert(parent, (AstDeclareExpression *)node, patch);
         case AstEnumUnaryExpression:
-            return (ORNode *)AstUnaryExpressionDeConvert((AstUnaryExpression *)node, patch);
+            return (ORNode *)AstUnaryExpressionDeConvert(parent, (AstUnaryExpression *)node, patch);
         case AstEnumBinaryExpression:
-            return (ORNode *)AstBinaryExpressionDeConvert((AstBinaryExpression *)node, patch);
+            return (ORNode *)AstBinaryExpressionDeConvert(parent, (AstBinaryExpression *)node, patch);
         case AstEnumTernaryExpression:
-            return (ORNode *)AstTernaryExpressionDeConvert((AstTernaryExpression *)node, patch);
+            return (ORNode *)AstTernaryExpressionDeConvert(parent, (AstTernaryExpression *)node, patch);
         case AstEnumIfStatement:
-            return (ORNode *)AstIfStatementDeConvert((AstIfStatement *)node, patch);
+            return (ORNode *)AstIfStatementDeConvert(parent, (AstIfStatement *)node, patch);
         case AstEnumWhileStatement:
-            return (ORNode *)AstWhileStatementDeConvert((AstWhileStatement *)node, patch);
+            return (ORNode *)AstWhileStatementDeConvert(parent, (AstWhileStatement *)node, patch);
         case AstEnumDoWhileStatement:
-            return (ORNode *)AstDoWhileStatementDeConvert((AstDoWhileStatement *)node, patch);
+            return (ORNode *)AstDoWhileStatementDeConvert(parent, (AstDoWhileStatement *)node, patch);
         case AstEnumCaseStatement:
-            return (ORNode *)AstCaseStatementDeConvert((AstCaseStatement *)node, patch);
+            return (ORNode *)AstCaseStatementDeConvert(parent, (AstCaseStatement *)node, patch);
         case AstEnumSwitchStatement:
-            return (ORNode *)AstSwitchStatementDeConvert((AstSwitchStatement *)node, patch);
+            return (ORNode *)AstSwitchStatementDeConvert(parent, (AstSwitchStatement *)node, patch);
         case AstEnumForStatement:
-            return (ORNode *)AstForStatementDeConvert((AstForStatement *)node, patch);
+            return (ORNode *)AstForStatementDeConvert(parent, (AstForStatement *)node, patch);
         case AstEnumForInStatement:
-            return (ORNode *)AstForInStatementDeConvert((AstForInStatement *)node, patch);
+            return (ORNode *)AstForInStatementDeConvert(parent, (AstForInStatement *)node, patch);
         case AstEnumReturnStatement:
-            return (ORNode *)AstReturnStatementDeConvert((AstReturnStatement *)node, patch);
+            return (ORNode *)AstReturnStatementDeConvert(parent, (AstReturnStatement *)node, patch);
         case AstEnumBreakStatement:
-            return (ORNode *)AstBreakStatementDeConvert((AstBreakStatement *)node, patch);
+            return (ORNode *)AstBreakStatementDeConvert(parent, (AstBreakStatement *)node, patch);
         case AstEnumContinueStatement:
-            return (ORNode *)AstContinueStatementDeConvert((AstContinueStatement *)node, patch);
+            return (ORNode *)AstContinueStatementDeConvert(parent, (AstContinueStatement *)node, patch);
         case AstEnumPropertyDeclare:
-            return (ORNode *)AstPropertyDeclareDeConvert((AstPropertyDeclare *)node, patch);
+            return (ORNode *)AstPropertyDeclareDeConvert(parent, (AstPropertyDeclare *)node, patch);
         case AstEnumMethodDeclare:
-            return (ORNode *)AstMethodDeclareDeConvert((AstMethodDeclare *)node, patch);
+            return (ORNode *)AstMethodDeclareDeConvert(parent, (AstMethodDeclare *)node, patch);
         case AstEnumMethodImplementation:
-            return (ORNode *)AstMethodImplementationDeConvert((AstMethodImplementation *)node, patch);
+            return (ORNode *)AstMethodImplementationDeConvert(parent, (AstMethodImplementation *)node, patch);
         case AstEnumClass:
-            return (ORNode *)AstClassDeConvert((AstClass *)node, patch);
+            return (ORNode *)AstClassDeConvert(parent, (AstClass *)node, patch);
         case AstEnumProtocol:
-            return (ORNode *)AstProtocolDeConvert((AstProtocol *)node, patch);
+            return (ORNode *)AstProtocolDeConvert(parent, (AstProtocol *)node, patch);
         case AstEnumStructExpressoin:
-            return (ORNode *)AstStructExpressoinDeConvert((AstStructExpressoin *)node, patch);
+            return (ORNode *)AstStructExpressoinDeConvert(parent, (AstStructExpressoin *)node, patch);
         case AstEnumEnumExpressoin:
-            return (ORNode *)AstEnumExpressoinDeConvert((AstEnumExpressoin *)node, patch);
+            return (ORNode *)AstEnumExpressoinDeConvert(parent, (AstEnumExpressoin *)node, patch);
         case AstEnumTypedefExpressoin:
-            return (ORNode *)AstTypedefExpressoinDeConvert((AstTypedefExpressoin *)node, patch);
+            return (ORNode *)AstTypedefExpressoinDeConvert(parent, (AstTypedefExpressoin *)node, patch);
         case AstEnumCArrayVariable:
-            return (ORNode *)AstCArrayVariableDeConvert((AstCArrayVariable *)node, patch);
+            return (ORNode *)AstCArrayVariableDeConvert(parent, (AstCArrayVariable *)node, patch);
         case AstEnumUnionExpressoin:
-            return (ORNode *)AstUnionExpressoinDeConvert((AstUnionExpressoin *)node, patch);
+            return (ORNode *)AstUnionExpressoinDeConvert(parent, (AstUnionExpressoin *)node, patch);
 
         default: return [ORNode new];
     }

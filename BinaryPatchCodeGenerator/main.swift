@@ -145,7 +145,7 @@ impSource +=
 """
 
 AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length);
-id AstNodeDeConvert(AstEmptyNode *node, AstPatchFile *patch);
+id AstNodeDeConvert(ORNode *parent, AstEmptyNode *node, AstPatchFile *patch);
 
 #pragma mark - Base Data Struct
 
@@ -163,10 +163,10 @@ AstNodeList *AstNodeListConvert(NSArray *array, AstPatchFile *patch, uint32_t *l
     return node;
 }
 
-NSMutableArray *AstNodeListDeConvert(AstNodeList *node, AstPatchFile *patch){
+NSMutableArray *AstNodeListDeConvert(ORNode *parent,AstNodeList *node, AstPatchFile *patch){
     NSMutableArray *array = [NSMutableArray array];
     for (int i = 0; i < node->count; i++) {
-        id result = AstNodeDeConvert(node->nodes[i], patch);
+        id result = AstNodeDeConvert(parent, node->nodes[i], patch);
         [array addObject:result];
     }
     return array;
@@ -239,12 +239,12 @@ AstPatchFile *AstPatchFileConvert(\(PatchFileClass) *patch, uint32_t *length){
 
 \(PatchFileClass) *AstPatchFileDeConvert(AstPatchFile *patch){
     \(PatchFileClass) *file = [\(PatchFileClass) new];
-    file.appVersion = AstNodeDeConvert((AstEmptyNode *)patch->appVersion, patch);
-    file.patchInternalVersion = AstNodeDeConvert((AstEmptyNode *)patch->osVersion, patch);
+    file.appVersion = AstNodeDeConvert(nil, (AstEmptyNode *)patch->appVersion, patch);
+    file.patchInternalVersion = AstNodeDeConvert(nil, (AstEmptyNode *)patch->osVersion, patch);
     file.enable = patch->enable;
     NSMutableArray *nodes = [NSMutableArray array];
     for (int i = 0; i < patch->nodes->count; i++) {
-        [nodes addObject:AstNodeDeConvert(patch->nodes->nodes[i], patch)];
+        [nodes addObject:AstNodeDeConvert(nil, patch->nodes->nodes[i], patch)];
     }
     file.nodes = nodes;
     return file;
@@ -525,7 +525,7 @@ for node in ast.nodes{
     deConvertExps.append(
     """
             case \(enumName):
-                return (ORNode *)\(structName)DeConvert((\(structName) *)node, patch);
+                return (ORNode *)\(structName)DeConvert(parent, (\(structName) *)node, patch);
     
     """)
     serializationExps.append(
@@ -574,12 +574,12 @@ AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
 """
 impSource +=
 """
-id AstNodeDeConvert(AstEmptyNode *node, AstPatchFile *patch){
+id AstNodeDeConvert(ORNode *parent,AstEmptyNode *node, AstPatchFile *patch){
     switch(node->nodeType){
         case AstEnumEmptyNode:
             return nil;
         case AstEnumListNode:
-            return AstNodeListDeConvert((AstNodeList *)node, patch);
+            return AstNodeListDeConvert(parent, (AstNodeList *)node, patch);
         case AstEnumStringCursorNode:
             return getNSStringWithStringCursor((AstStringCursor *) node, patch);
 \(deConvertExps.joined(separator: ""))
