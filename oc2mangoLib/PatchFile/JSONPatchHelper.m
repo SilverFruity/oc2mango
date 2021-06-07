@@ -117,7 +117,10 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
     NSAssert(error == nil, error.localizedDescription);
     dictionary = [NSJSONSerialization JSONObjectWithData:jsondata options:NSJSONReadingMutableLeaves error:&error];
     NSAssert(error == nil, error.localizedDescription);
-    NSArray *result = [self unArchivePatch:dictionary].nodes;
+    ORPatchFile *newFile = [ORPatchFile new];
+    [newFile setValuesForKeysWithDictionary:dictionary];
+    [self unArchivePatch:newFile object:dictionary];
+    NSArray *result = newFile.nodes;
     return result;
 }
 #endif
@@ -145,17 +148,15 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
         [array addObject:archiveNode(node, cryptoMap, patch)];
     }
     
-    return @{@"appVersion":patch.appVersion,
-             @"osVersion":patch.osVersion,
+    return @{@"appVersion": patch.appVersion,
+             @"osVersion": patch.patchInternalVersion,
+             @"patchInternalVersion":patch. patchInternalVersion,
              @"enable":@(patch.enable),
              @"nodes":array,
              @"strings":patch.strings};
 }
-+ (ORPatchFile *)unArchivePatch:(NSDictionary *)patch {
-    ORPatchFile *file = [ORPatchFile new];
-    [file setValuesForKeysWithDictionary:patch];
++ (void)unArchivePatch:(ORPatchFile *)file object:(NSDictionary *)patch {
     NSDictionary *cryptoMap;
-    
     NSString *mapString = jsonDecryptString;
     NSData *data = [mapString dataUsingEncoding:NSUTF8StringEncoding];
     
@@ -168,7 +169,7 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
         NSLog(@"%@", exception.reason);
     }
 #endif
-    if (!cryptoMap || ![cryptoMap isKindOfClass:[NSDictionary class]]) { return nil; }
+    if (!cryptoMap || ![cryptoMap isKindOfClass:[NSDictionary class]]) { return; }
     
     NSArray *nodes = patch[@"nodes"];
     NSMutableArray *results = [@[] mutableCopy];
@@ -176,7 +177,6 @@ ORNode *unArchiveNode(NSDictionary *nodeData, NSDictionary *decryptMap, ORPatchF
         [results addObject:unArchiveNode(node, cryptoMap, file)];
     }
     file.nodes = results;
-    return file;
 }
 
 @end

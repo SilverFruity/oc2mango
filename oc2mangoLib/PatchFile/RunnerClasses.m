@@ -7,6 +7,16 @@
 //
 
 #import "RunnerClasses.h"
+@implementation ORNode
++ (id)copyWithNode:(ORNode *)node{
+    ORVariable *new = [[[self class] alloc] init];
+    new.nodeType = node.nodeType;
+    new.parentNode = node.parentNode;
+    new.withSemicolon = node.withSemicolon;
+    return new;
+}
+@end
+
 @implementation ORTypeSpecial
 + (instancetype)specialWithType:(TypeKind)type name:(NSString *)name{
     ORTypeSpecial *s = [ORTypeSpecial new];
@@ -17,7 +27,7 @@
 @end
 @implementation ORVariable
 + (instancetype)copyFromVar:(ORVariable *)var{
-    ORVariable *new = [[self class] new];
+    ORVariable *new = [self copyWithNode:var];
     new.ptCount = var.ptCount;
     new.varname = var.varname;
     new.isBlock = var.isBlock;
@@ -33,14 +43,24 @@
 }
 @end
 @implementation ORFuncVariable
+- (instancetype)copy{
+    ORFuncVariable *var = [ORFuncVariable copyFromVar:self];
+    var.pairs = self.pairs;
+    return var;
+}
 @end
 @implementation ORFuncDeclare
+- (instancetype)copy{
+    ORFuncDeclare *declare = [ORFuncDeclare copyWithNode:self];
+    declare.funVar = [self.funVar copy];
+    declare.returnType = self.returnType;
+    return declare;
+}
 - (BOOL)isBlockDeclare{
     return self.funVar.isBlock;
 }
 @end
-@implementation ORNode
-@end
+
 @implementation ORValueExpression
 @end
 
@@ -88,14 +108,11 @@
         [self.statements addObject:statements];
     }
 }
-- (void)copyFromImp:(ORScopeImp *)imp{
-    self.statements = imp.statements;
-}
-
 @end
+
 @implementation ORFunctionImp
-- (instancetype)normalFunctionImp{
-    ORFunctionImp *imp = [ORFunctionImp new];
+- (instancetype)convertToNormalFunctionImp{
+    ORFunctionImp *imp = [ORFunctionImp copyWithNode:self];
     imp.declare = [self.declare copy];
     imp.scopeImp = self.scopeImp;
     imp.declare.funVar.isBlock = NO;
