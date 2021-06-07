@@ -12,8 +12,9 @@
 NS_ASSUME_NONNULL_BEGIN
 // MARK: - Node
 @interface ORNode: NSObject
-@property (nonatomic, weak)ORNode *parentNode;
 @property (nonatomic, assign)AstEnum nodeType;
+@property (nonatomic, weak)ORNode *parentNode;
+@property (nonatomic, strong)id symbol;
 @property (nonatomic, assign)BOOL withSemicolon;
 @end
 
@@ -77,7 +78,6 @@ typedef enum: uint32_t{
 @interface ORScopeImp: ORNode
 @property(nonatomic,strong) NSMutableArray* statements;
 - (void)addStatements:(id)statements;
-- (void)copyFromImp:(ORScopeImp *)imp;
 @end
 
 typedef enum: uint32_t{
@@ -141,7 +141,7 @@ typedef enum: uint8_t{
 @interface ORFunctionImp: ORNode
 @property(nonatomic,strong) ORFuncDeclare *declare;
 @property(nonatomic,strong) ORScopeImp *scopeImp;
-- (instancetype)normalFunctionImp;
+- (instancetype)convertToNormalFunctionImp;
 - (BOOL)isBlockImp;
 @end
 
