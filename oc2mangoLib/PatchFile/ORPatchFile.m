@@ -7,6 +7,7 @@
 //
 
 #import "ORPatchFile.h"
+#import <CommonCrypto/CommonDigest.h>
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #endif
@@ -70,39 +71,57 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     return self;
 }
 + (instancetype)loadBinaryPatch:(NSString *)patchPath{
-    if ([[patchPath pathExtension] isEqualToString:@"ocrr"] == NO) {
-        NSLog(@"OCRunner: 补丁仅支持.ocrr文件类型，file path:%@", patchPath);
-        return nil;
-    }
     NSData *data = [[NSData alloc] initWithContentsOfFile:patchPath];
     if (data == nil) {
         return nil;
     }
     NSLog(@"binary file length %.2f KB", (double)data.length / 1000.0);
-    void *buffer = (void *)[data bytes];
-    uint32_t cursor = 0;
-    if (AstPatchFileGenerateCheckFile(buffer, (uint32_t)data.length).canUseable == NO) {
+    uint32_t fileLength = (uint32_t)data.length;
+    if (fileLength <= CC_SHA256_DIGEST_LENGTH) {
         return nil;
     }
-    AstPatchFile *node = AstPatchFileDeserialization(buffer, &cursor, (uint32_t)data.length);
+    uint8_t *fileBuffer = (uint8_t *)[data bytes];
+    uint8_t *dataBuffer = fileBuffer + CC_SHA256_DIGEST_LENGTH;
+    uint8_t *dataLength = fileLength - CC_SHA256_DIGEST_LENGTH;
+    
+    // 校验文件中存储的SHA256和数据区的SHA256
+    uint8_t sha256Buffer[CC_SHA256_DIGEST_LENGTH] = {0};
+    CC_SHA256(dataBuffer, dataLength, sha256Buffer);
+    for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++) {
+        if (fileBuffer[i] != sha256Buffer[i]) {
+            return nil;
+        }
+    }
+    
+    uint32_t cursor = 0;
+    if (AstPatchFileGenerateCheckFile(dataBuffer, dataLength).canUseable == NO) {
+        return nil;
+    }
+    AstPatchFile *node = AstPatchFileDeserialization(dataBuffer, &cursor, dataLength);
     ORPatchFile *file = AstPatchFileDeConvert(node);
     AstPatchFileDestroy(node);
     return file;
 }
 - (NSString *)dumpAsBinaryPatch:(NSString *)patchPath{
-    uint32_t length = 0;
-    AstPatchFile *node = AstPatchFileConvert(self, &length);
-    void *buffer = malloc(length);
+    uint32_t dataLength = 0;
+    AstPatchFile *node = AstPatchFileConvert(self, &dataLength);
+    
+    uint32_t fileLength = dataLength + CC_SHA256_DIGEST_LENGTH;
+    uint8_t *fileBuffer = malloc(fileLength);
+    //前32字节为SHA256值
+    uint8_t *dataBuffer = fileBuffer + CC_SHA256_DIGEST_LENGTH;
+    
     uint32_t cursor = 0;
-    AstPatchFileSerialization(node, buffer, &cursor);
+    AstPatchFileSerialization(node, dataBuffer, &cursor);
     AstPatchFileDestroy(node);
-    NSData *data = [[NSData alloc]initWithBytes:buffer length:length];
+    
+    //用文件的前32字节来存储数据区的SHA256值
+    uint8_t sha256Buffer[CC_SHA256_DIGEST_LENGTH] = {0};
+    CC_SHA256(dataBuffer, dataLength, sha256Buffer);
+    memcpy(fileBuffer, sha256Buffer, CC_SHA256_DIGEST_LENGTH);
+    
+    NSData *data = [[NSData alloc]initWithBytes:fileBuffer length:fileLength];
     NSString *fileExtension = [patchPath pathExtension];
-    if (fileExtension.length == 0) {
-        patchPath = [patchPath stringByAppendingString:@".ocrr"];
-    }else if ([fileExtension isEqualToString:@"ocrr"] == NO) {
-        patchPath = [patchPath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@".%@",fileExtension] withString:@".ocrr"];
-    }
     [data writeToFile:patchPath atomically:YES];
     return patchPath;
 }
