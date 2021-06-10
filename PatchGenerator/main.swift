@@ -130,17 +130,20 @@ func main(){
     }
     let parser = Parser()
     print("References:\(inputRefrenceFiles.reduce("   ", { $0 + "\n   " + $1}))")
-    var refsNodes = [Any]()
+    let refsNodes = NSMutableArray.init()
     // for refs:
     for path in inputRefrenceFiles{
-        refsNodes += parser.parseCodeSource(CodeSource(filePath: path)).nodes
+        refsNodes.addObjects(from: parser.parseCodeSource(CodeSource(filePath: path)).nodes as! [Any])
     }
     print("InputFiles:\(inputSourceFiles.reduce("   ", { $0 + "\n   " + $1}))")
-    var inputNodes = [Any]()
+    let inputNodes = NSMutableArray.init()
     for path in inputSourceFiles{
-        inputNodes += parser.parseCodeSource(CodeSource(filePath: path)).nodes
+        inputNodes.addObjects(from: parser.parseCodeSource(CodeSource(filePath: path)).nodes as! [Any])
     }
-    let patchFile = ORPatchFile.init(nodes: refsNodes + inputNodes)
+    let nodes = NSMutableArray.init()
+    nodes.addObjects(from: refsNodes as! [Any])
+    nodes.addObjects(from: inputNodes as! [Any])
+    let patchFile = ORPatchFile.init(nodes: nodes as! [Any])
     patchFile.appVersion = result.appVersion
     switch result.type {
     case .binary:
