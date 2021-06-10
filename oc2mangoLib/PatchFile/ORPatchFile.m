@@ -87,12 +87,9 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     // 校验文件中存储的SHA256和数据区的SHA256
     uint8_t sha256Buffer[CC_SHA256_DIGEST_LENGTH] = {0};
     CC_SHA256(dataBuffer, dataLength, sha256Buffer);
-    for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++) {
-        if (fileBuffer[i] != sha256Buffer[i]) {
-            return nil;
-        }
+    if (memcmp(fileBuffer, sha256Buffer, CC_SHA256_DIGEST_LENGTH) != 0) {
+        return nil;
     }
-    
     uint32_t cursor = 0;
     if (AstPatchFileGenerateCheckFile(dataBuffer, dataLength).canUseable == NO) {
         return nil;
