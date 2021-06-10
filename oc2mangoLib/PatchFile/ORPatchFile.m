@@ -82,7 +82,7 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     }
     uint8_t *fileBuffer = (uint8_t *)[data bytes];
     uint8_t *dataBuffer = fileBuffer + CC_SHA256_DIGEST_LENGTH;
-    uint8_t *dataLength = fileLength - CC_SHA256_DIGEST_LENGTH;
+    uint32_t dataLength = fileLength - CC_SHA256_DIGEST_LENGTH;
     
     // 校验文件中存储的SHA256和数据区的SHA256
     uint8_t sha256Buffer[CC_SHA256_DIGEST_LENGTH] = {0};
@@ -121,7 +121,6 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     memcpy(fileBuffer, sha256Buffer, CC_SHA256_DIGEST_LENGTH);
     
     NSData *data = [[NSData alloc]initWithBytes:fileBuffer length:fileLength];
-    NSString *fileExtension = [patchPath pathExtension];
     [data writeToFile:patchPath atomically:YES];
     return patchPath;
 }
