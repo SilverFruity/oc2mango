@@ -265,7 +265,10 @@ void AstNodeListSerailization(AstNodeList *node, void *buffer, uint32_t *cursor)
 void AstStringBufferNodeSerailization(AstStringBufferNode *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, AstStringBufferNodeBaseLength);
     *cursor += AstStringBufferNodeBaseLength;
-    memcpy(buffer + *cursor, node->buffer, node->cursor);
+    char *dst = buffer + *cursor;
+    memcpy(dst, node->buffer, node->cursor);
+    // encrypt
+    for (uint32_t i = 0; i < node->cursor; i++) dst[i] ^= 'A';
     *cursor += node->cursor;
 }
 void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *cursor){
@@ -300,6 +303,8 @@ AstStringBufferNode *AstStringBufferNodeDeserialization(void *buffer, uint32_t *
     *cursor += AstStringBufferNodeBaseLength;
     node->buffer = malloc(node->cursor);
     memcpy(node->buffer, buffer + *cursor, node->cursor);
+    // decrypt
+    for (uint32_t i = 0; i < node->cursor; i++) node->buffer[i] ^= 'A';
     *cursor += node->cursor;
     return node;
 }
