@@ -48,7 +48,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type <Operator>  assign_operator unary_operator
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
 %type <expression> expression expression_optional  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys for_statement_var_list
-%type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional
+%type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional class_name class_name_suffix
 %type <IntValue> pointer pointer_optional
 %type <declaration_modifier> declaration_modifier
 %type <expression> union_declare struct_declare struct_field_list enum_declare enum_field_list typedef_declare
@@ -234,9 +234,26 @@ PROTOCOL IDENTIFIER CHILD_COLLECTION_OPTIONAL
 }
 | protocol_declare END
 ;
+
+class_name_suffix:
+{
+    $$ = _vretained @"";
+}
+| DOT IDENTIFIER
+{
+    $$ = _vretained [NSString stringWithFormat:@".%@", _transfer(id)$2];
+}
+;
+
+class_name: IDENTIFIER class_name_suffix
+{
+    $$ = _vretained [NSString stringWithFormat:@"%@%@", _transfer(id)$1, _transfer(id)$2];
+}
+;
+
 class_declare:
             //
-            INTERFACE IDENTIFIER COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
+            INTERFACE class_name COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL
             {
                 ORClass *occlass = [GlobalAst classForName:_transfer(id)$2];
                 occlass.superClassName = _transfer(id)$4;
@@ -245,14 +262,14 @@ class_declare:
                 $$ = _vretained occlass;
             }
             // category 
-            | INTERFACE IDENTIFIER LP IDENTIFIER RP CHILD_COLLECTION_OPTIONAL
+            | INTERFACE class_name LP IDENTIFIER RP CHILD_COLLECTION_OPTIONAL
             {
                 ORClass *occlass = [GlobalAst classForName:_transfer(id)$2];
                 NSArray *protocols = [_transfer(NSString *)$6 componentsSeparatedByString:@","];
                 occlass.protocols = [protocols mutableCopy];
                 $$ = _vretained occlass;
             }
-            | INTERFACE IDENTIFIER LP RP CHILD_COLLECTION_OPTIONAL
+            | INTERFACE class_name LP RP CHILD_COLLECTION_OPTIONAL
             {
                 ORClass *occlass = [GlobalAst classForName:_transfer(id)$2];
                 NSArray *protocols = [_transfer(NSString *)$5 componentsSeparatedByString:@","];
@@ -283,14 +300,14 @@ class_declare:
 
 
 class_implementation:
-            IMPLEMENTATION IDENTIFIER class_private_list
+            IMPLEMENTATION class_name class_private_list
             {
                 ORClass *occlass = [GlobalAst classForName:_transfer(id)$2];
                 [occlass.privateVariables addObjectsFromArray:_transfer(id) $3];
                 $$ = _vretained occlass;
             }
             // category
-            | IMPLEMENTATION IDENTIFIER LP IDENTIFIER RP
+            | IMPLEMENTATION class_name LP IDENTIFIER RP
             {
                 $$ = _vretained [GlobalAst classForName:_transfer(id)$2];
             }

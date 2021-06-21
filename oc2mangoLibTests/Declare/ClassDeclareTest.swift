@@ -109,6 +109,20 @@ void func(NSString *a, int *b){
         let classes = ast.classCache["Demo"] as! ORClass
         XCTAssert(classes.protocols == ["NSObject", "NSObject"])
     }
+    func testSwiftClassDeclare(){
+        let source =
+        """
+        
+        @interface Demo.TestObject () <NSObject,NSObject>
+        @property (nonatomic,atomic) NSString *className;
+        @property (nonatomic,atomic) void (^name)(void);
+        @end
+        """
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
+        let classes = ast.classCache["Demo.TestObject"] as! ORClass
+        XCTAssert(classes.protocols == ["NSObject", "NSObject"])
+    }
     
     func testEnumExpression(){
         var source =
