@@ -12,6 +12,7 @@
 #import <ORPatchFile/BinaryPatchHelper.h>
 
 NS_ASSUME_NONNULL_BEGIN
+#define OCPatchFileInternalVersion @"1000.0.1"
 BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint);
 @interface ORPatchFile : NSObject
 /*
@@ -27,8 +28,16 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint);
 
 /// target app version of patch
 @property(nonatomic, copy)NSString *appVersion;
-/// target os version of patch
-@property(nonatomic, copy)NSString *osVersion;
+
+/*
+ ORPatchFile <= 1.0.4时，此参数为osVersion
+ 
+ 1.0.5 后修改为 补丁内部版本号：起始版本号为1000.0.1
+ 版本号为何如此高？
+ 利用以前版本的osVersion参数默认和系统版本比对的逻辑：目标系统版本比当前系统版本高，直接放弃序列化补丁，防止新版本的补丁在低版本下会崩溃的问题。
+
+ */
+@property(nonatomic, copy)NSString *patchInternalVersion;
 
 @property(nonatomic, assign)BOOL enable;
 
@@ -41,9 +50,9 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint);
 - (instancetype)initWithNodes:(NSArray *)nodes;
 
 + (nullable instancetype)loadBinaryPatch:(NSString *)patchPath;
-- (void)dumpAsBinaryPatch:(NSString *)patchPath;
+- (NSString *)dumpAsBinaryPatch:(NSString *)patchPath;
 
 + (nullable instancetype)loadJsonPatch:(NSString *)patchPatch;
-- (void)dumpAsJsonPatch:(NSString *)patchPath;
+- (NSString *)dumpAsJsonPatch:(NSString *)patchPath;
 @end
 NS_ASSUME_NONNULL_END

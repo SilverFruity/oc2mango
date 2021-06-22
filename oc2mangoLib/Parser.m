@@ -59,20 +59,23 @@ Parser *OCParser = nil;
     } while (0);
 #endif
     
+#ifndef PATCH_FILE_CODE_GEN
+    
 //#define BINARY_PATCH_TEST
 #ifdef BINARY_PATCH_TEST
     do {
         NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-        NSString *filePath = [cachePath stringByAppendingPathComponent:@"BinaryPatch"];
+        NSString *filePath = [cachePath stringByAppendingPathComponent:@"BinaryPatch.png"];
         ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:GlobalAst.nodes];
-        file.osVersion = @">=10.15.6";
-        [file dumpAsBinaryPatch:filePath];
+        filePath = [file dumpAsBinaryPatch:filePath];
         ORPatchFile *newFile = [ORPatchFile loadBinaryPatch:filePath];
         if (newFile) {
             GlobalAst = [AST new];
             [GlobalAst merge:newFile.nodes];
         }
     } while (0);
+#endif
+    
 #endif
     
 

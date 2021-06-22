@@ -15,15 +15,37 @@
     return s;
 }
 @end
-@implementation ORVariableNode
-@end
 @implementation ORFunctionDeclNode
+- (instancetype)copy{
+    ORFunctionDeclNode *declare = [ORFunctionDeclNode copyWithNode:self];
+    declare.var = [self.var copy];
+    return declare;
+}
+- (BOOL)isBlockDeclare{
+    return self.var.isBlock;
+}
 @end
+
 @implementation ORNode
++ (id)copyWithNode:(ORNode *)node{
+    ORVariableNode *new = [[[self class] alloc] init];
+    new.nodeType = node.nodeType;
+    new.parentNode = node.parentNode;
+    new.withSemicolon = node.withSemicolon;
+    return new;
+}
+@end
+@implementation ORVariableNode
++ (instancetype)copyFromVar:(ORVariableNode *)var{
+    ORVariableNode *new = [self copyWithNode:var];
+    new.ptCount = var.ptCount;
+    new.varname = var.varname;
+    new.isBlock = var.isBlock;
+    return new;
+}
 @end
 @implementation ORValueNode
 @end
-
 @implementation ORIntegerValue
 @end
 
@@ -74,7 +96,7 @@
 
 @end
 @implementation ORFunctionNode
-- (instancetype)normalFunctionImp{
+- (instancetype)convertToNormalFunctionImp{
     ORFunctionNode *imp = [ORFunctionNode new];
     imp.declare = [self.declare copy];
     imp.scopeImp = self.scopeImp;
@@ -254,24 +276,15 @@
 
 @end
 
+
 @implementation ORCArrayDeclNode
-
-@end
-
-
-
-@implementation ORVisitor
-
-- (void)visitAllNode:(ORNode *)node {
-    if ([node isKindOfClass:[ORNode class]]){ }
-#define TYPE_CHECKE(type)\
-else if ([node isKindOfClass:[OR##type class]]){ [self visit##type:(OR##type *)node];}
-NODE_LIST(TYPE_CHECKE)
-#undef TYPE_CHECKE
++ (instancetype)copyFromDecl:(ORDeclaratorNode *)decl{
+    ORCArrayDeclNode *array  = [super copyFromDecl:decl];
+    if ([decl isKindOfClass:[ORCArrayDeclNode class]]) {
+        array.prev = (ORCArrayDeclNode *)decl;
+    }
+    return array;
 }
 
-#define METHOD_IMPS(type)\
-- (void)visit##type:(OR##type *)node{ }
-NODE_LIST(METHOD_IMPS)
-#undef METHOD_IMPS
 @end
+

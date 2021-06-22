@@ -10,21 +10,24 @@ import Foundation
 let filepath = CommandLine.arguments[1]
 let resultDir = CommandLine.arguments[2]
 
-let parser = Parser.shared()
+let parser = Parser()
 let source = CodeSource.init(filePath: filepath)
 let ast = parser.parseCodeSource(source)
 
-let NodeDefine = "_ORNodeFields"
-let PatchClass = "ORPatchFile"
+let NodeDefine = "AstNodeFields"
+let PatchFileClass = "ORPatchFile"
 let resultFileName = "BinaryPatchHelper"
 
 let forUnitTest = false
 let withSemicolon =  forUnitTest ? "\nuint8_t withSemicolon;\\" : ""
-let withSemicolonConvertExp =  forUnitTest ? "\n    node->withSemicolon = exp.withSemicolon;\\" : ""
-let withSemicolonDeconvertExp =  forUnitTest ? "\n    exp.withSemicolon = node->withSemicolon;\\" : ""
+let setNodeTypeWhileDeconvert = "\n    exp.nodeType = node->nodeType;"
+let withSemicolonConvertExp =  forUnitTest ? "\n    node->withSemicolon = exp.withSemicolon;" : ""
+var withSemicolonDeconvertExp =  forUnitTest ? "\n    exp.withSemicolon = node->withSemicolon;" : ""
+withSemicolonDeconvertExp += setNodeTypeWhileDeconvert
+
 let withSemicolonLength = forUnitTest ? 1 : 0
 
-let _ORNodeLength = 1 + withSemicolonLength
+let AstEmptyNodeLength = 1 + withSemicolonLength
 let _byteType = "uint8_t"
 let _byteLength = 1
 let _uintType = "uint32_t"
@@ -35,7 +38,33 @@ let _int64Type = "int64_t"
 let _int64Length = 8
 let _doubleType = "double"
 let _doubleLength = 8
-let _NodeTypeType = "uint8_t"
+let EnumValueType = "uint8_t"
+
+var enumVarDecls = [String]()
+var enumStartIndex = 5;
+for node in ast.nodes{
+    guard let classNode = node as? ORClassNode else {
+        continue
+    }
+    if classNode.className == "ORNode" {
+        continue
+    }
+    let generator = ClassCodeGenerator.init(className: classNode.className, superClassName: classNode.superClassName)
+    enumVarDecls.append("    \(generator.enumName) = \(enumStartIndex),")
+    enumStartIndex += 1;
+}
+let AstEnums =
+"""
+typedef enum: \(EnumValueType){
+    AstEnumEmptyNode = 0,
+    AstEnumPatchFile = 1,
+    AstEnumStringCursorNode = 2,
+    AstEnumStringBufferNode = 3,
+    AstEnumListNode = 4,
+\(enumVarDecls.joined(separator: "\n"))
+}AstEnum;\n
+"""
+
 //TODO: Header
 var headerSource =
 """
@@ -45,133 +74,113 @@ var headerSource =
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
-@class \(PatchClass);
+@class \(PatchFileClass);
+
+\(AstEnums)
+
 #define \(NodeDefine) \\
-\(_NodeTypeType) nodeType;\\\(withSemicolon)
+\(EnumValueType) nodeType;\\\(withSemicolon)
 
 #pragma pack(1)
 #pragma pack(show)
 typedef struct {
     \(NodeDefine)
-}_ORNode;
+}AstEmptyNode;
 
-static \(_uintType) _ORNodeLength = \(_ORNodeLength);
+static \(_uintType) AstEmptyNodeLength = \(AstEmptyNodeLength);
 
 typedef struct {
     \(NodeDefine)
     \(_uintType) count;
-    _ORNode **nodes;
-}_ListNode;
-static uint32_t _ListNodeBaseLength = \(_ORNodeLength + _uintLength);
+    AstEmptyNode **nodes;
+}AstNodeList;
+static uint32_t AstNodeListBaseLength = \(AstEmptyNodeLength + _uintLength);
 
 typedef struct {
     \(NodeDefine)
     \(_uintType) offset;
     \(_uintType) strLen;
-}_StringNode;
-static \(_uintType) _StringNodeBaseLength = \(_ORNodeLength + _uintLength * 2);
+}AstStringCursor;
+static \(_uintType) AstStringCursorBaseLength = \(AstEmptyNodeLength + _uintLength * 2);
 
 typedef struct {
     \(NodeDefine)
     \(_uintType) cursor;
     char *buffer;
-}_StringsNode;
-static \(_uintType) _StringsNodeBaseLength = \(_ORNodeLength + _uintLength);
+}AstStringBufferNode;
+static \(_uintType) AstStringBufferNodeBaseLength = \(AstEmptyNodeLength + _uintLength);
 
 typedef struct {
     \(NodeDefine)
     BOOL enable;
-    _StringsNode *strings;
-    _StringNode *appVersion;
-    _StringNode *osVersion;
-    _ListNode *nodes;
-}_PatchNode;
-static \(_uintType) _PatchNodeBaseLength = \(_ORNodeLength + 1);
+    AstStringBufferNode *strings;
+    AstStringCursor *appVersion;
+    AstStringCursor *osVersion;
+    AstNodeList *nodes;
+}AstPatchFile;
+static \(_uintType) AstPatchFileBaseLength = \(AstEmptyNodeLength + 1);
 
 #pragma pack()
 #pragma pack(show)
 
-_PatchNode *_PatchNodeConvert(\(PatchClass) *patch, uint32_t *length);
-\(PatchClass) *_PatchNodeDeConvert(_PatchNode *node);
-void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor);
-_PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
-void _PatchNodeDestroy(_PatchNode *node);
-ORPatchFile *_PatchNodeGenerateCheckFile(void *buffer, uint32_t bufferLength);
+AstPatchFile *AstPatchFileConvert(\(PatchFileClass) *patch, uint32_t *length);
+\(PatchFileClass) *AstPatchFileDeConvert(AstPatchFile *node);
+void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *cursor);
+AstPatchFile *AstPatchFileDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
+void AstPatchFileDestroy(AstPatchFile *node);
+ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength);
 """
 
-func StructTypeGenerator(_ structName: String)->String{
-    return "\(structName)Type"
-}
-var NodeTypeEnums = ""
-var enumIndex = 5
-for node in ast.nodes{
-    guard let classNode = node as? ORClassNode else {
-        continue
-    }
-    if classNode.className == "ORNode" {
-        continue
-    }
-    NodeTypeEnums += "    \(StructTypeGenerator("_\(classNode.className)")) = \(enumIndex),\n"
-    enumIndex += 1
-}
-NodeTypeEnums =
-"""
+var impSource = """
 //  \(resultFileName).m
 //  Generate By BinaryPatchGenerator
 //  Created by Jiang on \(Int(Date.init().timeIntervalSince1970))
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "\(resultFileName).h"
-#import "\(PatchClass).h"
-typedef enum: \(_NodeTypeType){
-    ORNodeType = 0,
-    PatchNodeType = 1,
-    StringNodeType = 2,
-    StringsNodeType = 3,
-    ListNodeType = 4,
-\(NodeTypeEnums)
-}_NodeType;\n
+#import "\(PatchFileClass).h"
+
 """
-var impSource = NodeTypeEnums
+
 impSource +=
 """
-#pragma pack(1)
-#pragma pack(show)
 
-_ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length);
-id _ORNodeDeConvert(_ORNode *node, _PatchNode *patch);
+AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length);
+id AstNodeDeConvert(ORNode *parent, AstEmptyNode *node, AstPatchFile *patch);
 
-_ListNode *_ListNodeConvert(NSArray *array, _PatchNode *patch, uint32_t *length){
-    _ListNode *node = malloc(sizeof(_ListNode));
-    memset(node, 0, sizeof(_ListNode));
+#pragma mark - Base Data Struct
+
+AstNodeList *AstNodeListConvert(NSArray *array, AstPatchFile *patch, uint32_t *length){
+    AstNodeList *node = malloc(sizeof(AstNodeList));
+    memset(node, 0, sizeof(AstNodeList));
     node->nodes = malloc(sizeof(void *) * array.count);
-    node->nodeType = ListNodeType;
-    *length += _ListNodeBaseLength;
+    node->nodeType = AstEnumListNode;
+    *length += AstNodeListBaseLength;
     for (id object in array) {
-        _ORNode *element = _ORNodeConvert(object, patch, length);;
+        AstEmptyNode *element = AstNodeConvert(object, patch, length);;
         node->nodes[node->count] = element;
         node->count++;
     }
     return node;
 }
 
-NSMutableArray *_ListNodeDeConvert(_ListNode *node, _PatchNode *patch){
+NSMutableArray *AstNodeListDeConvert(ORNode *parent,AstNodeList *node, AstPatchFile *patch){
     NSMutableArray *array = [NSMutableArray array];
     for (int i = 0; i < node->count; i++) {
-        id result = _ORNodeDeConvert(node->nodes[i], patch);
+        id result = AstNodeDeConvert(parent, node->nodes[i], patch);
         [array addObject:result];
     }
     return array;
 }
 
 static NSMutableDictionary *_stringMap = nil;
-_StringNode *saveNewString(NSString *string, _PatchNode *patch, uint32_t *length){
-    _StringNode * strNode = malloc(sizeof(_StringNode));
-    memset(strNode, 0, sizeof(_StringNode));
+AstStringCursor *createStringCursor(NSString *string, AstPatchFile *patch, uint32_t *length){
+    AstStringCursor * strNode = malloc(sizeof(AstStringCursor));
+    memset(strNode, 0, sizeof(AstStringCursor));
     const char *str = string.UTF8String;
     size_t len = strlen(str);
     strNode->strLen = (unsigned int)len;
-    strNode->nodeType = StringNodeType;
-    *length += _StringNodeBaseLength;
+    strNode->nodeType = AstEnumStringCursorNode;
+    *length += AstStringCursorBaseLength;
     if (_stringMap[string]) {
         \(_uintType) offset = [_stringMap[string] unsignedIntValue];
         strNode->offset = offset;
@@ -201,7 +210,7 @@ _StringNode *saveNewString(NSString *string, _PatchNode *patch, uint32_t *length
     return strNode;
 }
 
-NSString *getString(_StringNode *node, _PatchNode *patch){
+NSString *getNSStringWithStringCursor(AstStringCursor *node, AstPatchFile *patch){
     char *cursor = patch->strings->buffer + node->offset;
     char *buffer = alloca(node->strLen + 1);
     memcpy(buffer, cursor, node->strLen);
@@ -209,288 +218,151 @@ NSString *getString(_StringNode *node, _PatchNode *patch){
     return [NSString stringWithUTF8String:buffer];
 }
 
-_PatchNode *_PatchNodeConvert(\(PatchClass) *patch, uint32_t *length){
+AstPatchFile *AstPatchFileConvert(\(PatchFileClass) *patch, uint32_t *length){
     _stringMap = [NSMutableDictionary dictionary];
-    _PatchNode *node = malloc(sizeof(_PatchNode));
-    memset(node, 0, sizeof(_PatchNode));
-    *length += _PatchNodeBaseLength;
+    AstPatchFile *node = malloc(sizeof(AstPatchFile));
+    memset(node, 0, sizeof(AstPatchFile));
+    *length += AstPatchFileBaseLength;
 
-    node->strings = malloc(sizeof(_StringsNode));
-    memset(node->strings, 0, sizeof(_StringsNode));
-    node->strings->nodeType = StringsNodeType;
-    *length += _StringsNodeBaseLength;
+    node->strings = malloc(sizeof(AstStringBufferNode));
+    memset(node->strings, 0, sizeof(AstStringBufferNode));
+    node->strings->nodeType = AstEnumStringBufferNode;
+    *length += AstStringBufferNodeBaseLength;
     
-    node->nodeType = PatchNodeType;
+    node->nodeType = AstEnumPatchFile;
     node->enable = patch.enable;
-    node->appVersion = (_StringNode *)_ORNodeConvert(patch.appVersion, node, length);
-    node->osVersion = (_StringNode *)_ORNodeConvert(patch.osVersion, node, length);
-    node->nodes = (_ListNode *)_ORNodeConvert(patch.nodes, node, length);
+    node->appVersion = (AstStringCursor *)AstNodeConvert(patch.appVersion, node, length);
+    node->osVersion = (AstStringCursor *)AstNodeConvert(patch.patchInternalVersion, node, length);
+    node->nodes = (AstNodeList *)AstNodeConvert(patch.nodes, node, length);
     return node;
 }
 
-\(PatchClass) *_PatchNodeDeConvert(_PatchNode *patch){
-    \(PatchClass) *file = [\(PatchClass) new];
-    file.appVersion = _ORNodeDeConvert((_ORNode *)patch->appVersion, patch);
-    file.osVersion = _ORNodeDeConvert((_ORNode *)patch->osVersion, patch);
+\(PatchFileClass) *AstPatchFileDeConvert(AstPatchFile *patch){
+    \(PatchFileClass) *file = [\(PatchFileClass) new];
+    file.appVersion = AstNodeDeConvert(nil, (AstEmptyNode *)patch->appVersion, patch);
+    file.patchInternalVersion = AstNodeDeConvert(nil, (AstEmptyNode *)patch->osVersion, patch);
     file.enable = patch->enable;
     NSMutableArray *nodes = [NSMutableArray array];
     for (int i = 0; i < patch->nodes->count; i++) {
-        [nodes addObject:_ORNodeDeConvert(patch->nodes->nodes[i], patch)];
+        [nodes addObject:AstNodeDeConvert(nil, patch->nodes->nodes[i], patch)];
     }
     file.nodes = nodes;
     return file;
 }
 
-void _ORNodeSerailization(_ORNode *node, void *buffer, uint32_t *cursor);
-void _StringNodeSerailization(_StringNode *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _StringNodeBaseLength);
-    *cursor += _StringNodeBaseLength;
+void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor);
+void AstStringCursorSerailization(AstStringCursor *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstStringCursorBaseLength);
+    *cursor += AstStringCursorBaseLength;
 }
-void _ListNodeSerailization(_ListNode *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _ListNodeBaseLength);
-    *cursor += _ListNodeBaseLength;
+void AstNodeListSerailization(AstNodeList *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstNodeListBaseLength);
+    *cursor += AstNodeListBaseLength;
     for (int i = 0; i < node->count; i++) {
-        _ORNodeSerailization(node->nodes[i], buffer, cursor);
+        AstNodeSerailization(node->nodes[i], buffer, cursor);
     }
 }
-void _StringsNodeSerailization(_StringsNode *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _StringsNodeBaseLength);
-    *cursor += _StringsNodeBaseLength;
-    memcpy(buffer + *cursor, node->buffer, node->cursor);
+void AstStringBufferNodeSerailization(AstStringBufferNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstStringBufferNodeBaseLength);
+    *cursor += AstStringBufferNodeBaseLength;
+    char *dst = buffer + *cursor;
+    memcpy(dst, node->buffer, node->cursor);
+    // encrypt
+    for (uint32_t i = 0; i < node->cursor; i++) dst[i] ^= 'A';
     *cursor += node->cursor;
 }
-void _PatchNodeSerialization(_PatchNode *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, _PatchNodeBaseLength);
-    *cursor += _PatchNodeBaseLength;
-    _ORNodeSerailization((_ORNode *)node->strings, buffer, cursor);
-    _ORNodeSerailization((_ORNode *)node->appVersion, buffer, cursor);
-    _ORNodeSerailization((_ORNode *)node->osVersion, buffer, cursor);
-    _ORNodeSerailization((_ORNode *)node->nodes, buffer, cursor);
+void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstPatchFileBaseLength);
+    *cursor += AstPatchFileBaseLength;
+    AstNodeSerailization((AstEmptyNode *)node->strings, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->appVersion, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->osVersion, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->nodes, buffer, cursor);
 }
 
-_ORNode *_ORNodeDeserialization(void *buffer, uint32_t *cursor,uint32_t bufferLength);
-_StringNode * _StringNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _StringNode *node = malloc(sizeof(_StringNode));
-    memcpy(node, buffer + *cursor, _StringNodeBaseLength);
-    *cursor += _StringNodeBaseLength;
+AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor,uint32_t bufferLength);
+AstStringCursor * AstStringCursorDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstStringCursor *node = malloc(sizeof(AstStringCursor));
+    memcpy(node, buffer + *cursor, AstStringCursorBaseLength);
+    *cursor += AstStringCursorBaseLength;
     return node;
 }
-_ListNode *_ListNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _ListNode *node = malloc(sizeof(_ListNode));
-    memcpy(node, buffer + *cursor, _ListNodeBaseLength);
-    *cursor += _ListNodeBaseLength;
+AstNodeList *AstNodeListDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstNodeList *node = malloc(sizeof(AstNodeList));
+    memcpy(node, buffer + *cursor, AstNodeListBaseLength);
+    *cursor += AstNodeListBaseLength;
     node->nodes = malloc(sizeof(void *) * node->count);
     for (int i = 0; i < node->count; i++) {
-        node->nodes[i] = _ORNodeDeserialization(buffer, cursor, bufferLength);
+        node->nodes[i] = AstNodeDeserialization(buffer, cursor, bufferLength);
     }
     return node;
 }
-_StringsNode *_StringsNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _StringsNode *node = malloc(sizeof(_StringsNode));
-    memcpy(node, buffer + *cursor, _StringsNodeBaseLength);
-    *cursor += _StringsNodeBaseLength;
+AstStringBufferNode *AstStringBufferNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstStringBufferNode *node = malloc(sizeof(AstStringBufferNode));
+    memcpy(node, buffer + *cursor, AstStringBufferNodeBaseLength);
+    *cursor += AstStringBufferNodeBaseLength;
     node->buffer = malloc(node->cursor);
     memcpy(node->buffer, buffer + *cursor, node->cursor);
+    // decrypt
+    for (uint32_t i = 0; i < node->cursor; i++) node->buffer[i] ^= 'A';
     *cursor += node->cursor;
     return node;
 }
-ORPatchFile *_PatchNodeGenerateCheckFile(void *buffer, uint32_t bufferLength){
+ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength){
     uint32_t cursor = 0;
-    _PatchNode *node = malloc(sizeof(_PatchNode));
-    memcpy(node, buffer + cursor, _PatchNodeBaseLength);
-    cursor += _PatchNodeBaseLength;
-    node->strings = (_StringsNode *)_StringsNodeDeserialization(buffer, &cursor, bufferLength);
-    node->appVersion = (_StringNode *)_ORNodeDeserialization(buffer, &cursor, bufferLength);
-    node->osVersion = (_StringNode *)_ORNodeDeserialization(buffer, &cursor, bufferLength);
+    AstPatchFile *node = malloc(sizeof(AstPatchFile));
+    memcpy(node, buffer + cursor, AstPatchFileBaseLength);
+    cursor += AstPatchFileBaseLength;
+    node->strings = (AstStringBufferNode *)AstStringBufferNodeDeserialization(buffer, &cursor, bufferLength);
+    node->appVersion = (AstStringCursor *)AstNodeDeserialization(buffer, &cursor, bufferLength);
+    node->osVersion = (AstStringCursor *)AstNodeDeserialization(buffer, &cursor, bufferLength);
     node->nodes = NULL;
     ORPatchFile *file = [ORPatchFile new];
-    file.appVersion = getString(node->appVersion, node);
-    file.osVersion = getString(node->osVersion, node);
+    file.appVersion = getNSStringWithStringCursor(node->appVersion, node);
+    file.patchInternalVersion = getNSStringWithStringCursor(node->osVersion, node);
     file.enable = node->enable;
-    _PatchNodeDestroy(node);
+    AstPatchFileDestroy(node);
     return file;
 }
-_PatchNode *_PatchNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _PatchNode *node = malloc(sizeof(_PatchNode));
-    memcpy(node, buffer + *cursor, _PatchNodeBaseLength);
-    *cursor += _PatchNodeBaseLength;
-    node->strings = (_StringsNode *)_StringsNodeDeserialization(buffer, cursor, bufferLength);
-    node->appVersion = (_StringNode *)_ORNodeDeserialization(buffer, cursor, bufferLength);
-    node->osVersion = (_StringNode *)_ORNodeDeserialization(buffer, cursor, bufferLength);
-    node->nodes = (_ListNode *)_ORNodeDeserialization(buffer, cursor, bufferLength);
+AstPatchFile *AstPatchFileDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstPatchFile *node = malloc(sizeof(AstPatchFile));
+    memcpy(node, buffer + *cursor, AstPatchFileBaseLength);
+    *cursor += AstPatchFileBaseLength;
+    node->strings = (AstStringBufferNode *)AstStringBufferNodeDeserialization(buffer, cursor, bufferLength);
+    node->appVersion = (AstStringCursor *)AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->osVersion = (AstStringCursor *)AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->nodes = (AstNodeList *)AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-void _ORNodeDestroy(_ORNode *node);
-void _StringNodeDestroy(_StringNode *node){
+void AstNodeDestroy(AstEmptyNode *node);
+void AstStringCursorDestroy(AstStringCursor *node){
     free(node);
 }
-void _ListNodeDestroy(_ListNode *node){
+void AstNodeListDestroy(AstNodeList *node){
     for (int i = 0; i < node->count; i++) {
-         _ORNodeDestroy(node->nodes[i]);
+         AstNodeDestroy(node->nodes[i]);
     }
     free(node);
 }
-void _StringsNodeDestroy(_StringsNode *node){
+void AstStringBufferNodeDestroy(AstStringBufferNode *node){
     free(node->buffer);
     free(node);
 }
-void _PatchNodeDestroy(_PatchNode *node){
-    _ORNodeDestroy((_ORNode *)node->strings);
-    _ORNodeDestroy((_ORNode *)node->appVersion);
-    _ORNodeDestroy((_ORNode *)node->osVersion);
-    _ORNodeDestroy((_ORNode *)node->nodes);
+void AstPatchFileDestroy(AstPatchFile *node){
+    AstNodeDestroy((AstEmptyNode *)node->strings);
+    AstNodeDestroy((AstEmptyNode *)node->appVersion);
+    AstNodeDestroy((AstEmptyNode *)node->osVersion);
+    AstNodeDestroy((AstEmptyNode *)node->nodes);
     free(node);
 }
 
 """
-var contentCache = [String: ClassContent]()
-class ClassContent{
-    var className: String
-    var superClassName: String
-    var structName: String {
-        return "_\(self.className)"
-    }
-    var structNodeFiels = [String]()
-    var structBaseFiels = [String]()
-    var convertExps = [String]()
-    var deConvertExps = [String]()
-    var serializationExps = [String]()
-    var deserializationExps = [String]()
-    var destoryExps = [String]()
-    var baseLength = 0
-    func addStructNodeField(type: String, varname: String){
-        self.structNodeFiels.append("\(type) \(varname);")
-    }
-    func addStructBaseFiled(type: String, varname: String){
-        self.structBaseFiels.append("\(type) \(varname);")
-    }
-    func addNodeConvertExp(varname: String, nodeName:String){
-        self.convertExps.append("node->\(varname) = (\(nodeName) *)_ORNodeConvert(exp.\(varname), patch, length);")
-    }
-    func addBaseConvertExp(varname: String){
-        self.convertExps.append("node->\(varname) = exp.\(varname);")
-    }
-    func addNodeDeconvertExp(varname: String, className:String){
-        self.deConvertExps.append("exp.\(varname) = (\(className))_ORNodeDeConvert((_ORNode *)node->\(varname), patch);")
-    }
-    func addBaseDeconvertExp(varname: String){
-        self.deConvertExps.append("exp.\(varname) = node->\(varname);")
-    }
-    func addSerializationExp(varname: String){
-        self.serializationExps.append("_ORNodeSerailization((_ORNode *)node->\(varname), buffer, cursor);");
-    }
-    func addDeserializationExp(varname: String, nodeName:String){
-        deserializationExps.append("node->\(varname) =(\(nodeName) *) _ORNodeDeserialization(buffer, cursor, bufferLength);");
-    }
-    func addDestroyExp(varname: String){
-        destoryExps.append("_ORNodeDestroy((_ORNode *)node->\(varname));")
-    }
-    init(className: String, superClassName: String) {
-        self.className = className
-        self.superClassName = superClassName
-        contentCache[className] = self
-    }
-    //TODO: Struct
-    func structDeclareSource()->String{
-        //FIX: ORFuncVariable继承问题
-        var baseFiels = self.structBaseFiels
-        var nodeFiles = self.structNodeFiels
-        var baseLength = _ORNodeLength + self.baseLength
-        if let superContent = contentCache[self.superClassName]{
-            baseFiels = superContent.structBaseFiels + baseFiels
-            nodeFiles = superContent.structNodeFiels + nodeFiles
-            baseLength += superContent.baseLength
-        }
-        let structFiels = baseFiels + nodeFiles
-        return """
-        typedef struct {
-            \(NodeDefine)
-            \(structFiels.joined(separator: "\n    "))
-        }\(structName);
-        static \(_uintType) \(structName)BaseLength = \(baseLength);\n
-        """
-    }
-    //TODO: Convert
-    func convertFunctionSource()->String{
-        var convertExps = self.convertExps
-        if let superContent = contentCache[self.superClassName]{
-            convertExps = superContent.convertExps + convertExps
-        }
-        return """
-        \(structName) *\(structName)Convert(\(className) *exp, _PatchNode *patch, uint32_t *length){
-            \(structName) *node = malloc(sizeof(\(structName)));
-            memset(node, 0, sizeof(\(structName)));
-            node->nodeType = \(StructTypeGenerator(structName));\(withSemicolonConvertExp)
-            \(convertExps.joined(separator: "\n    "))
-            *length += \(structName)BaseLength;
-            return node;
-        }
-        
-        """
-    }
-    //TODO: Deconvert
-    func deconvertFunctionSource()->String{
-        var deConvertExps = self.deConvertExps
-        if let superContent = contentCache[self.superClassName]{
-            deConvertExps = superContent.deConvertExps + deConvertExps
-        }
-        return """
-        \(className) *\(structName)DeConvert(\(structName) *node, _PatchNode *patch){
-            \(className) *exp = [\(className) new];\(withSemicolonDeconvertExp)
-            \(deConvertExps.joined(separator: "\n    "))
-            return exp;
-        }
-        
-        """
-    }
-    //TODO: Serailization
-    func serailizationFunctionSource()->String{
-        var serializationExps = self.serializationExps
-        if let superContent = contentCache[self.superClassName]{
-            serializationExps = superContent.serializationExps + serializationExps
-        }
-        return """
-        void \(structName)Serailization(\(structName) *node, void *buffer, uint32_t *cursor){
-            memcpy(buffer + *cursor, node, \(structName)BaseLength);
-            *cursor += \(structName)BaseLength;
-            \(serializationExps.joined(separator: "\n    "))
-        }
-        
-        """
-    }
-    //TODO: Deserialization
-    func deserializationFunctionSource()->String{
-        var deserializationExps = self.deserializationExps
-        if let superContent = contentCache[self.superClassName]{
-            deserializationExps = superContent.deserializationExps + deserializationExps
-        }
-        return """
-         \(structName) *\(structName)Deserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-             \(structName) *node = malloc(sizeof(\(structName)));
-             memcpy(node, buffer + *cursor, \(structName)BaseLength);
-             *cursor += \(structName)BaseLength;
-             \(deserializationExps.joined(separator: "\n    "))
-             return node;
-         }
-         
-         """
-    }
-    //TODO: Destroy
-    func destoryFunctionSource()->String{
-        return """
-        void \(structName)Destroy(\(structName) *node){
-            \(destoryExps.joined(separator: "\n    "))
-            free(node);
-        }
-        
-        """
-    }
-}
+var generators = [ClassCodeGenerator]()
 for node in ast.nodes{
     guard let classNode = node as? ORClassNode, classNode.className != "ORNode" else {
         continue
     }
-    let item = ClassContent(className: classNode.className, superClassName:classNode.superClassName)
+    let generator = ClassCodeGenerator(className: classNode.className, superClassName:classNode.superClassName)
     let properties = classNode.properties as! [ORPropertyNode]
     for prop in properties{
         if prop.keywords.contains("readonly"){
@@ -499,81 +371,134 @@ for node in ast.nodes{
         let varname = prop.var.var.varname ?? ""
         if let typename = prop.var.type.name{
             if typename == "NSMutableArray" {
-                item.addStructNodeField(type: "_ListNode *", varname: varname)
-                item.addNodeConvertExp(varname: varname, nodeName: "_ListNode")
-                item.addNodeDeconvertExp(varname: varname, className: "NSMutableArray *")
-                item.addSerializationExp(varname: varname)
-                item.addDeserializationExp(varname: varname, nodeName: "_ListNode")
-                item.addDestroyExp(varname: varname)
+                generator.addStructNodeField(type: "AstNodeList *", varname: varname)
+                generator.addNodeConvertExp(varname: varname, nodeName: "AstNodeList")
+                generator.addNodeDeconvertExp(varname: varname, className: "NSMutableArray *")
+                generator.addSerializationExp(varname: varname)
+                generator.addDeserializationExp(varname: varname, nodeName: "AstNodeList")
+                generator.addDestroyExp(varname: varname)
             }else if typename.hasPrefix("OR") || typename == "id"{
-                item.addStructNodeField(type: "_ORNode *", varname: varname)
-                item.addNodeConvertExp(varname: varname, nodeName: "_ORNode")
-                item.addNodeDeconvertExp(varname: varname, className: "id")
-                item.addSerializationExp(varname: varname)
-                item.addDeserializationExp(varname: varname, nodeName: "_ORNode")
-                item.addDestroyExp(varname: varname)
+                generator.addStructNodeField(type: "AstEmptyNode *", varname: varname)
+                generator.addNodeConvertExp(varname: varname, nodeName: "AstEmptyNode")
+                generator.addNodeDeconvertExp(varname: varname, className: "id")
+                generator.addSerializationExp(varname: varname)
+                generator.addDeserializationExp(varname: varname, nodeName: "AstEmptyNode")
+                generator.addDestroyExp(varname: varname)
             }else if typename == "NSString"{
-                item.addStructNodeField(type: "_StringNode *", varname: varname)
-                item.addNodeConvertExp(varname: varname, nodeName: "_StringNode")
-                item.addNodeDeconvertExp(varname: varname, className: "NSString *")
-                item.addSerializationExp(varname: varname)
-                item.addDeserializationExp(varname: varname, nodeName: "_StringNode")
-                item.addDestroyExp(varname: varname)
+                generator.addStructNodeField(type: "AstStringCursor *", varname: varname)
+                generator.addNodeConvertExp(varname: varname, nodeName: "AstStringCursor")
+                generator.addNodeDeconvertExp(varname: varname, className: "NSString *")
+                generator.addSerializationExp(varname: varname)
+                generator.addDeserializationExp(varname: varname, nodeName: "AstStringCursor")
+                generator.addDestroyExp(varname: varname)
             }else{
-                item.addStructNodeField(type: _uintType, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _uintLength
+                generator.addStructNodeField(type: _uintType, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _uintLength
             }
             
         }else{
-            if prop.var.type.type == TypeBOOL {
-                item.addStructBaseFiled(type: "BOOL", varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += 1
-            }else if prop.var.type.type == TypeUChar{
-                item.addStructBaseFiled(type: _byteType, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _byteLength
-            }else if prop.var.type.type == TypeLongLong{
-                item.addStructBaseFiled(type: _int64Type, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _int64Length
-            }else if prop.var.type.type == TypeULongLong{
-                item.addStructBaseFiled(type: _uint64Type, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _uint64Length
-            }else if prop.var.type.type == TypeDouble{
-                item.addStructBaseFiled(type: _doubleType, varname: varname)
-                item.addBaseConvertExp(varname: varname)
-                item.addBaseDeconvertExp(varname: varname)
-                item.baseLength += _doubleLength
+            if prop.var.type.type == OCTypeBOOL {
+                generator.addStructBaseFiled(type: "BOOL", varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += 1
+            }else if prop.var.type.type == OCTypeUChar{
+                generator.addStructBaseFiled(type: _byteType, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _byteLength
+            }else if prop.var.type.type == OCTypeLongLong{
+                generator.addStructBaseFiled(type: _int64Type, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _int64Length
+            }else if prop.var.type.type == OCTypeULongLong{
+                generator.addStructBaseFiled(type: _uint64Type, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _uint64Length
+            }else if prop.var.type.type == OCTypeDouble{
+                generator.addStructBaseFiled(type: _doubleType, varname: varname)
+                generator.addBaseConvertExp(varname: varname)
+                generator.addBaseDeconvertExp(varname: varname)
+                generator.baseLength += _doubleLength
             }
         }
     }
-    impSource += item.structDeclareSource()
-    
-    impSource += item.convertFunctionSource()
-    
-    impSource += item.deconvertFunctionSource()
-    
-    impSource += item.serailizationFunctionSource()
-    
-    impSource += item.deserializationFunctionSource()
-    
-    impSource += item.destoryFunctionSource()
+    generators.append(generator)
 }
-
-impSource +=
+headerSource +=
 """
+
+#pragma pack(1)
+
+"""
+_ = generators.map({ headerSource += $0.structDeclareSource() })
+
+headerSource +=
+"""
+
 #pragma pack()
 #pragma pack(show)
 
 """
+
+impSource +=
+"""
+
+#pragma mark - Struct BaseLength
+
+"""
+
+_ = generators.map({ impSource += $0.baseLengthCode })
+
+impSource +=
+"""
+
+#pragma mark - Class Convert To Struct
+
+"""
+
+_ = generators.map({ impSource += $0.convertFunctionSource() })
+
+impSource +=
+"""
+
+#pragma mark - Struct Convert To Class
+
+"""
+
+_ = generators.map({ impSource += $0.deconvertFunctionSource() })
+
+impSource +=
+"""
+
+#pragma mark - Struct Write To Buffer
+
+"""
+
+_ = generators.map({ impSource += $0.serailizationFunctionSource() })
+
+impSource +=
+"""
+
+#pragma mark - Buffer Data Convert To Struct
+
+"""
+
+_ = generators.map({ impSource += $0.deserializationFunctionSource() })
+
+impSource +=
+"""
+
+#pragma mark - Free Struct Memory
+
+"""
+
+_ = generators.map({ impSource += $0.destoryFunctionSource() })
+
 var convertExps = [String]()
 var deConvertExps = [String]()
 var serializationExps = [String]()
@@ -586,11 +511,14 @@ for node in ast.nodes{
     if classNode.className == "ORNode" {
         continue
     }
-    let structName = "_\(classNode.className)";
+    let content = ClassCodeGenerator.init(className: classNode.className, superClassName: classNode.superClassName)
+    let structName = content.structName
+    let enumName = content.enumName
+    let className = content.className
     let convertExp =
     """
-    else if ([exp isKindOfClass:[\(classNode.className) class]]){
-            return (_ORNode *)\(structName)Convert((\(classNode.className) *)exp, patch, length);
+    else if ([exp isKindOfClass:[\(className) class]]){
+            return (AstEmptyNode *)\(structName)Convert((\(className) *)exp, patch, length);
         }
     """
     if classNode.superClassName.hasPrefix("OR") && classNode.superClassName != "ORNode"{
@@ -601,27 +529,27 @@ for node in ast.nodes{
     
     deConvertExps.append(
     """
-    else if (node->nodeType == \(StructTypeGenerator(structName))){
-            return (ORNode *)\(structName)DeConvert((\(structName) *)node, patch);
-        }
+            case \(enumName):
+                return (ORNode *)\(structName)DeConvert(parent, (\(structName) *)node, patch);
+    
     """)
     serializationExps.append(
     """
-    else if (node->nodeType == \(StructTypeGenerator(structName))){
-            \(structName)Serailization((\(structName) *)node, buffer, cursor);
-        }
+            case \(enumName):
+                \(structName)Serailization((\(structName) *)node, buffer, cursor); break;
+    
     """)
     deserializationExps.append(
     """
-    else if (nodeType == \(StructTypeGenerator(structName))){
-            return (_ORNode *)\(structName)Deserialization(buffer, cursor, bufferLength);
-        }
+            case \(enumName):
+                return (AstEmptyNode *)\(structName)Deserialization(buffer, cursor, bufferLength);
+    
     """)
     destoryExps.append(
     """
-    else if (node->nodeType == \(StructTypeGenerator(structName))){
-            \(structName)Destroy((\(structName) *)node);
-        }
+        case \(enumName):
+                \(structName)Destroy((\(structName) *)node); break;
+        
     """
     )
     
@@ -629,81 +557,103 @@ for node in ast.nodes{
 
 impSource +=
 """
-_ORNode *_ORNodeConvert(id exp, _PatchNode *patch, uint32_t *length){
+
+#pragma mark - Dispatch
+
+"""
+
+impSource +=
+"""
+AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
     if ([exp isKindOfClass:[NSString class]]) {
-        return (_ORNode *)saveNewString((NSString *)exp, patch, length);
+        return (AstEmptyNode *)createStringCursor((NSString *)exp, patch, length);
     }else if ([exp isKindOfClass:[NSArray class]]) {
-        return (_ORNode *)_ListNodeConvert((NSArray *)exp, patch, length);
+        return (AstEmptyNode *)AstNodeListConvert((NSArray *)exp, patch, length);
     }\(convertExps.joined(separator: ""))
-    _ORNode *node = malloc(sizeof(_ORNode));
-    memset(node, 0, sizeof(_ORNode));
-    *length += \(_ORNodeLength);
+    AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
+    memset(node, 0, sizeof(AstEmptyNode));
+    *length += \(AstEmptyNodeLength);
     return node;
 }
 
 """
 impSource +=
 """
-id _ORNodeDeConvert(_ORNode *node, _PatchNode *patch){
-    if (node->nodeType == ORNodeType) return nil;
-    if (node->nodeType == ListNodeType) {
-        return _ListNodeDeConvert((_ListNode *)node, patch);
-    }else if (node->nodeType == StringNodeType) {
-        return getString((_StringNode *) node, patch);
-    }\(deConvertExps.joined(separator: ""))
+id AstNodeDeConvert(ORNode *parent,AstEmptyNode *node, AstPatchFile *patch){
+    switch(node->nodeType){
+        case AstEnumEmptyNode:
+            return nil;
+        case AstEnumListNode:
+            return AstNodeListDeConvert(parent, (AstNodeList *)node, patch);
+        case AstEnumStringCursorNode:
+            return getNSStringWithStringCursor((AstStringCursor *) node, patch);
+\(deConvertExps.joined(separator: ""))
+        default: return [ORNode new];
+    }
     return [ORNode new];
 }
 
 """
 impSource +=
 """
-void _ORNodeSerailization(_ORNode *node, void *buffer, uint32_t *cursor){
-    if (node->nodeType == ORNodeType) {
-        memcpy(buffer + *cursor, node, \(_ORNodeLength));
-        *cursor += \(_ORNodeLength);
-    }else if (node->nodeType == ListNodeType) {
-        _ListNodeSerailization((_ListNode *)node, buffer, cursor);
-    }else if (node->nodeType == StringNodeType) {
-        _StringNodeSerailization((_StringNode *) node, buffer, cursor);
-    }else if (node->nodeType == StringsNodeType) {
-        _StringsNodeSerailization((_StringsNode *) node, buffer, cursor);
-    }\(serializationExps.joined(separator: ""))
-}
-
-"""
-impSource +=
-"""
-_ORNode *_ORNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    _NodeType nodeType = ORNodeType;
-    if (*cursor < bufferLength) {
-        nodeType = *(_NodeType *)(buffer + *cursor);
+void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor){
+    switch(node->nodeType){
+        case AstEnumEmptyNode: {
+            memcpy(buffer + *cursor, node, \(AstEmptyNodeLength));
+            *cursor += \(AstEmptyNodeLength);
+            break;
+        }
+        case AstEnumListNode:
+            AstNodeListSerailization((AstNodeList *)node, buffer, cursor); break;
+        case AstEnumStringCursorNode:
+            AstStringCursorSerailization((AstStringCursor *) node, buffer, cursor); break;
+        case AstEnumStringBufferNode:
+            AstStringBufferNodeSerailization((AstStringBufferNode *) node, buffer, cursor);break;
+\(serializationExps.joined(separator: ""))
+        default: break;
     }
-    if (nodeType == ListNodeType) {
-        return (_ORNode *)_ListNodeDeserialization(buffer, cursor, bufferLength);
-    }else if (nodeType == StringNodeType) {
-        return (_ORNode *)_StringNodeDeserialization(buffer, cursor, bufferLength);
-    }\(deserializationExps.joined(separator: ""))
-
-    _ORNode *node = malloc(sizeof(_ORNode));
-    memset(node, 0, sizeof(_ORNode));
-    *cursor += \(_ORNodeLength);
-    return node;
 }
 
 """
 impSource +=
 """
-void _ORNodeDestroy(_ORNode *node){
+AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstEnum nodeType = AstEnumEmptyNode;
+    if (*cursor < bufferLength) {
+        nodeType = *(AstEnum *)(buffer + *cursor);
+    }
+    switch(nodeType){
+        case AstEnumListNode:
+            return (AstEmptyNode *)AstNodeListDeserialization(buffer, cursor, bufferLength);
+        case AstEnumStringCursorNode:
+            return (AstEmptyNode *)AstStringCursorDeserialization(buffer, cursor, bufferLength);
+\(deserializationExps.joined(separator: ""))
+        default:{
+            AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
+            memset(node, 0, sizeof(AstEmptyNode));
+            *cursor += \(AstEmptyNodeLength);
+            return node;
+        }
+    }
+}
+
+"""
+impSource +=
+"""
+void AstNodeDestroy(AstEmptyNode *node){
     if(node == NULL) return;
-    if (node->nodeType == ORNodeType) {
-        free(node);
-    }else if (node->nodeType == ListNodeType) {
-        _ListNodeDestroy((_ListNode *)node);
-    }else if (node->nodeType == StringNodeType) {
-        _StringNodeDestroy((_StringNode *) node);
-    }else if (node->nodeType == StringsNodeType) {
-        _StringsNodeDestroy((_StringsNode *) node);
-    }\(destoryExps.joined(separator: ""))
+    switch(node->nodeType){
+        case AstEnumEmptyNode:
+            free(node); break;
+        case AstEnumListNode:
+            AstNodeListDestroy((AstNodeList *)node); break;
+        case AstEnumStringCursorNode:
+            AstStringCursorDestroy((AstStringCursor *) node); break;
+        case AstEnumStringBufferNode:
+            AstStringBufferNodeDestroy((AstStringBufferNode *) node); break;
+    \(destoryExps.joined(separator: ""))
+        default: break;
+    }
 }
 
 """

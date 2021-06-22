@@ -49,6 +49,8 @@ start_class_interface
 class_interface
 start_protocol_declare
 protocol_declare
+class_name
+class_name_suffix
 start_class_implementation
 class_implementation
 class_content
@@ -280,9 +282,27 @@ start_protocol_declare CHILD_COLLECTION_OPTIONAL class_content_list END
     }
 }
 ;
+class_name_suffix:
+{
+    __autoreleasing id object = @"";
+    $$ = object;
+}
+| DOT IDENTIFIER
+{
+    __autoreleasing id object = [NSString stringWithFormat:@".%@", $2];
+    $$ = object;
+}
+;
+
+class_name: IDENTIFIER class_name_suffix
+{
+    __autoreleasing id object = [NSString stringWithFormat:@"%@%@", $1, $2];
+    $$ = object;
+}
+;
 
 start_class_interface:
-INTERFACE IDENTIFIER
+INTERFACE class_name
 {
     curClassNode = [GlobalAst classForName:$2];
     $$ = curClassNode;
@@ -305,7 +325,7 @@ start_class_interface COLON IDENTIFIER CHILD_COLLECTION_OPTIONAL class_private_i
 ;
 
 start_class_implementation:
-IMPLEMENTATION IDENTIFIER
+IMPLEMENTATION class_name
 {
     curClassNode = [GlobalAst classForName:$2];
     $$ = curClassNode;
@@ -678,7 +698,6 @@ statement_list:
 }
 | statement_list control_statement
 {
-    log($2);
     [$1 addObject:$2];
 }
 ;

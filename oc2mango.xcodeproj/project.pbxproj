@@ -10,8 +10,6 @@
 		04815F7B25F0EA9A00342ADA /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		04815F7C25F0EA9A00342ADA /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		04815F7D25F0EA9A00342ADA /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
-		04815F8325F0EAB000342ADA /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
-		04815F8425F0EAB000342ADA /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		04C447E825F0D72200E3F443 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		04C4481B25F0E2F600E3F443 /* ORPatchFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16224FEB62C00C85B31 /* ORPatchFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -21,12 +19,18 @@
 		04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
 		04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E3725F6174D0047442D /* GlobalTypeTable.m */; };
+		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
 		EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE147260227F054300566B3F /* ClassDeclareTest.swift */; };
 		EE1C71F122882F750077A71E /* TestSource.imp in Resources */ = {isa = PBXBuildFile; fileRef = EE1C71EE22882DBF0077A71E /* TestSource.imp */; };
 		EE1C71F42288314C0077A71E /* FileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71F32288314C0077A71E /* FileTest.swift */; };
+		EE4B041026823E00009032B2 /* ORCoreHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4B040D26823E00009032B2 /* ORCoreHeader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE4B041126823E00009032B2 /* ORVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4B040E26823E00009032B2 /* ORVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE4B041226823E00009032B2 /* ORVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4B040F26823E00009032B2 /* ORVisitor.m */; };
+		EE4B042826824213009032B2 /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
+		EE4B042926824213009032B2 /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EE4BAFE624364CAA00A2A080 /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
 		EE4BAFE724364CAA00A2A080 /* parser.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* parser.y */; };
 		EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
@@ -67,7 +71,8 @@
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
-		EED67A772270AE0F0015AC02 /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
+		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
+		EEC088712669015800538E9A /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
 		EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67A702270AE0E0015AC02 /* oc2mangoLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67A972270B0CA0015AC02 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
 		EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
@@ -77,7 +82,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		04815F8525F0EAB000342ADA /* PBXContainerItemProxy */ = {
+		EE4B042A26824213009032B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EE66C15524FEB61300C85B31;
+			remoteInfo = ORPatchFile;
+		};
+		EE4B04322682421E009032B2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
 			proxyType = 1;
@@ -94,6 +106,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		EE4B042C26824213009032B2 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				EE4B042926824213009032B2 /* ORPatchFile.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EE4F367724F9251C00F685AF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -112,17 +135,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
-		EE66C17624FEB64900C85B31 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				04815F8425F0EAB000342ADA /* ORPatchFile.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		EE6E6CCD225E488000616C7E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,12 +149,16 @@
 /* Begin PBXFileReference section */
 		04E05E3625F6174D0047442D /* GlobalTypeTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalTypeTable.h; sourceTree = "<group>"; };
 		04E05E3725F6174D0047442D /* GlobalTypeTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalTypeTable.m; sourceTree = "<group>"; };
+		185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassCodeGenerator.swift; sourceTree = "<group>"; };
 		32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClassSecretKeyMap.h; path = oc2mangoLib/PatchFile/ClassSecretKeyMap.h; sourceTree = SOURCE_ROOT; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
 		EE1C71EE22882DBF0077A71E /* TestSource.imp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestSource.imp; sourceTree = "<group>"; };
 		EE1C71F32288314C0077A71E /* FileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTest.swift; sourceTree = "<group>"; };
+		EE4B040D26823E00009032B2 /* ORCoreHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ORCoreHeader.h; path = oc2mangoLib/PatchFile/ORCoreHeader.h; sourceTree = SOURCE_ROOT; };
+		EE4B040E26823E00009032B2 /* ORVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ORVisitor.h; path = oc2mangoLib/PatchFile/ORVisitor.h; sourceTree = SOURCE_ROOT; };
+		EE4B040F26823E00009032B2 /* ORVisitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ORVisitor.m; path = oc2mangoLib/PatchFile/ORVisitor.m; sourceTree = SOURCE_ROOT; };
 		EE4F367924F9251C00F685AF /* BinaryPatchCodeGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BinaryPatchCodeGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE4F367B24F9251C00F685AF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		EE4F368824F9259D00F685AF /* BinaryPatchCodeGenerator-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BinaryPatchCodeGenerator-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -218,7 +234,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04815F8325F0EAB000342ADA /* ORPatchFile.framework in Frameworks */,
+				EE4B042826824213009032B2 /* ORPatchFile.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,7 +242,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EED67A772270AE0F0015AC02 /* oc2mangoLib.framework in Frameworks */,
+				EEC088712669015800538E9A /* ORPatchFile.framework in Frameworks */,
+				EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +273,7 @@
 			children = (
 				EE4F368824F9259D00F685AF /* BinaryPatchCodeGenerator-Bridging-Header.h */,
 				EE4F367B24F9251C00F685AF /* main.swift */,
+				185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */,
 			);
 			path = BinaryPatchCodeGenerator;
 			sourceTree = "<group>";
@@ -289,6 +307,9 @@
 				32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */,
 				EE66C16224FEB62C00C85B31 /* ORPatchFile.h */,
 				EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */,
+				EE4B040D26823E00009032B2 /* ORCoreHeader.h */,
+				EE4B040E26823E00009032B2 /* ORVisitor.h */,
+				EE4B040F26823E00009032B2 /* ORVisitor.m */,
 				EE66C16424FEB62C00C85B31 /* RunnerClasses.h */,
 				EE66C16524FEB62C00C85B31 /* RunnerClasses.m */,
 			);
@@ -401,8 +422,10 @@
 				04C4481B25F0E2F600E3F443 /* ORPatchFile.h in Headers */,
 				32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */,
 				04C4483325F0E95C00E3F443 /* BinaryPatchHelper.h in Headers */,
+				EE4B041126823E00009032B2 /* ORVisitor.h in Headers */,
 				04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */,
 				EE66C16E24FEB62C00C85B31 /* RunnerClasses.h in Headers */,
+				EE4B041026823E00009032B2 /* ORCoreHeader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,12 +523,12 @@
 				EED67A6A2270AE0E0015AC02 /* Sources */,
 				EED67A6B2270AE0E0015AC02 /* Frameworks */,
 				EED67A6C2270AE0E0015AC02 /* Resources */,
-				EE66C17624FEB64900C85B31 /* Embed Frameworks */,
+				EE4B042C26824213009032B2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				04815F8625F0EAB000342ADA /* PBXTargetDependency */,
+				EE4B042B26824213009032B2 /* PBXTargetDependency */,
 			);
 			name = oc2mangoLib;
 			productName = oc2mangoLib;
@@ -523,6 +546,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				EE4B04332682421E009032B2 /* PBXTargetDependency */,
 				EED67A792270AE0F0015AC02 /* PBXTargetDependency */,
 			);
 			name = oc2mangoLibTests;
@@ -638,6 +662,7 @@
 				EE4F368424F9254400F685AF /* AST.m in Sources */,
 				EE4F368124F9254400F685AF /* Log.m in Sources */,
 				EE4F368024F9254400F685AF /* Parser.m in Sources */,
+				185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */,
 				EE4F368724F9254400F685AF /* parser.y in Sources */,
 				EE4F368524F9254400F685AF /* MakeDeclare.m in Sources */,
 				EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */,
@@ -672,6 +697,7 @@
 				04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */,
 				04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */,
 				04C4483225F0E95C00E3F443 /* BinaryPatchHelper.m in Sources */,
+				EE4B041226823E00009032B2 /* ORVisitor.m in Sources */,
 				EE66C16F24FEB62C00C85B31 /* RunnerClasses.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -727,10 +753,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		04815F8625F0EAB000342ADA /* PBXTargetDependency */ = {
+		EE4B042B26824213009032B2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
-			targetProxy = 04815F8525F0EAB000342ADA /* PBXContainerItemProxy */;
+			targetProxy = EE4B042A26824213009032B2 /* PBXContainerItemProxy */;
+		};
+		EE4B04332682421E009032B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
+			targetProxy = EE4B04322682421E009032B2 /* PBXContainerItemProxy */;
 		};
 		EED67A792270AE0F0015AC02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -747,7 +778,12 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"PATCH_FILE_CODE_GEN=1",
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
@@ -826,6 +862,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -854,6 +891,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";

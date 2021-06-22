@@ -91,39 +91,6 @@ int main(int argc, const char * argv[]) {
     NSLog(@"raw files size: %.2fKB", folderSizeAtPath(inputDir) / 1000);
     NSLog(@"compile time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
     
-    do {
-        NSString *filePath = @" /Users/weij/Desktop/WPTPrivateTool/oc2mango/oc2mango/Output/patch.json";
-        startDate = [NSDate new];
-        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:result.nodes];
-        [file dumpAsJsonPatch:filePath];
-        endDate = [NSDate new];
-        NSLog(@"json patch serialize time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-        
-        startDate = [NSDate new];
-        ORPatchFile *newFile = [ORPatchFile loadJsonPatch:filePath];
-        endDate = [NSDate new];
-        NSLog(@"json patch deserialize time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-        result = [AST new];
-        [result merge:newFile.nodes];
-    } while (0);
-    
-    do {
-        NSString *filePath = @"/Users/jiang/Downloads/OCRunner/oc2mango/oc2mango/Output/BinaryPatch.txt";
-        startDate = [NSDate new];
-        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:result.nodes];
-        [file dumpAsBinaryPatch:filePath];
-        endDate = [NSDate new];
-        NSLog(@"binary patch serialize time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-        
-        startDate = [NSDate new];
-        ORPatchFile *newFile = [ORPatchFile loadBinaryPatch:filePath];
-        result = [AST new];
-        [result merge:newFile.nodes];
-        endDate = [NSDate new];
-        NSLog(@"binary patch deserialize time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
-    } while (0);
-
-    
     Convert *convert = [[Convert alloc] init];
     __block NSError *error = nil;
     [result.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClassNode* class, BOOL * _Nonnull stop) {

@@ -7,120 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "BinaryPatchHelper.h"
+#import "ORCoreHeader.h"
+
 NS_ASSUME_NONNULL_BEGIN
-
-// MARK: - Base
-typedef enum: uint32_t {
-    OCTypeChar = 'c',
-    OCTypeShort = 's',
-    OCTypeInt = 'i',
-    OCTypeLong = 'l',
-    OCTypeLongLong = 'q',
-
-    OCTypeUChar = 'C',
-    OCTypeUShort = 'S',
-    OCTypeUInt = 'I',
-    OCTypeULong = 'L',
-    OCTypeULongLong = 'Q',
-    OCTypeBOOL = 'B',
-
-    OCTypeFloat = 'f',
-    OCTypeDouble = 'd',
-
-    OCTypeVoid = 'v',
-    OCTypeCString = '*',
-    OCTypeObject = '@',
-    OCTypeClass = '#',
-    OCTypeSEL = ':',
-
-    OCTypeArray = '[',
-    OCTypeStruct = '{',
-    OCTypeUnion = '(',
-    OCTypeBit = 'b',
-
-    OCTypePointer = '^',
-    OCTypeUnknown = '?'
-}OCType;
-
-#define ExternOCTypeString(Type) static const char OCTypeString##Type[2] = {OCType##Type, '\0'};
-ExternOCTypeString(Char)
-ExternOCTypeString(Short)
-ExternOCTypeString(Int)
-ExternOCTypeString(Long)
-ExternOCTypeString(LongLong)
-
-ExternOCTypeString(UChar)
-ExternOCTypeString(UShort)
-ExternOCTypeString(UInt)
-ExternOCTypeString(ULong)
-ExternOCTypeString(ULongLong)
-ExternOCTypeString(BOOL)
-
-ExternOCTypeString(Float)
-ExternOCTypeString(Double)
-ExternOCTypeString(Void)
-ExternOCTypeString(CString)
-ExternOCTypeString(Object)
-ExternOCTypeString(Class)
-ExternOCTypeString(SEL)
-
-ExternOCTypeString(Array)
-ExternOCTypeString(Struct)
-ExternOCTypeString(Union)
-ExternOCTypeString(Bit)
-
-ExternOCTypeString(Pointer)
-ExternOCTypeString(Unknown)
-
-//NOTE: ignore bit 'b'
-#define TypeEncodeIsBaseType(code) (('a'<= *code && *code <= 'z') || ('A'<= *code && *code <= 'Z'))
-
-static const char *OCTypeStringBlock = "@?";
-
-//VSCode正则: @interface (.*)?:[.\w\W]*?@end
-#define NODE_LIST(V)\
-V(TypeNode)\
-V(VariableNode)\
-V(DeclaratorNode)\
-V(FunctionDeclNode)\
-V(CArrayDeclNode)\
-V(BlockNode)\
-V(ValueNode)\
-V(IntegerValue)\
-V(UIntegerValue)\
-V(DoubleValue)\
-V(BoolValue)\
-V(MethodCall)\
-V(FunctionCall)\
-V(FunctionNode)\
-V(SubscriptNode)\
-V(AssignNode)\
-V(InitDeclaratorNode)\
-V(UnaryNode)\
-V(BinaryNode)\
-V(TernaryNode)\
-V(IfStatement)\
-V(WhileStatement)\
-V(DoWhileStatement)\
-V(CaseStatement)\
-V(SwitchStatement)\
-V(ForStatement)\
-V(ForInStatement)\
-V(ControlStatNode)\
-V(PropertyNode)\
-V(MethodDeclNode)\
-V(MethodNode)\
-V(ClassNode)\
-V(ProtocolNode)\
-V(StructStatNode)\
-V(UnionStatNode)\
-V(EnumStatNode)\
-V(TypedefStatNode)\
-
-
 // MARK: - Node
 @interface ORNode: NSObject
+@property (nonatomic, assign)AstEnum nodeType;
+@property (nonatomic, weak)ORNode *parentNode;
+@property (nonatomic, strong)id symbol;
 @property (nonatomic, assign)BOOL withSemicolon;
++ (id)copyWithNode:(ORNode *)node;
 @end
 
 typedef enum: uint32_t{
@@ -156,6 +53,7 @@ typedef enum: uint32_t{
 @end
 
 @interface ORCArrayDeclNode: ORDeclaratorNode
+@property (nonatomic,strong)ORCArrayDeclNode *prev;
 @property (nonatomic,strong)ORNode *capacity;
 @end
 
@@ -178,7 +76,7 @@ typedef enum: uint32_t{
     OCValueCString, // value: NSString
     OCValueNil, //  value: nil
     OCValueNULL, //  value: nil
-    OCValueClass,
+    OCValueClass
 }OC_VALUE_TYPE;
 
 @interface ORValueNode: ORNode
@@ -227,7 +125,7 @@ typedef enum: uint8_t{
 @interface ORFunctionNode: ORNode
 @property(nonatomic,strong) ORFunctionDeclNode *declare;
 @property(nonatomic,strong) ORBlockNode *scopeImp;
-- (instancetype)normalFunctionImp;
+- (instancetype)convertToNormalFunctionImp;
 - (BOOL)isBlockImp;
 @end
 
@@ -438,12 +336,4 @@ typedef enum: uint32_t{
 
 
 
-@interface ORVisitor : NSObject
-- (void)visitAllNode:(ORNode *)node;
-
-#define VISITOR_METHOD(node_name)\
-- (void)visit##node_name:(OR##node_name *)node;
-NODE_LIST(VISITOR_METHOD);
-#undef VISITOR_METHOD
-@end
 NS_ASSUME_NONNULL_END

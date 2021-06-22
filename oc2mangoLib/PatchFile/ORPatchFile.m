@@ -7,6 +7,7 @@
 //
 
 #import "ORPatchFile.h"
+#import <CommonCrypto/CommonDigest.h>
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #endif
@@ -41,7 +42,7 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     self = [super init];
     if (self) {
         self.appVersion = @"*";
-        self.osVersion = @"*";
+        self.patchInternalVersion = OCPatchFileInternalVersion;
         self.strings = [NSMutableArray array];
         self.nodes = [NSMutableArray array];
         self.enable = YES;
@@ -54,13 +55,14 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     }
     BOOL useable = YES;
     useable &= ORPatchFileVersionCompare([[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"], self.appVersion);
-    #if !TARGET_OS_OSX
-    useable &= ORPatchFileVersionCompare([[UIDevice currentDevice] systemVersion], self.osVersion);
-    #else
-    NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
-    NSString *osVersion = [NSString stringWithFormat:@"%lu.%lu.%lu", version.majorVersion, version.minorVersion, version.patchVersion];
-    useable &= ORPatchFileVersionCompare(osVersion, self.osVersion);
-    #endif
+    
+    // 针对 1.1.0 之前的版本特殊支持，1.0.4及以前默认为 *
+    if ([self.patchInternalVersion isEqualToString:@"*"]) {
+        useable &= YES;
+    }else{
+        //补丁文件的内部版本号是否 <= 当前ORPatchFile的内部版本号
+        useable &= ORPatchFileVersionCompare(self.patchInternalVersion, [NSString stringWithFormat:@"<=%@",OCPatchFileInternalVersion]);
+    }
     return useable;
 }
 - (instancetype)initWithNodes:(NSArray *)nodes{
@@ -74,26 +76,50 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
         return nil;
     }
     NSLog(@"binary file length %.2f KB", (double)data.length / 1000.0);
-    void *buffer = (void *)[data bytes];
-    uint32_t cursor = 0;
-    if (_PatchNodeGenerateCheckFile(buffer, (uint32_t)data.length).canUseable == NO) {
+    uint32_t fileLength = (uint32_t)data.length;
+    if (fileLength <= CC_SHA256_DIGEST_LENGTH) {
         return nil;
     }
-    _PatchNode *node = _PatchNodeDeserialization(buffer, &cursor, (uint32_t)data.length);
-    ORPatchFile *file = _PatchNodeDeConvert(node);
-    _PatchNodeDestroy(node);
+    uint8_t *fileBuffer = (uint8_t *)[data bytes];
+    uint8_t *dataBuffer = fileBuffer + CC_SHA256_DIGEST_LENGTH;
+    uint32_t dataLength = fileLength - CC_SHA256_DIGEST_LENGTH;
+    
+    // 校验文件中存储的SHA256和数据区的SHA256
+    uint8_t sha256Buffer[CC_SHA256_DIGEST_LENGTH] = {0};
+    CC_SHA256(dataBuffer, dataLength, sha256Buffer);
+    if (memcmp(fileBuffer, sha256Buffer, CC_SHA256_DIGEST_LENGTH) != 0) {
+        return nil;
+    }
+    uint32_t cursor = 0;
+    if (AstPatchFileGenerateCheckFile(dataBuffer, dataLength).canUseable == NO) {
+        return nil;
+    }
+    AstPatchFile *node = AstPatchFileDeserialization(dataBuffer, &cursor, dataLength);
+    ORPatchFile *file = AstPatchFileDeConvert(node);
+    AstPatchFileDestroy(node);
     return file;
 }
-- (void)dumpAsBinaryPatch:(NSString *)patchPath{
-    uint32_t length = 0;
-    _PatchNode *node = _PatchNodeConvert(self, &length);
-    void *buffer = malloc(length);
+- (NSString *)dumpAsBinaryPatch:(NSString *)patchPath{
+    uint32_t dataLength = 0;
+    AstPatchFile *node = AstPatchFileConvert(self, &dataLength);
+    
+    uint32_t fileLength = dataLength + CC_SHA256_DIGEST_LENGTH;
+    uint8_t *fileBuffer = malloc(fileLength);
+    //前32字节为SHA256值
+    uint8_t *dataBuffer = fileBuffer + CC_SHA256_DIGEST_LENGTH;
+    
     uint32_t cursor = 0;
-    _PatchNodeSerialization(node, buffer, &cursor);
-    _PatchNodeDestroy(node);
-    NSData *data = [[NSData alloc]initWithBytes:buffer length:length];
+    AstPatchFileSerialization(node, dataBuffer, &cursor);
+    AstPatchFileDestroy(node);
+    
+    //用文件的前32字节来存储数据区的SHA256值
+    uint8_t sha256Buffer[CC_SHA256_DIGEST_LENGTH] = {0};
+    CC_SHA256(dataBuffer, dataLength, sha256Buffer);
+    memcpy(fileBuffer, sha256Buffer, CC_SHA256_DIGEST_LENGTH);
+    
+    NSData *data = [[NSData alloc]initWithBytes:fileBuffer length:fileLength];
     [data writeToFile:patchPath atomically:YES];
-    return;
+    return patchPath;
 }
 + (instancetype)loadJsonPatch:(NSString *)patchPatch {
     NSData *fileData = [[NSData alloc] initWithContentsOfFile:patchPatch];
@@ -118,17 +144,27 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
         return nil;
     }
     NSLog(@"json file length %.2f KB", (double)fileData.length / 1000.0);
-    return [JSONPatchHelper unArchivePatch:jsonDict];
+    ORPatchFile *file = [ORPatchFile new];
+    [file setValuesForKeysWithDictionary:jsonDict];
+    if (file.canUseable == NO) {
+        return nil;
+    }
+    [JSONPatchHelper unArchivePatch:file object:jsonDict];
+    return file;
 }
-- (void)dumpAsJsonPatch:(NSString *)patchPath {
+- (NSString *)dumpAsJsonPatch:(NSString *)patchPath{
     NSDictionary *dictionary = [JSONPatchHelper archivePatch:self];
-    if (!dictionary) { return; }
+    if (!dictionary) { return @"json empty error"; }
     NSError *error = nil;
     NSData *data = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
     if (error) {
         NSLog(@"%@",error);
-        return;
+        return error.localizedDescription;
     }
     [data writeToFile:patchPath atomically:YES];
+    return patchPath;
+}
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key{
+    
 }
 @end

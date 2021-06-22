@@ -100,6 +100,20 @@ void func(NSString *a, int *b){
         let classes = ast.classCache["Demo"] as! ORClassNode
         XCTAssert(classes.protocols == ["NSObject", "NSObject"])
     }
+    func testSwiftClassDeclare(){
+        let source =
+        """
+        
+        @interface Demo.TestObject () <NSObject,NSObject>
+        @property (nonatomic,atomic) NSString *className;
+        @property (nonatomic,atomic) void (^name)(void);
+        @end
+        """
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
+        let classes = ast.classCache["Demo.TestObject"] as! ORClassNode
+        XCTAssert(classes.protocols == ["NSObject", "NSObject"])
+    }
     
     func testEnumExpression(){
         var source =
@@ -162,6 +176,7 @@ void func(NSString *a, int *b){
         int a[100];
         int b[a.x];
         int a[];
+        int d[100][10];
         """
         let ast = parser.parseSource(source)
         XCTAssert(parser.isSuccess())
@@ -169,11 +184,19 @@ void func(NSString *a, int *b){
         XCTAssert(exp.type.type == OCTypeInt)
         XCTAssert(exp.var.varname == "a")
         XCTAssert(exp.var.ptCount == 0)
+        
+        
         XCTAssert((exp.capacity as! ORIntegerValue).value == 100)
         let exp1 = ast.globalStatements[2] as! ORDeclaratorNode
         XCTAssert(exp1.type.type == OCTypeInt)
         XCTAssert(exp1.var.varname == "a")
-        XCTAssert(exp1.var.ptCount == 1, "ptCount \(exp1.var.ptCount)")
+        XCTAssert(exp1.var.ptCount == 1)
+        let exp2 = ast.globalStatements[3] as! ORCArrayDeclNode
+        XCTAssert(exp2.type.type == OCTypeInt)
+        XCTAssert(exp2.var.varname == "d")
+        XCTAssert((exp2.capacity as! ORIntegerValue).value == 10)
+        XCTAssert((exp2.prev.capacity as! ORIntegerValue).value == 100)
+        XCTAssert(exp2.prev.var.varname == "d")
     }
     func testUnionDeclare(){
         let source =

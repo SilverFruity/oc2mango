@@ -77,7 +77,11 @@ ORValueNode *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
 ORBlockNode *makeScopeImp(NSMutableArray *stats){
     __autoreleasing ORBlockNode *node = [ORBlockNode new];
     if (stats) {
-        node.statements = stats;
+        if ([stats isKindOfClass:[NSArray class]]) {
+            [node.statements addObjectsFromArray:stats];
+        }else{
+            [node.statements addObject:stats];
+        }
     }
     return node;
 }
