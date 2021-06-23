@@ -13,7 +13,7 @@ extern bool is_variable;
     void *identifier;
     __unsafe_unretained id object;
     NSInteger intValue;
-    NSUInteger uIntValue;
+    uint32_t uIntValue;
     double doubleValue;
 }
 
@@ -32,8 +32,7 @@ extern bool is_variable;
 %token <intValue> INTETER_LITERAL
 %token <doubleValue> DOUBLE_LITERAL
 %type <intValue> pointer pointer_optional
-%type <intValue>  assign_operator unary_operator
-%type <uIntValue> declaration_modifier declaration_modifier_opt
+%type <uIntValue> assign_operator unary_operator declaration_modifier declaration_modifier_opt
 
 %type  <identifier> global_define
 

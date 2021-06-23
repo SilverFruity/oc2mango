@@ -12,14 +12,14 @@
 
 - (void)visitAllNode:(ORNode *)node {
     if ([node isKindOfClass:[ORNode class]]){ }
-#define TYPE_CHECKE(type)\
-else if ([node isKindOfClass:[OR##type class]]){ [self visit##type:(OR##type *)node];}
+#define TYPE_CHECKE(node_name)\
+else if ([node isKindOfClass:[OR##node_name class]]){ [self visit##node_name:(OR##node_name *)node];}
 NODE_LIST(TYPE_CHECKE)
 #undef TYPE_CHECKE
 }
 
-#define METHOD_IMPS(type)\
-- (void)visit##type:(OR##type *)node{ }
+#define METHOD_IMPS(node_name)\
+- (void)visit##node_name:(OR##node_name *)node{ }
 NODE_LIST(METHOD_IMPS)
 #undef METHOD_IMPS
 

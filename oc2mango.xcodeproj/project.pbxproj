@@ -20,6 +20,8 @@
 		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
 		04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E3725F6174D0047442D /* GlobalTypeTable.m */; };
 		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
+		18819E28268329D800CC85DD /* ConvertVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18819E26268329D800CC85DD /* ConvertVisitor.h */; };
+		18819E29268329D800CC85DD /* ConvertVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* ConvertVisitor.m */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
@@ -150,6 +152,8 @@
 		04E05E3625F6174D0047442D /* GlobalTypeTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalTypeTable.h; sourceTree = "<group>"; };
 		04E05E3725F6174D0047442D /* GlobalTypeTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalTypeTable.m; sourceTree = "<group>"; };
 		185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassCodeGenerator.swift; sourceTree = "<group>"; };
+		18819E26268329D800CC85DD /* ConvertVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConvertVisitor.h; sourceTree = "<group>"; };
+		18819E27268329D800CC85DD /* ConvertVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConvertVisitor.m; sourceTree = "<group>"; };
 		32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClassSecretKeyMap.h; path = oc2mangoLib/PatchFile/ClassSecretKeyMap.h; sourceTree = SOURCE_ROOT; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
@@ -250,6 +254,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18819E25268329C700CC85DD /* Visitors */ = {
+			isa = PBXGroup;
+			children = (
+				18819E26268329D800CC85DD /* ConvertVisitor.h */,
+				18819E27268329D800CC85DD /* ConvertVisitor.m */,
+			);
+			path = Visitors;
+			sourceTree = "<group>";
+		};
 		EE147262227F0A4E00566B3F /* Declare */ = {
 			isa = PBXGroup;
 			children = (
@@ -381,6 +394,7 @@
 				EED67AA92270B1C70015AC02 /* Parser.m */,
 				EED67A932270AEE40015AC02 /* Log.h */,
 				EED67A942270AEE40015AC02 /* Log.m */,
+				18819E25268329C700CC85DD /* Visitors */,
 				EE982EE5226B601C008712C2 /* Builders */,
 				EE6E6CDB225E496600616C7E /* lexer.l */,
 				EE6E6CDA225E496600616C7E /* parser.y */,
@@ -437,6 +451,7 @@
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
 				04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
+				18819E28268329D800CC85DD /* ConvertVisitor.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
 				EE5534D32290053800A4B32E /* Convert.h in Headers */,
 			);
@@ -725,6 +740,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18819E29268329D800CC85DD /* ConvertVisitor.m in Sources */,
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* parser.y in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
