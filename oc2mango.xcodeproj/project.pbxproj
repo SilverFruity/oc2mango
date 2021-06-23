@@ -11,7 +11,6 @@
 		04815F7C25F0EA9A00342ADA /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		04815F7D25F0EA9A00342ADA /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
-		04C447E825F0D72200E3F443 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		04C4481B25F0E2F600E3F443 /* ORPatchFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16224FEB62C00C85B31 /* ORPatchFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		04C4483225F0E95C00E3F443 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
@@ -20,7 +19,7 @@
 		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
 		04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E3725F6174D0047442D /* GlobalTypeTable.m */; };
 		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
-		18819E28268329D800CC85DD /* ConvertVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18819E26268329D800CC85DD /* ConvertVisitor.h */; };
+		18819E28268329D800CC85DD /* ConvertVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18819E26268329D800CC85DD /* ConvertVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		18819E29268329D800CC85DD /* ConvertVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* ConvertVisitor.m */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
@@ -37,7 +36,6 @@
 		EE4BAFE724364CAA00A2A080 /* parser.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* parser.y */; };
 		EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
 		EE4BAFE924364CEA00A2A080 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
-		EE4BAFEA24364CEA00A2A080 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE4BAFEB24364CEA00A2A080 /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE4BAFEC24364CEA00A2A080 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
 		EE4BAFF424364CEA00A2A080 /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
@@ -51,13 +49,11 @@
 		EE4F368724F9254400F685AF /* parser.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* parser.y */; };
 		EE5534CF2290032700A4B32E /* AST.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534CD2290032700A4B32E /* AST.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE5534D02290032700A4B32E /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
-		EE5534D32290053800A4B32E /* Convert.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534D12290053800A4B32E /* Convert.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5534DB22900DFF00A4B32E /* ConvertTest.swift */; };
 		EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F05226CB443008712C2 /* MakeDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C0A624FE97D500C85B31 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE66C0A524FE97D500C85B31 /* main.swift */; };
 		EE66C0AA24FE982B00C85B31 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
 		EE66C0AB24FE982B00C85B31 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
-		EE66C0AD24FE982B00C85B31 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE66C0AE24FE982B00C85B31 /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE66C0AF24FE982B00C85B31 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
 		EE66C0B024FE982B00C85B31 /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
@@ -71,6 +67,11 @@
 		EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
+		EE75225A26836797004F855C /* ConvertVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* ConvertVisitor.m */; };
+		EE75226026836798004F855C /* ConvertVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* ConvertVisitor.m */; };
+		EE75227026836A16004F855C /* ORVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4B040F26823E00009032B2 /* ORVisitor.m */; };
+		EE75227626836A17004F855C /* ORVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4B040F26823E00009032B2 /* ORVisitor.m */; };
+		EE75227C26836A17004F855C /* ORVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4B040F26823E00009032B2 /* ORVisitor.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
 		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
@@ -168,8 +169,6 @@
 		EE4F368824F9259D00F685AF /* BinaryPatchCodeGenerator-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BinaryPatchCodeGenerator-Bridging-Header.h"; sourceTree = "<group>"; };
 		EE5534CD2290032700A4B32E /* AST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AST.h; sourceTree = "<group>"; };
 		EE5534CE2290032700A4B32E /* AST.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AST.m; sourceTree = "<group>"; };
-		EE5534D12290053800A4B32E /* Convert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
-		EE5534D22290053800A4B32E /* Convert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert.m; sourceTree = "<group>"; };
 		EE5534DB22900DFF00A4B32E /* ConvertTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertTest.swift; sourceTree = "<group>"; };
 		EE66C0A324FE97D500C85B31 /* PatchGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PatchGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE66C0A524FE97D500C85B31 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -375,8 +374,6 @@
 		EE982EE5226B601C008712C2 /* Builders */ = {
 			isa = PBXGroup;
 			children = (
-				EE5534D12290053800A4B32E /* Convert.h */,
-				EE5534D22290053800A4B32E /* Convert.m */,
 				EE5534CD2290032700A4B32E /* AST.h */,
 				EE5534CE2290032700A4B32E /* AST.m */,
 				EE982F05226CB443008712C2 /* MakeDeclare.h */,
@@ -453,7 +450,6 @@
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
 				18819E28268329D800CC85DD /* ConvertVisitor.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
-				EE5534D32290053800A4B32E /* Convert.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -693,12 +689,13 @@
 				EE66C0AE24FE982B00C85B31 /* AST.m in Sources */,
 				EE66C0AB24FE982B00C85B31 /* Log.m in Sources */,
 				EE66C0AA24FE982B00C85B31 /* Parser.m in Sources */,
+				EE75225A26836797004F855C /* ConvertVisitor.m in Sources */,
 				EE66C0B124FE982B00C85B31 /* parser.y in Sources */,
 				EE66C18524FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */,
 				EE66C0AF24FE982B00C85B31 /* MakeDeclare.m in Sources */,
+				EE75227026836A16004F855C /* ORVisitor.m in Sources */,
 				EE66C18824FEC14A00C85B31 /* RunnerClasses.m in Sources */,
 				EE66C0A624FE97D500C85B31 /* main.swift in Sources */,
-				EE66C0AD24FE982B00C85B31 /* Convert.m in Sources */,
 				EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */,
 				EE66C18624FEC14A00C85B31 /* JSONPatchHelper.m in Sources */,
 				EE66C0B024FE982B00C85B31 /* lexer.l in Sources */,
@@ -724,10 +721,11 @@
 				04815F7C25F0EA9A00342ADA /* BinaryPatchHelper.m in Sources */,
 				EE4BAFEB24364CEA00A2A080 /* AST.m in Sources */,
 				EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */,
+				EE75226026836798004F855C /* ConvertVisitor.m in Sources */,
 				EE4BAFF524364CEA00A2A080 /* parser.y in Sources */,
 				04815F7B25F0EA9A00342ADA /* ORPatchFile.m in Sources */,
-				EE4BAFEA24364CEA00A2A080 /* Convert.m in Sources */,
 				04815F7D25F0EA9A00342ADA /* JSONPatchHelper.m in Sources */,
+				EE75227C26836A17004F855C /* ORVisitor.m in Sources */,
 				EE4BAFE924364CEA00A2A080 /* Log.m in Sources */,
 				EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
@@ -746,8 +744,8 @@
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
+				EE75227626836A17004F855C /* ORVisitor.m in Sources */,
 				04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */,
-				04C447E825F0D72200E3F443 /* Convert.m in Sources */,
 				EE4BAFE624364CAA00A2A080 /* lexer.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

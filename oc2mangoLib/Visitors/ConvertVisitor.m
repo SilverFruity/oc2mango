@@ -9,9 +9,20 @@
 #import "ConvertVisitor.h"
 static NSString *convertBuffer = nil;
 @implementation ConvertVisitor
-//- (void)visitAllNode:(ORNode *)node{
-//    [super visitAllNode:node];
-//}
+- (NSString *)convert:(ORNode *)node{
+    convertBuffer = @"";
+    [self visitAllNode:node];
+    return convertBuffer;
+}
+- (void)visitAllNode:(ORNode *)node{
+    [super visitAllNode:node];
+    if (node.withSemicolon) {
+        convertBuffer = [convertBuffer stringByAppendingString:@";"];
+    }
+}
+- (void)visitEmptyNode:(ORNode *)node{
+    convertBuffer = @"nil";
+}
 - (void)visitClassNode:(ORClassNode *)node{
     NSMutableString *content = [NSMutableString string];
     [content appendFormat:@"class %@:%@",node.className,node.superClassName];
@@ -88,10 +99,9 @@ static NSString *convertBuffer = nil;
         
         for (int i = 0; i < node.parameterNames.count; i++) {
             [self visitAllNode:node.parameterTypes[i]];
-            NSString *paramType = convertBuffer;
             [list addObject:[NSString stringWithFormat:@"%@:(%@)%@",
                              node.methodNames[i],
-                             paramType,
+                             convertBuffer,
                              node.parameterNames[i]]];
         }
         methodName = [list componentsJoinedByString:@" "];
@@ -131,11 +141,11 @@ int convert_indentationCont = 0;
     if (node.declare) {
         if (!node.declare.var.isBlock) {
             // void x(int y){ }
-            [self visitDeclaratorNode:node.declare];
+            [self visitAllNode:node.declare];
             [content appendFormat:@"%@", convertBuffer];
         }else{
             // ^void (int x){ }
-            [self visitDeclaratorNode:node.declare];
+            [self visitAllNode:node.declare];
             [content appendFormat:@"^%@", convertBuffer];
         }
     }
@@ -379,5 +389,207 @@ BOOL convert_is_left_value = true;
     [self visitAllNode:node.keyExp];
     NSString *key = convertBuffer.copy;
     convertBuffer = [NSString stringWithFormat:@"%@[%@]", caller, key];
+}
+- (void)visitFunctionCall:(ORFunctionCall *)node{
+    // FIX: make.left.equalTo(superview.mas_left) to make.left.equalTo()(superview.mas_left)
+    // FIX: x.left(a) to x.left()(a)
+    [self visitAllNode:node.caller];
+    NSString *caller = convertBuffer.copy;
+    NSMutableArray *expList = [NSMutableArray array];
+    for (ORNode *exp in node.expressions) {
+        [self visitAllNode:exp];
+        [expList addObject:convertBuffer];
+    }
+    NSString *exps = [expList componentsJoinedByString:@","];
+    if ([node.caller isKindOfClass:[ORMethodCall class]] && [(ORMethodCall *)node.caller methodOperator]){
+        convertBuffer = [NSString stringWithFormat:@"%@()(%@)",caller,exps];
+        return;
+    }
+    convertBuffer = [NSString stringWithFormat:@"%@(%@)",caller,exps];
+}
+- (void)visitMethodCall:(ORMethodCall *)node{
+    NSMutableString *methodName = [[node.names componentsJoinedByString:@":"] mutableCopy];
+    NSString *sel;
+    if (node.values.count == 0) {
+        if (node.methodOperator) {
+            sel = [NSString stringWithFormat:@".%@",methodName];
+        }else{
+            sel = [NSString stringWithFormat:@".%@()",methodName];
+        }
+    }else{
+        NSMutableArray *expList = [NSMutableArray array];
+        for (ORNode *exp in node.values) {
+            [self visitAllNode:exp];
+            [expList addObject:convertBuffer];
+        }
+        sel = [NSString stringWithFormat:@".%@:(%@)",methodName,[expList componentsJoinedByString:@","]];
+    }
+    [self visitAllNode:node.caller];
+    convertBuffer = [NSString stringWithFormat:@"%@%@",convertBuffer,sel];
+}
+- (void)visitIfStatement:(ORIfStatement *)node{
+    NSString *content = @"";
+    while (node.last) {
+        if (!node.condition) {
+            [self visitAllNode:node.scopeImp];
+            content = [NSString stringWithFormat:@"%@else%@",content,convertBuffer];
+        }else{
+            [self visitAllNode:node.condition];
+            NSString *condition = convertBuffer.copy;
+            [self visitAllNode:node.scopeImp];
+            content = [NSString stringWithFormat:@"else if(%@)%@%@",condition,convertBuffer,content];
+        }
+        node = node.last;
+    }
+    [self visitAllNode:node.condition];
+    NSString *condition = convertBuffer.copy;
+    [self visitAllNode:node.scopeImp];
+    convertBuffer = [NSString stringWithFormat:@"if(%@)%@%@",condition,convertBuffer,content];
+}
+- (void)visitWhileStatement:(ORWhileStatement *)node{
+    NSMutableString *content = [NSMutableString string];
+    [self visitAllNode:node.condition];
+    [content appendFormat:@"while(%@)",convertBuffer];
+    [self visitAllNode:node.scopeImp];
+    [content appendString:convertBuffer];
+    convertBuffer = content;
+}
+- (void)visitDoWhileStatement:(ORDoWhileStatement *)node{
+    [self visitAllNode:node.condition];
+    NSString *condition = convertBuffer.copy;
+    [self visitAllNode:node.scopeImp];
+    convertBuffer = [NSString stringWithFormat:@"do%@while(%@)",convertBuffer,condition];
+}
+- (void)visitSwitchStatement:(ORSwitchStatement *)node{
+    [self visitAllNode:node.value];
+    NSString *value = convertBuffer.copy;
+    NSMutableString *content = [NSMutableString string];
+    for (ORCaseStatement *statement in node.cases) {
+        if (statement.value) {
+            [self visitAllNode:statement.value];
+            NSString *condition = convertBuffer.copy;
+            [self visitAllNode:statement.scopeImp];
+            [content appendFormat:@"case %@:%@\n",condition,convertBuffer];
+        }else{
+            [self visitAllNode:statement.scopeImp];
+            [content appendFormat:@"default:%@\n",convertBuffer];
+        }
+    }
+    convertBuffer = [NSString stringWithFormat:@"switch(%@){\n%@}",value,content];
+}
+- (void)visitForStatement:(ORForStatement *)node{
+    NSMutableString *content = [@"for (" mutableCopy];
+    NSMutableArray *varList = [NSMutableArray array];
+    for (ORNode *var in node.varExpressions) {
+        [self visitAllNode:var];
+        [varList addObject:convertBuffer];
+    }
+    [content appendFormat:@"%@; ",[varList componentsJoinedByString:@","]];
+    [self visitAllNode:node.condition];
+    [content appendFormat:@"%@; ",convertBuffer];
+    NSMutableArray *expList = [NSMutableArray array];
+    for (ORNode *exp in node.expressions) {
+        [self visitAllNode:exp];
+        [expList addObject:convertBuffer];
+    }
+    [content appendFormat:@"%@)",[expList componentsJoinedByString:@","]];
+    [self visitAllNode:node.scopeImp];
+    [content appendFormat:@"%@",convertBuffer];
+    convertBuffer = content;
+}
+- (void)visitForInStatement:(ORForInStatement *)node{
+    [self visitAllNode:node.expression];
+    NSString *decl = convertBuffer.copy;
+    [self visitAllNode:node.value];
+    NSString *var = convertBuffer.copy;
+    [self visitAllNode:node.scopeImp];
+    convertBuffer = [NSString stringWithFormat:@"for (%@ in %@)%@",decl,var,convertBuffer];
+}
+- (void)visitControlStatNode:(ORControlStatNode *)node{
+    switch (node.type) {
+        case ORControlStatBreak:
+            convertBuffer = @"break";
+            return;
+        case ORControlStatContinue:
+            convertBuffer = @"continue";
+            return;
+        case ORControlStatReturn:
+            [self visitAllNode:node.expression];
+            convertBuffer = [NSString stringWithFormat:@"return %@",convertBuffer];
+            return;
+        default:
+            break;
+    }
+}
+- (void)visitVariableNode:(ORVariableNode *)node{
+    NSMutableString *result = [@"" mutableCopy];
+    for (int i = 0; i < node.ptCount; i++) {
+        [result appendString:@"*"];
+    }
+    if (node.varname){
+        [result appendString:node.varname];
+    }
+    convertBuffer = result;
+}
+- (void)visitFunctionDeclNode:(ORFunctionDeclNode *)node{
+    if (convert_is_left_value && node.var.isBlock){
+        if (node.var.varname == nil) {
+            convertBuffer = @"Block";
+            return;
+        }
+        convertBuffer = [NSString stringWithFormat:@"Block %@", node.var.varname];
+        return;
+    }else{
+        NSMutableString *result = [@"" mutableCopy];
+        [self visitAllNode:node.type];
+        NSString *returnStr = convertBuffer.copy;
+        [self visitAllNode:node.var];
+        NSString *funcName = convertBuffer.copy;
+        if (node.params.count > 0){
+            NSMutableArray *exps = [NSMutableArray array];
+            for (ORNode *param in node.params) {
+                [self visitAllNode:param];
+                [exps addObject:convertBuffer];
+            }
+            NSString *params = [exps componentsJoinedByString:@","];
+            [result appendFormat:@"%@%@(%@)",returnStr,funcName,params];
+        } else if (!node.var.isBlock){
+            [result appendFormat:@"%@%@()",returnStr,funcName];
+        } else if (node.var.isBlock){
+            [result appendFormat:@"%@%@",returnStr,funcName];
+        }
+        convertBuffer = result;
+        return;
+    }
+}
+- (void)visitDeclaratorNode:(ORDeclaratorNode *)node{
+    switch (node.type.type){
+        case OCTypeUChar:
+        case OCTypeUShort:
+        case OCTypeUInt:
+        case OCTypeULong:
+        case OCTypeULongLong:
+        case OCTypeChar:
+        case OCTypeShort:
+        case OCTypeInt:
+        case OCTypeLong:
+        case OCTypeFloat:
+        case OCTypeDouble:
+        case OCTypeBOOL:
+        case OCTypeLongLong:{
+            if (node.var.ptCount > 0){
+                convertBuffer= [NSString stringWithFormat:@"Point %@",node.var.varname];
+                return;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    [self visitAllNode:node.type];
+    NSString *nodeTypeString = convertBuffer.copy;
+    NSString *type = node.type ? nodeTypeString : @"void ";
+    [self visitAllNode:node.var];
+    convertBuffer = [NSString stringWithFormat:@"%@%@",type,convertBuffer];
 }
 @end

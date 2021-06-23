@@ -11,7 +11,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ConvertVisitor : ORVisitor
-
+/// Convert
+/// @param node ORNode
+- (NSString *)convert:(id)node;
 @end
 
 NS_ASSUME_NONNULL_END

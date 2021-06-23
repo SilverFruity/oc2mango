@@ -10,7 +10,7 @@ import XCTest
 
 class ConvertTest: XCTestCase {
     let parser = Parser()
-    let convert = Convert()
+    let convert = ConvertVisitor()
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -25,16 +25,19 @@ class ConvertTest: XCTestCase {
 int x;
 NSObject *x;
 BOOL x;
+id a = nil;
 """
         let ast = parser.parseSource(source)
         XCTAssert(parser.isSuccess())
         let result = convert.convert(ast.globalStatements[0] as Any)
         let result1 = convert.convert(ast.globalStatements[1] as Any)
         let result2 = convert.convert(ast.globalStatements[2] as Any)
+        let result3 = convert.convert(ast.globalStatements[3] as Any)
         XCTAssert(parser.error == nil)
         XCTAssert(result == "int x;",result)
         XCTAssert(result1 == "NSObject *x;",result1)
         XCTAssert(result2 == "BOOL x;",result2)
+        XCTAssert(result3 == "id a = nil;",result3)
         
     }
     
