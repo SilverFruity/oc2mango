@@ -1,8 +1,8 @@
 //
-//  ConvertVisitor.h
+//  CodeGenVisitor.h
 //  oc2mangoLib
 //
-//  Created by APPLE on 2021/6/23.
+//  Created by Jiang on 2021/6/24.
 //  Copyright © 2021 SilverFruity. All rights reserved.
 //
 
@@ -10,10 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ConvertVisitor : ORVisitor
-/// Convert
-/// @param node ORNode
-- (NSString *)convert:(id)node;
+@interface CodeGenVisitor : NSObject <AstVisitor>
+
 @end
 
 NS_ASSUME_NONNULL_END

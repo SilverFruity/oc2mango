@@ -7,36 +7,23 @@
 //
 
 #import "RunnerClasses.h"
+#import "AstVisitor.h"
+
 #define OR_IMPL(node_name)\
-@implementation OR##node_name\
+@implementation OR##node_name (AstEnumExtension)\
 - (void)initialNodeType:(AstEnum)nodeType{\
     self.nodeType = AstEnum##node_name;\
-}
-
-OR_IMPL(TypeNode)
-+ (instancetype)specialWithType:(OCType)type name:(NSString *)name{
-    ORTypeNode *s = [ORTypeNode new];
-    s.type = type;
-    s.name = name;
-    return s;
-}
+}\
 @end
-
-OR_IMPL(FunctionDeclNode)
-- (instancetype)copy{
-    ORFunctionDeclNode *declare = [ORFunctionDeclNode copyWithNode:self];
-    declare.var = [self.var copy];
-    return declare;
-}
-- (BOOL)isBlockDeclare{
-    return self.var.isBlock;
+NODE_LIST(OR_IMPL)
+#undef OR_IMPL
+@implementation ORNode (AstEnumExtension)
+- (void)initialNodeType:(AstEnum)nodeType{
+    self.nodeType = AstEnumEmptyNode;
 }
 @end
 
 @implementation ORNode
-- (void)initialNodeType:(AstEnum)nodeType{
-    self.nodeType = nodeType;
-}
 - (instancetype)init{
     self = [super init];
     [self initialNodeType:AstEnumEmptyNode];
@@ -49,9 +36,20 @@ OR_IMPL(FunctionDeclNode)
     new.withSemicolon = node.withSemicolon;
     return new;
 }
+
 @end
 
-OR_IMPL(VariableNode)
+@implementation ORTypeNode
++ (instancetype)specialWithType:(OCType)type name:(NSString *)name{
+    ORTypeNode *s = [ORTypeNode new];
+    s.type = type;
+    s.name = name;
+    return s;
+}
+
+@end
+
+@implementation ORVariableNode
 + (instancetype)copyFromVar:(ORVariableNode *)var{
     ORVariableNode *new = [self copyWithNode:var];
     new.ptCount = var.ptCount;
@@ -61,42 +59,46 @@ OR_IMPL(VariableNode)
 }
 @end
 
-OR_IMPL(ValueNode)
-@end
-
-OR_IMPL(IntegerValue)
-@end
-
-OR_IMPL(UIntegerValue)
-@end
-
-OR_IMPL(DoubleValue)
-@end
-
-OR_IMPL(BoolValue)
-@end
-
-@interface ORMethodCall()
-@property (nonatomic, copy)NSString *selectorName;
-@end
-
-OR_IMPL(MethodCall)
-- (NSString *)selectorName{
-    if (_selectorName == nil){
-        NSMutableArray *names = [self.names mutableCopy];
-        if (self.values.count >= 1){
-            [names addObject:@""];
-        }
-        _selectorName = [names componentsJoinedByString:@":"];
-    }
-    return _selectorName;
+@implementation ORDeclaratorNode
+- (NSUInteger)hash{
+    return [self.var.varname hash];
 }
+- (BOOL)isEqual:(id)object{
+    return [self hash] == [object hash];
+}
++ (instancetype)copyFromDecl:(ORDeclaratorNode *)var{
+    __autoreleasing ORDeclaratorNode *new = [[self class] new];
+    new.type = var.type;
+    new.var = var.var;
+    return new;
+}
+
 @end
 
-OR_IMPL(FunctionCall)
+@implementation ORFunctionDeclNode
+- (instancetype)copy{
+    ORFunctionDeclNode *declare = [ORFunctionDeclNode copyWithNode:self];
+    declare.var = [self.var copy];
+    return declare;
+}
+- (BOOL)isBlockDeclare{
+    return self.var.isBlock;
+}
+
 @end
 
-OR_IMPL(BlockNode)
+@implementation ORCArrayDeclNode
++ (instancetype)copyFromDecl:(ORDeclaratorNode *)decl{
+    ORCArrayDeclNode *array  = [super copyFromDecl:decl];
+    if ([decl isKindOfClass:[ORCArrayDeclNode class]]) {
+        array.prev = (ORCArrayDeclNode *)decl;
+    }
+    return array;
+}
+
+@end
+
+@implementation ORBlockNode
 - (instancetype)init
 {
     self = [super init];
@@ -113,10 +115,45 @@ OR_IMPL(BlockNode)
 - (void)copyFromImp:(ORBlockNode *)imp{
     self.statements = imp.statements;
 }
-
+@end
+@implementation ORValueNode
 @end
 
-OR_IMPL(FunctionNode)
+@implementation ORIntegerValue
+@end
+
+@implementation ORUIntegerValue
+@end
+
+@implementation ORDoubleValue
+@end
+
+@implementation ORBoolValue
+@end
+
+@interface ORMethodCall()
+@property (nonatomic, copy)NSString *selectorName;
+@end
+
+@implementation ORMethodCall
+- (NSString *)selectorName{
+    if (_selectorName == nil){
+        NSMutableArray *names = [self.names mutableCopy];
+        if (self.values.count >= 1){
+            [names addObject:@""];
+        }
+        _selectorName = [names componentsJoinedByString:@":"];
+    }
+    return _selectorName;
+}
+@end
+
+@implementation ORFunctionCall
+@end
+
+
+
+@implementation ORFunctionNode
 - (instancetype)convertToNormalFunctionImp{
     ORFunctionNode *imp = [ORFunctionNode new];
     imp.declare = [self.declare copy];
@@ -129,10 +166,10 @@ OR_IMPL(FunctionNode)
 }
 @end
 
-OR_IMPL(SubscriptNode)
+@implementation ORSubscriptNode
 @end
 
-OR_IMPL(AssignNode)
+@implementation ORAssignNode
 - (NSString *)varname{
     if ([self.value isKindOfClass:[ORValueNode class]]) {
         return [(ORValueNode *)self.value value];
@@ -141,31 +178,18 @@ OR_IMPL(AssignNode)
 }
 @end
 
-OR_IMPL(DeclaratorNode)
-- (NSUInteger)hash{
-    return [self.var.varname hash];
-}
-- (BOOL)isEqual:(id)object{
-    return [self hash] == [object hash];
-}
-+ (instancetype)copyFromDecl:(ORDeclaratorNode *)var{
-    __autoreleasing ORDeclaratorNode *new = [[self class] new];
-    new.type = var.type;
-    new.var = var.var;
-    return new;
-}
+
+
+@implementation ORInitDeclaratorNode
 @end
 
-OR_IMPL(InitDeclaratorNode)
+@implementation ORUnaryNode
 @end
 
-OR_IMPL(UnaryNode)
+@implementation ORBinaryNode
 @end
 
-OR_IMPL(BinaryNode)
-@end
-
-OR_IMPL(TernaryNode)
+@implementation ORTernaryNode
 - (instancetype)init
 {
     self = [super init];
@@ -174,19 +198,19 @@ OR_IMPL(TernaryNode)
 }
 @end
 
-OR_IMPL(IfStatement)
+@implementation ORIfStatement
 @end
 
-OR_IMPL(WhileStatement)
+@implementation ORWhileStatement
 @end
 
-OR_IMPL(DoWhileStatement)
+@implementation ORDoWhileStatement
 @end
 
-OR_IMPL(CaseStatement)
+@implementation ORCaseStatement
 @end
 
-OR_IMPL(SwitchStatement)
+@implementation ORSwitchStatement
 - (instancetype)init
 {
     self = [super init];
@@ -195,16 +219,16 @@ OR_IMPL(SwitchStatement)
 }
 @end
 
-OR_IMPL(ForStatement)
+@implementation ORForStatement
 @end
 
-OR_IMPL(ForInStatement)
+@implementation ORForInStatement
 @end
 
-OR_IMPL(ControlStatNode)
+@implementation ORControlStatNode
 @end
 
-OR_IMPL(PropertyNode)
+@implementation ORPropertyNode
 - (MFPropertyModifier)modifier{
     NSDictionary *cache = @{
         @"strong":@(MFPropertyModifierMemStrong),
@@ -234,7 +258,7 @@ OR_IMPL(PropertyNode)
 @property (nonatomic, copy)NSString *selectorName;
 @end
 
-OR_IMPL(MethodDeclNode)
+@implementation ORMethodDeclNode
 - (NSString *)selectorName{
     if (_selectorName == nil){
         NSMutableArray *names = [self.methodNames mutableCopy];
@@ -247,7 +271,7 @@ OR_IMPL(MethodDeclNode)
 }
 @end
 
-OR_IMPL(MethodNode)
+@implementation ORMethodNode
 - (NSUInteger)hash{
     return [[self.declare selectorName] stringByAppendingFormat:@"%d",self.declare.isClassMethod].hash;
 }
@@ -256,7 +280,7 @@ OR_IMPL(MethodNode)
 }
 @end
 
-OR_IMPL(ClassNode)
+@implementation ORClassNode
 + (instancetype)classNodeWithClassName:(NSString *)className{
     ORClassNode *class = [ORClassNode new];
     class.className = className;
@@ -282,7 +306,7 @@ OR_IMPL(ClassNode)
 }
 @end
 
-OR_IMPL(ProtocolNode)
+@implementation ORProtocolNode
 + (instancetype)protcolWithProtcolName:(NSString *)protcolName{
     ORProtocolNode *protcol = [ORProtocolNode new];
     protcol.protcolName = protcolName;
@@ -298,31 +322,20 @@ OR_IMPL(ProtocolNode)
 }
 @end
 
-OR_IMPL(StructStatNode)
+@implementation ORStructStatNode
 
 @end
 
-OR_IMPL(UnionStatNode)
+@implementation ORUnionStatNode
 
 @end
 
-OR_IMPL(EnumStatNode)
+@implementation OREnumStatNode
 
 @end
 
-OR_IMPL(TypedefStatNode)
+@implementation ORTypedefStatNode
 
 @end
 
-
-OR_IMPL(CArrayDeclNode)
-+ (instancetype)copyFromDecl:(ORDeclaratorNode *)decl{
-    ORCArrayDeclNode *array  = [super copyFromDecl:decl];
-    if ([decl isKindOfClass:[ORCArrayDeclNode class]]) {
-        array.prev = (ORCArrayDeclNode *)decl;
-    }
-    return array;
-}
-
-@end
 

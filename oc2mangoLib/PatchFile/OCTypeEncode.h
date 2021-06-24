@@ -1,13 +1,13 @@
 //
-//  ORCoreHeader.h
+//  OCTypeEncode.h
 //  ORPatchFile
 //
 //  Created by Jiang on 2021/6/22.
 //  Copyright © 2021 SilverFruity. All rights reserved.
 //
 
-#ifndef ORCoreHeader_h
-#define ORCoreHeader_h
+#ifndef OCTypeEncode_h
+#define OCTypeEncode_h
 
 // MARK: - Base
 typedef enum: uint32_t {
@@ -77,44 +77,4 @@ ExternOCTypeString(Unknown)
 
 static const char *OCTypeStringBlock = "@?";
 
-//VSCode正则: @interface (.*)?:[.\w\W]*?@end
-#define NODE_LIST(V)\
-V(TypeNode)\
-V(VariableNode)\
-V(DeclaratorNode)\
-V(FunctionDeclNode)\
-V(CArrayDeclNode)\
-V(BlockNode)\
-V(ValueNode)\
-V(IntegerValue)\
-V(UIntegerValue)\
-V(DoubleValue)\
-V(BoolValue)\
-V(MethodCall)\
-V(FunctionCall)\
-V(FunctionNode)\
-V(SubscriptNode)\
-V(AssignNode)\
-V(InitDeclaratorNode)\
-V(UnaryNode)\
-V(BinaryNode)\
-V(TernaryNode)\
-V(IfStatement)\
-V(WhileStatement)\
-V(DoWhileStatement)\
-V(CaseStatement)\
-V(SwitchStatement)\
-V(ForStatement)\
-V(ForInStatement)\
-V(ControlStatNode)\
-V(PropertyNode)\
-V(MethodDeclNode)\
-V(MethodNode)\
-V(ClassNode)\
-V(ProtocolNode)\
-V(StructStatNode)\
-V(UnionStatNode)\
-V(EnumStatNode)\
-V(TypedefStatNode)\
-
-#endif /* ORCoreHeader_h */
+#endif /* OCTypeEncode_h */

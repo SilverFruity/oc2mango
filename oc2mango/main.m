@@ -91,7 +91,7 @@ int main(int argc, const char * argv[]) {
     NSLog(@"raw files size: %.2fKB", folderSizeAtPath(inputDir) / 1000);
     NSLog(@"compile time: %fs",[endDate timeIntervalSince1970] - [startDate timeIntervalSince1970]);
     
-    ConvertVisitor *convert = [ConvertVisitor new];
+    Convert2MangoVisitor *convert = [Convert2MangoVisitor new];
     __block NSError *error = nil;
     [result.classCache enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, ORClassNode* class, BOOL * _Nonnull stop) {
         NSString *filename = [NSString stringWithFormat:@"%@.mg",key];

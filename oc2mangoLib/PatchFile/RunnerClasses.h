@@ -8,15 +8,17 @@
 
 #import <Foundation/Foundation.h>
 #import "BinaryPatchHelper.h"
-#import "ORCoreHeader.h"
+#import "OCTypeEncode.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@class ocSymbol, ocScope;
 // MARK: - Node
 @interface ORNode: NSObject
 @property (nonatomic, assign)AstEnum nodeType;
 @property (nonatomic, assign)BOOL withSemicolon;
 @property (nonatomic, weak)ORNode *parentNode;
-@property (nonatomic, strong)id symbol;
+@property (nonatomic, strong)ocScope *scope;
+@property (nonatomic, strong)ocSymbol *symbol;
 + (id)copyWithNode:(ORNode *)node;
 @end
 

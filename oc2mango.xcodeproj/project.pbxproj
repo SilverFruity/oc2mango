@@ -19,17 +19,28 @@
 		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
 		04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E3725F6174D0047442D /* GlobalTypeTable.m */; };
 		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
-		18819E28268329D800CC85DD /* ConvertVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18819E26268329D800CC85DD /* ConvertVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		18819E29268329D800CC85DD /* ConvertVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* ConvertVisitor.m */; };
+		18819E28268329D800CC85DD /* Convert2MangoVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18819E26268329D800CC85DD /* Convert2MangoVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
+		18E852CC26842CC5009B9A3E /* CodeGenVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */; };
+		18E852CD26842CC5009B9A3E /* CodeGenVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */; };
+		18E852D426846324009B9A3E /* AstVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852D226846324009B9A3E /* AstVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18E852D526846324009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
+		18E852D726846394009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
+		18E852D826846394009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
+		18E852D926846399009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
+		18E852DD26846BA0009B9A3E /* ocSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852DB26846BA0009B9A3E /* ocSymbol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18E852DE26846BA0009B9A3E /* ocSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852DC26846BA0009B9A3E /* ocSymbol.m */; };
+		18E852E2268472AE009B9A3E /* ocScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852E0268472AE009B9A3E /* ocScope.h */; };
+		18E852E3268472AE009B9A3E /* ocScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852E1268472AE009B9A3E /* ocScope.m */; };
+		18E852E626847337009B9A3E /* ocSymbolTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852E426847337009B9A3E /* ocSymbolTable.h */; };
+		18E852E726847337009B9A3E /* ocSymbolTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852E526847337009B9A3E /* ocSymbolTable.m */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
 		EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE147260227F054300566B3F /* ClassDeclareTest.swift */; };
 		EE1C71F122882F750077A71E /* TestSource.imp in Resources */ = {isa = PBXBuildFile; fileRef = EE1C71EE22882DBF0077A71E /* TestSource.imp */; };
 		EE1C71F42288314C0077A71E /* FileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71F32288314C0077A71E /* FileTest.swift */; };
-		EE4B041026823E00009032B2 /* ORCoreHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4B040D26823E00009032B2 /* ORCoreHeader.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE4B041126823E00009032B2 /* ORVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4B040E26823E00009032B2 /* ORVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE4B041226823E00009032B2 /* ORVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4B040F26823E00009032B2 /* ORVisitor.m */; };
+		EE4B041026823E00009032B2 /* OCTypeEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4B040D26823E00009032B2 /* OCTypeEncode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE4B042826824213009032B2 /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
 		EE4B042926824213009032B2 /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EE4BAFE624364CAA00A2A080 /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
@@ -67,11 +78,8 @@
 		EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
-		EE75225A26836797004F855C /* ConvertVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* ConvertVisitor.m */; };
-		EE75226026836798004F855C /* ConvertVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* ConvertVisitor.m */; };
-		EE75227026836A16004F855C /* ORVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4B040F26823E00009032B2 /* ORVisitor.m */; };
-		EE75227626836A17004F855C /* ORVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4B040F26823E00009032B2 /* ORVisitor.m */; };
-		EE75227C26836A17004F855C /* ORVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4B040F26823E00009032B2 /* ORVisitor.m */; };
+		EE75225A26836797004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
+		EE75226026836798004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
 		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
@@ -153,17 +161,25 @@
 		04E05E3625F6174D0047442D /* GlobalTypeTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalTypeTable.h; sourceTree = "<group>"; };
 		04E05E3725F6174D0047442D /* GlobalTypeTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalTypeTable.m; sourceTree = "<group>"; };
 		185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassCodeGenerator.swift; sourceTree = "<group>"; };
-		18819E26268329D800CC85DD /* ConvertVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConvertVisitor.h; sourceTree = "<group>"; };
-		18819E27268329D800CC85DD /* ConvertVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConvertVisitor.m; sourceTree = "<group>"; };
+		18819E26268329D800CC85DD /* Convert2MangoVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert2MangoVisitor.h; sourceTree = "<group>"; };
+		18819E27268329D800CC85DD /* Convert2MangoVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert2MangoVisitor.m; sourceTree = "<group>"; };
+		18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CodeGenVisitor.h; sourceTree = "<group>"; };
+		18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CodeGenVisitor.m; sourceTree = "<group>"; };
+		18E852D226846324009B9A3E /* AstVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AstVisitor.h; path = oc2mangoLib/PatchFile/AstVisitor.h; sourceTree = SOURCE_ROOT; };
+		18E852D326846324009B9A3E /* AstVisitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AstVisitor.m; path = oc2mangoLib/PatchFile/AstVisitor.m; sourceTree = SOURCE_ROOT; };
+		18E852DB26846BA0009B9A3E /* ocSymbol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocSymbol.h; sourceTree = "<group>"; };
+		18E852DC26846BA0009B9A3E /* ocSymbol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocSymbol.m; sourceTree = "<group>"; };
+		18E852E0268472AE009B9A3E /* ocScope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocScope.h; sourceTree = "<group>"; };
+		18E852E1268472AE009B9A3E /* ocScope.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocScope.m; sourceTree = "<group>"; };
+		18E852E426847337009B9A3E /* ocSymbolTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocSymbolTable.h; sourceTree = "<group>"; };
+		18E852E526847337009B9A3E /* ocSymbolTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocSymbolTable.m; sourceTree = "<group>"; };
 		32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClassSecretKeyMap.h; path = oc2mangoLib/PatchFile/ClassSecretKeyMap.h; sourceTree = SOURCE_ROOT; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
 		EE1C71EE22882DBF0077A71E /* TestSource.imp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestSource.imp; sourceTree = "<group>"; };
 		EE1C71F32288314C0077A71E /* FileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTest.swift; sourceTree = "<group>"; };
-		EE4B040D26823E00009032B2 /* ORCoreHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ORCoreHeader.h; path = oc2mangoLib/PatchFile/ORCoreHeader.h; sourceTree = SOURCE_ROOT; };
-		EE4B040E26823E00009032B2 /* ORVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ORVisitor.h; path = oc2mangoLib/PatchFile/ORVisitor.h; sourceTree = SOURCE_ROOT; };
-		EE4B040F26823E00009032B2 /* ORVisitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ORVisitor.m; path = oc2mangoLib/PatchFile/ORVisitor.m; sourceTree = SOURCE_ROOT; };
+		EE4B040D26823E00009032B2 /* OCTypeEncode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCTypeEncode.h; path = oc2mangoLib/PatchFile/OCTypeEncode.h; sourceTree = SOURCE_ROOT; };
 		EE4F367924F9251C00F685AF /* BinaryPatchCodeGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BinaryPatchCodeGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE4F367B24F9251C00F685AF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		EE4F368824F9259D00F685AF /* BinaryPatchCodeGenerator-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BinaryPatchCodeGenerator-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -256,10 +272,32 @@
 		18819E25268329C700CC85DD /* Visitors */ = {
 			isa = PBXGroup;
 			children = (
-				18819E26268329D800CC85DD /* ConvertVisitor.h */,
-				18819E27268329D800CC85DD /* ConvertVisitor.m */,
+				18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */,
+				18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */,
+				18819E26268329D800CC85DD /* Convert2MangoVisitor.h */,
+				18819E27268329D800CC85DD /* Convert2MangoVisitor.m */,
 			);
 			path = Visitors;
+			sourceTree = "<group>";
+		};
+		18E852DA26846B97009B9A3E /* Symbol */ = {
+			isa = PBXGroup;
+			children = (
+				18E852E426847337009B9A3E /* ocSymbolTable.h */,
+				18E852E526847337009B9A3E /* ocSymbolTable.m */,
+				18E852DB26846BA0009B9A3E /* ocSymbol.h */,
+				18E852DC26846BA0009B9A3E /* ocSymbol.m */,
+				18E852E0268472AE009B9A3E /* ocScope.h */,
+				18E852E1268472AE009B9A3E /* ocScope.m */,
+			);
+			path = Symbol;
+			sourceTree = "<group>";
+		};
+		18E852DF26846BD3009B9A3E /* SymbolTable */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = SymbolTable;
 			sourceTree = "<group>";
 		};
 		EE147262227F0A4E00566B3F /* Declare */ = {
@@ -319,9 +357,9 @@
 				32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */,
 				EE66C16224FEB62C00C85B31 /* ORPatchFile.h */,
 				EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */,
-				EE4B040D26823E00009032B2 /* ORCoreHeader.h */,
-				EE4B040E26823E00009032B2 /* ORVisitor.h */,
-				EE4B040F26823E00009032B2 /* ORVisitor.m */,
+				EE4B040D26823E00009032B2 /* OCTypeEncode.h */,
+				18E852D226846324009B9A3E /* AstVisitor.h */,
+				18E852D326846324009B9A3E /* AstVisitor.m */,
 				EE66C16424FEB62C00C85B31 /* RunnerClasses.h */,
 				EE66C16524FEB62C00C85B31 /* RunnerClasses.m */,
 			);
@@ -391,6 +429,8 @@
 				EED67AA92270B1C70015AC02 /* Parser.m */,
 				EED67A932270AEE40015AC02 /* Log.h */,
 				EED67A942270AEE40015AC02 /* Log.m */,
+				18E852DF26846BD3009B9A3E /* SymbolTable */,
+				18E852DA26846B97009B9A3E /* Symbol */,
 				18819E25268329C700CC85DD /* Visitors */,
 				EE982EE5226B601C008712C2 /* Builders */,
 				EE6E6CDB225E496600616C7E /* lexer.l */,
@@ -433,10 +473,10 @@
 				04C4481B25F0E2F600E3F443 /* ORPatchFile.h in Headers */,
 				32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */,
 				04C4483325F0E95C00E3F443 /* BinaryPatchHelper.h in Headers */,
-				EE4B041126823E00009032B2 /* ORVisitor.h in Headers */,
+				18E852D426846324009B9A3E /* AstVisitor.h in Headers */,
 				04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */,
 				EE66C16E24FEB62C00C85B31 /* RunnerClasses.h in Headers */,
-				EE4B041026823E00009032B2 /* ORCoreHeader.h in Headers */,
+				EE4B041026823E00009032B2 /* OCTypeEncode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,11 +484,15 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18E852DD26846BA0009B9A3E /* ocSymbol.h in Headers */,
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
 				04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
-				18819E28268329D800CC85DD /* ConvertVisitor.h in Headers */,
+				18819E28268329D800CC85DD /* Convert2MangoVisitor.h in Headers */,
+				18E852CC26842CC5009B9A3E /* CodeGenVisitor.h in Headers */,
+				18E852E626847337009B9A3E /* ocSymbolTable.h in Headers */,
+				18E852E2268472AE009B9A3E /* ocScope.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -689,11 +733,11 @@
 				EE66C0AE24FE982B00C85B31 /* AST.m in Sources */,
 				EE66C0AB24FE982B00C85B31 /* Log.m in Sources */,
 				EE66C0AA24FE982B00C85B31 /* Parser.m in Sources */,
-				EE75225A26836797004F855C /* ConvertVisitor.m in Sources */,
+				EE75225A26836797004F855C /* Convert2MangoVisitor.m in Sources */,
 				EE66C0B124FE982B00C85B31 /* parser.y in Sources */,
+				18E852D926846399009B9A3E /* AstVisitor.m in Sources */,
 				EE66C18524FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */,
 				EE66C0AF24FE982B00C85B31 /* MakeDeclare.m in Sources */,
-				EE75227026836A16004F855C /* ORVisitor.m in Sources */,
 				EE66C18824FEC14A00C85B31 /* RunnerClasses.m in Sources */,
 				EE66C0A624FE97D500C85B31 /* main.swift in Sources */,
 				EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */,
@@ -709,7 +753,7 @@
 				04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */,
 				04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */,
 				04C4483225F0E95C00E3F443 /* BinaryPatchHelper.m in Sources */,
-				EE4B041226823E00009032B2 /* ORVisitor.m in Sources */,
+				18E852D526846324009B9A3E /* AstVisitor.m in Sources */,
 				EE66C16F24FEB62C00C85B31 /* RunnerClasses.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -721,11 +765,11 @@
 				04815F7C25F0EA9A00342ADA /* BinaryPatchHelper.m in Sources */,
 				EE4BAFEB24364CEA00A2A080 /* AST.m in Sources */,
 				EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */,
-				EE75226026836798004F855C /* ConvertVisitor.m in Sources */,
+				EE75226026836798004F855C /* Convert2MangoVisitor.m in Sources */,
 				EE4BAFF524364CEA00A2A080 /* parser.y in Sources */,
+				18E852D826846394009B9A3E /* AstVisitor.m in Sources */,
 				04815F7B25F0EA9A00342ADA /* ORPatchFile.m in Sources */,
 				04815F7D25F0EA9A00342ADA /* JSONPatchHelper.m in Sources */,
-				EE75227C26836A17004F855C /* ORVisitor.m in Sources */,
 				EE4BAFE924364CEA00A2A080 /* Log.m in Sources */,
 				EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
@@ -738,14 +782,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18819E29268329D800CC85DD /* ConvertVisitor.m in Sources */,
+				18E852E726847337009B9A3E /* ocSymbolTable.m in Sources */,
+				18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */,
+				18E852D726846394009B9A3E /* AstVisitor.m in Sources */,
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* parser.y in Sources */,
+				18E852E3268472AE009B9A3E /* ocScope.m in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
+				18E852DE26846BA0009B9A3E /* ocSymbol.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
-				EE75227626836A17004F855C /* ORVisitor.m in Sources */,
 				04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */,
+				18E852CD26842CC5009B9A3E /* CodeGenVisitor.m in Sources */,
 				EE4BAFE624364CAA00A2A080 /* lexer.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
