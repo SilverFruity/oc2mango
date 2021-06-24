@@ -11,7 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ocSymbol : NSObject
-
+@property (nonatomic, copy)NSString *name;
++ (instancetype)symbolWithName:(NSString *)name;
 @end
 
 NS_ASSUME_NONNULL_END

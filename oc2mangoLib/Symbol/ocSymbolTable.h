@@ -7,11 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ocSymbol.h"
+#import "ocScope.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ocSymbolTable : NSObject
-
+@property (nonatomic, strong)ocScope *scope;
+- (ocSymbol *)insert:(ocSymbol *)symbol;
+- (ocSymbol *)insertRoot:(ocSymbol *)symbol;
+- (ocSymbol *)insertRootWithName:(NSString *)name symbol:(ocSymbol *)symbol;
+- (ocSymbol *)lookup:(NSString *)name;
+- (ocSymbol *)localLookup:(NSString *)name;
+- (ocScope *)increaseScope;
+- (ocScope *)decreaseScope;
 @end
 
 NS_ASSUME_NONNULL_END
