@@ -293,13 +293,6 @@
 			path = Symbol;
 			sourceTree = "<group>";
 		};
-		18E852DF26846BD3009B9A3E /* SymbolTable */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = SymbolTable;
-			sourceTree = "<group>";
-		};
 		EE147262227F0A4E00566B3F /* Declare */ = {
 			isa = PBXGroup;
 			children = (
@@ -429,7 +422,6 @@
 				EED67AA92270B1C70015AC02 /* Parser.m */,
 				EED67A932270AEE40015AC02 /* Log.h */,
 				EED67A942270AEE40015AC02 /* Log.m */,
-				18E852DF26846BD3009B9A3E /* SymbolTable */,
 				18E852DA26846B97009B9A3E /* Symbol */,
 				18819E25268329C700CC85DD /* Visitors */,
 				EE982EE5226B601C008712C2 /* Builders */,

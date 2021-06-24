@@ -174,7 +174,7 @@ class ExpressionTest: XCTestCase {
         """
         let ast = parser.parseSource(source);
         XCTAssert(parser.isSuccess())
-        let convert = ConvertVisitor()
+        let convert = Convert2MangoVisitor()
         let result = convert.convert(ast.globalStatements[7] as Any)
         XCTAssert(result == "a = x * c * 1;",result)
         let result1 = convert.convert(ast.globalStatements[8] as Any)
