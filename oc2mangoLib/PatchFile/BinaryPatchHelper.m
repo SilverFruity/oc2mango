@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1624378492
+//  Created by Jiang on 1624502897
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -262,8 +262,8 @@ AstTypeNode *AstTypeNodeConvert(ORTypeNode *exp, AstPatchFile *patch, uint32_t *
     memset(node, 0, sizeof(AstTypeNode));
     node->nodeType = AstEnumTypeNode;
     node->type = exp.type;
-    node->name = (AstStringCursor *)AstNodeConvert(exp.name, patch, length);
     node->modifier = exp.modifier;
+    node->name = (AstStringCursor *)AstNodeConvert(exp.name, patch, length);
     *length += AstTypeNodeBaseLength;
     return node;
 }
@@ -618,8 +618,8 @@ ORTypeNode *AstTypeNodeDeConvert(ORNode *parent, AstTypeNode *node, AstPatchFile
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.type = node->type;
-    exp.name = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->name, patch);
     exp.modifier = node->modifier;
+    exp.name = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->name, patch);
     return exp;
 }
 ORVariableNode *AstVariableNodeDeConvert(ORNode *parent, AstVariableNode *node, AstPatchFile *patch){

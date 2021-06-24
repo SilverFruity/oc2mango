@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 // MARK: - Node
 @interface ORNode: NSObject
 @property (nonatomic, assign)AstEnum nodeType;
+@property (nonatomic, assign)BOOL withSemicolon;
 @property (nonatomic, weak)ORNode *parentNode;
 @property (nonatomic, strong)id symbol;
-@property (nonatomic, assign)BOOL withSemicolon;
 + (id)copyWithNode:(ORNode *)node;
 @end
 
@@ -29,8 +29,8 @@ typedef enum: uint32_t{
 
 @interface ORTypeNode: ORNode
 @property (nonatomic, assign)OCType type;
-@property (nonatomic, nullable, copy) NSString * name;
 @property (nonatomic, assign)DeclarationModifier modifier;
+@property (nonatomic, nullable, copy) NSString * name;
 + (instancetype)specialWithType:(OCType)type name:(nullable NSString *)name;
 @end
 

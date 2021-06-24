@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1624378492
+//  Created by Jiang on 1624502897
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
@@ -108,8 +108,8 @@ ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength);
 typedef struct {
     AstNodeFields
     uint32_t type;
-    AstStringCursor * name;
     uint32_t modifier;
+    AstStringCursor * name;
 }AstTypeNode;
 
 typedef struct {
