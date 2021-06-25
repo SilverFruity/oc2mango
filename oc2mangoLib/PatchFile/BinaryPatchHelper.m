@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1624502897
+//  Created by Jiang on 1624636006
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -486,7 +486,6 @@ AstSwitchStatement *AstSwitchStatementConvert(ORSwitchStatement *exp, AstPatchFi
     node->nodeType = AstEnumSwitchStatement;
     node->value = (AstEmptyNode *)AstNodeConvert(exp.value, patch, length);
     node->cases = (AstNodeList *)AstNodeConvert(exp.cases, patch, length);
-    node->scopeImp = (AstEmptyNode *)AstNodeConvert(exp.scopeImp, patch, length);
     *length += AstSwitchStatementBaseLength;
     return node;
 }
@@ -818,7 +817,6 @@ ORSwitchStatement *AstSwitchStatementDeConvert(ORNode *parent, AstSwitchStatemen
     exp.nodeType = node->nodeType;
     exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
     exp.cases = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->cases, patch);
-    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
 ORForStatement *AstForStatementDeConvert(ORNode *parent, AstForStatement *node, AstPatchFile *patch){
@@ -1077,7 +1075,6 @@ void AstSwitchStatementSerailization(AstSwitchStatement *node, void *buffer, uin
     *cursor += AstSwitchStatementBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->value, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->cases, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->scopeImp, buffer, cursor);
 }
 void AstForStatementSerailization(AstForStatement *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, AstForStatementBaseLength);
@@ -1357,7 +1354,6 @@ AstSwitchStatement *AstSwitchStatementDeserialization(void *buffer, uint32_t *cu
     *cursor += AstSwitchStatementBaseLength;
     node->value =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->cases =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->scopeImp =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
 AstForStatement *AstForStatementDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
@@ -1583,7 +1579,6 @@ void AstCaseStatementDestroy(AstCaseStatement *node){
 void AstSwitchStatementDestroy(AstSwitchStatement *node){
     AstNodeDestroy((AstEmptyNode *)node->value);
     AstNodeDestroy((AstEmptyNode *)node->cases);
-    AstNodeDestroy((AstEmptyNode *)node->scopeImp);
     free(node);
 }
 void AstForStatementDestroy(AstForStatement *node){

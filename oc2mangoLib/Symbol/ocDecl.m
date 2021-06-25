@@ -9,59 +9,6 @@
 #import "ocDecl.h"
 #import "ocHandleTypeEncode.h"
 
-const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
-    ORTypeNode *typeSpecial = node.type;
-    ORVariableNode *var = node.var;
-    OCType type = typeSpecial.type;
-    char encoding[128];
-    memset(encoding, 0, 128);
-#define append(str) strcat(encoding,str)
-    NSInteger tmpPtCount = var.ptCount;
-    if (tmpPtCount == 0) {
-        char type = node.type.type;
-        return strdup(&type);
-    }
-    while (tmpPtCount > 0) {
-        if (type == OCTypeChar && tmpPtCount == 1) {
-            break;
-        }
-        append("^");
-        tmpPtCount--;
-    }
-#define CaseTypeEncoding(type)\
-case OCType##type:\
-append(OCTypeString##type); break;
-    
-    switch (type) {
-        case OCTypeChar:
-        {
-            if (var.ptCount > 0)
-                append(OCTypeStringCString);
-            else
-                append(OCTypeStringChar);
-            break;
-        }
-            CaseTypeEncoding(Int)
-            CaseTypeEncoding(Short)
-            CaseTypeEncoding(Long)
-            CaseTypeEncoding(LongLong)
-            CaseTypeEncoding(UChar)
-            CaseTypeEncoding(UInt)
-            CaseTypeEncoding(UShort)
-            CaseTypeEncoding(ULong)
-            CaseTypeEncoding(ULongLong)
-            CaseTypeEncoding(Float)
-            CaseTypeEncoding(Double)
-            CaseTypeEncoding(BOOL)
-            CaseTypeEncoding(Object)
-            CaseTypeEncoding(Class)
-            CaseTypeEncoding(SEL)
-        default:
-            break;
-    }
-    append("\0");
-    return strdup(encoding);
-}
 @implementation ocDecl
 - (instancetype)init
 {
@@ -116,6 +63,6 @@ append(OCTypeString##type); break;
 }
 @end
 
-
+@implementation ocComposeDecl
 
 @end

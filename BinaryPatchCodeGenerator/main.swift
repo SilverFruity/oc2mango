@@ -13,7 +13,9 @@ let resultDir = CommandLine.arguments[2]
 let parser = Parser()
 let source = CodeSource.init(filePath: filepath)
 let ast = parser.parseCodeSource(source)
-
+if (parser.error != nil){
+    exit(0);
+}
 let NodeDefine = "AstNodeFields"
 let PatchFileClass = "ORPatchFile"
 let resultFileName = "BinaryPatchHelper"

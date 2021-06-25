@@ -10,8 +10,6 @@
 #import <ORPatchFile/ORPatchFile.h>
 NS_ASSUME_NONNULL_BEGIN
 
-extern const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
-
 @interface ocDecl : NSObject
 @property (nonatomic, assign)OCType type;
 @property (nonatomic, copy)NSString *typeName;
@@ -25,6 +23,8 @@ extern const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
 - (BOOL)isCArray;
 @end
 
-
+@interface ocComposeDecl: ocDecl
+@property (nonatomic, assign)ocScope *fielsScope;
+@end
 
 NS_ASSUME_NONNULL_END

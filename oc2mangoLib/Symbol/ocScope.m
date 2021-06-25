@@ -23,6 +23,7 @@
     }
 }
 - (ocSymbol *)lookup:(NSString *)name{
+    NSAssert(name != nil && name.length > 0, @"");
     return self.table[name];
 }
 @end

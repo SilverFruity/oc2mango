@@ -13,7 +13,6 @@
 		04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		04C4481B25F0E2F600E3F443 /* ORPatchFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16224FEB62C00C85B31 /* ORPatchFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
-		04C4483225F0E95C00E3F443 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		04C4483325F0E95C00E3F443 /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
@@ -88,6 +87,7 @@
 		EE75226026836798004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
+		EEB7396C268616EC00855E4A /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EEC088712669015800538E9A /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
 		EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67A702270AE0E0015AC02 /* oc2mangoLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -765,7 +765,7 @@
 			files = (
 				04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */,
 				04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */,
-				04C4483225F0E95C00E3F443 /* BinaryPatchHelper.m in Sources */,
+				EEB7396C268616EC00855E4A /* BinaryPatchHelper.m in Sources */,
 				18E852D526846324009B9A3E /* AstVisitor.m in Sources */,
 				EE66C16F24FEB62C00C85B31 /* RunnerClasses.m in Sources */,
 			);

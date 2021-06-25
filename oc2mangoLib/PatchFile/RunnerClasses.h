@@ -235,7 +235,6 @@ typedef enum: uint32_t{
 @interface ORSwitchStatement: ORNode
 @property (nonatomic,strong)ORNode * value;
 @property (nonatomic,strong)NSMutableArray <ORCaseStatement *>*cases;
-@property (nonatomic, strong, nullable)ORBlockNode *scopeImp;
 @end
 
 @interface ORForStatement: ORNode

@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1624502897
+//  Created by Jiang on 1624636006
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
@@ -260,7 +260,6 @@ typedef struct {
     AstNodeFields
     AstEmptyNode * value;
     AstNodeList * cases;
-    AstEmptyNode * scopeImp;
 }AstSwitchStatement;
 
 typedef struct {
