@@ -19,6 +19,12 @@
 		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
 		04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E3725F6174D0047442D /* GlobalTypeTable.m */; };
 		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
+		1872080B26857F3A003C4DC6 /* InitialSymbolTableVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1872080926857F3A003C4DC6 /* InitialSymbolTableVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1872080C26857F3A003C4DC6 /* InitialSymbolTableVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1872080A26857F3A003C4DC6 /* InitialSymbolTableVisitor.m */; };
+		1872080F2685824A003C4DC6 /* ocDecl.h in Headers */ = {isa = PBXBuildFile; fileRef = 1872080D2685824A003C4DC6 /* ocDecl.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		187208102685824A003C4DC6 /* ocDecl.m in Sources */ = {isa = PBXBuildFile; fileRef = 1872080E2685824A003C4DC6 /* ocDecl.m */; };
+		18720813268594D8003C4DC6 /* ocHandleTypeEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */; };
+		18720814268594D8003C4DC6 /* ocHandleTypeEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 18720812268594D8003C4DC6 /* ocHandleTypeEncode.h */; };
 		18819E28268329D800CC85DD /* Convert2MangoVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18819E26268329D800CC85DD /* Convert2MangoVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
 		18E852CC26842CC5009B9A3E /* CodeGenVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */; };
@@ -161,6 +167,12 @@
 		04E05E3625F6174D0047442D /* GlobalTypeTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalTypeTable.h; sourceTree = "<group>"; };
 		04E05E3725F6174D0047442D /* GlobalTypeTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalTypeTable.m; sourceTree = "<group>"; };
 		185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassCodeGenerator.swift; sourceTree = "<group>"; };
+		1872080926857F3A003C4DC6 /* InitialSymbolTableVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InitialSymbolTableVisitor.h; sourceTree = "<group>"; };
+		1872080A26857F3A003C4DC6 /* InitialSymbolTableVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InitialSymbolTableVisitor.m; sourceTree = "<group>"; };
+		1872080D2685824A003C4DC6 /* ocDecl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocDecl.h; sourceTree = "<group>"; };
+		1872080E2685824A003C4DC6 /* ocDecl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocDecl.m; sourceTree = "<group>"; };
+		18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ocHandleTypeEncode.m; sourceTree = "<group>"; };
+		18720812268594D8003C4DC6 /* ocHandleTypeEncode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ocHandleTypeEncode.h; sourceTree = "<group>"; };
 		18819E26268329D800CC85DD /* Convert2MangoVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert2MangoVisitor.h; sourceTree = "<group>"; };
 		18819E27268329D800CC85DD /* Convert2MangoVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert2MangoVisitor.m; sourceTree = "<group>"; };
 		18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CodeGenVisitor.h; sourceTree = "<group>"; };
@@ -272,6 +284,8 @@
 		18819E25268329C700CC85DD /* Visitors */ = {
 			isa = PBXGroup;
 			children = (
+				1872080926857F3A003C4DC6 /* InitialSymbolTableVisitor.h */,
+				1872080A26857F3A003C4DC6 /* InitialSymbolTableVisitor.m */,
 				18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */,
 				18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */,
 				18819E26268329D800CC85DD /* Convert2MangoVisitor.h */,
@@ -283,6 +297,10 @@
 		18E852DA26846B97009B9A3E /* Symbol */ = {
 			isa = PBXGroup;
 			children = (
+				18720812268594D8003C4DC6 /* ocHandleTypeEncode.h */,
+				18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */,
+				1872080D2685824A003C4DC6 /* ocDecl.h */,
+				1872080E2685824A003C4DC6 /* ocDecl.m */,
 				18E852E426847337009B9A3E /* ocSymbolTable.h */,
 				18E852E526847337009B9A3E /* ocSymbolTable.m */,
 				18E852DB26846BA0009B9A3E /* ocSymbol.h */,
@@ -476,7 +494,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1872080F2685824A003C4DC6 /* ocDecl.h in Headers */,
 				18E852DD26846BA0009B9A3E /* ocSymbol.h in Headers */,
+				18720814268594D8003C4DC6 /* ocHandleTypeEncode.h in Headers */,
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
 				04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */,
@@ -486,6 +506,7 @@
 				18E852E626847337009B9A3E /* ocSymbolTable.h in Headers */,
 				18E852E2268472AE009B9A3E /* ocScope.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
+				1872080B26857F3A003C4DC6 /* InitialSymbolTableVisitor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,6 +798,7 @@
 				18E852E726847337009B9A3E /* ocSymbolTable.m in Sources */,
 				18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */,
 				18E852D726846394009B9A3E /* AstVisitor.m in Sources */,
+				1872080C26857F3A003C4DC6 /* InitialSymbolTableVisitor.m in Sources */,
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* parser.y in Sources */,
 				18E852E3268472AE009B9A3E /* ocScope.m in Sources */,
@@ -785,7 +807,9 @@
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
 				04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */,
+				18720813268594D8003C4DC6 /* ocHandleTypeEncode.m in Sources */,
 				18E852CD26842CC5009B9A3E /* CodeGenVisitor.m in Sources */,
+				187208102685824A003C4DC6 /* ocDecl.m in Sources */,
 				EE4BAFE624364CAA00A2A080 /* lexer.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

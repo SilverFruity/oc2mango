@@ -16,7 +16,7 @@
         if (globalSymbol == nil || globalSymbol != symbol) {
             [self.scope insert:symbol.name symbol:symbol];
         }else{
-            symbol = [ocSymbol symbolWithName:symbol.name];
+            symbol = [ocSymbol symbolWithName:symbol.name decl:nil];
             [self.scope insert:symbol.name symbol:symbol];
         }
     }

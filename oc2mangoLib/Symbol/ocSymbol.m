@@ -9,9 +9,10 @@
 #import "ocSymbol.h"
 
 @implementation ocSymbol
-+ (instancetype)symbolWithName:(NSString *)name{
++ (instancetype)symbolWithName:(NSString *)name decl:(ocDecl *)decl{
     ocSymbol *symbol = [ocSymbol new];
     symbol.name = name;
+    symbol.decl = decl;
     return symbol;
 }
 @end

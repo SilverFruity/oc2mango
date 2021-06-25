@@ -11,6 +11,8 @@
 #import "ocScope.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@class ocSymbolTable;
+static const ocSymbolTable * symbolTableRoot = nil;
 
 @interface ocSymbolTable : NSObject
 @property (nonatomic, strong)ocScope *scope;

@@ -11,6 +11,7 @@
 #import <ORPatchFile/JSONPatchHelper.h>
 #import <ORPatchFile/BinaryPatchHelper.h>
 #import <ORPatchFile/AstVisitor.h>
+#import <ORPatchFile/OCTypeEncode.h>
 
 NS_ASSUME_NONNULL_BEGIN
 #define OCPatchFileInternalVersion @"1000.0.1"

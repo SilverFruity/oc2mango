@@ -72,8 +72,8 @@ ExternOCTypeString(Bit)
 ExternOCTypeString(Pointer)
 ExternOCTypeString(Unknown)
 
-//NOTE: ignore bit 'b'
-#define TypeEncodeIsBaseType(code) (('a'<= *code && *code <= 'z') || ('A'<= *code && *code <= 'Z'))
+#define TypeEncodeCharIsBaseType(chr) ((('a'<= chr && chr <= 'z') || ('A'<= chr && chr <= 'Z')) && chr != 'v')
+#define TypeEncodeIsBaseType(code) TypeEncodeCharIsBaseType(*code)
 
 static const char *OCTypeStringBlock = "@?";
 
