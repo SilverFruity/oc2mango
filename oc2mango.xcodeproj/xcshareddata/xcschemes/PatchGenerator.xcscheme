@@ -51,27 +51,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-files"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/apple/Downloads/ZYGLogicManager.m"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-refs"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/apple/Desktop/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-output"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/apple/Downloads/binarypatch"
+            argument = "-files /Users/apple/Downloads/ZYGLogicManager.m -refs /Users/apple/Desktop/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle -output /Users/apple/Downloads/binarypatch"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
