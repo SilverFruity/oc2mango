@@ -76,5 +76,6 @@ ExternOCTypeString(Unknown)
 #define TypeEncodeIsBaseType(code) TypeEncodeCharIsBaseType(*code)
 
 static const char *OCTypeStringBlock = "@?";
+static const char *OCTypeStringFunction = "^?";
 
 #endif /* OCTypeEncode_h */

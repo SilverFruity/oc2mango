@@ -7,6 +7,7 @@
 //
 
 #import "CodeGenVisitor.h"
+#import "InitialSymbolTableVisitor.h"
 
 @implementation CodeGenVisitor
 

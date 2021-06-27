@@ -8,6 +8,9 @@
 
 #import "InitialSymbolTableVisitor.h"
 #import "ocSymbolTable.h"
+static NSString *AnonymousBlockSignature = @"BlockSignature";
+
+static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
 static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
     ORTypeNode *typeSpecial = node.type;
     ORVariableNode *var = node.var;
@@ -103,14 +106,44 @@ static const char *cArrayTypeEncode(ORCArrayDeclNode *node){
     strcat(result, rights);
     return strdup(result);
 }
+static const char *functionTypeEncode(ORFunctionDeclNode *node){
+    char signature [128] = { 0 };
+    // 函数 TypEncode 签名: ^?@@:*
+    // Block TypEncode 签名: @?@@:*
+    if(node.var.isBlock){
+        // block
+        strcat(signature, "@?");
+
+    }else{
+        // function
+        strcat(signature, "^?");
+        // 针对 void func(void); 其ptCount默认为1，当作函数指针处理
+        // ？paser.y中直接默认为1的可行性
+        if (node.var.ptCount == 0) {
+            node = [ORFunctionDeclNode copyFromDecl:node];
+            node.var.ptCount = 1;
+        }
+    }
+    ORDeclaratorNode *returnNode = [ORDeclaratorNode copyFromDecl:node];
+    const char *returnEncode = typeEncodeForDeclaratorNode(returnNode);
+    strcat(signature, returnEncode);
+    free((void *)returnEncode);
+    
+    for (ORDeclaratorNode *param in node.params) {
+        const char *typeencode = typeEncodeForDeclaratorNode(param);
+        strcat(signature, typeencode);
+        free((void *)typeencode);
+    }
+    return strdup(signature);
+}
 
 static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
-    // block
-    if (node.nodeType == AstEnumFunctionDeclNode && node.var.isBlock) {
-        return strdup("@?");
-    }else if (node.nodeType == AstEnumCArrayDeclNode){
+    if (node.nodeType == AstEnumCArrayDeclNode){
         ORCArrayDeclNode *arrayNode = (ORCArrayDeclNode *)node;
         return cArrayTypeEncode(arrayNode);
+    }else if (node.nodeType == AstEnumFunctionDeclNode){
+        ORFunctionDeclNode *functionNode = (ORFunctionDeclNode *)node;
+        return functionTypeEncode(functionNode);
     }
     return typeEncodeWithSearchSymbolTable(node);
 }
@@ -133,14 +166,45 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     }
 }
 - (void)visitFunctionDeclNode:(nonnull ORFunctionDeclNode *)node {
-    for (ORNode *param in node.params) {
-        [self visit:param];
-    }
+    const char *signature = typeEncodeForDeclaratorNode(node);
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = signature;
+    // Return Type Name，使用函数的返回值信息，作为函数的符号类型
+    decl.typeName = node.type.name;
+    NSAssert(node.var.varname.length > 0, @"");
+    // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
+    ocSymbol *symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
+    [symbolTableRoot insert:symbol];
 }
 
 - (void)visitFunctionNode:(nonnull ORFunctionNode *)node {
+    
+    const char *signature = typeEncodeForDeclaratorNode(node.declare);
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = signature;
+    // Return Type Name，使用函数的返回值信息，作为函数的符号类型
+    decl.typeName = node.declare.type.name;
+    NSString *functionName = node.declare.var.varname;
+    
+    // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
+    if (functionName.length != 0){
+        ocSymbol *symbol = [ocSymbol symbolWithName:functionName decl:decl];
+        [symbolTableRoot insert:symbol];
+    }
+    
     [symbolTableRoot increaseScope];
-    [self visit:node.declare];
+    
+    //针对匿名函数，需要自己在自己的作用域中持有签名信息
+    //形如: ^(int a, int b){  }
+    if (functionName.length == 0){
+        ocSymbol *symbol = [ocSymbol symbolWithName:AnonymousBlockSignature decl:decl];
+        [symbolTableRoot insert:symbol];
+    }
+    
+    // 在函数实现的作用域中添加参数的符号信息
+    for (ORNode *param in node.declare.params) {
+        [self visit:param];
+    }
     [self visit:node.scopeImp];
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];

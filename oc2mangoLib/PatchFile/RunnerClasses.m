@@ -69,7 +69,7 @@ NODE_LIST(OR_IMPL)
 + (instancetype)copyFromDecl:(ORDeclaratorNode *)var{
     __autoreleasing ORDeclaratorNode *new = [[self class] new];
     new.type = var.type;
-    new.var = var.var;
+    new.var = [ORVariableNode copyFromVar:var.var];
     return new;
 }
 

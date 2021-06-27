@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isStruct;
 - (BOOL)isUnion;
 - (BOOL)isCArray;
+/// @?
+- (BOOL)isBlock;
+/// ^?
+- (BOOL)isFunction;
 @end
 
 @interface ocComposeDecl: ocDecl

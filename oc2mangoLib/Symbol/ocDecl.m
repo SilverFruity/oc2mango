@@ -41,7 +41,12 @@
         NSGetSizeAndAlignment(typeEncoding, &size, &alignment);
         _size = size;
         _alignment = alignment;
-        _type = *typeEncoding;
+        if (self.isBlock || self.isFunction) {
+            // @?x | ^?x, 取x
+            _type = _typeEncode[2];
+        }else{
+            _type = *typeEncoding;
+        }
     }
 }
 
@@ -53,6 +58,14 @@
 }
 - (BOOL)isCArray{
     return _type == OCTypeArray;
+}
+- (BOOL)isBlock{
+    if (strlen(_typeEncode) < 2) return NO;
+    return _typeEncode[0] == OCTypeObject && _typeEncode[1] == OCTypeUnknown;
+}
+- (BOOL)isFunction{
+    if (strlen(_typeEncode) < 2) return NO;
+    return _typeEncode[0] == OCTypePointer && _typeEncode[1] == OCTypeUnknown;
 }
 - (void)dealloc
 {
