@@ -7,7 +7,11 @@
 //
 
 #import <ORPatchFile/ORPatchFile.h>
+#import "ocSymbolTable.h"
+
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString *AnonymousBlockSignature;
 
 @interface InitialSymbolTableVisitor : NSObject <AstVisitor>
 

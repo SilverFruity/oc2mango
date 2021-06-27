@@ -23,7 +23,12 @@
     }
 }
 - (ocSymbol *)lookup:(NSString *)name{
-    NSAssert(name != nil && name.length > 0, @"");
     return self.table[name];
+}
+- (ocSymbol *)objectForKeyedSubscript:(NSString *)key{
+    return self.table[key];
+}
+- (void)setObject:(ocSymbol *)obj forKeyedSubscript:(NSString *)key{
+    self.table[key] = obj;
 }
 @end

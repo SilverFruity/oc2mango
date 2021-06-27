@@ -1203,14 +1203,29 @@ IDENTIFIER
 {
     $$ = makeDeclaratorNode(nil, makeVarNode($1));
 }
-| LP declarator RP
-{
-    $$ = $2;
-}
-| direct_declarator LP parameter_list RP
+| declarator LP parameter_list RP
 {
     ORFunctionDeclNode *funcDecl = [ORFunctionDeclNode copyFromDecl:$1];
     NSMutableArray *pairs = $3;
+    if ([pairs lastObject] == [NSNull null]) {
+        funcDecl.isMultiArgs = YES;
+        [pairs removeLastObject];
+    }
+    funcDecl.params = pairs;
+    $$ = funcDecl;
+}
+| LP declarator RP LP parameter_list RP
+{
+    /*
+     为函数指针声明单独处理: void (*a)(void); void (**a)(void);，将其ptCount置为0.
+     原因: 在签名声明时，ptCount的值，将与 void *a(void); 签名冲突
+     理想的签名结果： void (**a)(void)的签名应为: ^^?vv, void *a(void)签名应为: ^?^vv
+     目前的语法树结构无法正确处理此问题，所以统一将函数声明的签名同一处理为 ^? 开头，不处理指针个数
+     目前的签名结果: void (**a)(void) -> ^?vv  void *a(void) -> ^?^vv
+     */
+    ORFunctionDeclNode *funcDecl = [ORFunctionDeclNode copyFromDecl:$2];
+    funcDecl.var.ptCount = 0;
+    NSMutableArray *pairs = $5;
     if ([pairs lastObject] == [NSNull null]) {
         funcDecl.isMultiArgs = YES;
         [pairs removeLastObject];

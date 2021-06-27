@@ -35,7 +35,7 @@
         free((void *)_typeEncode);
         _typeEncode = NULL;
     }
-    _typeEncode = typeEncoding;
+    _typeEncode = strdup(typeEncoding);
     if (typeEncoding != NULL) {
         NSUInteger size = 0, alignment = 0;
         NSGetSizeAndAlignment(typeEncoding, &size, &alignment);

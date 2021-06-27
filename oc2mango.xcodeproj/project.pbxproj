@@ -23,7 +23,7 @@
 		1872080F2685824A003C4DC6 /* ocDecl.h in Headers */ = {isa = PBXBuildFile; fileRef = 1872080D2685824A003C4DC6 /* ocDecl.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		187208102685824A003C4DC6 /* ocDecl.m in Sources */ = {isa = PBXBuildFile; fileRef = 1872080E2685824A003C4DC6 /* ocDecl.m */; };
 		18720813268594D8003C4DC6 /* ocHandleTypeEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */; };
-		18720814268594D8003C4DC6 /* ocHandleTypeEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 18720812268594D8003C4DC6 /* ocHandleTypeEncode.h */; };
+		18720814268594D8003C4DC6 /* ocHandleTypeEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 18720812268594D8003C4DC6 /* ocHandleTypeEncode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		18819E28268329D800CC85DD /* Convert2MangoVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18819E26268329D800CC85DD /* Convert2MangoVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
 		18E852CC26842CC5009B9A3E /* CodeGenVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */; };
@@ -35,9 +35,9 @@
 		18E852D926846399009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
 		18E852DD26846BA0009B9A3E /* ocSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852DB26846BA0009B9A3E /* ocSymbol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		18E852DE26846BA0009B9A3E /* ocSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852DC26846BA0009B9A3E /* ocSymbol.m */; };
-		18E852E2268472AE009B9A3E /* ocScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852E0268472AE009B9A3E /* ocScope.h */; };
+		18E852E2268472AE009B9A3E /* ocScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852E0268472AE009B9A3E /* ocScope.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		18E852E3268472AE009B9A3E /* ocScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852E1268472AE009B9A3E /* ocScope.m */; };
-		18E852E626847337009B9A3E /* ocSymbolTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852E426847337009B9A3E /* ocSymbolTable.h */; };
+		18E852E626847337009B9A3E /* ocSymbolTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852E426847337009B9A3E /* ocSymbolTable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		18E852E726847337009B9A3E /* ocSymbolTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852E526847337009B9A3E /* ocSymbolTable.m */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
@@ -87,6 +87,7 @@
 		EE75226026836798004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
+		EEB3FF6D268873CA00630C4E /* SymbolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3FF6C268873CA00630C4E /* SymbolTests.m */; };
 		EEB7396C268616EC00855E4A /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EEC088712669015800538E9A /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
@@ -219,6 +220,7 @@
 		EE982F05226CB443008712C2 /* MakeDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MakeDeclare.h; sourceTree = "<group>"; };
 		EE982F06226CB4E4008712C2 /* MakeDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MakeDeclare.m; sourceTree = "<group>"; };
 		EEB17FFA22849273003D5C36 /* MethodCallTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodCallTest.swift; sourceTree = "<group>"; };
+		EEB3FF6C268873CA00630C4E /* SymbolTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolTests.m; sourceTree = "<group>"; };
 		EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = oc2mangoLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EED67A702270AE0E0015AC02 /* oc2mangoLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = oc2mangoLib.h; sourceTree = "<group>"; };
 		EED67A712270AE0E0015AC02 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -458,6 +460,7 @@
 				EED67A7D2270AE0F0015AC02 /* Info.plist */,
 				EED67AB62270B55D0015AC02 /* oc2mangoLibTests-Bridging-Header.h */,
 				EE1C71F32288314C0077A71E /* FileTest.swift */,
+				EEB3FF6C268873CA00630C4E /* SymbolTests.m */,
 				EE9592DD24F7CA8800D8ABE0 /* Archive */,
 				EE5534D822900DD700A4B32E /* Convert */,
 				EE147263227F1D6B00566B3F /* Implementation */,
@@ -819,6 +822,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE1C71F42288314C0077A71E /* FileTest.swift in Sources */,
+				EEB3FF6D268873CA00630C4E /* SymbolTests.m in Sources */,
 				EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */,
 				EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */,
 				639D738422939E89005C6577 /* ExpressionTest.swift in Sources */,

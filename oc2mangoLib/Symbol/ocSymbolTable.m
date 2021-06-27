@@ -7,8 +7,16 @@
 //
 
 #import "ocSymbolTable.h"
-
+const ocSymbolTable * symbolTableRoot = nil;
 @implementation ocSymbolTable
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.scope = [ocScope new];
+    }
+    return self;
+}
 - (ocSymbol *)insert:(ocSymbol *)symbol{
     ocSymbol *localSymbol = [self localLookup:symbol.name];
     if (localSymbol == nil) {
@@ -34,6 +42,10 @@
     return symbol;
 }
 - (ocSymbol *)lookup:(NSString *)name{
+    if (name != nil && name.length > 0) {
+        return nil;
+    }
+//    NSAssert(name != nil && name.length > 0, @"");
     ocScope *scope = self.scope;
     ocSymbol *symbol = nil;
     while (symbol == nil && scope != nil)
@@ -47,7 +59,9 @@
     return [self.scope lookup:name];
 }
 - (ocScope *)increaseScope{
-    self.scope = [ocScope new];
+    ocScope *scope = [ocScope new];
+    scope.parent = self.scope;
+    self.scope = scope;
     return self.scope;
 }
 - (ocScope *)decreaseScope{

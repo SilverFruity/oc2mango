@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong)ocScope *parent;
 - (void)insert:(NSString *)name symbol:(ocSymbol *)symbol;
 - (ocSymbol *)lookup:(NSString *)name;
+- (ocSymbol *)objectForKeyedSubscript:(NSString *)key;
+- (void)setObject:(ocSymbol *)obj forKeyedSubscript:(NSString *)key;
 @end
 
 NS_ASSUME_NONNULL_END

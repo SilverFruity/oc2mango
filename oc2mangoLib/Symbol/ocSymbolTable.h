@@ -12,8 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @class ocSymbolTable;
-static const ocSymbolTable * symbolTableRoot = nil;
-
+extern const ocSymbolTable * symbolTableRoot;
 @interface ocSymbolTable : NSObject
 @property (nonatomic, strong)ocScope *scope;
 - (ocSymbol *)insert:(ocSymbol *)symbol;

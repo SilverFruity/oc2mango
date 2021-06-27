@@ -7,8 +7,8 @@
 //
 
 #import "InitialSymbolTableVisitor.h"
-#import "ocSymbolTable.h"
-static NSString *AnonymousBlockSignature = @"BlockSignature";
+
+NSString *AnonymousBlockSignature = @"BlockSignature";
 
 static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
 static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
@@ -68,7 +68,7 @@ static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
     }
     strcat(encoding, suffixEncode);
     strcat(encoding, "\0");
-    return strdup(encoding);
+    return [NSString stringWithFormat:@"%s",encoding].UTF8String;
 }
 
 static const char *cArrayTypeEncode(ORCArrayDeclNode *node){
@@ -81,7 +81,7 @@ static const char *cArrayTypeEncode(ORCArrayDeclNode *node){
         memset(buffer, 0, buffer_len);
         buffer[0] = '^';
         memcpy(buffer + 1, result, result_len);
-        return strdup(buffer);
+        return [NSString stringWithFormat:@"%s",buffer].UTF8String;;
     }
     ORCArrayDeclNode *tmp = node;
     NSMutableArray *nodes = [NSMutableArray array];
@@ -104,37 +104,28 @@ static const char *cArrayTypeEncode(ORCArrayDeclNode *node){
         }
     }
     strcat(result, rights);
-    return strdup(result);
+    return [NSString stringWithFormat:@"%s",result].UTF8String;
 }
 static const char *functionTypeEncode(ORFunctionDeclNode *node){
     char signature [128] = { 0 };
-    // 函数 TypEncode 签名: ^?@@:*
-    // Block TypEncode 签名: @?@@:*
+    // 函数 void (int, int) TypEncode 签名: ^?vii
+    // Block void (^)(int, int) TypEncode 签名: @?v@ii
+    
+    ORDeclaratorNode *returnNode = [ORDeclaratorNode copyFromDecl:node];
     if(node.var.isBlock){
         // block
         strcat(signature, "@?");
-
     }else{
         // function
-        strcat(signature, "^?");
         // 针对 void func(void); 其ptCount默认为1，当作函数指针处理
         // ？paser.y中直接默认为1的可行性
-        if (node.var.ptCount == 0) {
-            node = [ORFunctionDeclNode copyFromDecl:node];
-            node.var.ptCount = 1;
-        }
+        strcat(signature, "^?");
     }
-    ORDeclaratorNode *returnNode = [ORDeclaratorNode copyFromDecl:node];
-    const char *returnEncode = typeEncodeForDeclaratorNode(returnNode);
-    strcat(signature, returnEncode);
-    free((void *)returnEncode);
-    
+    strcat(signature, typeEncodeForDeclaratorNode(returnNode));
     for (ORDeclaratorNode *param in node.params) {
-        const char *typeencode = typeEncodeForDeclaratorNode(param);
-        strcat(signature, typeencode);
-        free((void *)typeencode);
+        strcat(signature, typeEncodeForDeclaratorNode(param));
     }
-    return strdup(signature);
+    return [NSString stringWithFormat:@"%s",signature].UTF8String;;
 }
 
 static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
@@ -153,6 +144,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 {
     self = [super init];
     symbolTableRoot = [ocSymbolTable new];
+    NSLog(@"%@",symbolTableRoot);
     return self;
 }
 - (void)visit:(nonnull ORNode *)node {
@@ -359,7 +351,13 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [self visit:node.declarator];
     [self visit:node.expression];
 }
-
+NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger align){
+    size = MIN(size, align); // 在参数对齐数和默认对齐数取小
+    if (offset % size != 0) {
+        offset = ((offset + size - 1) / size) * size;
+    }
+    return offset;
+}
 - (void)visitStructStatNode:(nonnull ORStructStatNode *)node {
     // 展开 struct 内部的符号表作用域
     [symbolTableRoot increaseScope];
@@ -367,8 +365,8 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     NSMutableString *typeEncode = [@"{" mutableCopy];
     [typeEncode appendString:node.sturctName];
     [typeEncode appendString:@"="];
-    NSUInteger offset = 0;
     NSUInteger structAlignment = 8;
+    ocDecl *lastDecl = nil;
     for (ORDeclaratorNode *exp in node.fields) {
         NSString *typeName = exp.type.name;
         ocSymbol *symbol = [symbolTableRoot lookup:typeName];
@@ -379,18 +377,13 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
         ocDecl * decl = [ocDecl new];
         decl.typeEncode = fieldEncode;
         decl.typeName = typeName;
-        decl.offset = offset;
+        // 内存对齐
+        decl.offset = momeryLayoutAlignment(lastDecl.offset + lastDecl.size, decl.size, structAlignment);;
+        lastDecl = decl;
         ocSymbol *fieldSymbol = [ocSymbol symbolWithName:exp.var.varname decl:decl];
         [symbolTableRoot insert:fieldSymbol];
-        
-        // 内存对齐
-        NSUInteger size = 0;
-        NSGetSizeAndAlignment(fieldEncode, &size, NULL);
-        size = MIN(size, structAlignment); // 在参数对齐数和默认对齐数8取小
-        if (offset % size != 0) {
-            offset = ((offset + size - 1) / size) * size;
-        }
     }
+    NSUInteger offset = momeryLayoutAlignment(lastDecl.offset + lastDecl.size, structAlignment, structAlignment);
     [typeEncode appendString:@"}"];
     // 根符号表注册struct
     ocComposeDecl *decl = [ocComposeDecl new];
@@ -403,7 +396,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     decl.size = offset;
     ocSymbol *symbol = [ocSymbol symbolWithName:node.sturctName decl:decl];
     [symbolTableRoot insertRoot:symbol];
-    
+    node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
 }
 
@@ -436,7 +429,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     decl.fielsScope = symbolTableRoot.scope;
     ocSymbol *symbol = [ocSymbol symbolWithName:node.unionName decl:decl];
     [symbolTableRoot insertRoot:symbol];
-
+    node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
 }
 - (void)visitEnumStatNode:(nonnull OREnumStatNode *)node {
