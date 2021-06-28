@@ -11,13 +11,23 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ocDecl : NSObject
+{
+@public
+    BOOL isProperty;
+    BOOL isIvar;
+    BOOL isMethod;
+    BOOL isClassMethod;
+}
 @property (nonatomic, assign)OCType type;
 @property (nonatomic, copy)NSString *typeName;
 @property (nonatomic, assign)const char *typeEncode;
 @property (nonatomic, assign)NSUInteger size;
 @property (nonatomic, assign)NSUInteger offset;
 @property (nonatomic, assign)NSUInteger alignment;
-- (instancetype)initWithDeclrator:(ORDeclaratorNode *)node;
+
+@property (nonatomic, assign)DeclarationModifier declModifer;
+@property (nonatomic, assign)MFPropertyModifier propModifer;
+
 - (BOOL)isStruct;
 - (BOOL)isUnion;
 - (BOOL)isCArray;
@@ -25,6 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isBlock;
 /// ^?
 - (BOOL)isFunction;
+
+- (BOOL)isProperty;
+- (BOOL)isIvar;
+- (BOOL)isMethod;
+- (BOOL)isClassMethod;
+
+- (BOOL)isStatic;
+- (BOOL)isConst;
 @end
 
 @interface ocComposeDecl: ocDecl

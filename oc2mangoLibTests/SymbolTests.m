@@ -134,7 +134,7 @@ union ORValue{
     XCTAssert(strcmp(symbol.decl.typeEncode?:"", "@?dii") == 0);
     
 }
-- (void)testExample {
+- (void)testSimpleDeclarator{
     source = @"int a; double b;";
     AST *ast = [parser parseSource:source];
     ocSymbol *symbol = ast.scope[@"a"];
@@ -147,6 +147,89 @@ union ORValue{
     
 //    ast.scope[@"b"];
 }
+- (void)testClass{
+    source = @" \
+    @interface TestClass: NSObject\
+    @property(nonatomic, strong)id object;\
+    @property(nonatomic, strong)NSString *string;\
+    @property(nonatomic, strong)NSArray *array;\
+    @end\
+    @implementation TestClass\
+    {\
+        int a;\
+        double b;\
+        NSString *c;\
+        void *d;\
+    }\
+    - (instancetype)initWithObject:(id)object{  }\
+    + (instranceType)objectWithA:(int)a b:(double)b c:(NSString *)c d:(void **)d{ }\
+    @end";
+    AST *ast = [parser parseSource:source];
+    ORClassNode *classNode = ast.nodes.firstObject;
+    ocSymbol *symbol = classNode.scope[@"_object"];
+    XCTAssert([symbol.decl.typeName isEqualToString:@"id"], @"%@",symbol.decl.typeName);
+    XCTAssert(symbol.decl.type = OCTypeObject);
+    XCTAssert(symbol.decl.isIvar);
+    
+    symbol = classNode.scope[@"@object"];
+    XCTAssert([symbol.decl.typeName isEqualToString:@"id"], @"%@",symbol.decl.typeName);
+    XCTAssert(symbol.decl.type = OCTypeObject);
+    XCTAssert(symbol.decl.isProperty);
+    XCTAssert(symbol.decl.propModifer && (MFPropertyModifierNonatomic | MFPropertyModifierMemStrong));
+    
+    symbol = classNode.scope[@"_string"];
+    XCTAssert([symbol.decl.typeName isEqualToString:@"NSString"], @"%@",symbol.decl.typeName);
+    XCTAssert(symbol.decl.type = OCTypeObject);
+    XCTAssert(strcmp(symbol.decl.typeEncode, "@") == 0);
+    XCTAssert(symbol.decl.isIvar);
+    
+    symbol = classNode.scope[@"@string"];
+    XCTAssert([symbol.decl.typeName isEqualToString:@"NSString"], @"%@",symbol.decl.typeName);
+    XCTAssert(symbol.decl.type = OCTypeObject);
+    XCTAssert(symbol.decl.isProperty);
+    XCTAssert(symbol.decl.propModifer && (MFPropertyModifierNonatomic | MFPropertyModifierMemStrong));
+    
+    symbol = classNode.scope[@"a"];
+    XCTAssert(symbol.decl.type = OCTypeInt);
+    XCTAssert(symbol.decl.isIvar);
+    
+    symbol = classNode.scope[@"b"];
+    XCTAssert(symbol.decl.type = OCTypeDouble);
+    XCTAssert(symbol.decl.isIvar);
+    
+    symbol = classNode.scope[@"d"];
+    XCTAssert(symbol.decl.type = OCTypePointer);
+    XCTAssert(symbol.decl.isIvar);
+    
+    symbol = classNode.scope[@"initWithObject:"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, "@@:@") == 0, @"%s",symbol.decl.typeEncode);
+    XCTAssert(symbol.decl.type = OCTypeObject);
+    XCTAssert(symbol.decl.isMethod);
+    XCTAssert(symbol.decl.isClassMethod == NO);
+    
+    symbol = classNode.scope[@"objectWithA:b:c:d:"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, "@@:id@^^v") == 0, @"%s",symbol.decl.typeEncode);
+    XCTAssert(symbol.decl.type = OCTypeObject);
+    XCTAssert(symbol.decl.isMethod);
+    XCTAssert(symbol.decl.isClassMethod);
+    
+    ORMethodNode *method = classNode.methods[0];
+    symbol = method.scope[@"object"];
+    XCTAssert(symbol.decl.type = OCTypeObject);
+    XCTAssert([symbol.decl.typeName isEqualToString:@"id"], @"%@",symbol.decl.typeName);
+    
+    method = classNode.methods[1];
+    symbol = method.scope[@"a"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, "i") == 0);
+    symbol = method.scope[@"b"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, "d") == 0);
+    symbol = method.scope[@"c"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, "@") == 0);
+    symbol = method.scope[@"d"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, "^^v") == 0, @"%s", symbol.decl.typeEncode);
+    
+}
+
 
 - (void)testPerformanceExample {
     // This is an example of a performance test case.

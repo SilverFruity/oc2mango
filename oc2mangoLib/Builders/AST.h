@@ -18,6 +18,7 @@ void handlePropertyDecls(ORPropertyNode *node);
 void handleMethodDecl(ORMethodDeclNode *node);
 void handleMethodImp(ORMethodNode *node);
 extern AST *GlobalAst;
+@class ocScope;
 @interface AST : NSObject
 @property(nonatomic,strong)ocScope *scope;
 @property(nonatomic,nonnull,strong)NSMutableArray *nodes;

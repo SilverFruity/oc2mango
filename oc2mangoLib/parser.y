@@ -421,8 +421,8 @@ SUB LP parameter_declaration RP
     ORDeclaratorNode *pair = $5;
     ORMethodDeclNode *method = $$;
     [method.methodNames addObject: $2];
-    [method.parameterTypes addObject:pair];
-    [method.parameterNames addObject: $7];
+    pair.var.varname = $7;
+    [method.parameters addObject:pair];
     $$ = method;
 }
 ;

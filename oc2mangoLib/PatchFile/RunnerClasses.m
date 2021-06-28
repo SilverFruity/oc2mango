@@ -262,7 +262,7 @@ NODE_LIST(OR_IMPL)
 - (NSString *)selectorName{
     if (_selectorName == nil){
         NSMutableArray *names = [self.methodNames mutableCopy];
-        if (self.parameterNames.count >= 1){
+        if (self.parameters.count >= 1){
             [names addObject:@""];
         }
         _selectorName = [names componentsJoinedByString:@":"];

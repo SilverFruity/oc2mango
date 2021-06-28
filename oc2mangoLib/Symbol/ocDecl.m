@@ -20,16 +20,6 @@
     }
     return self;
 }
-- (instancetype)initWithDeclrator:(ORDeclaratorNode *)node{
-    self = [super init];
-//    char type = node.type.type;
-//    if (TypeEncodeCharIsBaseType(type)) {
-//        self.typeEncode = typeEncodeForDeclaratorNode(node);
-//    }else{
-//
-//    }
-    return self;
-}
 - (void)setTypeEncode:(const char *)typeEncoding{
     if (_typeEncode != NULL) {
         free((void *)_typeEncode);
@@ -66,6 +56,18 @@
 - (BOOL)isFunction{
     if (strlen(_typeEncode) < 2) return NO;
     return _typeEncode[0] == OCTypePointer && _typeEncode[1] == OCTypeUnknown;
+}
+- (BOOL)isProperty{
+    return isProperty;
+}
+- (BOOL)isIvar{
+    return isIvar;
+}
+- (BOOL)isMethod{
+    return isMethod;
+}
+- (BOOL)isClassMethod{
+    return isClassMethod;
 }
 - (void)dealloc
 {

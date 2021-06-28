@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 typedef enum: uint32_t{
-    DeclarationModifierNone       = 1,
+    DeclarationModifierBlock      = 1 << 0,
     DeclarationModifierStrong     = 1 << 1,
     DeclarationModifierWeak       = 1 << 2,
     DeclarationModifierStatic     = 1 << 3
@@ -284,8 +284,7 @@ typedef enum: uint32_t{
 @property(nonatomic,assign) BOOL isClassMethod;
 @property(nonatomic,strong) ORDeclaratorNode * returnType;
 @property(nonatomic,strong) NSMutableArray *methodNames;
-@property(nonatomic,strong) NSMutableArray <ORDeclaratorNode *>*parameterTypes;
-@property(nonatomic,strong) NSMutableArray *parameterNames;
+@property(nonatomic,strong) NSMutableArray <ORDeclaratorNode *>*parameters;
 - (NSString *)selectorName;
 @end
 

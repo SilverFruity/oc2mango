@@ -42,8 +42,7 @@ ORPropertyNode *makePropertyDeclare(NSMutableArray *keywords, ORDeclaratorNode *
 ORMethodDeclNode *makeMethodDeclare(BOOL isClassMethod, ORDeclaratorNode *returnType){
     __autoreleasing ORMethodDeclNode *method = [ORMethodDeclNode new];
     method.methodNames = [NSMutableArray array];
-    method.parameterNames  = [NSMutableArray array];
-    method.parameterTypes = [NSMutableArray array];
+    method.parameters = [NSMutableArray array];
     method.isClassMethod = isClassMethod;
     method.returnType = returnType;
     return method;

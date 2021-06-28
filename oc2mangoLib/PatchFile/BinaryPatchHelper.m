@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1624636006
+//  Created by Jiang on 1624888141
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -535,8 +535,7 @@ AstMethodDeclNode *AstMethodDeclNodeConvert(ORMethodDeclNode *exp, AstPatchFile 
     node->isClassMethod = exp.isClassMethod;
     node->returnType = (AstEmptyNode *)AstNodeConvert(exp.returnType, patch, length);
     node->methodNames = (AstNodeList *)AstNodeConvert(exp.methodNames, patch, length);
-    node->parameterTypes = (AstNodeList *)AstNodeConvert(exp.parameterTypes, patch, length);
-    node->parameterNames = (AstNodeList *)AstNodeConvert(exp.parameterNames, patch, length);
+    node->parameters = (AstNodeList *)AstNodeConvert(exp.parameters, patch, length);
     *length += AstMethodDeclNodeBaseLength;
     return node;
 }
@@ -861,8 +860,7 @@ ORMethodDeclNode *AstMethodDeclNodeDeConvert(ORNode *parent, AstMethodDeclNode *
     exp.isClassMethod = node->isClassMethod;
     exp.returnType = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->returnType, patch);
     exp.methodNames = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->methodNames, patch);
-    exp.parameterTypes = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->parameterTypes, patch);
-    exp.parameterNames = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->parameterNames, patch);
+    exp.parameters = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->parameters, patch);
     return exp;
 }
 ORMethodNode *AstMethodNodeDeConvert(ORNode *parent, AstMethodNode *node, AstPatchFile *patch){
@@ -1107,8 +1105,7 @@ void AstMethodDeclNodeSerailization(AstMethodDeclNode *node, void *buffer, uint3
     *cursor += AstMethodDeclNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->returnType, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->methodNames, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->parameterTypes, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->parameterNames, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->parameters, buffer, cursor);
 }
 void AstMethodNodeSerailization(AstMethodNode *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, AstMethodNodeBaseLength);
@@ -1396,8 +1393,7 @@ AstMethodDeclNode *AstMethodDeclNodeDeserialization(void *buffer, uint32_t *curs
     *cursor += AstMethodDeclNodeBaseLength;
     node->returnType =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->methodNames =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->parameterTypes =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->parameterNames =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->parameters =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
 AstMethodNode *AstMethodNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
@@ -1606,8 +1602,7 @@ void AstPropertyNodeDestroy(AstPropertyNode *node){
 void AstMethodDeclNodeDestroy(AstMethodDeclNode *node){
     AstNodeDestroy((AstEmptyNode *)node->returnType);
     AstNodeDestroy((AstEmptyNode *)node->methodNames);
-    AstNodeDestroy((AstEmptyNode *)node->parameterTypes);
-    AstNodeDestroy((AstEmptyNode *)node->parameterNames);
+    AstNodeDestroy((AstEmptyNode *)node->parameters);
     free(node);
 }
 void AstMethodNodeDestroy(AstMethodNode *node){

@@ -7,6 +7,7 @@
 //
 
 #import "InitialSymbolTableVisitor.h"
+#import "ocHandleTypeEncode.h"
 
 NSString *AnonymousBlockSignature = @"BlockSignature";
 
@@ -49,6 +50,7 @@ static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
                 CaseTypeEncoding(Object)
                 CaseTypeEncoding(Class)
                 CaseTypeEncoding(SEL)
+                CaseTypeEncoding(Void)
             default:
                 break;
         }
@@ -61,6 +63,9 @@ static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
     }
     while (tmpPtCount > 0) {
         if (type == OCTypeChar && tmpPtCount == 1) {
+            break;
+        }
+        if (type == OCTypeObject && tmpPtCount == 1) {
             break;
         }
         strcat(encoding, "^");
@@ -203,7 +208,54 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 #pragma mark - Class
+- (void)visitProtocolNode:(nonnull ORProtocolNode *)node {
+
+}
+- (void)visitPropertyNode:(nonnull ORPropertyNode *)node {
+    ocDecl *propDecl = [ocDecl new];
+    propDecl.typeEncode = typeEncodeForDeclaratorNode(node.var);
+    propDecl.typeName = node.var.type.name;
+    propDecl->isProperty = YES;
+    propDecl.propModifer = node.modifier;
+    ocSymbol *propSymbol = [ocSymbol symbolWithName:[NSString stringWithFormat:@"@%@",node.var.var.varname] decl:propDecl];
+    [symbolTableRoot insert:propSymbol];
+    
+    ocDecl *ivarDecl = [ocDecl new];
+    ivarDecl.typeEncode = propDecl.typeEncode;
+    ivarDecl.typeName = propDecl.typeName;
+    ivarDecl->isIvar = YES;
+    ocSymbol *ivarSymbol = [ocSymbol symbolWithName:[NSString stringWithFormat:@"_%@",node.var.var.varname] decl:ivarDecl];
+    [symbolTableRoot insert:ivarSymbol];
+}
+- (void)visitMethodDeclNode:(nonnull ORMethodDeclNode *)node {
+    //向method作用域注册参数符号
+    for (int i = 0; i < node.parameters.count; i++) {
+        [self visit:node.parameters[i]];
+    }
+}
 - (void)visitMethodNode:(nonnull ORMethodNode *)node {
+    //生成 method 签名信息
+    char methodTypeEncode[256] = { 0 };
+    const char *returnTypeEncode = typeEncodeForDeclaratorNode(node.declare.returnType);
+    strcat(methodTypeEncode, returnTypeEncode);
+    strcat(methodTypeEncode, OCTypeStringObject);
+    strcat(methodTypeEncode, OCTypeStringSEL);
+    for (ORNode *param in node.declare.parameters) {
+        strcat(methodTypeEncode, typeEncodeForDeclaratorNode(param));
+    }
+    
+    ocDecl *methodDecl = [ocDecl new];
+    methodDecl.typeEncode = methodTypeEncode;
+    methodDecl.size = sizeOfTypeEncode(returnTypeEncode);
+    methodDecl->isMethod = YES;
+    methodDecl->isClassMethod = node.declare.isClassMethod;
+    
+    //向Class作用域添加Method的符号信息
+    ocSymbol *symbol = [ocSymbol new];
+    symbol.decl = methodDecl;
+    symbol.name = node.declare.selectorName;
+    [symbolTableRoot insert:symbol];
+    
     [symbolTableRoot increaseScope];
     [self visit:node.declare];
     [self visit:node.scopeImp];
@@ -211,35 +263,24 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [symbolTableRoot decreaseScope];
 }
 
-- (void)visitPropertyNode:(nonnull ORPropertyNode *)node {
-    ocDecl *ivarDecl = [ocDecl new];
-    ivarDecl.typeEncode = typeEncodeForDeclaratorNode(node.var);
-    ivarDecl.typeName = node.var.type.name;
-    ocSymbol *ivarSymbol = [ocSymbol symbolWithName:[NSString stringWithFormat:@"_%@",node.var.var.varname] decl:ivarDecl];
-    [symbolTableRoot insert:ivarSymbol];
-//    NOTE: 使用 OCPropertyDecl ???, property相关的的符号表应该存储在哪里？
-//    ocDecl *propDecl = nil;
-//    ocSymbol *propSymbol = [ocSymbol symbolWithName:node.var.var.varname decl:propDecl];
-//    [symbolTableRoot insert:propSymbol];
-}
-- (void)visitProtocolNode:(nonnull ORProtocolNode *)node {
-
-}
-- (void)visitMethodDeclNode:(nonnull ORMethodDeclNode *)node {
-    for (int i = 0; i < node.parameterNames.count; i++) {
-        NSString *name = node.parameterNames[i];
-        ORDeclaratorNode *declNode = node.parameterTypes[i];
-        declNode.var.varname = name;
-        [self visit:declNode];
-    }
-}
 - (void)visitClassNode:(nonnull ORClassNode *)node {
+    ocDecl *classDecl = [ocDecl new];
+    classDecl.typeName = node.className;
+    classDecl.typeEncode = OCTypeStringClass;
+    ocSymbol *symbol = [ocSymbol symbolWithName:node.className decl:classDecl];
+    [symbolTableRoot insertRoot:symbol];
+    
     [symbolTableRoot increaseScope];
     for (ORPropertyNode *prop in node.properties) {
         [self visit:prop];
     }
     for (ORDeclaratorNode *ivar in node.privateVariables) {
-        [self visit:ivar];
+        ocDecl *ivarDecl = [ocDecl new];
+        ivarDecl.typeEncode = typeEncodeForDeclaratorNode(ivar);
+        ivarDecl.typeName = ivar.type.name;
+        ivarDecl->isIvar = YES;
+        ocSymbol *ivarSymbol = [ocSymbol symbolWithName:ivar.var.varname decl:ivarDecl];
+        [symbolTableRoot insert:ivarSymbol];
     }
     // 所有 method 的父作用域是 Class 作用域
     for (ORMethodNode *method in node.methods) {
@@ -248,11 +289,6 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
     
-    ocDecl *classDecl = [ocDecl new];
-    classDecl.typeName = node.className;
-    classDecl.typeEncode = OCTypeStringClass;
-    ocSymbol *symbol = [ocSymbol symbolWithName:node.className decl:classDecl];
-    [symbolTableRoot insertRoot:symbol];
 }
 
 - (void)visitControlStatNode:(nonnull ORControlStatNode *)node {

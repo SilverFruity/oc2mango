@@ -92,17 +92,21 @@ static NSString *convertBuffer = nil;
 }
 - (void)visitMethodDeclNode:(ORMethodDeclNode *)node{
     NSString *methodName = @"";
-    if (node.parameterNames.count == 0) {
+    if (node.parameters.count == 0) {
         methodName = node.methodNames.firstObject;
     }else{
         NSMutableArray *list = [NSMutableArray array];
         
-        for (int i = 0; i < node.parameterNames.count; i++) {
-            [self visit:node.parameterTypes[i]];
+        for (int i = 0; i < node.parameters.count; i++) {
+            ORDeclaratorNode *decl = node.parameters[i];
+            NSString *varname = decl.var.varname;
+            decl.var.varname = nil;
+            [self visit:node.parameters[i]];
             [list addObject:[NSString stringWithFormat:@"%@:(%@)%@",
                              node.methodNames[i],
                              convertBuffer,
-                             node.parameterNames[i]]];
+                             varname]];
+             decl.var.varname = varname;
         }
         methodName = [list componentsJoinedByString:@" "];
     }
