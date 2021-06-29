@@ -49,6 +49,9 @@
 - (BOOL)isCArray{
     return _type == OCTypeArray;
 }
+- (BOOL)isObject{
+    return _type == OCTypeObject && self.isBlock == NO;
+}
 - (BOOL)isBlock{
     if (strlen(_typeEncode) < 2) return NO;
     return _typeEncode[0] == OCTypeObject && _typeEncode[1] == OCTypeUnknown;
@@ -75,6 +78,9 @@
         free((void *)_typeEncode);
         _typeEncode = NULL;
     }
+}
+- (BOOL)isClassRef{
+    return isClassRef;
 }
 @end
 

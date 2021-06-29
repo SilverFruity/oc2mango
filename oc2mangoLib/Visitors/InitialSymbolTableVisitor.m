@@ -123,7 +123,6 @@ static const char *functionTypeEncode(ORFunctionDeclNode *node){
     }else{
         // function
         // 针对 void func(void); 其ptCount默认为1，当作函数指针处理
-        // ？paser.y中直接默认为1的可行性
         strcat(signature, "^?");
     }
     strcat(signature, typeEncodeForDeclaratorNode(returnNode));
@@ -220,6 +219,17 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocSymbol *propSymbol = [ocSymbol symbolWithName:[NSString stringWithFormat:@"@%@",node.var.var.varname] decl:propDecl];
     [symbolTableRoot insert:propSymbol];
     
+    // 不使用assing的类型可以确定为NSObject的子类，向根符号表注册类符号
+    MFPropertyModifier modifer = propDecl.propModifer & MFPropertyModifierMemMask;
+    if (modifer != MFPropertyModifierMemAssign) {
+        ocDecl *classDecl = [ocDecl new];
+        classDecl.typeName = node.var.type.name;
+        classDecl.typeEncode = OCTypeStringObject;
+        classDecl->isClassRef = YES;
+        ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
+        [symbolTableRoot insertRoot:symbol];
+    }
+    
     ocDecl *ivarDecl = [ocDecl new];
     ivarDecl.typeEncode = propDecl.typeEncode;
     ivarDecl.typeName = propDecl.typeName;
@@ -240,7 +250,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     strcat(methodTypeEncode, returnTypeEncode);
     strcat(methodTypeEncode, OCTypeStringObject);
     strcat(methodTypeEncode, OCTypeStringSEL);
-    for (ORNode *param in node.declare.parameters) {
+    for (ORDeclaratorNode *param in node.declare.parameters) {
         strcat(methodTypeEncode, typeEncodeForDeclaratorNode(param));
     }
     
@@ -266,7 +276,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 - (void)visitClassNode:(nonnull ORClassNode *)node {
     ocDecl *classDecl = [ocDecl new];
     classDecl.typeName = node.className;
-    classDecl.typeEncode = OCTypeStringClass;
+    classDecl.typeEncode = OCTypeStringObject;
     ocSymbol *symbol = [ocSymbol symbolWithName:node.className decl:classDecl];
     [symbolTableRoot insertRoot:symbol];
     
@@ -297,7 +307,25 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 
 #pragma mark - ConstValue
 - (void)visitValueNode:(nonnull ORValueNode *)node {
-    
+    if (node.value_type == OCValueVariable) {
+        ocSymbol *symbol = [symbolTableRoot lookup:node.value];
+        // NSObject *a = nil;
+        // b = a.xxx;
+        // a.xxx = b;
+        // [[a xxx] yyy];
+        // b = a.xxx();
+        // 找到 a 的类型 NSObject，并注册为Class
+        if (symbol.decl.isStruct == NO
+            && symbol.decl.isFunction == NO
+            && (symbol == nil || symbol.decl.isObject )) {
+            ocDecl *classDecl = [ocDecl new];
+            classDecl.typeName = symbol == nil ? node.value : symbol.decl.typeName;
+            classDecl.typeEncode = OCTypeStringObject;
+            classDecl->isClassRef = YES;
+            ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
+            [symbolTableRoot insertRoot:symbol];
+        }
+    }
 }
 - (void)visitBoolValue:(nonnull ORBoolValue *)node {
     
@@ -375,6 +403,14 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [symbolTableRoot decreaseScope];
 }
 #pragma mark -  Major New Symbols
+- (void)visitTypeNode:(nonnull ORTypeNode *)node {
+    
+}
+
+- (void)visitVariableNode:(nonnull ORVariableNode *)node {
+    
+}
+
 - (void)visitDeclaratorNode:(nonnull ORDeclaratorNode *)node {
     ocDecl *decl = [ocDecl new];
     decl.typeName = node.type.name;
@@ -382,11 +418,14 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocSymbol * symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
     [symbolTableRoot insert:symbol];
 }
-
 - (void)visitInitDeclaratorNode:(nonnull ORInitDeclaratorNode *)node {
     [self visit:node.declarator];
     [self visit:node.expression];
 }
+- (void)visitCArrayDeclNode:(nonnull ORCArrayDeclNode *)node {
+    
+}
+
 NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger align){
     size = MIN(size, align); // 在参数对齐数和默认对齐数取小
     if (offset % size != 0) {
@@ -525,45 +564,44 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     }
 }
 
-- (void)visitCArrayDeclNode:(nonnull ORCArrayDeclNode *)node {
-    
-}
-
-
 #pragma mark - Operation Exp
 - (void)visitFunctionCall:(nonnull ORFunctionCall *)node {
-    
+    [self visit:node.caller];
+    for (ORNode *arg in node.expressions) {
+        [self visit:arg];
+    }
 }
 
 - (void)visitMethodCall:(nonnull ORMethodCall *)node {
-    
-}
-
-- (void)visitTypeNode:(nonnull ORTypeNode *)node {
-    
-}
-
-- (void)visitVariableNode:(nonnull ORVariableNode *)node {
-    
+    [self visit:node.caller];
+    for (ORNode *arg in node.values) {
+        [self visit:arg];
+    }
 }
 
 - (void)visitAssignNode:(nonnull ORAssignNode *)node {
-    
+    [self visit:node.value];
+    [self visit:node.expression];
 }
 
 - (void)visitBinaryNode:(nonnull ORBinaryNode *)node {
-    
+    [self visit:node.left];
+    [self visit:node.right];
 }
 
 - (void)visitSubscriptNode:(nonnull ORSubscriptNode *)node {
-    
+    [self visit:node.caller];
+    [self visit:node.keyExp];
 }
 
 - (void)visitTernaryNode:(nonnull ORTernaryNode *)node {
-    
+    [self visit:node.expression];
+    for (ORNode *value in node.values) {
+        [self visit:value];
+    }
 }
 - (void)visitUnaryNode:(nonnull ORUnaryNode *)node {
-    
+    [self visit:node.value];
 }
 
 

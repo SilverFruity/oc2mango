@@ -229,7 +229,47 @@ union ORValue{
     XCTAssert(strcmp(symbol.decl.typeEncode, "^^v") == 0, @"%s", symbol.decl.typeEncode);
     
 }
-
+- (void)testClassDetect{
+    source = @" \
+    @interface TestClass: NSObject\
+    @property(nonatomic, strong)id object;\
+    @property(nonatomic, strong)NSString *string;\
+    @property(nonatomic, strong)NSArray *array;\
+    @end\
+    @implementation TestClass\
+    @end\
+    void function(){\
+        NSMutableArray *a;\
+        [a addObject:@\"123\"];\
+        NSSimulatorClass *b;\
+        b.block();\
+        NSSimulatorClass1 *c;\
+        c.value = 1;\
+        NSSimulatorClass2 *d;\
+        int a = d.value;\
+        [NSSimulatorClass3 new];\
+    }\
+    ";
+    AST *ast = [parser parseSource:source];
+    ocSymbol *symbol = ast.scope[@"NSString"];
+    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.isClassRef);
+    symbol = ast.scope[@"NSArray"];
+    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.isClassRef);
+    symbol = ast.scope[@"NSSimulatorClass"];
+    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.isClassRef);
+    symbol = ast.scope[@"NSSimulatorClass1"];
+    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.isClassRef);
+    symbol = ast.scope[@"NSSimulatorClass2"];
+    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.isClassRef);
+    symbol = ast.scope[@"NSSimulatorClass3"];
+    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.isClassRef);
+}
 
 - (void)testPerformanceExample {
     // This is an example of a performance test case.

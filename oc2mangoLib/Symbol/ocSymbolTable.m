@@ -42,7 +42,7 @@ const ocSymbolTable * symbolTableRoot = nil;
     return symbol;
 }
 - (ocSymbol *)lookup:(NSString *)name{
-    if (name != nil && name.length > 0) {
+    if (name != nil && name.length == 0) {
         return nil;
     }
 //    NSAssert(name != nil && name.length > 0, @"");

@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isIvar;
     BOOL isMethod;
     BOOL isClassMethod;
+    BOOL isClassRef;
 }
 @property (nonatomic, assign)OCType type;
 @property (nonatomic, copy)NSString *typeName;
@@ -32,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isUnion;
 - (BOOL)isCArray;
 /// @?
+- (BOOL)isObject;
 - (BOOL)isBlock;
 /// ^?
 - (BOOL)isFunction;
@@ -41,8 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isMethod;
 - (BOOL)isClassMethod;
 
+// Data Section
 - (BOOL)isStatic;
 - (BOOL)isConst;
+- (BOOL)isClassRef;
 @end
 
 @interface ocComposeDecl: ocDecl
