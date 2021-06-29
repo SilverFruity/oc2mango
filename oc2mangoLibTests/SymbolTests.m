@@ -270,7 +270,18 @@ union ORValue{
     XCTAssert(symbol.decl.type == OCTypeObject);
     XCTAssert(symbol.decl.isClassRef);
 }
-
+- (void)testCArraySymbol{
+    source = @" \
+    int* a[10][100];\
+    int* b[c][d];\
+    ";
+    AST *ast = [parser parseSource:source];
+    ocSymbol *symbol = ast.scope[@"a"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, @encode(int* [10][100])) == 0);
+    symbol = ast.scope[@"b"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, "[%ld[%ld^i]]") == 0);
+    
+}
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
     [self measureBlock:^{

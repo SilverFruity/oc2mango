@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isMethod;
     BOOL isClassMethod;
     BOOL isClassRef;
+    BOOL isDynamicCArray;
 }
 @property (nonatomic, assign)OCType type;
 @property (nonatomic, copy)NSString *typeName;
@@ -37,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isBlock;
 /// ^?
 - (BOOL)isFunction;
+
+- (BOOL)isDynamicCArray;
 
 - (BOOL)isProperty;
 - (BOOL)isIvar;

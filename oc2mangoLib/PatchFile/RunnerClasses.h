@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak)ORNode *parentNode;
 @property (nonatomic, strong)ocScope *scope;
 @property (nonatomic, strong)ocSymbol *symbol;
+- (BOOL)isConst;
+- (NSInteger)integerValue;
 + (id)copyWithNode:(ORNode *)node;
 @end
 

@@ -29,6 +29,9 @@ NODE_LIST(OR_IMPL)
     [self initialNodeType:AstEnumEmptyNode];
     return self;
 }
+- (BOOL)isConst{
+    return NO;
+}
 + (id)copyWithNode:(ORNode *)node{
     ORVariableNode *new = [[[self class] alloc] init];
     new.nodeType = node.nodeType;
@@ -120,9 +123,21 @@ NODE_LIST(OR_IMPL)
 @end
 
 @implementation ORIntegerValue
+- (BOOL)isConst{
+    return YES;
+}
+- (NSInteger)integerValue{
+    return self.value;
+}
 @end
 
 @implementation ORUIntegerValue
+- (BOOL)isConst{
+    return YES;
+}
+- (NSInteger)integerValue{
+    return (NSInteger)self.value;
+}
 @end
 
 @implementation ORDoubleValue

@@ -99,12 +99,17 @@ static const char *cArrayTypeEncode(ORCArrayDeclNode *node){
     char rights[20]  = {0};
     for (int i = 0; i < nodes.count; i++) {
         ORCArrayDeclNode *item = nodes[i];
-        sprintf(buffer, "[%lld", [(ORIntegerValue *)item.capacity value]);
+        if (item.capacity.isConst) {
+            sprintf(buffer, "[%ld", [item.capacity integerValue]);
+        }else if(item.capacity){
+            memset(buffer, 0, strlen(buffer));
+            strcpy(buffer, "[%ld");
+        }
         strcat(result, buffer);
         if (i != nodes.count - 1) {
             strcat(rights, "]");
         }else{
-            sprintf(buffer, "%s]", ""); //typeEncode(typeSpecial, nil));
+            sprintf(buffer, "%s]", typeEncodeForDeclaratorNode([ORDeclaratorNode copyFromDecl:item]));
             strcat(result, buffer);
         }
     }
@@ -148,7 +153,6 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 {
     self = [super init];
     symbolTableRoot = [ocSymbolTable new];
-    NSLog(@"%@",symbolTableRoot);
     return self;
 }
 - (void)visit:(nonnull ORNode *)node {
@@ -423,7 +427,24 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [self visit:node.expression];
 }
 - (void)visitCArrayDeclNode:(nonnull ORCArrayDeclNode *)node {
-    
+    ocDecl *decl = [ocDecl new];
+    decl.typeName = @"CArray";
+    const char *typeEncode = typeEncodeForDeclaratorNode(node);
+    if (*typeEncode == OCTypeArray) {
+        BOOL isDynamicCArray = NO;
+        const char *tmp = typeEncode;
+        while (*tmp != '\0') {
+            if (*tmp == '%') {
+                isDynamicCArray = YES;
+                break;
+            }
+            tmp = tmp + 1;
+        }
+        decl->isDynamicCArray = YES;
+    }
+    decl.typeEncode = typeEncode;
+    ocSymbol * symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
+    [symbolTableRoot insert:symbol];
 }
 
 NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger align){

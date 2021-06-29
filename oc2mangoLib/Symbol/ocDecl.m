@@ -26,7 +26,7 @@
         _typeEncode = NULL;
     }
     _typeEncode = strdup(typeEncoding);
-    if (typeEncoding != NULL) {
+    if (typeEncoding != NULL && isDynamicCArray == NO) {
         NSUInteger size = 0, alignment = 0;
         NSGetSizeAndAlignment(typeEncoding, &size, &alignment);
         _size = size;
@@ -55,6 +55,9 @@
 - (BOOL)isBlock{
     if (strlen(_typeEncode) < 2) return NO;
     return _typeEncode[0] == OCTypeObject && _typeEncode[1] == OCTypeUnknown;
+}
+- (BOOL)isDynamicCArray{
+    return isDynamicCArray;
 }
 - (BOOL)isFunction{
     if (strlen(_typeEncode) < 2) return NO;
