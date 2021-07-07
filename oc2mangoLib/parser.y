@@ -143,7 +143,7 @@ expression_stats
 {
     [GlobalAst addGlobalStatements:$1];
 }
-| CLASS_DECLARE IDENTIFIER SEMICOLON
+| CLASS_DECLARE for_statement_var_list SEMICOLON
 | PROTOCOL IDENTIFIER SEMICOLON
 | declarator_type declarator ast_block_imp
 {
