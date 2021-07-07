@@ -10,6 +10,7 @@
 #import "ocHandleTypeEncode.h"
 
 NSString *AnonymousBlockSignature = @"BlockSignature";
+static unsigned long or_mem_offset = 0;
 
 static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
 static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
@@ -178,7 +179,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitFunctionNode:(nonnull ORFunctionNode *)node {
-    
+    or_mem_offset = 0;
     const char *signature = typeEncodeForDeclaratorNode(node.declare);
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = signature;
@@ -208,9 +209,11 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [self visit:node.scopeImp];
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
+    or_mem_offset = 0;
 }
 
 #pragma mark - Class
+
 - (void)visitProtocolNode:(nonnull ORProtocolNode *)node {
 
 }
@@ -248,6 +251,9 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     }
 }
 - (void)visitMethodNode:(nonnull ORMethodNode *)node {
+    
+    or_mem_offset = 0;
+    
     //生成 method 签名信息
     char methodTypeEncode[256] = { 0 };
     const char *returnTypeEncode = typeEncodeForDeclaratorNode(node.declare.returnType);
@@ -275,6 +281,8 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [self visit:node.scopeImp];
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
+    
+    or_mem_offset = 0;
 }
 
 - (void)visitClassNode:(nonnull ORClassNode *)node {
@@ -306,7 +314,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitControlStatNode:(nonnull ORControlStatNode *)node {
-    
+    [self visit:node.expression];
 }
 
 #pragma mark - ConstValue
@@ -328,7 +336,11 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
             classDecl->isClassRef = YES;
             ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
             [symbolTableRoot insertRoot:symbol];
+            return;
         }
+        node.symbol = symbol;
+    }else if (node.value_type == OCValueSelf){
+        
     }
 }
 - (void)visitBoolValue:(nonnull ORBoolValue *)node {
@@ -419,8 +431,11 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocDecl *decl = [ocDecl new];
     decl.typeName = node.type.name;
     decl.typeEncode = typeEncodeForDeclaratorNode(node);
+    decl.offset = or_mem_offset;
     ocSymbol * symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
     [symbolTableRoot insert:symbol];
+    node.symbol = symbol;
+    or_mem_offset++;
 }
 - (void)visitInitDeclaratorNode:(nonnull ORInitDeclaratorNode *)node {
     [self visit:node.declarator];

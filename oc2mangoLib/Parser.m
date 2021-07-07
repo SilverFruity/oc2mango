@@ -8,6 +8,8 @@
 
 #import "Parser.h"
 #import "RunnerClasses.h"
+#import "oc2mangoLib.h"
+
 Parser *OCParser = nil;
 @implementation CodeSource
 - (instancetype)initWithFilePath:(NSString *)filePath{

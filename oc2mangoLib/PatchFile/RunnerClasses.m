@@ -39,7 +39,9 @@ NODE_LIST(OR_IMPL)
     new.withSemicolon = node.withSemicolon;
     return new;
 }
-
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key{
+    
+}
 @end
 
 @implementation ORTypeNode

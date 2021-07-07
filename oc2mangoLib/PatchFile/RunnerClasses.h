@@ -121,7 +121,7 @@ typedef enum: uint8_t{
 @end
 
 @interface ORFunctionCall: ORNode
-@property (nonatomic, strong)ORNode *caller;
+@property (nonatomic, strong)ORValueNode *caller;
 @property (nonatomic, strong)NSMutableArray <ORNode *>*expressions;
 @end
 
@@ -247,7 +247,7 @@ typedef enum: uint32_t{
 @end
 
 @interface ORForInStatement: ORNode
-@property (nonatomic,strong)ORNode * expression;
+@property (nonatomic,strong)ORDeclaratorNode * expression;
 @property (nonatomic,strong)ORNode * value;
 @property (nonatomic, strong, nullable)ORBlockNode *scopeImp;
 @end
