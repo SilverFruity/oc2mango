@@ -14,6 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class ocSymbolTable;
 extern const ocSymbolTable * symbolTableRoot;
 @interface ocSymbolTable : NSObject
+{
+    @public
+    unichar *constants;
+    unsigned long constants_size;
+}
 @property (nonatomic, strong)ocScope *scope;
 - (ocSymbol *)insert:(ocSymbol *)symbol;
 - (ocSymbol *)insertRoot:(ocSymbol *)symbol;

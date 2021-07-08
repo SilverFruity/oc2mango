@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ocSymbol : NSObject
 @property (nonatomic, copy)NSString *name;
 @property (nonatomic, strong)ocDecl *decl;
-+ (instancetype)symbolWithName:(NSString *)name decl:(nullable ocDecl *)decl;
++ (instancetype)symbolWithName:(nullable NSString *)name decl:(nullable ocDecl *)decl;
 @end
 
 NS_ASSUME_NONNULL_END

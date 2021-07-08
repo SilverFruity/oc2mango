@@ -13,6 +13,7 @@ const ocSymbolTable * symbolTableRoot = nil;
 {
     self = [super init];
     if (self) {
+        constants = malloc(sizeof(char));
         self.scope = [ocScope new];
     }
     return self;

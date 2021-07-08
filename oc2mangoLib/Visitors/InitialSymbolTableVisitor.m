@@ -11,6 +11,7 @@
 
 NSString *AnonymousBlockSignature = @"BlockSignature";
 static unsigned long or_mem_offset = 0;
+static unsigned long or_const_offset = 0;
 
 static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
 static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
@@ -343,17 +344,33 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
         
     }
 }
+- (ocSymbol *)createConstantSymbol:(const char *)typeEncode value:(void *)value{
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = typeEncode;
+    decl.offset = or_const_offset;
+    decl->isConstant = YES;
+    ocSymbol * symbol = [ocSymbol symbolWithName:nil decl:decl];
+    or_const_offset += decl.size;
+    symbolTableRoot->constants_size = or_const_offset;
+    symbolTableRoot->constants = realloc(symbolTableRoot->constants, sizeof(unichar) * symbolTableRoot->constants_size);
+    memcpy(symbolTableRoot->constants + decl.offset, value, decl.size);
+    return symbol;
+}
 - (void)visitBoolValue:(nonnull ORBoolValue *)node {
-    
+    BOOL value = node.value;
+    node.symbol = [self createConstantSymbol:OCTypeStringBOOL value:&value];
 }
 - (void)visitIntegerValue:(nonnull ORIntegerValue *)node {
-    
+    int64_t value = node.value;
+    node.symbol = [self createConstantSymbol:OCTypeStringLongLong value:&value];
 }
 - (void)visitUIntegerValue:(nonnull ORUIntegerValue *)node {
-    
+    uint64_t value = node.value;
+    node.symbol = [self createConstantSymbol:OCTypeStringULongLong value:&value];
 }
 - (void)visitDoubleValue:(nonnull ORDoubleValue *)node {
-    
+    double value = node.value;
+    node.symbol = [self createConstantSymbol:OCTypeStringDouble value:&value];
 }
 - (void)visitEmptyNode:(nonnull ORNode *)node {
     
@@ -435,7 +452,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocSymbol * symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
     [symbolTableRoot insert:symbol];
     node.symbol = symbol;
-    or_mem_offset++;
+    or_mem_offset += decl.size;
 }
 - (void)visitInitDeclaratorNode:(nonnull ORInitDeclaratorNode *)node {
     [self visit:node.declarator];

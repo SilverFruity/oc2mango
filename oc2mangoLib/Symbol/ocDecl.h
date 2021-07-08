@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isClassMethod;
     BOOL isClassRef;
     BOOL isDynamicCArray;
+    BOOL isConstant;
 }
 @property (nonatomic, assign)OCType type;
 @property (nonatomic, copy)NSString *typeName;
