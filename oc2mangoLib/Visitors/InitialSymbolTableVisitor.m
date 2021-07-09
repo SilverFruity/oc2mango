@@ -452,7 +452,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocSymbol * symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
     [symbolTableRoot insert:symbol];
     node.symbol = symbol;
-    or_mem_offset += decl.size;
+    or_mem_offset += MAX(decl.size, 8);
 }
 - (void)visitInitDeclaratorNode:(nonnull ORInitDeclaratorNode *)node {
     [self visit:node.declarator];
