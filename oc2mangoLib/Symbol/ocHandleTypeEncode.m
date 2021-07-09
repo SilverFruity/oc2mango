@@ -392,6 +392,16 @@ BOOL isObjectWithTypeEncode(const char *typeEncode){
             return NO;
     }
 }
+BOOL isBlockWithTypeEncode(const char *typeEncode){
+    if (typeEncode == NULL || strlen(typeEncode) < 2) {
+        return NO;
+    }
+    return typeEncode[0] == OCTypeObject && typeEncode[1] == OCTypeUnknown;
+}
+BOOL isVoidWithTypeEncode(const char *typeEncode){
+    if (typeEncode == NULL) return NO;
+    return *typeEncode == OCTypeVoid;
+}
 BOOL isPointerWithTypeEncode(const char *typeEncode){
     if (typeEncode == NULL) return NO;
     return *typeEncode == OCTypePointer;

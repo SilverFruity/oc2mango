@@ -29,4 +29,6 @@ BOOL isIntegerWithTypeEncode(const char *typeEncode);
 BOOL isFloatWithTypeEncode(const char *typeEncode);
 BOOL isObjectWithTypeEncode(const char *typeEncode);
 BOOL isPointerWithTypeEncode(const char *typeEncode);
+BOOL isVoidWithTypeEncode(const char *typeEncode);
+BOOL isBlockWithTypeEncode(const char *typeEncode);
 NSUInteger sizeOfTypeEncode(const char *typeEncode);
