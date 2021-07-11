@@ -330,10 +330,6 @@ BOOL convert_is_left_value = true;
             convertBuffer = @"super";
             return;
             
-        case OCValueClass:
-            assert(false);
-            return;
-            
         case OCValueString:
             convertBuffer = [NSString stringWithFormat:@"@\"%@\"",node.value?:@""];
             return;

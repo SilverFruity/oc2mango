@@ -9,11 +9,15 @@
 #import "ocSymbolTable.h"
 const ocSymbolTable * symbolTableRoot = nil;
 @implementation ocSymbolTable
+{
+    NSMutableDictionary *constantCache;
+}
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         constants = malloc(sizeof(char));
+        constantCache = [NSMutableDictionary dictionary];
         self.scope = [ocScope new];
     }
     return self;
@@ -68,5 +72,11 @@ const ocSymbolTable * symbolTableRoot = nil;
 - (ocScope *)decreaseScope{
     self.scope = self.scope.parent;
     return self.scope;
+}
+- (void)addConstantSymbol:(ocSymbol *)symbol withKey:(id <NSCopying>)key{
+    constantCache[key] = symbol;
+}
+- (ocSymbol *)getConstantSymbol:(NSString *)key{
+    return constantCache[key];
 }
 @end

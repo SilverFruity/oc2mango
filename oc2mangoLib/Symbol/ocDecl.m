@@ -82,6 +82,9 @@
         _typeEncode = NULL;
     }
 }
+- (BOOL)isConstant{
+    return isConstant;
+}
 - (BOOL)isClassRef{
     return isClassRef;
 }

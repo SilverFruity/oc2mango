@@ -27,6 +27,8 @@ extern const ocSymbolTable * symbolTableRoot;
 - (ocSymbol *)localLookup:(NSString *)name;
 - (ocScope *)increaseScope;
 - (ocScope *)decreaseScope;
+- (void)addConstantSymbol:(ocSymbol *)symbol withKey:(id <NSCopying>)key;
+- (ocSymbol *)getConstantSymbol:(id <NSCopying>)key;
 @end
 
 NS_ASSUME_NONNULL_END

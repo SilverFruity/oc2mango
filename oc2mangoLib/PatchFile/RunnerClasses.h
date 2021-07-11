@@ -80,7 +80,6 @@ typedef enum: uint32_t{
     OCValueCString, // value: NSString
     OCValueNil, //  value: nil
     OCValueNULL, //  value: nil
-    OCValueClass
 }OC_VALUE_TYPE;
 
 @interface ORValueNode: ORNode

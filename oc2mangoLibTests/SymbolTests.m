@@ -282,6 +282,35 @@ union ORValue{
     XCTAssert(strcmp(symbol.decl.typeEncode, "[%ld[%ld^i]]") == 0);
     
 }
+- (void)testStructFieldGet{
+    source = @"\
+    struct ORPoint{\
+      double x;\
+      int y;\
+      double z;\
+    };\
+    ORPoint point;\
+    point.x = 1.0;\
+    ";
+    AST *ast = [parser parseSource:source];
+    ORMethodCall *call = ast.globalStatements.lastObject;
+}
+- (void)testStringConstant{
+    source = @"\
+    @\"123\"; \
+    @\"1234\"; \
+    @\"123\"; \
+    ";
+    AST *ast = [parser parseSource:source];
+    ORValueNode *node1 = ast.nodes[0];
+    void *buffer1 = symbolTableRoot->constants + node1.symbol.decl.offset;
+    XCTAssert([[NSString stringWithUTF8String:buffer1] isEqualToString:@"123"]);
+    ORValueNode *node2 = ast.nodes[1];
+    void *buffer2 = symbolTableRoot->constants + node2.symbol.decl.offset;
+    XCTAssert([[NSString stringWithUTF8String:buffer2] isEqualToString:@"1234"]);
+    ORValueNode *node3 = ast.nodes[2];
+    XCTAssert(node1.symbol.decl.offset == node3.symbol.decl.offset);
+}
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
     [self measureBlock:^{

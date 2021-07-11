@@ -247,6 +247,34 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 - (void)visitMethodDeclNode:(nonnull ORMethodDeclNode *)node {
     //向method作用域注册参数符号
+    //第一个参数为self或super
+    ocDecl *selfDecl = [ocDecl new];
+    selfDecl.typeName = @"id";
+    selfDecl.typeEncode = OCTypeStringObject;
+    selfDecl.offset = or_mem_offset;
+    selfDecl->isSelf = YES;
+    ocSymbol * selfSymbol = [ocSymbol symbolWithName:@"self" decl:selfDecl];
+    
+    ocDecl *superDecl = [ocDecl new];
+    superDecl.typeName = @"id";
+    superDecl.typeEncode = OCTypeStringObject;
+    superDecl.offset = or_mem_offset;
+    superDecl->isSuper = YES;
+    ocSymbol * superSymbol = [ocSymbol symbolWithName:@"super" decl:superDecl];
+    [symbolTableRoot insert:selfSymbol];
+    [symbolTableRoot insert:superSymbol];
+    
+    or_mem_offset += MAX(selfDecl.size, 8);
+
+    //第二个参数为sel
+    ocDecl *selDecl = [ocDecl new];
+    selDecl.typeName = @"SEL";
+    selDecl.typeEncode = OCTypeStringSEL;
+    selDecl.offset = or_mem_offset;
+    ocSymbol * selSymbol = [ocSymbol symbolWithName:@"sel" decl:selDecl];
+    [symbolTableRoot insert:selSymbol];
+    or_mem_offset += MAX(selDecl.size, 8);
+    
     for (int i = 0; i < node.parameters.count; i++) {
         [self visit:node.parameters[i]];
     }
@@ -276,6 +304,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     symbol.decl = methodDecl;
     symbol.name = node.declare.selectorName;
     [symbolTableRoot insert:symbol];
+    node.symbol = symbol;
     
     [symbolTableRoot increaseScope];
     [self visit:node.declare];
@@ -319,58 +348,105 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 #pragma mark - ConstValue
-- (void)visitValueNode:(nonnull ORValueNode *)node {
-    if (node.value_type == OCValueVariable) {
-        ocSymbol *symbol = [symbolTableRoot lookup:node.value];
-        // NSObject *a = nil;
-        // b = a.xxx;
-        // a.xxx = b;
-        // [[a xxx] yyy];
-        // b = a.xxx();
-        // 找到 a 的类型 NSObject，并注册为Class
-        if (symbol.decl.isStruct == NO
-            && symbol.decl.isFunction == NO
-            && (symbol == nil || symbol.decl.isObject )) {
-            ocDecl *classDecl = [ocDecl new];
-            classDecl.typeName = symbol == nil ? node.value : symbol.decl.typeName;
-            classDecl.typeEncode = OCTypeStringObject;
-            classDecl->isClassRef = YES;
-            ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
-            [symbolTableRoot insertRoot:symbol];
-            return;
-        }
-        node.symbol = symbol;
-    }else if (node.value_type == OCValueSelf){
-        
+- (ocSymbol *)createConstantSymbol:(const char *)typeEncode value:(void *)value cacheKey:(id)key{
+    ocSymbol *symbol = [symbolTableRoot getConstantSymbol:(id <NSCopying>)key];
+    if (symbol) {
+        return symbol;
     }
-}
-- (ocSymbol *)createConstantSymbol:(const char *)typeEncode value:(void *)value{
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeEncode;
     decl.offset = or_const_offset;
     decl->isConstant = YES;
-    ocSymbol * symbol = [ocSymbol symbolWithName:nil decl:decl];
+    BOOL is_string_constant = [key isKindOfClass:[NSString class]];
+    if (is_string_constant) {
+        decl.size = strlen((char *)value) + 1;
+    }
+    symbol = [ocSymbol symbolWithName:nil decl:decl];
     or_const_offset += decl.size;
     symbolTableRoot->constants_size = or_const_offset;
     symbolTableRoot->constants = realloc(symbolTableRoot->constants, sizeof(unichar) * symbolTableRoot->constants_size);
     memcpy(symbolTableRoot->constants + decl.offset, value, decl.size);
+    if (is_string_constant) {
+        memcpy(symbolTableRoot->constants + decl.offset + decl.size - 1, "\0", 1);
+    }
+    [symbolTableRoot addConstantSymbol:symbol withKey:key];
+    
     return symbol;
+}
+
+- (void)visitValueNode:(nonnull ORValueNode *)node {
+    switch (node.value_type) {
+        case OCValueSelf:
+            node.symbol = [symbolTableRoot lookup:@"self"];
+            break;
+        case OCValueSuper:
+            node.symbol = [symbolTableRoot lookup:@"super"];
+            break;
+        case OCValueVariable:
+        {
+            ocSymbol *symbol = [symbolTableRoot lookup:node.value];
+            // NSObject *a = nil;
+            // b = a.xxx;
+            // a.xxx = b;
+            // [[a xxx] yyy];
+            // b = a.xxx();
+            // 找到 a 的类型 NSObject，并注册为Class
+            if (symbol.decl.isStruct == NO
+                && symbol.decl.isFunction == NO
+                && (symbol == nil || symbol.decl.isObject )) {
+                ocDecl *classDecl = [ocDecl new];
+                classDecl.typeName = symbol == nil ? node.value : symbol.decl.typeName;
+                classDecl.typeEncode = OCTypeStringObject;
+                classDecl->isClassRef = YES;
+                symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
+                [symbolTableRoot insertRoot:symbol];
+            }
+            node.symbol = symbol;
+            break;
+        }
+        case OCValueProtocol:
+        {
+            NSString *value = node.value;
+            node.symbol = [self createConstantSymbol:OCTypeStringCString value:(void *)value.UTF8String cacheKey:value];
+            break;
+        }
+        case OCValueSelector:
+        {
+            NSString *value = node.value;
+            node.symbol = [self createConstantSymbol:OCTypeStringSEL value:(void *)value.UTF8String cacheKey:value];
+            break;
+        }
+        case OCValueString:
+        {
+            NSString *value = node.value;
+            node.symbol = [self createConstantSymbol:OCTypeStringCString value:(void *)value.UTF8String cacheKey:value];
+            break;
+        }
+        case OCValueCString:
+        {
+            NSString *value = node.value;
+            node.symbol = [self createConstantSymbol:OCTypeStringCString value:(void *)value.UTF8String cacheKey:value];
+            break;
+        }
+        default:
+            break;
+    }
 }
 - (void)visitBoolValue:(nonnull ORBoolValue *)node {
     BOOL value = node.value;
-    node.symbol = [self createConstantSymbol:OCTypeStringBOOL value:&value];
+    node.symbol = [self createConstantSymbol:OCTypeStringBOOL value:&value cacheKey:@(node.value)];
 }
 - (void)visitIntegerValue:(nonnull ORIntegerValue *)node {
     int64_t value = node.value;
-    node.symbol = [self createConstantSymbol:OCTypeStringLongLong value:&value];
+    node.symbol = [self createConstantSymbol:OCTypeStringLongLong value:&value cacheKey:@(node.value)];
 }
 - (void)visitUIntegerValue:(nonnull ORUIntegerValue *)node {
     uint64_t value = node.value;
-    node.symbol = [self createConstantSymbol:OCTypeStringULongLong value:&value];
+    node.symbol = [self createConstantSymbol:OCTypeStringULongLong value:&value cacheKey:@(node.value)];
 }
 - (void)visitDoubleValue:(nonnull ORDoubleValue *)node {
     double value = node.value;
-    node.symbol = [self createConstantSymbol:OCTypeStringDouble value:&value];
+    node.symbol = [self createConstantSymbol:OCTypeStringDouble value:&value cacheKey:@(node.value)];
 }
 - (void)visitEmptyNode:(nonnull ORNode *)node {
     

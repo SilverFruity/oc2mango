@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isClassRef;
     BOOL isDynamicCArray;
     BOOL isConstant;
+    BOOL isSelf;
+    BOOL isSuper;
 }
 @property (nonatomic, assign)OCType type;
 @property (nonatomic, copy)NSString *typeName;
@@ -49,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Data Section
 - (BOOL)isStatic;
-- (BOOL)isConst;
+- (BOOL)isConstant;
 - (BOOL)isClassRef;
 @end
 
