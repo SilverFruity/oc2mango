@@ -20,6 +20,11 @@
     }
     return self;
 }
++ (instancetype)declWithTypeEncode:(const char *)typeEncode{
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = typeEncode;
+    return decl;
+}
 - (void)setTypeEncode:(const char *)typeEncoding{
     if (_typeEncode != NULL) {
         free((void *)_typeEncode);

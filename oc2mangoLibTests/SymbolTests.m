@@ -130,7 +130,7 @@ union ORValue{
     XCTAssert(strcmp(symbol.decl.typeEncode?:"", "@?dii") == 0);
     symbol = ast.scope[@"funcImp"];
     XCTAssert(strcmp(symbol.decl.typeEncode?:"", "^?dii") == 0);
-    symbol = ((ORNode *)ast.nodes.lastObject).scope[AnonymousBlockSignature];
+    symbol = ((ORNode *)ast.nodes.lastObject).symbol;
     XCTAssert(strcmp(symbol.decl.typeEncode?:"", "@?dii") == 0);
     
 }

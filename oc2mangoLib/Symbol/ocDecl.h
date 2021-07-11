@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign)DeclarationModifier declModifer;
 @property (nonatomic, assign)MFPropertyModifier propModifer;
-
++ (instancetype)declWithTypeEncode:(const char *)typeEncode;
 - (BOOL)isStruct;
 - (BOOL)isUnion;
 - (BOOL)isCArray;
@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface ocComposeDecl: ocDecl
+@property (nonatomic, strong)NSMutableArray *keys;
 @property (nonatomic, assign)ocScope *fielsScope;
 @end
 

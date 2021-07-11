@@ -9,9 +9,9 @@
 #import "InitialSymbolTableVisitor.h"
 #import "ocHandleTypeEncode.h"
 
-NSString *AnonymousBlockSignature = @"BlockSignature";
 static unsigned long or_mem_offset = 0;
 static unsigned long or_const_offset = 0;
+static BOOL is_return_declarator = NO;
 
 static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
 static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
@@ -168,22 +168,21 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     }
 }
 - (void)visitFunctionDeclNode:(nonnull ORFunctionDeclNode *)node {
-    const char *signature = typeEncodeForDeclaratorNode(node);
-    ocDecl *decl = [ocDecl new];
-    decl.typeEncode = signature;
-    // Return Type Name，使用函数的返回值信息，作为函数的符号类型
-    decl.typeName = node.type.name;
-    NSAssert(node.var.varname.length > 0, @"");
-    // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
-    ocSymbol *symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
-    [symbolTableRoot insert:symbol];
+//    const char *signature = typeEncodeForDeclaratorNode(node);
+//    ocDecl *decl = [ocDecl new];
+//    decl.typeEncode = signature;
+//    // Return Type Name，使用函数的返回值信息，作为函数的符号类型
+//    decl.typeName = node.type.name;
+//    NSAssert(node.var.varname.length > 0, @"");
+//    // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
+//    ocSymbol *symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
+//    [symbolTableRoot insert:symbol];
 }
 
 - (void)visitFunctionNode:(nonnull ORFunctionNode *)node {
     or_mem_offset = 0;
-    const char *signature = typeEncodeForDeclaratorNode(node.declare);
     ocDecl *decl = [ocDecl new];
-    decl.typeEncode = signature;
+    decl.typeEncode = typeEncodeForDeclaratorNode(node.declare);;
     // Return Type Name，使用函数的返回值信息，作为函数的符号类型
     decl.typeName = node.declare.type.name;
     NSString *functionName = node.declare.var.varname;
@@ -194,22 +193,23 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
         [symbolTableRoot insert:symbol];
     }
     
+    //包括匿名函数，自己持有签名信息
+    node.symbol = [ocSymbol symbolWithName:nil decl:decl];
+    
+    is_return_declarator = YES;
+    [self visit:[ORDeclaratorNode copyFromDecl:node.declare]];
+    is_return_declarator = NO;
+    
     [symbolTableRoot increaseScope];
-    
-    //针对匿名函数，需要自己在自己的作用域中持有签名信息
-    //形如: ^(int a, int b){  }
-    if (functionName.length == 0){
-        ocSymbol *symbol = [ocSymbol symbolWithName:AnonymousBlockSignature decl:decl];
-        [symbolTableRoot insert:symbol];
-    }
-    
     // 在函数实现的作用域中添加参数的符号信息
     for (ORNode *param in node.declare.params) {
         [self visit:param];
     }
     [self visit:node.scopeImp];
+    
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
+    
     or_mem_offset = 0;
 }
 
@@ -225,6 +225,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     propDecl->isProperty = YES;
     propDecl.propModifer = node.modifier;
     ocSymbol *propSymbol = [ocSymbol symbolWithName:[NSString stringWithFormat:@"@%@",node.var.var.varname] decl:propDecl];
+    node.symbol = propSymbol;
     [symbolTableRoot insert:propSymbol];
     
     // 不使用assing的类型可以确定为NSObject的子类，向根符号表注册类符号
@@ -232,12 +233,14 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     if (modifer != MFPropertyModifierMemAssign) {
         ocDecl *classDecl = [ocDecl new];
         classDecl.typeName = node.var.type.name;
-        classDecl.typeEncode = OCTypeStringObject;
+        classDecl.typeEncode = OCTypeStringClass;
         classDecl->isClassRef = YES;
         ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
         [symbolTableRoot insertRoot:symbol];
     }
-    
+    is_return_declarator = YES;
+    [self visit:node.var];
+    is_return_declarator = NO;
     ocDecl *ivarDecl = [ocDecl new];
     ivarDecl.typeEncode = propDecl.typeEncode;
     ivarDecl.typeName = propDecl.typeName;
@@ -246,6 +249,9 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [symbolTableRoot insert:ivarSymbol];
 }
 - (void)visitMethodDeclNode:(nonnull ORMethodDeclNode *)node {
+    is_return_declarator = YES;
+    [self visit:node.returnType];
+    is_return_declarator = NO;
     //向method作用域注册参数符号
     //第一个参数为self或super
     ocDecl *selfDecl = [ocDecl new];
@@ -323,6 +329,14 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [symbolTableRoot insertRoot:symbol];
     
     [symbolTableRoot increaseScope];
+    
+    ocDecl *classRefDecl = [ocDecl new];
+    classRefDecl.typeName = node.className;
+    classRefDecl.typeEncode = OCTypeStringClass;
+    classRefDecl->isClassRef = YES;
+    ocSymbol *classRefSymbol = [ocSymbol symbolWithName:@"Class" decl:classRefDecl];
+    [symbolTableRoot insertRoot:classRefSymbol];
+    
     for (ORPropertyNode *prop in node.properties) {
         [self visit:prop];
     }
@@ -396,7 +410,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
                 && (symbol == nil || symbol.decl.isObject )) {
                 ocDecl *classDecl = [ocDecl new];
                 classDecl.typeName = symbol == nil ? node.value : symbol.decl.typeName;
-                classDecl.typeEncode = OCTypeStringObject;
+                classDecl.typeEncode = OCTypeStringClass;
                 classDecl->isClassRef = YES;
                 symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
                 [symbolTableRoot insertRoot:symbol];
@@ -524,10 +538,12 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocDecl *decl = [ocDecl new];
     decl.typeName = node.type.name;
     decl.typeEncode = typeEncodeForDeclaratorNode(node);
+    node.symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
+    if (is_return_declarator) {
+        return;
+    }
+    [symbolTableRoot insert:node.symbol];
     decl.offset = or_mem_offset;
-    ocSymbol * symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
-    [symbolTableRoot insert:symbol];
-    node.symbol = symbol;
     or_mem_offset += MAX(decl.size, 8);
 }
 - (void)visitInitDeclaratorNode:(nonnull ORInitDeclaratorNode *)node {
