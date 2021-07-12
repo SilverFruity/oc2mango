@@ -322,21 +322,21 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitClassNode:(nonnull ORClassNode *)node {
-    ocDecl *classDecl = [ocDecl new];
-    classDecl.typeName = node.className;
-    classDecl.typeEncode = OCTypeStringObject;
-    ocSymbol *symbol = [ocSymbol symbolWithName:node.className decl:classDecl];
-    [symbolTableRoot insertRoot:symbol];
-    
-    [symbolTableRoot increaseScope];
+//    ocDecl *classDecl = [ocDecl new];
+//    classDecl.typeName = node.className;
+//    classDecl.typeEncode = OCTypeStringObject;
+//    ocSymbol *symbol = [ocSymbol symbolWithName:node.className decl:classDecl];
+//    [symbolTableRoot insertRoot:symbol];
     
     ocDecl *classRefDecl = [ocDecl new];
     classRefDecl.typeName = node.className;
     classRefDecl.typeEncode = OCTypeStringClass;
     classRefDecl->isClassRef = YES;
-    ocSymbol *classRefSymbol = [ocSymbol symbolWithName:@"Class" decl:classRefDecl];
+    ocSymbol *classRefSymbol = [ocSymbol symbolWithName:node.className decl:classRefDecl];
     [symbolTableRoot insertRoot:classRefSymbol];
     
+    [symbolTableRoot increaseScope];
+        
     for (ORPropertyNode *prop in node.properties) {
         [self visit:prop];
     }
