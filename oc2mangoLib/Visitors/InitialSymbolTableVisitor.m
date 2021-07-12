@@ -59,7 +59,7 @@ static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
         #undef CaseTypeEncoding
     }
     NSInteger tmpPtCount = var.ptCount;
-    if (tmpPtCount == 0) {
+    if (tmpPtCount == 0 && TypeEncodeCharIsBaseType(type)) {
         char typeEncode[2] = { type, '\0' };
         return strdup(typeEncode);
     }
@@ -621,6 +621,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     [typeEncode appendString:@"="];
     NSUInteger structAlignment = 8;
     ocDecl *lastDecl = nil;
+    NSMutableArray *keys = [NSMutableArray array];
     for (ORDeclaratorNode *exp in node.fields) {
         NSString *typeName = exp.type.name;
         ocSymbol *symbol = [symbolTableRoot lookup:typeName];
@@ -640,6 +641,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
             decl.typeEncode = fieldEncode;
             decl.typeName = typeName;
         }
+        [keys addObject:exp.var.varname];
         // 内存对齐
         decl.offset = momeryLayoutAlignment(lastDecl.offset + lastDecl.size, decl.size, structAlignment);;
         lastDecl = decl;
@@ -652,6 +654,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     ocComposeDecl *decl = [ocComposeDecl new];
     decl.typeEncode = typeEncode.UTF8String;
     decl.typeName = node.sturctName;
+    decl.keys = keys;
     // 将作用域中的符号信息交给struct的字段符号表持有
     decl.fielsScope = symbolTableRoot.scope;
     // 默认内存对齐值(8)时，NSGetSizeAndAlignment的值和offset的值应该相同
@@ -766,11 +769,12 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
 - (void)visitMethodCall:(nonnull ORMethodCall *)node {
     [self visit:node.caller];
     if (node.caller.symbol.decl.isStruct || node.caller.symbol.decl.isUnion) {
-        ocComposeDecl *decl = (ocComposeDecl *)node.symbol.decl;
+        ocComposeDecl *composeDecl = (ocComposeDecl *)[symbolTableRoot lookup:node.caller.symbol.decl.typeName].decl;
+        ocDecl *beforeDecl = node.caller.symbol.decl;
         NSString *fieldName = node.names.firstObject;
-        ocDecl *fieldDecl = decl.fielsScope[fieldName].decl;
+        ocDecl *fieldDecl = composeDecl.fielsScope[fieldName].decl;
         ocDecl *expDecl = [ocDecl declWithTypeEncode:fieldDecl.typeEncode];
-        expDecl.offset = decl.offset + fieldDecl.offset;
+        expDecl.offset = beforeDecl.offset + fieldDecl.offset;
         expDecl.typeName = fieldDecl.typeName;
         node.symbol = [ocSymbol symbolWithName:fieldName decl:expDecl];
         node.isStructRef = YES;
