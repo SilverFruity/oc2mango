@@ -409,13 +409,47 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
                 && symbol.decl.isFunction == NO
                 && (symbol == nil || symbol.decl.isObject )) {
                 ocDecl *classDecl = [ocDecl new];
-                classDecl.typeName = symbol == nil ? node.value : symbol.decl.typeName;
+                if (symbol == nil) {
+                    classDecl.typeName = node.value;
+                }else{
+                    classDecl.typeName = symbol.decl.typeName;
+                }
                 classDecl.typeEncode = OCTypeStringClass;
                 classDecl->isClassRef = YES;
-                symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
-                [symbolTableRoot insertRoot:symbol];
+                ocSymbol *classSymbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
+                [symbolTableRoot insertRoot:classSymbol];
+                if (symbol == nil) {
+                    node.symbol = classSymbol;
+                }else{
+                    node.symbol = symbol;
+                }
+                break;
             }
             node.symbol = symbol;
+            break;
+        }
+        case OCValueNSNumber:
+        {
+            [self visit:node.value];
+            break;
+        }
+        case OCValueDictionary:
+        {
+            NSMutableArray *exps = node.value;
+            for (NSMutableArray <ORNode *>*kv in exps) {
+                ORNode *keyExp = kv.firstObject;
+                ORNode *valueExp = kv.lastObject;
+                [self visit:keyExp];
+                [self visit:valueExp];
+            }
+            break;
+        }
+        case OCValueArray:
+        {
+            NSMutableArray *exps = node.value;
+            for (ORNode *exp in exps) {
+                [self visit:exp];
+            }
             break;
         }
         case OCValueProtocol:
@@ -594,9 +628,18 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
         [typeEncode appendFormat:@"%s",fieldEncode];
         
         //向StructNode的作用域中注册参数类型以及内存偏移量
-        ocDecl * decl = [ocDecl new];
-        decl.typeEncode = fieldEncode;
-        decl.typeName = typeName;
+        ocDecl * decl;
+        if (symbol.decl && symbol.decl.isStruct) {
+            ocComposeDecl *cdecl = [ocComposeDecl new];
+            cdecl.typeEncode = fieldEncode;
+            cdecl.typeName = typeName;
+            cdecl.fielsScope = [(ocComposeDecl *)symbol.decl fielsScope];
+            decl = cdecl;
+        }else{
+            decl = [ocDecl new];
+            decl.typeEncode = fieldEncode;
+            decl.typeName = typeName;
+        }
         // 内存对齐
         decl.offset = momeryLayoutAlignment(lastDecl.offset + lastDecl.size, decl.size, structAlignment);;
         lastDecl = decl;
@@ -627,6 +670,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     [typeEncode appendString:node.unionName];
     [typeEncode appendString:@"="];
     
+    NSMutableArray *keys = [NSMutableArray array];
     for (ORDeclaratorNode *exp in node.fields) {
         NSString *typeName = exp.type.name;
         ocSymbol *symbol = [symbolTableRoot lookup:typeName];
@@ -638,6 +682,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
         decl.typeEncode = fieldEncode;
         decl.typeName = typeName;
         ocSymbol *fieldSymbol = [ocSymbol symbolWithName:exp.var.varname decl:decl];
+        [keys addObject:exp.var.varname];
         [symbolTableRoot insert:fieldSymbol];
     }
     [typeEncode appendString:@")"];
@@ -647,6 +692,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     decl.typeEncode = typeEncode.UTF8String;
     decl.typeName = node.unionName;
     decl.fielsScope = symbolTableRoot.scope;
+    decl.keys = keys;
     ocSymbol *symbol = [ocSymbol symbolWithName:node.unionName decl:decl];
     [symbolTableRoot insertRoot:symbol];
     node.scope = symbolTableRoot.scope;
@@ -719,6 +765,16 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
 
 - (void)visitMethodCall:(nonnull ORMethodCall *)node {
     [self visit:node.caller];
+    if (node.caller.symbol.decl.isStruct || node.caller.symbol.decl.isUnion) {
+        ocComposeDecl *decl = (ocComposeDecl *)node.symbol.decl;
+        NSString *fieldName = node.names.firstObject;
+        ocDecl *fieldDecl = decl.fielsScope[fieldName].decl;
+        ocDecl *expDecl = [ocDecl declWithTypeEncode:fieldDecl.typeEncode];
+        expDecl.offset = decl.offset + fieldDecl.offset;
+        expDecl.typeName = fieldDecl.typeName;
+        node.symbol = [ocSymbol symbolWithName:fieldName decl:expDecl];
+        node.isStructRef = YES;
+    }
     for (ORNode *arg in node.values) {
         [self visit:arg];
     }

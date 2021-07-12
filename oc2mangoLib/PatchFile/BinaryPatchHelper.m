@@ -362,7 +362,7 @@ AstMethodCall *AstMethodCallConvert(ORMethodCall *exp, AstPatchFile *patch, uint
     memset(node, 0, sizeof(AstMethodCall));
     node->nodeType = AstEnumMethodCall;
     node->methodOperator = exp.methodOperator;
-    node->isAssignedValue = exp.isAssignedValue;
+    node->isAssignedValue = exp.isStructRef;
     node->caller = (AstEmptyNode *)AstNodeConvert(exp.caller, patch, length);
     node->names = (AstNodeList *)AstNodeConvert(exp.names, patch, length);
     node->values = (AstNodeList *)AstNodeConvert(exp.values, patch, length);
@@ -705,7 +705,7 @@ ORMethodCall *AstMethodCallDeConvert(ORNode *parent, AstMethodCall *node, AstPat
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.methodOperator = node->methodOperator;
-    exp.isAssignedValue = node->isAssignedValue;
+    exp.isStructRef = node->isAssignedValue;
     exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
     exp.names = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->names, patch);
     exp.values = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->values, patch);

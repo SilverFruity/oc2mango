@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ocDecl : NSObject
 {
 @public
+    BOOL isInternalIvar;
     BOOL isProperty;
     BOOL isIvar;
     BOOL isMethod;
