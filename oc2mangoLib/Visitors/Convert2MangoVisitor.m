@@ -429,22 +429,26 @@ BOOL convert_is_left_value = true;
 }
 - (void)visitIfStatement:(ORIfStatement *)node{
     NSString *content = @"";
-    while (node.last) {
-        if (!node.condition) {
-            [self visit:node.scopeImp];
-            content = [NSString stringWithFormat:@"%@else%@",content,convertBuffer];
-        }else{
+    for (int i = 0; i < node.statements.count; i++) {
+        ORIfStatement *sub = node.statements[i];
+        if (i == 0) {
             [self visit:node.condition];
             NSString *condition = convertBuffer.copy;
             [self visit:node.scopeImp];
-            content = [NSString stringWithFormat:@"else if(%@)%@%@",condition,convertBuffer,content];
+            condition = [NSString stringWithFormat:@"if(%@)%@",condition,convertBuffer];
+        }else{
+            if (!sub.condition) {
+                [self visit:sub.scopeImp];
+                content = [NSString stringWithFormat:@"%@else%@",content,convertBuffer];
+            }else{
+                [self visit:sub.condition];
+                NSString *condition = convertBuffer.copy;
+                [self visit:sub.scopeImp];
+                content = [NSString stringWithFormat:@"%@else if(%@)%@",content,condition,convertBuffer];
+            }
         }
-        node = node.last;
     }
-    [self visit:node.condition];
-    NSString *condition = convertBuffer.copy;
-    [self visit:node.scopeImp];
-    convertBuffer = [NSString stringWithFormat:@"if(%@)%@%@",condition,convertBuffer,content];
+    convertBuffer = content;
 }
 - (void)visitWhileStatement:(ORWhileStatement *)node{
     NSMutableString *content = [NSMutableString string];

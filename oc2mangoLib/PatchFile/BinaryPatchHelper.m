@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1624888141
+//  Created by Jiang on 1626253396
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -362,7 +362,7 @@ AstMethodCall *AstMethodCallConvert(ORMethodCall *exp, AstPatchFile *patch, uint
     memset(node, 0, sizeof(AstMethodCall));
     node->nodeType = AstEnumMethodCall;
     node->methodOperator = exp.methodOperator;
-    node->isAssignedValue = exp.isStructRef;
+    node->isStructRef = exp.isStructRef;
     node->caller = (AstEmptyNode *)AstNodeConvert(exp.caller, patch, length);
     node->names = (AstNodeList *)AstNodeConvert(exp.names, patch, length);
     node->values = (AstNodeList *)AstNodeConvert(exp.values, patch, length);
@@ -448,8 +448,8 @@ AstIfStatement *AstIfStatementConvert(ORIfStatement *exp, AstPatchFile *patch, u
     memset(node, 0, sizeof(AstIfStatement));
     node->nodeType = AstEnumIfStatement;
     node->condition = (AstEmptyNode *)AstNodeConvert(exp.condition, patch, length);
-    node->last = (AstEmptyNode *)AstNodeConvert(exp.last, patch, length);
     node->scopeImp = (AstEmptyNode *)AstNodeConvert(exp.scopeImp, patch, length);
+    node->statements = (AstNodeList *)AstNodeConvert(exp.statements, patch, length);
     *length += AstIfStatementBaseLength;
     return node;
 }
@@ -705,7 +705,7 @@ ORMethodCall *AstMethodCallDeConvert(ORNode *parent, AstMethodCall *node, AstPat
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.methodOperator = node->methodOperator;
-    exp.isStructRef = node->isAssignedValue;
+    exp.isStructRef = node->isStructRef;
     exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
     exp.names = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->names, patch);
     exp.values = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->values, patch);
@@ -782,8 +782,8 @@ ORIfStatement *AstIfStatementDeConvert(ORNode *parent, AstIfStatement *node, Ast
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.condition = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->condition, patch);
-    exp.last = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->last, patch);
     exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
+    exp.statements = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->statements, patch);
     return exp;
 }
 ORWhileStatement *AstWhileStatementDeConvert(ORNode *parent, AstWhileStatement *node, AstPatchFile *patch){
@@ -1047,8 +1047,8 @@ void AstIfStatementSerailization(AstIfStatement *node, void *buffer, uint32_t *c
     memcpy(buffer + *cursor, node, AstIfStatementBaseLength);
     *cursor += AstIfStatementBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->condition, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->last, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->scopeImp, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->statements, buffer, cursor);
 }
 void AstWhileStatementSerailization(AstWhileStatement *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, AstWhileStatementBaseLength);
@@ -1317,8 +1317,8 @@ AstIfStatement *AstIfStatementDeserialization(void *buffer, uint32_t *cursor, ui
     memcpy(node, buffer + *cursor, AstIfStatementBaseLength);
     *cursor += AstIfStatementBaseLength;
     node->condition =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->last =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->scopeImp =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->statements =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
 AstWhileStatement *AstWhileStatementDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
@@ -1553,8 +1553,8 @@ void AstTernaryNodeDestroy(AstTernaryNode *node){
 }
 void AstIfStatementDestroy(AstIfStatement *node){
     AstNodeDestroy((AstEmptyNode *)node->condition);
-    AstNodeDestroy((AstEmptyNode *)node->last);
     AstNodeDestroy((AstEmptyNode *)node->scopeImp);
+    AstNodeDestroy((AstEmptyNode *)node->statements);
     free(node);
 }
 void AstWhileStatementDestroy(AstWhileStatement *node){

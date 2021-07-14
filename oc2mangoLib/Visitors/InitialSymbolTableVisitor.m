@@ -155,6 +155,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 {
     self = [super init];
     symbolTableRoot = [ocSymbolTable new];
+    internalFunctionTable = [NSMutableDictionary dictionary];
     return self;
 }
 - (void)visit:(nonnull ORNode *)node {
@@ -186,6 +187,8 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     // Return Type Name，使用函数的返回值信息，作为函数的符号类型
     decl.typeName = node.declare.type.name;
     NSString *functionName = node.declare.var.varname;
+    
+    internalFunctionTable[functionName] = node;
     
     // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
     if (functionName.length != 0){
@@ -501,14 +504,13 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 #pragma mark - Control Flow
 - (void)visitIfStatement:(nonnull ORIfStatement *)node {
-    while (node) {
-        if (!node.condition) {
-            [self visit:node.scopeImp];
+    for (ORIfStatement *sub in node.statements) {
+        if (!sub.condition) {
+            [self visit:sub.scopeImp];
         }else{
-            [self visit:node.condition];
-            [self visit:node.scopeImp];
+            [self visit:sub.condition];
+            [self visit:sub.scopeImp];
         }
-        node = node.last;
     }
 }
 - (void)visitWhileStatement:(nonnull ORWhileStatement *)node {
@@ -761,6 +763,12 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
 #pragma mark - Operation Exp
 - (void)visitFunctionCall:(nonnull ORFunctionCall *)node {
     [self visit:node.caller];
+    if (node.caller.nodeType == AstEnumValueNode) {
+        ORNode *impNode = internalFunctionTable[[node.caller value]];
+        ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:nil];
+        symbol->_bbimp = impNode;
+        node.symbol = symbol;
+    }
     for (ORNode *arg in node.expressions) {
         [self visit:arg];
     }

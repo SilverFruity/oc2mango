@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1624888141
+//  Created by Jiang on 1626253396
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
@@ -175,7 +175,7 @@ typedef struct {
 typedef struct {
     AstNodeFields
     uint8_t methodOperator;
-    BOOL isAssignedValue;
+    BOOL isStructRef;
     AstEmptyNode * caller;
     AstNodeList * names;
     AstNodeList * values;
@@ -234,8 +234,8 @@ typedef struct {
 typedef struct {
     AstNodeFields
     AstEmptyNode * condition;
-    AstEmptyNode * last;
     AstEmptyNode * scopeImp;
+    AstNodeList * statements;
 }AstIfStatement;
 
 typedef struct {

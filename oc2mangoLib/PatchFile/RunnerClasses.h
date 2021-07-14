@@ -83,10 +83,14 @@ typedef enum: uint32_t{
     OCValueString, // value: NSString
     OCValueCString, // value: NSString
     OCValueNil, //  value: nil
-    OCValueNULL, //  value: nil
+    OCValueNULL //  value: nil
 }OC_VALUE_TYPE;
 
 @interface ORValueNode: ORNode
+{
+    @public
+    OC_VALUE_TYPE _value_type;
+}
 @property (nonatomic,assign)OC_VALUE_TYPE value_type;
 @property (nonatomic,strong)id value;
 @end
@@ -206,6 +210,12 @@ typedef enum: uint32_t{
 }BinaryOperatorType;
 
 @interface ORBinaryNode: ORNode
+{
+    @public
+    BinaryOperatorType _operatorType;
+    ORNode *_left;
+    ORNode *_right;
+}
 @property (nonatomic,assign)BinaryOperatorType operatorType;
 @property (nonatomic,strong)ORNode * left;
 @property (nonatomic,strong)ORNode * right;
@@ -217,9 +227,15 @@ typedef enum: uint32_t{
 @end
 // MARK: - Statement
 @interface ORIfStatement: ORNode
+{
+    @public
+    ORNode *_condition;
+    ORBlockNode *_scopeImp;
+    NSMutableArray *_statements;
+}
 @property (nonatomic,strong,nullable)ORNode * condition;
-@property (nonatomic,strong,nullable)ORIfStatement * last;
-@property (nonatomic, strong, nullable)ORBlockNode *scopeImp;
+@property (nonatomic,strong, nullable)ORBlockNode *scopeImp;
+@property (nonatomic,strong, nullable)NSMutableArray * statements;
 @end
 
 @interface ORWhileStatement: ORNode

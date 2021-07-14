@@ -216,6 +216,14 @@ NODE_LIST(OR_IMPL)
 @end
 
 @implementation ORIfStatement
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.statements = [NSMutableArray array];
+    }
+    return self;
+}
 @end
 
 @implementation ORWhileStatement

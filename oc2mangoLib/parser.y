@@ -544,35 +544,39 @@ expression SEMICOLON
 if_statement:
 IF LP expression RP expression_stats
 {
-    $$ = makeIfStatement( $3, makeScopeImp($5));
+    ORIfStatement *header = makeIfStatement(nil, nil);
+    [header.statements addObject: makeIfStatement($3, makeScopeImp($5))];
+    $$ = header;
 }
 | IF LP expression RP ast_block_imp
 {
-    $$ = makeIfStatement( $3, $5);;
+    ORIfStatement *header = makeIfStatement(nil, nil);
+    [header.statements addObject: makeIfStatement($3, $5)];
+    $$ = header;
 }
 | if_statement _else IF LP expression RP expression_stats
 {
-    ORIfStatement *elseIfStatement = makeIfStatement( $5, makeScopeImp($7));
-    elseIfStatement.last = $1;
-    $$  = elseIfStatement;
+    ORIfStatement *header = $1;
+    [header.statements addObject: makeIfStatement( $5, makeScopeImp($7))];
+    $$  = $1;
 }
 | if_statement _else IF LP expression RP ast_block_imp
 {
-    ORIfStatement *elseIfStatement = makeIfStatement($5, $7);
-    elseIfStatement.last = $1;
-    $$  = elseIfStatement;
+    ORIfStatement *header = $1;
+    [header.statements addObject: makeIfStatement($5, $7)];
+    $$  = $1;
 }
 | if_statement _else expression_stats
 {
-    ORIfStatement *elseStatement = makeIfStatement(nil, makeScopeImp($3));
-    elseStatement.last = $1;
-    $$  = elseStatement;
+    ORIfStatement *header = $1;
+    [header.statements addObject: makeIfStatement(nil, makeScopeImp($3))];
+    $$  = $1;
 }
 | if_statement _else ast_block_imp
 {
-    ORIfStatement *elseStatement = makeIfStatement(nil, $3);
-    elseStatement.last = $1;
-    $$  = elseStatement;
+    ORIfStatement *header = $1;
+    [header.statements addObject: makeIfStatement(nil, $3)];
+    $$  = $1;
 }
 ;
 

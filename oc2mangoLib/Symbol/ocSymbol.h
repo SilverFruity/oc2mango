@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     @public
     ocDecl *_decl;
+    ORNode *_bbimp;
 }
 @property (nonatomic, copy)NSString *name;
 @property (nonatomic, strong)ocDecl *decl;
