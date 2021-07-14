@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isConstant;
     BOOL isSelf;
     BOOL isSuper;
+    NSUInteger _offset;
+    NSUInteger _size;
+    const char *_typeEncode;
 }
 @property (nonatomic, assign)OCType type;
 @property (nonatomic, copy)NSString *typeName;

@@ -14,6 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class ocSymbol, ocScope;
 // MARK: - Node
 @interface ORNode: NSObject
+{
+@public
+    ocSymbol *_symbol;
+}
 @property (nonatomic, assign)AstEnum nodeType;
 @property (nonatomic, assign)BOOL withSemicolon;
 @property (nonatomic, weak)ORNode *parentNode;
