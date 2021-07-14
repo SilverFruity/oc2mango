@@ -16,7 +16,7 @@ extern const ocSymbolTable * symbolTableRoot;
 @interface ocSymbolTable : NSObject
 {
     @public
-    unichar *constants;
+    char *constants;
     unsigned long constants_size;
 }
 @property (nonatomic, strong)ocScope *scope;

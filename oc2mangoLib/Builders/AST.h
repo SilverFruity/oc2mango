@@ -10,7 +10,7 @@
 #import <ORPatchFile/RunnerClasses.h>
 NS_ASSUME_NONNULL_BEGIN
 @class AST;
-int startClassProrityDetect(AST *ast, ORClassNode *class);
+int startClassProrityDetect(AST *ast, ORClassNode *clazz);
 extern ORClassNode *curClassNode;
 extern ORProtocolNode *curProtocolNode;
 void handlePrivateVarDecls(NSArray *decls);

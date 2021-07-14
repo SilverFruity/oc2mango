@@ -49,9 +49,9 @@ void classProrityDetect(AST *ast,ORClassNode *class, int *level){
     }
     classProrityDetect(ast, superClass, level);
 }
-int startClassProrityDetect(AST *ast, ORClassNode *class){
+int startClassProrityDetect(AST *ast, ORClassNode *clazz){
     int prority = 0;
-    classProrityDetect(ast, class, &prority);
+    classProrityDetect(ast, clazz, &prority);
     return prority;
 }
 @implementation AST

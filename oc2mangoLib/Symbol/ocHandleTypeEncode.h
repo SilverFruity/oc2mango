@@ -7,6 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+
 
 NSString *startRemovePointerOfTypeEncode(const char *typeEncode);
 NSUInteger startDetectPointerCount(const char *typeEncode);
@@ -32,3 +36,7 @@ BOOL isPointerWithTypeEncode(const char *typeEncode);
 BOOL isVoidWithTypeEncode(const char *typeEncode);
 BOOL isBlockWithTypeEncode(const char *typeEncode);
 NSUInteger sizeOfTypeEncode(const char *typeEncode);
+
+#ifdef __cplusplus
+}
+#endif //__cplusplus

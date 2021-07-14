@@ -29,7 +29,7 @@ extern ORValueNode *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) 
 
 extern ORBlockNode *makeScopeImp(NSMutableArray *stats);
 extern ORBlockNode *makeScopeImp(void) __attribute__((overloadable));
-extern ORFunctionCall *makeFuncCall(ORNode *caller, NSMutableArray *expressions);
+extern ORFunctionCall *makeFuncCall(ORValueNode *caller, NSMutableArray *expressions);
 extern ORUnaryNode *makeUnaryExpression(UnaryOperatorType type, ORNode *node);
 extern ORBinaryNode *makeBinaryExpression(BinaryOperatorType type, ORNode *left, ORNode *right);
 extern ORTernaryNode *makeTernaryExpression(void);

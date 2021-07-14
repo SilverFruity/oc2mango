@@ -59,6 +59,16 @@ NODE_LIST(VISITOR_METHOD);
 - (void)visitEmptyNode:(ORNode *)node;
 - (void)visit:(ORNode *)node;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+
 extern void AstVisitor_VisitNode(id <AstVisitor> visitor, ORNode *node);
+
+#ifdef __cplusplus
+}
+#endif //__cplusplus
+
 
 NS_ASSUME_NONNULL_END
