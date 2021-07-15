@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1626253396
+//  Created by Jiang on 1626333610
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -364,7 +364,7 @@ AstMethodCall *AstMethodCallConvert(ORMethodCall *exp, AstPatchFile *patch, uint
     node->methodOperator = exp.methodOperator;
     node->isStructRef = exp.isStructRef;
     node->caller = (AstEmptyNode *)AstNodeConvert(exp.caller, patch, length);
-    node->names = (AstNodeList *)AstNodeConvert(exp.names, patch, length);
+    node->selectorName = (AstStringCursor *)AstNodeConvert(exp.selectorName, patch, length);
     node->values = (AstNodeList *)AstNodeConvert(exp.values, patch, length);
     *length += AstMethodCallBaseLength;
     return node;
@@ -707,7 +707,7 @@ ORMethodCall *AstMethodCallDeConvert(ORNode *parent, AstMethodCall *node, AstPat
     exp.methodOperator = node->methodOperator;
     exp.isStructRef = node->isStructRef;
     exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
-    exp.names = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->names, patch);
+    exp.selectorName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->selectorName, patch);
     exp.values = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->values, patch);
     return exp;
 }
@@ -993,7 +993,7 @@ void AstMethodCallSerailization(AstMethodCall *node, void *buffer, uint32_t *cur
     memcpy(buffer + *cursor, node, AstMethodCallBaseLength);
     *cursor += AstMethodCallBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->caller, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->names, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->selectorName, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->values, buffer, cursor);
 }
 void AstFunctionCallSerailization(AstFunctionCall *node, void *buffer, uint32_t *cursor){
@@ -1245,7 +1245,7 @@ AstMethodCall *AstMethodCallDeserialization(void *buffer, uint32_t *cursor, uint
     memcpy(node, buffer + *cursor, AstMethodCallBaseLength);
     *cursor += AstMethodCallBaseLength;
     node->caller =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->names =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->selectorName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->values =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
@@ -1508,7 +1508,7 @@ void AstBoolValueDestroy(AstBoolValue *node){
 }
 void AstMethodCallDestroy(AstMethodCall *node){
     AstNodeDestroy((AstEmptyNode *)node->caller);
-    AstNodeDestroy((AstEmptyNode *)node->names);
+    AstNodeDestroy((AstEmptyNode *)node->selectorName);
     AstNodeDestroy((AstEmptyNode *)node->values);
     free(node);
 }

@@ -408,7 +408,7 @@ BOOL convert_is_left_value = true;
     convertBuffer = [NSString stringWithFormat:@"%@(%@)",caller,exps];
 }
 - (void)visitMethodCall:(ORMethodCall *)node{
-    NSMutableString *methodName = [[node.names componentsJoinedByString:@":"] mutableCopy];
+    NSMutableString *methodName = node.selectorName;
     NSString *sel;
     if (node.values.count == 0) {
         if (node.methodOperator) {

@@ -148,21 +148,8 @@ NODE_LIST(OR_IMPL)
 @implementation ORBoolValue
 @end
 
-@interface ORMethodCall()
-@property (nonatomic, copy)NSString *selectorName;
-@end
-
 @implementation ORMethodCall
-- (NSString *)selectorName{
-    if (_selectorName == nil){
-        NSMutableArray *names = [self.names mutableCopy];
-        if (self.values.count >= 1){
-            [names addObject:@""];
-        }
-        _selectorName = [names componentsJoinedByString:@":"];
-    }
-    return _selectorName;
-}
+
 @end
 
 @implementation ORFunctionCall

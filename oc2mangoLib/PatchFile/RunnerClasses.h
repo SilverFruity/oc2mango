@@ -122,9 +122,8 @@ typedef enum: uint8_t{
 @property (nonatomic, assign)uint8_t methodOperator; //MethodOperatorType
 @property (nonatomic, assign)BOOL isStructRef;
 @property (nonatomic, strong)ORNode * caller;
-@property (nonatomic, strong)NSMutableArray *names;
+@property (nonatomic, copy)NSString *selectorName;
 @property (nonatomic, strong)NSMutableArray <ORNode *> *values;
-- (NSString *)selectorName;
 @end
 
 @interface ORFunctionCall: ORNode

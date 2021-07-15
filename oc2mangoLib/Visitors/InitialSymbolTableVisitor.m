@@ -779,7 +779,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     if (node.caller.symbol.decl.isStruct || node.caller.symbol.decl.isUnion) {
         ocComposeDecl *composeDecl = (ocComposeDecl *)[symbolTableRoot lookup:node.caller.symbol.decl.typeName].decl;
         ocDecl *beforeDecl = node.caller.symbol.decl;
-        NSString *fieldName = node.names.firstObject;
+        NSString *fieldName = node.selectorName;
         ocDecl *fieldDecl = composeDecl.fielsScope[fieldName].decl;
         ocDecl *expDecl = [ocDecl declWithTypeEncode:fieldDecl.typeEncode];
         expDecl.offset = beforeDecl.offset + fieldDecl.offset;

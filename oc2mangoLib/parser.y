@@ -455,8 +455,12 @@ objc_method_call:
      ORMethodCall *methodcall = makeMethodCall();
      methodcall.caller =  makeValue(OCValueVariable,$2);
      NSArray *params = $3;
-     methodcall.names = params[0];
      methodcall.values = params[1];
+     NSMutableArray *names = params[0];
+     if(methodcall.values.count > 0){
+         [names addObject:@""];
+     }
+     methodcall.selectorName = [names componentsJoinedByString:@":"];
      $$ = methodcall;
 }
 | LB postfix_expression objc_method_call_pramameters RB
@@ -465,8 +469,12 @@ objc_method_call:
      ORValueNode *caller = $2;
      methodcall.caller =  caller;
      NSArray *params = $3;
-     methodcall.names = params[0];
      methodcall.values = params[1];
+     NSMutableArray *names = params[0];
+     if(methodcall.values.count > 0){
+         [names addObject:@""];
+     }
+     methodcall.selectorName = [names componentsJoinedByString:@":"];
      $$ = methodcall;
 }
 ;
@@ -966,7 +974,7 @@ postfix_expression: primary_expression
     ORMethodCall *methodcall = makeMethodCall();
     methodcall.caller =  $1;
     methodcall.methodOperator = MethodOpretorDot;
-    methodcall.names = [@[$3] mutableCopy];
+    methodcall.selectorName = $3;
     $$ = methodcall;
 }
 | postfix_expression ARROW IDENTIFIER
@@ -974,7 +982,7 @@ postfix_expression: primary_expression
     ORMethodCall *methodcall = makeMethodCall();
     methodcall.caller =  $1;
     methodcall.methodOperator = MethodOpretorArrow;
-    methodcall.names = [@[$3] mutableCopy];
+    methodcall.selectorName = $3;
     $$ = methodcall;
 }
 | postfix_expression LP expression_list RP
