@@ -163,6 +163,8 @@ NODE_LIST(OR_IMPL)
     imp.declare = [self.declare copy];
     imp.scopeImp = self.scopeImp;
     imp.declare.var.isBlock = NO;
+    imp.symbol = self.symbol;
+    imp.parentNode = self.parentNode;
     return imp;
 }
 - (BOOL)isBlockImp{

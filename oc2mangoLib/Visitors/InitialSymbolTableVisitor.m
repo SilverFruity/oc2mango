@@ -25,6 +25,10 @@ static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
         suffixEncode = symbol.decl.typeEncode;
         assert(suffixEncode != NULL);
         type = symbol.decl.type;
+        if (symbol.decl->isClassRef) {
+            suffixEncode = OCTypeStringObject;
+            type = OCTypeObject;
+        }
     }else{
         #define CaseTypeEncoding(type)\
         case OCType##type: suffixEncode = OCTypeString##type; break;
