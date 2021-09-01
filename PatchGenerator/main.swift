@@ -136,13 +136,13 @@ func main(){
         refsNodes.addObjects(from: parser.parseCodeSource(CodeSource(filePath: path)).nodes as! [Any])
     }
     print("InputFiles:\(inputSourceFiles.reduce("   ", { $0 + "\n   " + $1}))")
-    let inputNodes = NSMutableArray.init()
+    let inputAst = AST.init()
     for path in inputSourceFiles{
-        inputNodes.addObjects(from: parser.parseCodeSource(CodeSource(filePath: path)).nodes as! [Any])
+        inputAst.merge(parser.parseCodeSource(CodeSource(filePath: path)).nodes as! [Any])
     }
     let nodes = NSMutableArray.init()
     nodes.addObjects(from: refsNodes as! [Any])
-    nodes.addObjects(from: inputNodes as! [Any])
+    nodes.addObjects(from: inputAst.nodes as! [Any])
     let patchFile = ORPatchFile.init(nodes: nodes as! [Any])
     patchFile.appVersion = result.appVersion
     switch result.type {

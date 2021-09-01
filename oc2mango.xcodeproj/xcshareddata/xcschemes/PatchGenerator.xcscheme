@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-files /Users/apple/Downloads/ZYGLogicManager.m  -refs /Users/apple/Desktop/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle  -output /Users/apple/Downloads/binarypatch"
+            argument = "-files  /Users/jiang/Downloads/tankCat/TankCat/hotfix -refs /Users/jiang/Desktop/OCRunner/OCRunnerDemo/OCRunnerDemo/Scripts.bundle  -output /Users/jiang/Downloads/binarypatch"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

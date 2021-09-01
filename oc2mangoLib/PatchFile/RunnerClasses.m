@@ -240,11 +240,11 @@
 }
 - (void)merge:(ORClass *)target key:(nonnull NSString *)key{
     NSMutableSet *sourceSet = [NSMutableSet setWithArray:[self valueForKey:key]];
-    NSMutableSet *compredSet = [NSMutableSet setWithArray:[target valueForKey:key]];
-    [compredSet unionSet:sourceSet];
-    [compredSet minusSet:sourceSet];
+    NSMutableSet *comparedSet = [NSMutableSet setWithArray:[target valueForKey:key]];
+    [comparedSet unionSet:sourceSet];
+    [comparedSet minusSet:sourceSet];
     NSMutableArray *array = [self valueForKey:key];
-    [array addObjectsFromArray:compredSet.allObjects];
+    [array addObjectsFromArray:comparedSet.allObjects];
 }
 @end
 @implementation ORProtocol
