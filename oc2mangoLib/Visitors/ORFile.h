@@ -31,7 +31,12 @@ enum OR_LOAD_COMMAND{
 };
 
 struct ORStringItem{
-    uint32_t offset;
+    uint64 offset;
+};
+
+struct ORCFString {
+    void * ref;
+    struct ORStringItem string;
 };
 
 struct ORStringSection{
@@ -59,14 +64,14 @@ struct or_function_signature{
     UInt8 decl_arg_count;
     UInt8 *signature;
 };
-struct LinkedCFunction{
+struct ORLinkedCFunction{
     intptr_t function_address;
     struct ORStringItem function_name;
     struct ORStringItem type_encode;
     struct or_function_signature signature;
 };
 
-struct ORVariableDataSection {
+struct ORVariableData {
     uintptr_t data;
 };
 
@@ -77,9 +82,9 @@ struct ORObjcMethod{
     struct ORStringItem method_type_encode;
 };
 
-typedef int MFPropertyModifier;
+//typedef int MFPropertyModifier;
 struct ORObjcProperty {
-    MFPropertyModifier modifer;
+    int modifer;
     struct ORStringItem property_name;
     struct ORStringItem property_type_encode;
     struct ORStringItem getter_name;
@@ -101,12 +106,13 @@ struct ORFile {
     struct ORFileHeader *header;
     struct ORLoadCommand *commands;
     struct ORLinkedClass *linked_class_section;
-    struct LinkedCFunction *linked_cfunction_section;
+    struct ORLinkedCFunction *linked_cfunction_section;
     struct ORClassItem *dynamic_class_section;
     struct ORObjcMethod *method_section;
     struct ORObjcProperty *property_section;
     struct ORStruct *struct_section;
-    struct ORVariableDataSection *data_section;
+    struct ORVariableData *data_section;
+    struct ORCFString *cf_string_section;
     struct ORStringSection *string_section;
     const void *instructions;
 };

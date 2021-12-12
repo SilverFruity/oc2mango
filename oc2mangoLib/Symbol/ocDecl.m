@@ -16,7 +16,7 @@
     if (self) {
         _alignment = 8;
         _typeEncode = NULL;
-        _offset = 0;
+        _index = 0;
     }
     return self;
 }
@@ -91,7 +91,7 @@
     return isConstant;
 }
 - (BOOL)isClassRef{
-    return isClassRef;
+    return isClassRef || isLinkedClass;
 }
 @end
 

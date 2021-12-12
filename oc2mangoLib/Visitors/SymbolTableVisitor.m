@@ -8,9 +8,8 @@
 
 #import "SymbolTableVisitor.h"
 #import "ocHandleTypeEncode.h"
-
+#import "ORFileSection.h"
 static unsigned long or_mem_offset = 0;
-static unsigned long or_const_offset = 0;
 static BOOL is_return_declarator = NO;
 
 const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
@@ -173,15 +172,15 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     }
 }
 - (void)visitFunctionDeclNode:(nonnull ORFunctionDeclNode *)node {
-//    const char *signature = typeEncodeForDeclaratorNode(node);
-//    ocDecl *decl = [ocDecl new];
-//    decl.typeEncode = signature;
-//    // Return Type Name，使用函数的返回值信息，作为函数的符号类型
-//    decl.typeName = node.type.name;
-//    NSAssert(node.var.varname.length > 0, @"");
-//    // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
-//    ocSymbol *symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
-//    [symbolTableRoot insert:symbol];
+    const char *signature = typeEncodeForDeclaratorNode(node);
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = signature;
+    // Return Type Name，使用函数的返回值信息，作为函数的符号类型
+    decl.typeName = node.type.name;
+    NSAssert(node.var.varname.length > 0, @"");
+    // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
+    ocSymbol *symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
+    [symbolTableRoot insert:symbol];
 }
 
 - (void)visitFunctionNode:(nonnull ORFunctionNode *)node {
@@ -191,8 +190,13 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     // Return Type Name，使用函数的返回值信息，作为函数的符号类型
     decl.typeName = node.declare.type.name;
     NSString *functionName = node.declare.var.varname;
+    if (functionName) {
+        internalFunctionTable[functionName] = node;
+    }else{
+        // for block
+//        assert(false);
+    }
     
-    internalFunctionTable[functionName] = node;
     
     // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
     if (functionName.length != 0){
@@ -259,14 +263,14 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocDecl *selfDecl = [ocDecl new];
     selfDecl.typeName = @"id";
     selfDecl.typeEncode = OCTypeStringObject;
-    selfDecl.offset = or_mem_offset;
+    selfDecl.index = or_mem_offset;
     selfDecl->isSelf = YES;
     ocSymbol * selfSymbol = [ocSymbol symbolWithName:@"self" decl:selfDecl];
     
     ocDecl *superDecl = [ocDecl new];
     superDecl.typeName = @"id";
     superDecl.typeEncode = OCTypeStringObject;
-    superDecl.offset = or_mem_offset;
+    superDecl.index = or_mem_offset;
     superDecl->isSuper = YES;
     ocSymbol * superSymbol = [ocSymbol symbolWithName:@"super" decl:superDecl];
     [symbolTableRoot insert:selfSymbol];
@@ -278,7 +282,7 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocDecl *selDecl = [ocDecl new];
     selDecl.typeName = @"SEL";
     selDecl.typeEncode = OCTypeStringSEL;
-    selDecl.offset = or_mem_offset;
+    selDecl.index = or_mem_offset;
     ocSymbol * selSymbol = [ocSymbol symbolWithName:@"sel" decl:selDecl];
     [symbolTableRoot insert:selSymbol];
     or_mem_offset += MAX(selDecl.size, 8);
@@ -354,28 +358,6 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 #pragma mark - ConstValue
-- (ocSymbol *)createConstantSymbol:(const char *)typeEncode value:(void *)value cacheKey:(id)key{
-    ocSymbol *symbol = [symbolTableRoot getConstantSymbol:(id <NSCopying>)key];
-    if (symbol) {
-        return symbol;
-    }
-    ocDecl *decl = [ocDecl new];
-    decl.typeEncode = typeEncode;
-    decl.offset = or_const_offset;
-    decl->isConstant = YES;
-    BOOL is_string_constant = [key isKindOfClass:[NSString class]];
-    if (is_string_constant) {
-        decl.size = strlen((char *)value) + 1;
-    }
-    symbol = [ocSymbol symbolWithName:nil decl:decl];
-    or_const_offset += decl.size;
-    symbolTableRoot->constants_size = or_const_offset;
-    symbolTableRoot->constants = realloc(symbolTableRoot->constants, sizeof(unichar) * symbolTableRoot->constants_size);
-    memcpy(symbolTableRoot->constants + decl.offset, value, decl.size);
-    [symbolTableRoot addConstantSymbol:symbol withKey:key];
-    
-    return symbol;
-}
 
 - (void)visitValueNode:(nonnull ORValueNode *)node {
     switch (node.value_type) {
@@ -435,25 +417,25 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
         case OCValueProtocol:
         {
             NSString *value = node.value;
-            node.symbol = [self createConstantSymbol:OCTypeStringCString value:(void *)value.UTF8String cacheKey:value];
+            node.symbol = [symbolTableRoot addStringSection:OCTypeStringCString string:value.UTF8String];
             break;
         }
         case OCValueSelector:
         {
             NSString *value = node.value;
-            node.symbol = [self createConstantSymbol:OCTypeStringSEL value:(void *)value.UTF8String cacheKey:value];
+            node.symbol = [symbolTableRoot addStringSection:OCTypeStringSEL string:value.UTF8String];
             break;
         }
         case OCValueString:
         {
             NSString *value = node.value;
-            node.symbol = [self createConstantSymbol:OCTypeStringCString value:(void *)value.UTF8String cacheKey:value];
+            node.symbol = [symbolTableRoot addStringSection:OCTypeStringObject string:value.UTF8String];
             break;
         }
         case OCValueCString:
         {
             NSString *value = node.value;
-            node.symbol = [self createConstantSymbol:OCTypeStringCString value:(void *)value.UTF8String cacheKey:value];
+            node.symbol = [symbolTableRoot addStringSection:OCTypeStringCString string:value.UTF8String];
             break;
         }
         default:
@@ -462,19 +444,19 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 - (void)visitBoolValue:(nonnull ORBoolValue *)node {
     BOOL value = node.value;
-    node.symbol = [self createConstantSymbol:OCTypeStringBOOL value:&value cacheKey:@(node.value)];
+    node.symbol = [symbolTableRoot addConstantSection:OCTypeStringBOOL data:&value];
 }
 - (void)visitIntegerValue:(nonnull ORIntegerValue *)node {
     int64_t value = node.value;
-    node.symbol = [self createConstantSymbol:OCTypeStringLongLong value:&value cacheKey:@(node.value)];
+    node.symbol = [symbolTableRoot addConstantSection:OCTypeStringLongLong data:&value];
 }
 - (void)visitUIntegerValue:(nonnull ORUIntegerValue *)node {
     uint64_t value = node.value;
-    node.symbol = [self createConstantSymbol:OCTypeStringULongLong value:&value cacheKey:@(node.value)];
+    node.symbol = [symbolTableRoot addConstantSection:OCTypeStringULongLong data:&value];
 }
 - (void)visitDoubleValue:(nonnull ORDoubleValue *)node {
     double value = node.value;
-    node.symbol = [self createConstantSymbol:OCTypeStringDouble value:&value cacheKey:@(node.value)];
+    node.symbol = [symbolTableRoot addConstantSection:OCTypeStringDouble data:&value];
 }
 - (void)visitEmptyNode:(nonnull ORNode *)node {
     
@@ -556,7 +538,7 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
         return;
     }
     [symbolTableRoot insert:node.symbol];
-    decl.offset = or_mem_offset;
+    decl.index = or_mem_offset;
     or_mem_offset += MAX(decl.size, 8);
 }
 - (void)visitInitDeclaratorNode:(nonnull ORInitDeclaratorNode *)node {
@@ -622,12 +604,12 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
         }
         [keys addObject:exp.var.varname];
         // 内存对齐
-        decl.offset = momeryLayoutAlignment(lastDecl.offset + lastDecl.size, decl.size, structAlignment);;
+        decl.index = momeryLayoutAlignment(lastDecl.index + lastDecl.size, decl.size, structAlignment);;
         lastDecl = decl;
         ocSymbol *fieldSymbol = [ocSymbol symbolWithName:exp.var.varname decl:decl];
         [symbolTableRoot insert:fieldSymbol];
     }
-    NSUInteger offset = momeryLayoutAlignment(lastDecl.offset + lastDecl.size, structAlignment, structAlignment);
+    NSUInteger offset = momeryLayoutAlignment(lastDecl.index + lastDecl.size, structAlignment, structAlignment);
     [typeEncode appendString:@"}"];
     // 根符号表注册struct
     ocComposeDecl *decl = [ocComposeDecl new];
@@ -759,7 +741,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
         NSString *fieldName = node.selectorName;
         ocDecl *fieldDecl = composeDecl.fielsScope[fieldName].decl;
         ocDecl *expDecl = [ocDecl declWithTypeEncode:fieldDecl.typeEncode];
-        expDecl.offset = beforeDecl.offset + fieldDecl.offset;
+        expDecl.index = beforeDecl.index + fieldDecl.index;
         expDecl.typeName = fieldDecl.typeName;
         node.symbol = [ocSymbol symbolWithName:fieldName decl:expDecl];
         node.isStructRef = YES;

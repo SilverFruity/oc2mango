@@ -16,8 +16,13 @@ extern const ocSymbolTable * symbolTableRoot;
 @interface ocSymbolTable : NSObject
 {
     @public
-    char *constants;
-    unsigned long constants_size;
+    
+    const void *string_recorder;
+    const void *cfstring_recorder;
+    const void *data_section_recorder;
+    const void *constant_recorder;
+    const void *linked_class_recorder;
+    const void *linked_cfunction_recorder;
 }
 @property (nonatomic, strong)ocScope *scope;
 - (ocSymbol *)insert:(ocSymbol *)symbol;
@@ -27,13 +32,15 @@ extern const ocSymbolTable * symbolTableRoot;
 - (ocSymbol *)localLookup:(NSString *)name;
 - (ocScope *)increaseScope;
 - (ocScope *)decreaseScope;
-- (void)addConstantSymbol:(ocSymbol *)symbol withKey:(id <NSCopying>)key;
-- (ocSymbol *)getConstantSymbol:(id <NSCopying>)key;
 @end
 
 
 @interface ocSymbolTable (Tools)
 - (ocSymbol *)addClassRefWithName:(NSString *)name;
+- (ocSymbol *)addStringSection:(const char *)typeencode string:(const char *)str;
+- (ocSymbol *)addLinkedCFunctionSection:(const char *)typeencode name:(const char *)name;
+- (ocSymbol *)addConstantSection:(const char *)typeencode data:(void *)data;
+- (ocSymbol *)addDataSection:(const char *)typeencode size:(size_t)size;
 @end
 
 

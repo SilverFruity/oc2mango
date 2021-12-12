@@ -7,18 +7,22 @@
 //
 
 #import "ocSymbolTable.h"
+#import "ORFileSection.h"
 const ocSymbolTable * symbolTableRoot = nil;
+const ocScope *scopeRoot = nil;
 @implementation ocSymbolTable
-{
-    NSMutableDictionary *constantCache;
-}
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        constants = malloc(sizeof(char));
-        constantCache = [NSMutableDictionary dictionary];
         self.scope = [ocScope new];
+        scopeRoot = _scope;
+        string_recorder = init_string_recorder();
+        cfstring_recorder = init_cfstring_recorder();
+        data_section_recorder = init_data_section_recorder();
+        constant_recorder = init_constant_section_recorder();
+        linked_class_recorder = init_linked_class_recorder();
+        linked_cfunction_recorder = init_linked_cfunction_recorder();
     }
     return self;
 }
@@ -73,12 +77,7 @@ const ocSymbolTable * symbolTableRoot = nil;
     self.scope = self.scope.parent;
     return self.scope;
 }
-- (void)addConstantSymbol:(ocSymbol *)symbol withKey:(id <NSCopying>)key{
-    constantCache[key] = symbol;
-}
-- (ocSymbol *)getConstantSymbol:(NSString *)key{
-    return constantCache[key];
-}
+
 @end
 
 
@@ -87,9 +86,48 @@ const ocSymbolTable * symbolTableRoot = nil;
     ocDecl *classDecl = [ocDecl new];
     classDecl.typeName = name;
     classDecl.typeEncode = OCTypeStringClass;
+    classDecl->isLinkedClass = YES;
     classDecl->isClassRef = YES;
+    classDecl.index = or_linked_class_recorder_add(name.UTF8String);
     ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
     [self insertRoot:symbol];
+    return symbol;
+}
+- (ocSymbol *)addStringSection:(const char *)typeencode string:(const char *)str{
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = typeencode;
+    if (decl.type == OCTypeObject) {
+        decl.index = or_cfstring_recorder_add(str);
+    }else{
+        decl.index = or_string_recorder_add(str);
+    }
+    decl->isStringConstant = YES;
+    ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
+    return symbol;
+}
+- (ocSymbol *)addLinkedCFunctionSection:(const char *)typeencode name:(const char *)name {
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = typeencode;
+    decl.index = or_linked_cfunction_recorder_add(typeencode, name);
+    decl->isLinkedCFunction = YES;
+    ocSymbol *symbol = [ocSymbol symbolWithName:[NSString stringWithUTF8String:name] decl:decl];
+    [symbolTableRoot insertRoot:symbol];
+    return symbol;
+}
+- (ocSymbol *)addConstantSection:(const char *)typeencode data:(void *)data {
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = typeencode;
+    decl.index = or_constant_section_recorder_add(data);
+    decl->isConstant = YES;
+    ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
+    return symbol;
+}
+- (ocSymbol *)addDataSection:(const char *)typeencode size:(size_t)size{
+    ocDecl *decl = [ocDecl new];
+    decl.typeEncode = typeencode;
+    decl.index = or_data_section_recorder_add(size);
+    decl->isDataSection = YES;
+    ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
 }
 

@@ -83,12 +83,13 @@
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE75225A26836797004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
 		EE75226026836798004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
-		EE75647B275FB10F0016CFB6 /* ORFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE756479275FB10F0016CFB6 /* ORFile.h */; };
+		EE75647B275FB10F0016CFB6 /* ORFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE756479275FB10F0016CFB6 /* ORFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE75647C275FB10F0016CFB6 /* ORFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE75647A275FB10F0016CFB6 /* ORFile.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
-		EE99E7652764879A00881AED /* ORFileSection.h in Headers */ = {isa = PBXBuildFile; fileRef = EE99E7632764879A00881AED /* ORFileSection.h */; };
+		EE99E7652764879A00881AED /* ORFileSection.h in Headers */ = {isa = PBXBuildFile; fileRef = EE99E7632764879A00881AED /* ORFileSection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE99E7662764879A00881AED /* ORFileSection.m in Sources */ = {isa = PBXBuildFile; fileRef = EE99E7642764879A00881AED /* ORFileSection.m */; };
 		EE99E76727662C9B00881AED /* SymbolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3FF6C268873CA00630C4E /* SymbolTests.m */; };
+		EE99E76A27663ABC00881AED /* SymbolParser.m in Sources */ = {isa = PBXBuildFile; fileRef = EE99E76927663ABC00881AED /* SymbolParser.m */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
 		EEB7396C268616EC00855E4A /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
@@ -112,6 +113,13 @@
 			remoteInfo = ORPatchFile;
 		};
 		EE4B04322682421E009032B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EE66C15524FEB61300C85B31;
+			remoteInfo = ORPatchFile;
+		};
+		EE99E76C276656A300881AED /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
 			proxyType = 1;
@@ -233,6 +241,9 @@
 		EE982F06226CB4E4008712C2 /* MakeDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MakeDeclare.m; sourceTree = "<group>"; };
 		EE99E7632764879A00881AED /* ORFileSection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORFileSection.h; sourceTree = "<group>"; };
 		EE99E7642764879A00881AED /* ORFileSection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORFileSection.m; sourceTree = "<group>"; };
+		EE99E76827663ABC00881AED /* SymbolParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SymbolParser.h; sourceTree = "<group>"; };
+		EE99E76927663ABC00881AED /* SymbolParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolParser.m; sourceTree = "<group>"; };
+		EE99E76B27663D1F00881AED /* SymbolTableTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SymbolTableTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		EEB17FFA22849273003D5C36 /* MethodCallTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodCallTest.swift; sourceTree = "<group>"; };
 		EEB3FF6C268873CA00630C4E /* SymbolTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolTests.m; sourceTree = "<group>"; };
 		EECF6CA4274A8DB200EC0737 /* SymbolTableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SymbolTableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -310,6 +321,8 @@
 		18819E25268329C700CC85DD /* Visitors */ = {
 			isa = PBXGroup;
 			children = (
+				EE756479275FB10F0016CFB6 /* ORFile.h */,
+				EE75647A275FB10F0016CFB6 /* ORFile.m */,
 				EE99E7632764879A00881AED /* ORFileSection.h */,
 				EE99E7642764879A00881AED /* ORFileSection.m */,
 				1872080926857F3A003C4DC6 /* SymbolTableVisitor.h */,
@@ -318,8 +331,6 @@
 				18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */,
 				18819E26268329D800CC85DD /* Convert2MangoVisitor.h */,
 				18819E27268329D800CC85DD /* Convert2MangoVisitor.m */,
-				EE756479275FB10F0016CFB6 /* ORFile.h */,
-				EE75647A275FB10F0016CFB6 /* ORFile.m */,
 				EE75647D275FB1330016CFB6 /* ORInstructions.h */,
 			);
 			path = Visitors;
@@ -467,8 +478,11 @@
 		EECF6CA5274A8DB200EC0737 /* SymbolTableTests */ = {
 			isa = PBXGroup;
 			children = (
+				EE99E76827663ABC00881AED /* SymbolParser.h */,
+				EE99E76927663ABC00881AED /* SymbolParser.m */,
 				EEB3FF6C268873CA00630C4E /* SymbolTests.m */,
 				EECF6CA6274A8DB200EC0737 /* SymbolTableTests.swift */,
+				EE99E76B27663D1F00881AED /* SymbolTableTests-Bridging-Header.h */,
 			);
 			path = SymbolTableTests;
 			sourceTree = "<group>";
@@ -635,6 +649,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				EE99E76D276656A300881AED /* PBXTargetDependency */,
 				EECF6CAA274A8DB200EC0737 /* PBXTargetDependency */,
 			);
 			name = SymbolTableTests;
@@ -867,6 +882,7 @@
 			files = (
 				EECF6CA7274A8DB200EC0737 /* SymbolTableTests.swift in Sources */,
 				EE99E76727662C9B00881AED /* SymbolTests.m in Sources */,
+				EE99E76A27663ABC00881AED /* SymbolParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -920,6 +936,11 @@
 			isa = PBXTargetDependency;
 			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
 			targetProxy = EE4B04322682421E009032B2 /* PBXContainerItemProxy */;
+		};
+		EE99E76D276656A300881AED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
+			targetProxy = EE99E76C276656A300881AED /* PBXContainerItemProxy */;
 		};
 		EECF6CAA274A8DB200EC0737 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1212,6 +1233,7 @@
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "SymbolTableTests/SymbolTableTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1239,6 +1261,7 @@
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "SymbolTableTests/SymbolTableTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

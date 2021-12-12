@@ -10,11 +10,10 @@ import XCTest
 import oc2mangoLib
 
 class SymbolTableTests: XCTestCase {
-    let parser = Parser()
-    var visitor = SymbolTableVisitor()
+    var parser = SymbolParser.init()
     override func setUpWithError() throws {
+        parser = SymbolParser.init();
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        visitor = SymbolTableVisitor()
     }
 
     override func tearDownWithError() throws {
@@ -27,10 +26,7 @@ class SymbolTableTests: XCTestCase {
         @class TestClass,TestClass1;
         @class NSObject1;
         """
-        let ast = parser.parseSource(source)
-        for node in ast.nodes {
-            visitor.visit(node as! ORNode)
-        }
+        parser.parseSource(source)
         XCTAssert(symbolTableRoot.lookup("TestClass").decl.isClassRef())
         XCTAssert(symbolTableRoot.lookup("TestClass1").decl.isClassRef())
         XCTAssert(symbolTableRoot.lookup("NSObject1").decl.isClassRef())
@@ -50,10 +46,7 @@ class SymbolTableTests: XCTestCase {
         }
         @end
         """
-        let ast = parser.parseSource(source)
-        for node in ast.nodes {
-            visitor.visit(node as! ORNode)
-        }
+        parser.parseSource(source)
         XCTAssert(symbolTableRoot.lookup("TestObject1").decl.isClassRef())
         XCTAssert(symbolTableRoot.lookup("TestObject2").decl.isClassRef())
         XCTAssert(symbolTableRoot.lookup("TestObject3").decl.isClassRef())
@@ -79,17 +72,14 @@ class SymbolTableTests: XCTestCase {
         @end
         """
         let ast = parser.parseSource(source)
-        for node in ast.nodes {
-            visitor.visit(node as! ORNode)
-        }
         let class1 = ast.classCache["TestObject"] as! ORClassNode
         let node = class1.methods.firstObject as! ORMethodNode
-        XCTAssert(node.scope.lookup("self").decl.offset == 0)
-        XCTAssert(node.scope.lookup("sel").decl.offset == 8)
-        XCTAssert(node.scope.lookup("arg").decl.offset == 16)
-        XCTAssert(node.scope.lookup("rect").decl.offset == 24)
-        XCTAssert(node.scope.lookup("c").decl.offset == 56)
-        XCTAssert(node.scope.lookup("d").decl.offset == 64)
+        XCTAssert(node.scope.lookup("self").decl.index == 0)
+        XCTAssert(node.scope.lookup("sel").decl.index == 8)
+        XCTAssert(node.scope.lookup("arg").decl.index == 16)
+        XCTAssert(node.scope.lookup("rect").decl.index == 24)
+        XCTAssert(node.scope.lookup("c").decl.index == 56)
+        XCTAssert(node.scope.lookup("d").decl.index == 64)
         
     }
     

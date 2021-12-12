@@ -275,7 +275,7 @@ int convert_indentationCont = 0;
         convertBuffer = [NSString stringWithFormat:@"%@ ? %@ : %@",condition, value1, value2];
     }
 }
-BOOL convert_is_left_value = true;
+BOOL convert_is_left_value = false;
 - (void)visitInitDeclaratorNode:(ORInitDeclaratorNode *)node{
     if (node.expression) {
         NSMutableString *str = [NSMutableString string];
@@ -408,7 +408,7 @@ BOOL convert_is_left_value = true;
     convertBuffer = [NSString stringWithFormat:@"%@(%@)",caller,exps];
 }
 - (void)visitMethodCall:(ORMethodCall *)node{
-    NSMutableString *methodName = node.selectorName;
+    NSString *methodName = node.selectorName;
     NSString *sel;
     if (node.values.count == 0) {
         if (node.methodOperator) {
@@ -422,7 +422,7 @@ BOOL convert_is_left_value = true;
             [self visit:exp];
             [expList addObject:convertBuffer];
         }
-        sel = [NSString stringWithFormat:@".%@:(%@)",methodName,[expList componentsJoinedByString:@","]];
+        sel = [NSString stringWithFormat:@".%@(%@)",methodName,[expList componentsJoinedByString:@","]];
     }
     [self visit:node.caller];
     convertBuffer = [NSString stringWithFormat:@"%@%@",convertBuffer,sel];
@@ -432,10 +432,10 @@ BOOL convert_is_left_value = true;
     for (int i = 0; i < node.statements.count; i++) {
         ORIfStatement *sub = node.statements[i];
         if (i == 0) {
-            [self visit:node.condition];
+            [self visit:sub.condition];
             NSString *condition = convertBuffer.copy;
-            [self visit:node.scopeImp];
-            condition = [NSString stringWithFormat:@"if(%@)%@",condition,convertBuffer];
+            [self visit:sub.scopeImp];
+            content = [NSString stringWithFormat:@"if(%@)%@",condition,convertBuffer];
         }else{
             if (!sub.condition) {
                 [self visit:sub.scopeImp];

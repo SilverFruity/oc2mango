@@ -8,31 +8,10 @@
 
 #import <XCTest/XCTest.h>
 #import <oc2mangoLib/oc2mangoLib.h>
-@interface SymbolParser: Parser
-@property (nonatomic, strong)SymbolTableVisitor *visitor;
-@end
+#import <oc2mangoLib/ORFileSection.h>
+#import <oc2mangoLib/ORFile.h>
+#import "SymbolParser.h"
 
-@implementation SymbolParser
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.visitor = [SymbolTableVisitor new];
-    }
-    return self;
-}
-- (AST *)parseCodeSource:(CodeSource *)source{
-    AST *ast = [super parseCodeSource:source];
-    NSAssert(self.error == nil, @"%@",self.error);
-    symbolTableRoot = [ocSymbolTable new];
-    for (ORNode *node in ast.nodes) {
-        [self.visitor visit:node];
-    }
-    ast.scope = symbolTableRoot.scope;
-    return ast;
-}
-
-@end
 @interface SymbolTests : XCTestCase
 {
     NSString *source;
@@ -68,15 +47,15 @@ struct ORPoint{
     XCTAssert(strcmp(symbol.decl.typeEncode, @encode(struct ORPoint)) == 0);
     ocScope *structScope = ((ORNode *)ast.nodes.lastObject).scope;
     ocDecl *decl = structScope[@"x"].decl;
-    XCTAssert(decl.offset == 0);
+    XCTAssert(decl.index == 0);
     XCTAssert(decl.size == 8);
     XCTAssert(decl.type == OCTypeDouble);
     decl = structScope[@"y"].decl;
-    XCTAssert(decl.offset == 8);
+    XCTAssert(decl.index == 8);
     XCTAssert(decl.size == 4);
     XCTAssert(decl.type == OCTypeInt);
     decl = structScope[@"z"].decl;
-    XCTAssert(decl.offset == 16);
+    XCTAssert(decl.index == 16);
     XCTAssert(decl.size == 8);
     XCTAssert(decl.type == OCTypeDouble);
     
@@ -100,15 +79,15 @@ union ORValue{
     XCTAssert(strcmp(symbol.decl.typeEncode, @encode(union ORValue)) == 0);
     ocScope *unionScope = ((ORNode *)ast.nodes.lastObject).scope;
     ocDecl *decl = unionScope[@"x"].decl;
-    XCTAssert(decl.offset == 0);
+    XCTAssert(decl.index == 0);
     XCTAssert(decl.size == 1);
     XCTAssert(decl.type == OCTypeChar);
     decl = unionScope[@"y"].decl;
-    XCTAssert(decl.offset == 0);
+    XCTAssert(decl.index == 0);
     XCTAssert(decl.size == 2);
     XCTAssert(decl.type == OCTypeShort);
     decl = unionScope[@"z"].decl;
-    XCTAssert(decl.offset == 0);
+    XCTAssert(decl.index == 0);
     XCTAssert(decl.size == 4);
     XCTAssert(decl.type == OCTypeInt);
 }
@@ -252,22 +231,22 @@ union ORValue{
     ";
     AST *ast = [parser parseSource:source];
     ocSymbol *symbol = ast.scope[@"NSString"];
-    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.type == OCTypeClass);
     XCTAssert(symbol.decl.isClassRef);
     symbol = ast.scope[@"NSArray"];
-    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.type == OCTypeClass);
     XCTAssert(symbol.decl.isClassRef);
     symbol = ast.scope[@"NSSimulatorClass"];
-    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.type == OCTypeClass);
     XCTAssert(symbol.decl.isClassRef);
     symbol = ast.scope[@"NSSimulatorClass1"];
-    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.type == OCTypeClass);
     XCTAssert(symbol.decl.isClassRef);
     symbol = ast.scope[@"NSSimulatorClass2"];
-    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.type == OCTypeClass);
     XCTAssert(symbol.decl.isClassRef);
     symbol = ast.scope[@"NSSimulatorClass3"];
-    XCTAssert(symbol.decl.type == OCTypeObject);
+    XCTAssert(symbol.decl.type == OCTypeClass);
     XCTAssert(symbol.decl.isClassRef);
 }
 - (void)testCArraySymbol{
@@ -295,21 +274,54 @@ union ORValue{
     AST *ast = [parser parseSource:source];
     ORMethodCall *call = ast.globalStatements.lastObject;
 }
-- (void)testStringConstant{
+- (void)testCStringConstant {
+    source = @"\
+    \"123\"; \
+    \"1234\"; \
+    \"123\"; \
+    ";
+    AST *ast = [parser parseSource:source];
+    struct or_data_recorder *stringRecorder = (struct or_data_recorder *)symbolTableRoot->string_recorder;
+    
+    ORValueNode *node1 = ast.nodes[0];
+    XCTAssertTrue(node1.symbol.decl.index == 0);
+    void *string1 = stringRecorder->buffer + node1.symbol.decl.index;
+    XCTAssert([[NSString stringWithUTF8String:string1] isEqualToString:node1.value]);
+    
+    ORValueNode *node2 = ast.nodes[1];
+    XCTAssertTrue(node2.symbol.decl.index == [node1.value length] + 1);
+    void *string2 = stringRecorder->buffer + node2.symbol.decl.index;
+    XCTAssert([[NSString stringWithUTF8String:string2] isEqualToString:node2.value]);
+    
+    ORValueNode *node3 = ast.nodes[2];
+    XCTAssert(node1.symbol.decl.index == node3.symbol.decl.index);
+    
+}
+- (void)testCFStringConstant{
     source = @"\
     @\"123\"; \
     @\"1234\"; \
     @\"123\"; \
     ";
     AST *ast = [parser parseSource:source];
+    struct or_data_recorder *cfRecorder = (struct or_data_recorder *)symbolTableRoot->cfstring_recorder;
+    struct ORCFString *buffer = (struct ORCFString *)cfRecorder->buffer;
+    struct or_data_recorder *stringRecorder = (struct or_data_recorder *)symbolTableRoot->string_recorder;
+    
     ORValueNode *node1 = ast.nodes[0];
-    void *buffer1 = symbolTableRoot->constants + node1.symbol.decl.offset;
-    XCTAssert([[NSString stringWithUTF8String:buffer1] isEqualToString:@"123"]);
+    XCTAssertTrue(node1.symbol.decl.index == 0);
+    struct ORCFString *cfstr = buffer + node1.symbol.decl.index;
+    void *string1 = stringRecorder->buffer + cfstr->string.offset;
+    XCTAssert([[NSString stringWithUTF8String:string1] isEqualToString:node1.value]);
+    
     ORValueNode *node2 = ast.nodes[1];
-    void *buffer2 = symbolTableRoot->constants + node2.symbol.decl.offset;
-    XCTAssert([[NSString stringWithUTF8String:buffer2] isEqualToString:@"1234"]);
+    XCTAssertTrue(node2.symbol.decl.index == 1);
+    cfstr = buffer + node2.symbol.decl.index;
+    void *string2 = stringRecorder->buffer + cfstr->string.offset;
+    XCTAssert([[NSString stringWithUTF8String:string2] isEqualToString:node2.value]);
+    
     ORValueNode *node3 = ast.nodes[2];
-    XCTAssert(node1.symbol.decl.offset == node3.symbol.decl.offset);
+    XCTAssert(node1.symbol.decl.index == node3.symbol.decl.index);
 }
 - (void)testPerformanceExample {
     // This is an example of a performance test case.

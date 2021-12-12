@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isLinkedClass;
     BOOL isDataSection;
     
-    NSUInteger _offset;
+    NSUInteger _index;
     NSUInteger _size;
     const char *_typeEncode;
 }
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy)NSString *typeName;
 @property (nonatomic, assign)const char *typeEncode;
 @property (nonatomic, assign)NSUInteger size;
-@property (nonatomic, assign)NSUInteger offset;
+@property (nonatomic, assign)NSUInteger index;
 @property (nonatomic, assign)NSUInteger alignment;
 
 @property (nonatomic, assign)DeclarationModifier declModifer;
