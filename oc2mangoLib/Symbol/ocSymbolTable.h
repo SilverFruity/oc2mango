@@ -31,4 +31,11 @@ extern const ocSymbolTable * symbolTableRoot;
 - (ocSymbol *)getConstantSymbol:(id <NSCopying>)key;
 @end
 
+
+@interface ocSymbolTable (Tools)
+- (ocSymbol *)addClassRefWithName:(NSString *)name;
+@end
+
+
+
 NS_ASSUME_NONNULL_END

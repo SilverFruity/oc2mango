@@ -80,3 +80,17 @@ const ocSymbolTable * symbolTableRoot = nil;
     return constantCache[key];
 }
 @end
+
+
+@implementation ocSymbolTable (Tools)
+- (ocSymbol *)addClassRefWithName:(NSString *)name{
+    ocDecl *classDecl = [ocDecl new];
+    classDecl.typeName = name;
+    classDecl.typeEncode = OCTypeStringClass;
+    classDecl->isClassRef = YES;
+    ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
+    [self insertRoot:symbol];
+    return symbol;
+}
+
+@end

@@ -15,11 +15,9 @@
 		04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		04C4483325F0E95C00E3F443 /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E05E3625F6174D0047442D /* GlobalTypeTable.h */; };
-		04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E05E3725F6174D0047442D /* GlobalTypeTable.m */; };
 		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
-		1872080B26857F3A003C4DC6 /* InitialSymbolTableVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1872080926857F3A003C4DC6 /* InitialSymbolTableVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1872080C26857F3A003C4DC6 /* InitialSymbolTableVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1872080A26857F3A003C4DC6 /* InitialSymbolTableVisitor.m */; };
+		1872080B26857F3A003C4DC6 /* SymbolTableVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1872080926857F3A003C4DC6 /* SymbolTableVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1872080C26857F3A003C4DC6 /* SymbolTableVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1872080A26857F3A003C4DC6 /* SymbolTableVisitor.m */; };
 		1872080F2685824A003C4DC6 /* ocDecl.h in Headers */ = {isa = PBXBuildFile; fileRef = 1872080D2685824A003C4DC6 /* ocDecl.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		187208102685824A003C4DC6 /* ocDecl.m in Sources */ = {isa = PBXBuildFile; fileRef = 1872080E2685824A003C4DC6 /* ocDecl.m */; };
 		18720813268594D8003C4DC6 /* ocHandleTypeEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */; };
@@ -85,12 +83,18 @@
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
 		EE75225A26836797004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
 		EE75226026836798004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
+		EE75647B275FB10F0016CFB6 /* ORFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE756479275FB10F0016CFB6 /* ORFile.h */; };
+		EE75647C275FB10F0016CFB6 /* ORFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE75647A275FB10F0016CFB6 /* ORFile.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
+		EE99E7652764879A00881AED /* ORFileSection.h in Headers */ = {isa = PBXBuildFile; fileRef = EE99E7632764879A00881AED /* ORFileSection.h */; };
+		EE99E7662764879A00881AED /* ORFileSection.m in Sources */ = {isa = PBXBuildFile; fileRef = EE99E7642764879A00881AED /* ORFileSection.m */; };
+		EE99E76727662C9B00881AED /* SymbolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3FF6C268873CA00630C4E /* SymbolTests.m */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
-		EEB3FF6D268873CA00630C4E /* SymbolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3FF6C268873CA00630C4E /* SymbolTests.m */; };
 		EEB7396C268616EC00855E4A /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EEC088712669015800538E9A /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
+		EECF6CA7274A8DB200EC0737 /* SymbolTableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EECF6CA6274A8DB200EC0737 /* SymbolTableTests.swift */; };
+		EECF6CA8274A8DB200EC0737 /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67A702270AE0E0015AC02 /* oc2mangoLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67A972270B0CA0015AC02 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
 		EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
@@ -113,6 +117,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = EE66C15524FEB61300C85B31;
 			remoteInfo = ORPatchFile;
+		};
+		EECF6CA9274A8DB200EC0737 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EED67A6D2270AE0E0015AC02;
+			remoteInfo = oc2mangoLib;
 		};
 		EED67A782270AE0F0015AC02 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -165,11 +176,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		04E05E3625F6174D0047442D /* GlobalTypeTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalTypeTable.h; sourceTree = "<group>"; };
-		04E05E3725F6174D0047442D /* GlobalTypeTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalTypeTable.m; sourceTree = "<group>"; };
 		185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassCodeGenerator.swift; sourceTree = "<group>"; };
-		1872080926857F3A003C4DC6 /* InitialSymbolTableVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InitialSymbolTableVisitor.h; sourceTree = "<group>"; };
-		1872080A26857F3A003C4DC6 /* InitialSymbolTableVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InitialSymbolTableVisitor.m; sourceTree = "<group>"; };
+		1872080926857F3A003C4DC6 /* SymbolTableVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SymbolTableVisitor.h; sourceTree = "<group>"; };
+		1872080A26857F3A003C4DC6 /* SymbolTableVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolTableVisitor.m; sourceTree = "<group>"; };
 		1872080D2685824A003C4DC6 /* ocDecl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocDecl.h; sourceTree = "<group>"; };
 		1872080E2685824A003C4DC6 /* ocDecl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocDecl.m; sourceTree = "<group>"; };
 		18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ocHandleTypeEncode.m; sourceTree = "<group>"; };
@@ -216,11 +225,18 @@
 		EE6E6CD2225E488000616C7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EE6E6CDA225E496600616C7E /* parser.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = parser.y; sourceTree = "<group>"; };
 		EE6E6CDB225E496600616C7E /* lexer.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = lexer.l; sourceTree = "<group>"; };
+		EE756479275FB10F0016CFB6 /* ORFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORFile.h; sourceTree = "<group>"; };
+		EE75647A275FB10F0016CFB6 /* ORFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORFile.m; sourceTree = "<group>"; };
+		EE75647D275FB1330016CFB6 /* ORInstructions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORInstructions.h; sourceTree = "<group>"; };
 		EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveTests.swift; sourceTree = "<group>"; };
 		EE982F05226CB443008712C2 /* MakeDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MakeDeclare.h; sourceTree = "<group>"; };
 		EE982F06226CB4E4008712C2 /* MakeDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MakeDeclare.m; sourceTree = "<group>"; };
+		EE99E7632764879A00881AED /* ORFileSection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORFileSection.h; sourceTree = "<group>"; };
+		EE99E7642764879A00881AED /* ORFileSection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORFileSection.m; sourceTree = "<group>"; };
 		EEB17FFA22849273003D5C36 /* MethodCallTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodCallTest.swift; sourceTree = "<group>"; };
 		EEB3FF6C268873CA00630C4E /* SymbolTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolTests.m; sourceTree = "<group>"; };
+		EECF6CA4274A8DB200EC0737 /* SymbolTableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SymbolTableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EECF6CA6274A8DB200EC0737 /* SymbolTableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolTableTests.swift; sourceTree = "<group>"; };
 		EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = oc2mangoLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EED67A702270AE0E0015AC02 /* oc2mangoLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = oc2mangoLib.h; sourceTree = "<group>"; };
 		EED67A712270AE0E0015AC02 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -263,6 +279,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EECF6CA1274A8DB200EC0737 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EECF6CA8274A8DB200EC0737 /* oc2mangoLib.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EED67A6B2270AE0E0015AC02 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -286,12 +310,17 @@
 		18819E25268329C700CC85DD /* Visitors */ = {
 			isa = PBXGroup;
 			children = (
-				1872080926857F3A003C4DC6 /* InitialSymbolTableVisitor.h */,
-				1872080A26857F3A003C4DC6 /* InitialSymbolTableVisitor.m */,
+				EE99E7632764879A00881AED /* ORFileSection.h */,
+				EE99E7642764879A00881AED /* ORFileSection.m */,
+				1872080926857F3A003C4DC6 /* SymbolTableVisitor.h */,
+				1872080A26857F3A003C4DC6 /* SymbolTableVisitor.m */,
 				18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */,
 				18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */,
 				18819E26268329D800CC85DD /* Convert2MangoVisitor.h */,
 				18819E27268329D800CC85DD /* Convert2MangoVisitor.m */,
+				EE756479275FB10F0016CFB6 /* ORFile.h */,
+				EE75647A275FB10F0016CFB6 /* ORFile.m */,
+				EE75647D275FB1330016CFB6 /* ORInstructions.h */,
 			);
 			path = Visitors;
 			sourceTree = "<group>";
@@ -388,6 +417,7 @@
 				EE6E6CD1225E488000616C7E /* oc2mango */,
 				EED67A6F2270AE0E0015AC02 /* oc2mangoLib */,
 				EED67A7A2270AE0F0015AC02 /* oc2mangoLibTests */,
+				EECF6CA5274A8DB200EC0737 /* SymbolTableTests */,
 				EE6E6CD0225E488000616C7E /* Products */,
 				EED67AA52270B1170015AC02 /* Frameworks */,
 			);
@@ -402,6 +432,7 @@
 				EE4F367924F9251C00F685AF /* BinaryPatchCodeGenerator */,
 				EE66C0A324FE97D500C85B31 /* PatchGenerator */,
 				EE66C15624FEB61300C85B31 /* ORPatchFile.framework */,
+				EECF6CA4274A8DB200EC0737 /* SymbolTableTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -429,10 +460,17 @@
 				EE5534CE2290032700A4B32E /* AST.m */,
 				EE982F05226CB443008712C2 /* MakeDeclare.h */,
 				EE982F06226CB4E4008712C2 /* MakeDeclare.m */,
-				04E05E3625F6174D0047442D /* GlobalTypeTable.h */,
-				04E05E3725F6174D0047442D /* GlobalTypeTable.m */,
 			);
 			path = Builders;
+			sourceTree = "<group>";
+		};
+		EECF6CA5274A8DB200EC0737 /* SymbolTableTests */ = {
+			isa = PBXGroup;
+			children = (
+				EEB3FF6C268873CA00630C4E /* SymbolTests.m */,
+				EECF6CA6274A8DB200EC0737 /* SymbolTableTests.swift */,
+			);
+			path = SymbolTableTests;
 			sourceTree = "<group>";
 		};
 		EED67A6F2270AE0E0015AC02 /* oc2mangoLib */ = {
@@ -460,7 +498,6 @@
 				EED67A7D2270AE0F0015AC02 /* Info.plist */,
 				EED67AB62270B55D0015AC02 /* oc2mangoLibTests-Bridging-Header.h */,
 				EE1C71F32288314C0077A71E /* FileTest.swift */,
-				EEB3FF6C268873CA00630C4E /* SymbolTests.m */,
 				EE9592DD24F7CA8800D8ABE0 /* Archive */,
 				EE5534D822900DD700A4B32E /* Convert */,
 				EE147263227F1D6B00566B3F /* Implementation */,
@@ -500,16 +537,17 @@
 				1872080F2685824A003C4DC6 /* ocDecl.h in Headers */,
 				18E852DD26846BA0009B9A3E /* ocSymbol.h in Headers */,
 				18720814268594D8003C4DC6 /* ocHandleTypeEncode.h in Headers */,
+				EE99E7652764879A00881AED /* ORFileSection.h in Headers */,
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
-				04E05E3825F6174D0047442D /* GlobalTypeTable.h in Headers */,
+				EE75647B275FB10F0016CFB6 /* ORFile.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
 				18819E28268329D800CC85DD /* Convert2MangoVisitor.h in Headers */,
 				18E852CC26842CC5009B9A3E /* CodeGenVisitor.h in Headers */,
 				18E852E626847337009B9A3E /* ocSymbolTable.h in Headers */,
 				18E852E2268472AE009B9A3E /* ocScope.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
-				1872080B26857F3A003C4DC6 /* InitialSymbolTableVisitor.h in Headers */,
+				1872080B26857F3A003C4DC6 /* SymbolTableVisitor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +624,24 @@
 			productReference = EE6E6CCF225E488000616C7E /* oc2mango */;
 			productType = "com.apple.product-type.tool";
 		};
+		EECF6CA3274A8DB200EC0737 /* SymbolTableTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EECF6CAB274A8DB200EC0737 /* Build configuration list for PBXNativeTarget "SymbolTableTests" */;
+			buildPhases = (
+				EECF6CA0274A8DB200EC0737 /* Sources */,
+				EECF6CA1274A8DB200EC0737 /* Frameworks */,
+				EECF6CA2274A8DB200EC0737 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EECF6CAA274A8DB200EC0737 /* PBXTargetDependency */,
+			);
+			name = SymbolTableTests;
+			productName = SymbolTableTests;
+			productReference = EECF6CA4274A8DB200EC0737 /* SymbolTableTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		EED67A6D2270AE0E0015AC02 /* oc2mangoLib */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EED67A832270AE0F0015AC02 /* Build configuration list for PBXNativeTarget "oc2mangoLib" */;
@@ -631,7 +687,7 @@
 		EE6E6CC7225E488000616C7E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1160;
+				LastSwiftUpdateCheck = 1310;
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = SilverFruity;
 				TargetAttributes = {
@@ -646,6 +702,9 @@
 					};
 					EE6E6CCE225E488000616C7E = {
 						CreatedOnToolsVersion = 10.1;
+					};
+					EECF6CA3274A8DB200EC0737 = {
+						CreatedOnToolsVersion = 13.1;
 					};
 					EED67A6D2270AE0E0015AC02 = {
 						CreatedOnToolsVersion = 10.1;
@@ -674,12 +733,20 @@
 				EE4F367824F9251C00F685AF /* BinaryPatchCodeGenerator */,
 				EE66C0A224FE97D500C85B31 /* PatchGenerator */,
 				EE66C15524FEB61300C85B31 /* ORPatchFile */,
+				EECF6CA3274A8DB200EC0737 /* SymbolTableTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EE66C15424FEB61300C85B31 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EECF6CA2274A8DB200EC0737 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -794,6 +861,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EECF6CA0274A8DB200EC0737 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EECF6CA7274A8DB200EC0737 /* SymbolTableTests.swift in Sources */,
+				EE99E76727662C9B00881AED /* SymbolTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EED67A6A2270AE0E0015AC02 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -801,7 +877,8 @@
 				18E852E726847337009B9A3E /* ocSymbolTable.m in Sources */,
 				18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */,
 				18E852D726846394009B9A3E /* AstVisitor.m in Sources */,
-				1872080C26857F3A003C4DC6 /* InitialSymbolTableVisitor.m in Sources */,
+				1872080C26857F3A003C4DC6 /* SymbolTableVisitor.m in Sources */,
+				EE75647C275FB10F0016CFB6 /* ORFile.m in Sources */,
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* parser.y in Sources */,
 				18E852E3268472AE009B9A3E /* ocScope.m in Sources */,
@@ -809,7 +886,7 @@
 				18E852DE26846BA0009B9A3E /* ocSymbol.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
-				04E05E3925F6174D0047442D /* GlobalTypeTable.m in Sources */,
+				EE99E7662764879A00881AED /* ORFileSection.m in Sources */,
 				18720813268594D8003C4DC6 /* ocHandleTypeEncode.m in Sources */,
 				18E852CD26842CC5009B9A3E /* CodeGenVisitor.m in Sources */,
 				187208102685824A003C4DC6 /* ocDecl.m in Sources */,
@@ -822,7 +899,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE1C71F42288314C0077A71E /* FileTest.swift in Sources */,
-				EEB3FF6D268873CA00630C4E /* SymbolTests.m in Sources */,
 				EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */,
 				EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */,
 				639D738422939E89005C6577 /* ExpressionTest.swift in Sources */,
@@ -844,6 +920,11 @@
 			isa = PBXTargetDependency;
 			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
 			targetProxy = EE4B04322682421E009032B2 /* PBXContainerItemProxy */;
+		};
+		EECF6CAA274A8DB200EC0737 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EED67A6D2270AE0E0015AC02 /* oc2mangoLib */;
+			targetProxy = EECF6CA9274A8DB200EC0737 /* PBXContainerItemProxy */;
 		};
 		EED67A792270AE0F0015AC02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1110,6 +1191,61 @@
 			};
 			name = Release;
 		};
+		EECF6CAC274A8DB200EC0737 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SilverFruity.SymbolTableTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EECF6CAD274A8DB200EC0737 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SilverFruity.SymbolTableTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		EED67A7F2270AE0F0015AC02 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1271,6 +1407,15 @@
 			buildConfigurations = (
 				EE6E6CD7225E488000616C7E /* Debug */,
 				EE6E6CD8225E488000616C7E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EECF6CAB274A8DB200EC0737 /* Build configuration list for PBXNativeTarget "SymbolTableTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EECF6CAC274A8DB200EC0737 /* Debug */,
+				EECF6CAD274A8DB200EC0737 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

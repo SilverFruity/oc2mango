@@ -9,10 +9,15 @@
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
-		<key>ORPatchFile.xcscheme_^#shared#^_</key>
+		<key>CodeGenTests.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>6</integer>
+		</dict>
+		<key>ORPatchFile.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>7</integer>
 		</dict>
 		<key>PatchGenerator.xcscheme_^#shared#^_</key>
 		<dict>
@@ -25,6 +30,16 @@
 			<false/>
 			<key>orderHint</key>
 			<integer>3</integer>
+		</dict>
+		<key>SymbleTableTests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
+		</dict>
+		<key>SymbolTableTests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>6</integer>
 		</dict>
 		<key>oc2mango.xcscheme_^#shared#^_</key>
 		<dict>
@@ -55,6 +70,11 @@
 			<true/>
 		</dict>
 		<key>EE6E6CCE225E488000616C7E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EECF6CA3274A8DB200EC0737</key>
 		<dict>
 			<key>primary</key>
 			<true/>

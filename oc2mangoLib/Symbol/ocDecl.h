@@ -20,9 +20,16 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isClassMethod;
     BOOL isClassRef;
     BOOL isDynamicCArray;
-    BOOL isConstant;
     BOOL isSelf;
     BOOL isSuper;
+    
+    // Data Section
+    BOOL isConstant;
+    BOOL isStringConstant;
+    BOOL isLinkedCFunction;
+    BOOL isLinkedClass;
+    BOOL isDataSection;
+    
     NSUInteger _offset;
     NSUInteger _size;
     const char *_typeEncode;

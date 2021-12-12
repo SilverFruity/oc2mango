@@ -4,6 +4,7 @@
 #import <Foundation/Foundation.h>
 #import "Log.h"
 #import "MakeDeclare.h"
+#import "ocSymbolTable.h"
 
 extern int yylex (void);
 extern void yyerror(const char *s);
@@ -144,6 +145,11 @@ expression_stats
     [GlobalAst addGlobalStatements:$1];
 }
 | CLASS_DECLARE for_statement_var_list SEMICOLON
+{
+    for (ORValueNode *node in (NSMutableArray *)$2){
+        [symbolTableRoot addClassRefWithName:node.value];
+    }
+}
 | PROTOCOL IDENTIFIER SEMICOLON
 | declarator_type declarator ast_block_imp
 {

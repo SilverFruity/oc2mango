@@ -34,18 +34,19 @@ if (x >= 0 ){
         let ast = parser.parseSource(source)
         XCTAssert(parser.isSuccess())
         let state = ast.globalStatements.firstObject as! ORIfStatement
-        XCTAssert(state.condition == nil)
-        XCTAssert(state.scopeImp != nil)
+        let elsestat = state.statements![3] as? ORIfStatement
+        XCTAssert(elsestat?.condition == nil)
+        XCTAssert(elsestat?.scopeImp != nil)
         
-        let elseif2 = state.last;
+        let elseif2 = state.statements![2] as? ORIfStatement
         XCTAssert(elseif2?.condition != nil)
         XCTAssert(elseif2?.scopeImp != nil)
         
-        let elseif1 = elseif2?.last;
+        let elseif1 = state.statements![1] as? ORIfStatement
         XCTAssert(elseif1?.condition != nil)
         XCTAssert(elseif1?.scopeImp != nil)
         
-        let ifS = elseif1?.last;
+        let ifS = state.statements![0] as? ORIfStatement;
         XCTAssert(ifS?.condition != nil)
         XCTAssert(ifS?.scopeImp != nil)
         

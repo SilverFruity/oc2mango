@@ -6,14 +6,14 @@
 //  Copyright © 2021 SilverFruity. All rights reserved.
 //
 
-#import "InitialSymbolTableVisitor.h"
+#import "SymbolTableVisitor.h"
 #import "ocHandleTypeEncode.h"
 
 static unsigned long or_mem_offset = 0;
 static unsigned long or_const_offset = 0;
 static BOOL is_return_declarator = NO;
 
-static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
+const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
 static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
     ORTypeNode *typeSpecial = node.type;
     ORVariableNode *var = node.var;
@@ -143,7 +143,7 @@ static const char *functionTypeEncode(ORFunctionDeclNode *node){
     return [NSString stringWithFormat:@"%s",signature].UTF8String;;
 }
 
-static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
+const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     if (node.nodeType == AstEnumCArrayDeclNode){
         ORCArrayDeclNode *arrayNode = (ORCArrayDeclNode *)node;
         return cArrayTypeEncode(arrayNode);
@@ -154,7 +154,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     return typeEncodeWithSearchSymbolTable(node);
 }
 
-@implementation InitialSymbolTableVisitor
+@implementation SymbolTableVisitor
 - (instancetype)init
 {
     self = [super init];
@@ -238,12 +238,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     // 不使用assing的类型可以确定为NSObject的子类，向根符号表注册类符号
     MFPropertyModifier modifer = propDecl.propModifer & MFPropertyModifierMemMask;
     if (modifer != MFPropertyModifierMemAssign) {
-        ocDecl *classDecl = [ocDecl new];
-        classDecl.typeName = node.var.type.name;
-        classDecl.typeEncode = OCTypeStringClass;
-        classDecl->isClassRef = YES;
-        ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
-        [symbolTableRoot insertRoot:symbol];
+        [symbolTableRoot addClassRefWithName:node.var.type.name];
     }
     is_return_declarator = YES;
     [self visit:node.var];
@@ -329,18 +324,8 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitClassNode:(nonnull ORClassNode *)node {
-//    ocDecl *classDecl = [ocDecl new];
-//    classDecl.typeName = node.className;
-//    classDecl.typeEncode = OCTypeStringObject;
-//    ocSymbol *symbol = [ocSymbol symbolWithName:node.className decl:classDecl];
-//    [symbolTableRoot insertRoot:symbol];
     
-    ocDecl *classRefDecl = [ocDecl new];
-    classRefDecl.typeName = node.className;
-    classRefDecl.typeEncode = OCTypeStringClass;
-    classRefDecl->isClassRef = YES;
-    ocSymbol *classRefSymbol = [ocSymbol symbolWithName:node.className decl:classRefDecl];
-    [symbolTableRoot insertRoot:classRefSymbol];
+    [symbolTableRoot addClassRefWithName:node.className];
     
     [symbolTableRoot increaseScope];
         
@@ -387,9 +372,6 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     symbolTableRoot->constants_size = or_const_offset;
     symbolTableRoot->constants = realloc(symbolTableRoot->constants, sizeof(unichar) * symbolTableRoot->constants_size);
     memcpy(symbolTableRoot->constants + decl.offset, value, decl.size);
-    if (is_string_constant) {
-        memcpy(symbolTableRoot->constants + decl.offset + decl.size - 1, "\0", 1);
-    }
     [symbolTableRoot addConstantSymbol:symbol withKey:key];
     
     return symbol;
@@ -415,16 +397,7 @@ static const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
             if (symbol.decl.isStruct == NO
                 && symbol.decl.isFunction == NO
                 && (symbol == nil || symbol.decl.isObject )) {
-                ocDecl *classDecl = [ocDecl new];
-                if (symbol == nil) {
-                    classDecl.typeName = node.value;
-                }else{
-                    classDecl.typeName = symbol.decl.typeName;
-                }
-                classDecl.typeEncode = OCTypeStringClass;
-                classDecl->isClassRef = YES;
-                ocSymbol *classSymbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
-                [symbolTableRoot insertRoot:classSymbol];
+                ocSymbol *classSymbol = [symbolTableRoot addClassRefWithName:symbol == nil ? node.value : symbol.decl.typeName];
                 if (symbol == nil) {
                     node.symbol = classSymbol;
                 }else{
@@ -824,3 +797,4 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
 
 
 @end
+

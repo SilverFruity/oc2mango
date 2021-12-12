@@ -9,7 +9,7 @@
 #import <XCTest/XCTest.h>
 #import <oc2mangoLib/oc2mangoLib.h>
 @interface SymbolParser: Parser
-@property (nonatomic, strong)InitialSymbolTableVisitor *visitor;
+@property (nonatomic, strong)SymbolTableVisitor *visitor;
 @end
 
 @implementation SymbolParser
@@ -17,7 +17,7 @@
 {
     self = [super init];
     if (self) {
-        self.visitor = [InitialSymbolTableVisitor new];
+        self.visitor = [SymbolTableVisitor new];
     }
     return self;
 }
