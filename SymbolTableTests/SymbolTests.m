@@ -305,29 +305,72 @@ union ORValue{
     ";
     AST *ast = [parser parseSource:source];
     struct or_data_recorder *cfRecorder = (struct or_data_recorder *)symbolTableRoot->cfstring_recorder;
-    struct ORCFString *buffer = (struct ORCFString *)cfRecorder->buffer;
-    struct or_data_recorder *stringRecorder = (struct or_data_recorder *)symbolTableRoot->string_recorder;
+    struct ORCFString **stringList = (struct ORCFString **)cfRecorder->list;
     
     ORValueNode *node1 = ast.nodes[0];
     XCTAssertTrue(node1.symbol.decl.index == 0);
-    struct ORCFString *cfstr = buffer + node1.symbol.decl.index;
-    void *string1 = stringRecorder->buffer + cfstr->string.offset;
-    XCTAssert([[NSString stringWithUTF8String:string1] isEqualToString:node1.value]);
+    const char *str = unwrapStringItem(stringList[node1.symbol.decl.index]->string);
+    XCTAssertTrue(strcmp(str, [node1.value UTF8String]) == 0);
     
     ORValueNode *node2 = ast.nodes[1];
-    XCTAssertTrue(node2.symbol.decl.index == 1);
-    cfstr = buffer + node2.symbol.decl.index;
-    void *string2 = stringRecorder->buffer + cfstr->string.offset;
-    XCTAssert([[NSString stringWithUTF8String:string2] isEqualToString:node2.value]);
+    str = unwrapStringItem(stringList[node2.symbol.decl.index]->string);
+    XCTAssertTrue(strcmp(str, [node2.value UTF8String]) == 0);
     
     ORValueNode *node3 = ast.nodes[2];
     XCTAssert(node1.symbol.decl.index == node3.symbol.decl.index);
 }
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
+- (void)testLinkedClassSection {
+    source = @"\
+    @class Test1, Test2; \
+    @interface Test1: NSObject @end \
+    @interface Test3: NSObject @end \
+    [NSObject new];\
+    ";
+    AST *ast = [parser parseSource:source];
+    struct or_data_recorder *classRecorder = (struct or_data_recorder *)symbolTableRoot->linked_class_recorder;
+    XCTAssertTrue(classRecorder->count == 4);
+    
+    struct ORLinkedClass *linked = classRecorder->list[0];
+    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "Test1") == 0);
+    
+    linked = classRecorder->list[1];
+    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "Test2") == 0);
+    
+    linked = classRecorder->list[2];
+    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "NSObject") == 0);
+    
+    linked = classRecorder->list[3];
+    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "Test3") == 0);
+    
+    ORMethodCall *call = ast.nodes[2];
+    ORValueNode *value = (ORValueNode *)call.caller;
+    linked = classRecorder->list[value.symbol.decl.index];
+    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "NSObject") == 0);
+    
 }
+- (void)testLinkedCFunctionSection {
+    source = @"\
+    struct CGRect { CGFloat x; CGFloat x; CGFloat width; CGFloat height; };\
+    void NSLog(const char *str, ...); \
+    CGRect CGRectMake(CGFloat x, CGFloat y, CGFloat width, CGFloat height); \
+    int a = CGRectMake(0,0,0,0);\
+    ";
+    AST *ast = [parser parseSource:source];
+    struct or_data_recorder *funcRecorder = (struct or_data_recorder *)symbolTableRoot->linked_cfunction_recorder;
+    XCTAssertTrue(funcRecorder->count == 2);
+    
+    struct ORLinkedCFunction *cfunc = funcRecorder->list[0];
+    XCTAssertTrue(strcmp(unwrapStringItem(cfunc->function_name), "NSLog") == 0);
+    
+    cfunc = funcRecorder->list[1];
+    XCTAssertTrue(strcmp(unwrapStringItem(cfunc->function_name), "CGRectMake") == 0);
+    
+    ORAssignNode *assignExp = ast.nodes[3];
+    ORFunctionCall *call = (ORFunctionCall *)assignExp.expression;
+    cfunc = funcRecorder->list[call.symbol.decl.index];
+    XCTAssertTrue(strcmp(unwrapStringItem(cfunc->function_name), "CGRectMake") == 0);
+    XCTAssertTrue(strcmp(unwrapStringItem(cfunc->type_encode), "^?{CGRect=dddd}dddd") == 0);
+}
+
 
 @end

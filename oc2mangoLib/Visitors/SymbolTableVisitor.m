@@ -173,14 +173,10 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 - (void)visitFunctionDeclNode:(nonnull ORFunctionDeclNode *)node {
     const char *signature = typeEncodeForDeclaratorNode(node);
-    ocDecl *decl = [ocDecl new];
-    decl.typeEncode = signature;
-    // Return Type Name，使用函数的返回值信息，作为函数的符号类型
-    decl.typeName = node.type.name;
     NSAssert(node.var.varname.length > 0, @"");
-    // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
-    ocSymbol *symbol = [ocSymbol symbolWithName:node.var.varname decl:decl];
-    [symbolTableRoot insert:symbol];
+    ocSymbol *symbol = [symbolTableRoot addLinkedCFunctionSection:signature name:node.var.varname.UTF8String];
+    // Return Type Name，使用函数的返回值信息，作为函数的符号类型
+    symbol.decl.typeName = node.type.name;
 }
 
 - (void)visitFunctionNode:(nonnull ORFunctionNode *)node {
@@ -328,9 +324,10 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitClassNode:(nonnull ORClassNode *)node {
-    
     [symbolTableRoot addClassRefWithName:node.className];
-    
+    if (node.superClassName) {
+        [symbolTableRoot addClassRefWithName:node.superClassName];
+    }
     [symbolTableRoot increaseScope];
         
     for (ORPropertyNode *prop in node.properties) {
@@ -723,10 +720,20 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
 - (void)visitFunctionCall:(nonnull ORFunctionCall *)node {
     [self visit:node.caller];
     if (node.caller.nodeType == AstEnumValueNode) {
-        ORNode *impNode = internalFunctionTable[[node.caller value]];
-        ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:nil];
-        symbol->_bbimp = impNode;
-        node.symbol = symbol;
+        NSString *name = [node.caller value];
+        ORNode *impNode = internalFunctionTable[name];
+        if (impNode) {
+            ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:nil];
+            symbol->_bbimp = impNode;
+            node.symbol = symbol;
+        } else {
+            ocSymbol *symbol = [symbolTableRoot lookup:name];
+            if (symbol && symbol.decl->isLinkedCFunction) {
+                node.symbol = symbol;
+            }
+        }
+    } else {
+        // handle self.block()
     }
     for (ORNode *arg in node.expressions) {
         [self visit:arg];

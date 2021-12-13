@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ORFile.h"
+
 struct or_data_recorder {
     char *buffer;
     int cursor;
@@ -19,7 +21,7 @@ struct or_data_recorder {
 #pragma mark - String Section
 const void *init_string_recorder(void);
 int or_string_recorder_add(const char *str);
-
+const char * unwrapStringItem(struct ORStringItem item);
 #pragma mark - CFString Section
 /*
  when virtual machine started, all NSString References which need to be initialized

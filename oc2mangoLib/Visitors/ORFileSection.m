@@ -67,10 +67,14 @@ int or_string_recorder_add(const char *str) {
     data_recorder_add(&string_recorder, (char *)str, strlen(str) + 1);
     return offset;
 }
+
 struct ORStringItem or_string_item(const char *str) {
     struct ORStringItem item;
     item.offset = or_string_recorder_add(str);
     return item;
+}
+const char * unwrapStringItem(struct ORStringItem item) {
+    return string_recorder.buffer + item.offset;
 }
 
 #pragma mark - CFString Section
@@ -113,8 +117,8 @@ int or_linked_class_recorder_add(const char *className) {
     if (cached) {
         return cached.intValue;
     }
-    int index = cfstring_recorder.count;
-    cfstring_section_cache[@(linked.class_name.offset)] = @(index);
+    int index = linked_class_recorder.count;
+    linked_class_section_cache[@(linked.class_name.offset)] = @(index);
     data_recorder_add(&linked_class_recorder, &linked, sizeof(struct ORLinkedClass));
     return index;
 }
