@@ -23,12 +23,24 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isSelf;
     BOOL isSuper;
     
+    union {
+        BOOL isFunctionDefine;
+        BOOL isBlockDefine;
+    } functionDefine;
+    
     // Data Section
-    BOOL isConstant;
-    BOOL isStringConstant;
-    BOOL isLinkedCFunction;
-    BOOL isLinkedClass;
-    BOOL isDataSection;
+    union {
+        BOOL isConstant;
+        BOOL isStringConstant;
+        BOOL isLinkedCFunction;
+        BOOL isLinkedClass;
+        BOOL isDataSection;
+        
+        BOOL isClassSection;
+        BOOL isMethodSection;
+        BOOL isPropertySection;
+    } section;
+    
     
     NSUInteger _index;
     NSUInteger _size;

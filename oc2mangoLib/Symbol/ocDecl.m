@@ -88,10 +88,10 @@
     }
 }
 - (BOOL)isConstant{
-    return isConstant;
+    return section.isConstant;
 }
 - (BOOL)isClassRef{
-    return isClassRef || isLinkedClass;
+    return isClassRef || section.isLinkedClass;
 }
 @end
 

@@ -14,9 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *AnonymousBlockSignature;
 
 @interface SymbolTableVisitor : NSObject <AstVisitor>
-{
-    NSMutableDictionary <NSString *, ORNode *>*internalFunctionTable;
-}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -9,7 +9,6 @@
 #import "SymbolTableVisitor.h"
 #import "ocHandleTypeEncode.h"
 #import "ORFileSection.h"
-static unsigned long or_mem_offset = 0;
 static BOOL is_return_declarator = NO;
 
 const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
@@ -158,7 +157,6 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 {
     self = [super init];
     symbolTableRoot = [ocSymbolTable new];
-    internalFunctionTable = [NSMutableDictionary dictionary];
     return self;
 }
 - (void)visit:(nonnull ORNode *)node {
@@ -180,28 +178,24 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitFunctionNode:(nonnull ORFunctionNode *)node {
-    or_mem_offset = 0;
+
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeEncodeForDeclaratorNode(node.declare);;
     // Return Type Name，使用函数的返回值信息，作为函数的符号类型
     decl.typeName = node.declare.type.name;
     NSString *functionName = node.declare.var.varname;
-    if (functionName) {
-        internalFunctionTable[functionName] = node;
-    }else{
-        // for block
-//        assert(false);
+    if (functionName == nil) {
+        // FIXME: block need to generate new label automatically
+        // Temp
+        decl->functionDefine.isBlockDefine = YES;
+        functionName = @"BLOCK_TEMP_NAME";
     }
-    
-    
-    // 针对正常的函数实现，在函数作用域的上一级作用域注册该函数的信息
-    if (functionName.length != 0){
-        ocSymbol *symbol = [ocSymbol symbolWithName:functionName decl:decl];
-        [symbolTableRoot insert:symbol];
-    }
+    ocSymbol *symbol = [ocSymbol symbolWithName:functionName decl:decl];
+    decl->functionDefine.isFunctionDefine = YES;
+    [symbolTableRoot insertRoot:symbol];
     
     //包括匿名函数，自己持有签名信息
-    node.symbol = [ocSymbol symbolWithName:nil decl:decl];
+    node.symbol = [ocSymbol symbolWithName:functionName decl:decl];
     
     is_return_declarator = YES;
     [self visit:[ORDeclaratorNode copyFromDecl:node.declare]];
@@ -217,7 +211,6 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
     
-    or_mem_offset = 0;
 }
 
 #pragma mark - Class
@@ -259,37 +252,29 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocDecl *selfDecl = [ocDecl new];
     selfDecl.typeName = @"id";
     selfDecl.typeEncode = OCTypeStringObject;
-    selfDecl.index = or_mem_offset;
     selfDecl->isSelf = YES;
     ocSymbol * selfSymbol = [ocSymbol symbolWithName:@"self" decl:selfDecl];
     
     ocDecl *superDecl = [ocDecl new];
     superDecl.typeName = @"id";
     superDecl.typeEncode = OCTypeStringObject;
-    superDecl.index = or_mem_offset;
-    superDecl->isSuper = YES;
+    selfDecl->isSuper = YES;
     ocSymbol * superSymbol = [ocSymbol symbolWithName:@"super" decl:superDecl];
     [symbolTableRoot insert:selfSymbol];
     [symbolTableRoot insert:superSymbol];
-    
-    or_mem_offset += MAX(selfDecl.size, 8);
 
     //第二个参数为sel
     ocDecl *selDecl = [ocDecl new];
     selDecl.typeName = @"SEL";
     selDecl.typeEncode = OCTypeStringSEL;
-    selDecl.index = or_mem_offset;
     ocSymbol * selSymbol = [ocSymbol symbolWithName:@"sel" decl:selDecl];
     [symbolTableRoot insert:selSymbol];
-    or_mem_offset += MAX(selDecl.size, 8);
     
     for (int i = 0; i < node.parameters.count; i++) {
         [self visit:node.parameters[i]];
     }
 }
 - (void)visitMethodNode:(nonnull ORMethodNode *)node {
-    
-    or_mem_offset = 0;
     
     //生成 method 签名信息
     char methodTypeEncode[256] = { 0 };
@@ -320,7 +305,6 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
     
-    or_mem_offset = 0;
 }
 
 - (void)visitClassNode:(nonnull ORClassNode *)node {
@@ -440,8 +424,8 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     }
 }
 - (void)visitBoolValue:(nonnull ORBoolValue *)node {
-    BOOL value = node.value;
-    node.symbol = [symbolTableRoot addConstantSection:OCTypeStringBOOL data:&value];
+    int64_t value = (int64_t)node.value;
+    node.symbol = [symbolTableRoot addConstantSection:OCTypeStringLongLong data:&value];
 }
 - (void)visitIntegerValue:(nonnull ORIntegerValue *)node {
     int64_t value = node.value;
@@ -535,8 +519,6 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
         return;
     }
     [symbolTableRoot insert:node.symbol];
-    decl.index = or_mem_offset;
-    or_mem_offset += MAX(decl.size, 8);
 }
 - (void)visitInitDeclaratorNode:(nonnull ORInitDeclaratorNode *)node {
     [self visit:node.declarator];
@@ -721,17 +703,7 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     [self visit:node.caller];
     if (node.caller.nodeType == AstEnumValueNode) {
         NSString *name = [node.caller value];
-        ORNode *impNode = internalFunctionTable[name];
-        if (impNode) {
-            ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:nil];
-            symbol->_bbimp = impNode;
-            node.symbol = symbol;
-        } else {
-            ocSymbol *symbol = [symbolTableRoot lookup:name];
-            if (symbol && symbol.decl->isLinkedCFunction) {
-                node.symbol = symbol;
-            }
-        }
+        node.symbol = [symbolTableRoot lookup:name];
     } else {
         // handle self.block()
     }

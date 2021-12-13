@@ -86,8 +86,7 @@ const ocScope *scopeRoot = nil;
     ocDecl *classDecl = [ocDecl new];
     classDecl.typeName = name;
     classDecl.typeEncode = OCTypeStringClass;
-    classDecl->isLinkedClass = YES;
-    classDecl->isClassRef = YES;
+    classDecl->section.isLinkedClass = YES;
     classDecl.index = or_linked_class_recorder_add(name.UTF8String);
     ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
     [self insertRoot:symbol];
@@ -101,7 +100,7 @@ const ocScope *scopeRoot = nil;
     }else{
         decl.index = or_string_recorder_add(str);
     }
-    decl->isStringConstant = YES;
+    decl->section.isStringConstant = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
 }
@@ -109,7 +108,7 @@ const ocScope *scopeRoot = nil;
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
     decl.index = or_linked_cfunction_recorder_add(typeencode, name);
-    decl->isLinkedCFunction = YES;
+    decl->section.isLinkedCFunction = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:[NSString stringWithUTF8String:name] decl:decl];
     [symbolTableRoot insertRoot:symbol];
     return symbol;
@@ -118,7 +117,7 @@ const ocScope *scopeRoot = nil;
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
     decl.index = or_constant_section_recorder_add(data);
-    decl->isConstant = YES;
+    decl->section.isConstant = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
 }
@@ -126,7 +125,7 @@ const ocScope *scopeRoot = nil;
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
     decl.index = or_data_section_recorder_add(size);
-    decl->isDataSection = YES;
+    decl->section.isDataSection = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
 }

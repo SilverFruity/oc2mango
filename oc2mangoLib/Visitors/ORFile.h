@@ -77,6 +77,7 @@ struct ORVariableData {
 
 struct ORObjcMethod{
     NSMethodSignature *signature;
+    BOOL isClassMethod;
     SEL selector;
     struct ORStringItem method_name;
     struct ORStringItem method_type_encode;
