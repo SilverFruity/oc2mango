@@ -7,11 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <objc/runtime.h>
+typedef int or_file_offset;
 
 struct ORLoadCommand{
-    int64_t section_offset;
-    int64_t section_size;
-    int64_t item_count;
+    or_file_offset section_offset;
+    or_file_offset section_size;
+    int item_count;
 };
 
 struct ORFileHeader{
@@ -19,10 +21,10 @@ struct ORFileHeader{
     char target_os_version[64];
     char target_app_version[64];
     char target_framework_version[64];
-    int64_t load_command_count;
+    int load_command_count;
 };
 
-enum OR_LOAD_COMMAND{
+enum OR_LOAD_COMMAND: int{
     or_load_string_section,
     or_load_linked_class_section,
     or_load_link_cfunction_section,
@@ -31,7 +33,8 @@ enum OR_LOAD_COMMAND{
 };
 
 struct ORStringItem{
-    uint64 offset;
+    // the offset in string seciton
+    int offset;
 };
 
 struct ORCFString {
@@ -43,7 +46,7 @@ struct ORStringSection{
     char *buffer;
 };
 
-struct ORLinkedClass{
+struct ORLinkedClass {
     void *class_ptr;
     struct ORStringItem class_name;
 };
@@ -75,17 +78,27 @@ struct ORVariableData {
     uintptr_t data;
 };
 
+#pragma mark - Objc Sections
+struct ORStruct{
+    struct ORStringItem struct_name;
+    struct ORStringItem type_encode;
+};
+
 struct ORObjcMethod{
-    NSMethodSignature *signature;
+    struct objc_method *method;
     BOOL isClassMethod;
-    SEL selector;
+    struct ORStringItem class_name;
+    struct ORStringItem selector;
     struct ORStringItem method_name;
     struct ORStringItem method_type_encode;
+    or_file_offset imp;
 };
 
 //typedef int MFPropertyModifier;
 struct ORObjcProperty {
+    struct objc_property * objc_prop;
     int modifer;
+    struct ORStringItem class_name;
     struct ORStringItem property_name;
     struct ORStringItem property_type_encode;
     struct ORStringItem getter_name;
@@ -93,28 +106,50 @@ struct ORObjcProperty {
     struct ORStringItem ivar_name;
 };
 
-struct ORClassItem {
-    struct ORObjcProperty *properties;
-    struct ORObjcMethod *method;
-};
-
-struct ORStruct{
-    struct ORStringItem struct_name;
+struct ORObjcIvar {
+    struct objc_ivar * ivar;
+    struct ORStringItem class_name;
+    struct ORStringItem ivar_name;
     struct ORStringItem type_encode;
 };
+
+struct ORFileList {
+    int count;
+    or_file_offset item_start_offset;
+};
+
+struct ORClassItem {
+    struct objc_object *class_t;
+    struct ORStringItem class_name;
+    struct ORStringItem super_class_name;
+    // struct ORObjcIvar *
+    struct ORFileList ivar_list;
+    // struct ORObjcProperty *
+    struct ORFileList prop_list;
+    // struct ORObjcMethod *
+    struct ORFileList class_method_list;
+    // struct ORObjcMethod *
+    struct ORFileList instance_method_list;
+};
+#pragma mark - ----
 
 struct ORFile {
     struct ORFileHeader *header;
     struct ORLoadCommand *commands;
     struct ORLinkedClass *linked_class_section;
     struct ORLinkedCFunction *linked_cfunction_section;
-    struct ORClassItem *dynamic_class_section;
-    struct ORObjcMethod *method_section;
-    struct ORObjcProperty *property_section;
     struct ORStruct *struct_section;
     struct ORVariableData *data_section;
+    uint64_t *constant_section;
     struct ORCFString *cf_string_section;
     struct ORStringSection *string_section;
+    
+    struct ORObjcMethod *instance_method_section;
+    struct ORObjcMethod *class_method_section;
+    struct ORObjcProperty *property_section;
+    struct ORObjcIvar *ivar_section;
+    struct ORClassItem *class_section;
+    
     const void *instructions;
 };
 

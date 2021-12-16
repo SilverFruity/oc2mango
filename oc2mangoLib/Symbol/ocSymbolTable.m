@@ -82,11 +82,21 @@ const ocScope *scopeRoot = nil;
 
 
 @implementation ocSymbolTable (Tools)
-- (ocSymbol *)addClassRefWithName:(NSString *)name{
+- (ocSymbol *)addClassDefineWithName:(NSString *)name {
+    ocSymbol *symbol = [self addLinkedClassWithName:name];
+    symbol.decl->isLinkedClass = NO;
+    symbol.decl->isClassDefine = YES;
+    return symbol;
+}
+- (ocSymbol *)addLinkedClassWithName:(NSString *)name {
+    ocSymbol *classSymbol = [symbolTableRoot lookup:name];
+    if (classSymbol.decl.isClassRef) {
+        return classSymbol;
+    }
     ocDecl *classDecl = [ocDecl new];
     classDecl.typeName = name;
     classDecl.typeEncode = OCTypeStringClass;
-    classDecl->section.isLinkedClass = YES;
+    classDecl->isLinkedClass = YES;
     classDecl.index = or_linked_class_recorder_add(name.UTF8String);
     ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
     [self insertRoot:symbol];
@@ -100,7 +110,7 @@ const ocScope *scopeRoot = nil;
     }else{
         decl.index = or_string_recorder_add(str);
     }
-    decl->section.isStringConstant = YES;
+    decl->isStringConstant = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
 }
@@ -108,7 +118,7 @@ const ocScope *scopeRoot = nil;
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
     decl.index = or_linked_cfunction_recorder_add(typeencode, name);
-    decl->section.isLinkedCFunction = YES;
+    decl->isLinkedCFunction = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:[NSString stringWithUTF8String:name] decl:decl];
     [symbolTableRoot insertRoot:symbol];
     return symbol;
@@ -117,7 +127,7 @@ const ocScope *scopeRoot = nil;
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
     decl.index = or_constant_section_recorder_add(data);
-    decl->section.isConstant = YES;
+    decl->isConstant = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
 }
@@ -125,7 +135,7 @@ const ocScope *scopeRoot = nil;
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
     decl.index = or_data_section_recorder_add(size);
-    decl->section.isDataSection = YES;
+    decl->isDataSection = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
 }

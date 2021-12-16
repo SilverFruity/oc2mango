@@ -147,7 +147,7 @@ expression_stats
 | CLASS_DECLARE for_statement_var_list SEMICOLON
 {
     for (ORValueNode *node in (NSMutableArray *)$2){
-        [symbolTableRoot addClassRefWithName:node.value];
+        [symbolTableRoot addLinkedClassWithName:node.value];
     }
 }
 | PROTOCOL IDENTIFIER SEMICOLON

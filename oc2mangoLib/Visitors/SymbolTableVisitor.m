@@ -23,7 +23,7 @@ static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
         suffixEncode = symbol.decl.typeEncode;
         assert(suffixEncode != NULL);
         type = symbol.decl.type;
-        if (symbol.decl->isClassRef) {
+        if (symbol.decl.isClassRef) {
             suffixEncode = OCTypeStringObject;
             type = OCTypeObject;
         }
@@ -231,7 +231,7 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     // 不使用assing的类型可以确定为NSObject的子类，向根符号表注册类符号
     MFPropertyModifier modifer = propDecl.propModifer & MFPropertyModifierMemMask;
     if (modifer != MFPropertyModifierMemAssign) {
-        [symbolTableRoot addClassRefWithName:node.var.type.name];
+        [symbolTableRoot addLinkedClassWithName:node.var.type.name];
     }
     is_return_declarator = YES;
     [self visit:node.var];
@@ -289,7 +289,7 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     ocDecl *methodDecl = [ocDecl new];
     methodDecl.typeEncode = methodTypeEncode;
     methodDecl.size = sizeOfTypeEncode(returnTypeEncode);
-    methodDecl->isMethod = YES;
+    methodDecl->isMethodDef = YES;
     methodDecl->isClassMethod = node.declare.isClassMethod;
     
     //向Class作用域添加Method的符号信息
@@ -308,9 +308,9 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitClassNode:(nonnull ORClassNode *)node {
-    [symbolTableRoot addClassRefWithName:node.className];
+    [symbolTableRoot addClassDefineWithName:node.className];
     if (node.superClassName) {
-        [symbolTableRoot addClassRefWithName:node.superClassName];
+        [symbolTableRoot addLinkedClassWithName:node.superClassName];
     }
     [symbolTableRoot increaseScope];
         
@@ -358,9 +358,10 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
             // b = a.xxx();
             // 找到 a 的类型 NSObject，并注册为Class
             if (symbol.decl.isStruct == NO
-                && symbol.decl.isFunction == NO
+                && symbol.decl.isFunctionDefine == NO
+                && symbol.decl.isLinkedCFunction == NO
                 && (symbol == nil || symbol.decl.isObject )) {
-                ocSymbol *classSymbol = [symbolTableRoot addClassRefWithName:symbol == nil ? node.value : symbol.decl.typeName];
+                ocSymbol *classSymbol = [symbolTableRoot addLinkedClassWithName:symbol == nil ? node.value : symbol.decl.typeName];
                 if (symbol == nil) {
                     node.symbol = classSymbol;
                 }else{

@@ -10,7 +10,7 @@
 #import "ORFile.h"
 
 struct or_data_recorder {
-    char *buffer;
+    void *buffer;
     int cursor;
     void **list;
     int count;

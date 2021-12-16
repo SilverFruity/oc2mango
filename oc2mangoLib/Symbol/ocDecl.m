@@ -36,7 +36,7 @@
         NSGetSizeAndAlignment(typeEncoding, &size, &alignment);
         _size = size;
         _alignment = alignment;
-        if (self.isBlock || self.isFunction) {
+        if (self.isBlock || self.isFunctionDefine) {
             // @?x | ^?x, 取x
             _type = _typeEncode[2];
         }else{
@@ -64,9 +64,12 @@
 - (BOOL)isDynamicCArray{
     return isDynamicCArray;
 }
-- (BOOL)isFunction{
+- (BOOL)isFunctionDefine{
     if (strlen(_typeEncode) < 2) return NO;
     return _typeEncode[0] == OCTypePointer && _typeEncode[1] == OCTypeUnknown;
+}
+- (BOOL)isLinkedCFunction {
+    return isLinkedCFunction;
 }
 - (BOOL)isProperty{
     return isProperty;
@@ -75,7 +78,7 @@
     return isIvar;
 }
 - (BOOL)isMethod{
-    return isMethod;
+    return isMethodDef;
 }
 - (BOOL)isClassMethod{
     return isClassMethod;
@@ -88,10 +91,10 @@
     }
 }
 - (BOOL)isConstant{
-    return section.isConstant;
+    return isConstant;
 }
 - (BOOL)isClassRef{
-    return isClassRef || section.isLinkedClass;
+    return isClassDefine || isLinkedClass;
 }
 @end
 

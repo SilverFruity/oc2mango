@@ -16,9 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isInternalIvar;
     BOOL isProperty;
     BOOL isIvar;
-    BOOL isMethod;
+    BOOL isMethodDef;
     BOOL isClassMethod;
-    BOOL isClassRef;
+    BOOL isClassDefine;
     BOOL isDynamicCArray;
     BOOL isSelf;
     BOOL isSuper;
@@ -29,28 +29,24 @@ NS_ASSUME_NONNULL_BEGIN
     } functionDefine;
     
     // Data Section
-    union {
-        BOOL isConstant;
-        BOOL isStringConstant;
-        BOOL isLinkedCFunction;
-        BOOL isLinkedClass;
-        BOOL isDataSection;
-        
-        BOOL isClassSection;
-        BOOL isMethodSection;
-        BOOL isPropertySection;
-    } section;
+    BOOL isConstant;
+    BOOL isStringConstant;
+    BOOL isLinkedCFunction;
+    BOOL isLinkedClass;
+    BOOL isDataSection;
     
+    BOOL isClassSection;
+    BOOL isMethodSection;
+    BOOL isPropertySection;
     
-    NSUInteger _index;
-    NSUInteger _size;
+    unsigned int _size;
     const char *_typeEncode;
 }
 @property (nonatomic, assign)OCType type;
 @property (nonatomic, copy)NSString *typeName;
 @property (nonatomic, assign)const char *typeEncode;
-@property (nonatomic, assign)NSUInteger size;
-@property (nonatomic, assign)NSUInteger index;
+@property (nonatomic, assign)unsigned int size;
+@property (nonatomic, assign)unsigned int index;
 @property (nonatomic, assign)NSUInteger alignment;
 
 @property (nonatomic, assign)DeclarationModifier declModifer;
@@ -63,7 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isObject;
 - (BOOL)isBlock;
 /// ^?
-- (BOOL)isFunction;
+- (BOOL)isFunctionDefine;
+- (BOOL)isLinkedCFunction;
 
 - (BOOL)isDynamicCArray;
 

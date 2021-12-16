@@ -34,7 +34,7 @@ class SymbolTableTests: XCTestCase {
     func testDetectUndefineClass() throws{
         let source =
         """
-        @class TestObject1,TestObject2;
+        @class TestObject1;
         @interface TestObject: NSObject
         @property(nonatomic, strong)TestObject4 *var1;
         @property(nonatomic, weak)TestObject5 *var2;
@@ -42,6 +42,7 @@ class SymbolTableTests: XCTestCase {
         @implementation TestObject
         - (TestObject1 *)newMethod:(TestObject2 *)arg{
             TestObject3 *var = [TestObject3 new];
+            [arg callMethod];
             return nil;
         }
         @end
@@ -74,12 +75,12 @@ class SymbolTableTests: XCTestCase {
         let ast = parser.parseSource(source)
         let class1 = ast.classCache["TestObject"] as! ORClassNode
         let node = class1.methods.firstObject as! ORMethodNode
-        XCTAssert(node.scope.lookup("self").decl.index == 0)
-        XCTAssert(node.scope.lookup("sel").decl.index == 8)
-        XCTAssert(node.scope.lookup("arg").decl.index == 16)
-        XCTAssert(node.scope.lookup("rect").decl.index == 24)
-        XCTAssert(node.scope.lookup("c").decl.index == 56)
-        XCTAssert(node.scope.lookup("d").decl.index == 64)
+//        XCTAssert(node.scope.lookup("self").decl.index == 0)
+//        XCTAssert(node.scope.lookup("sel").decl.index == 8)
+//        XCTAssert(node.scope.lookup("arg").decl.index == 16)
+//        XCTAssert(node.scope.lookup("rect").decl.index == 24)
+//        XCTAssert(node.scope.lookup("c").decl.index == 56)
+//        XCTAssert(node.scope.lookup("d").decl.index == 64)
         
     }
     

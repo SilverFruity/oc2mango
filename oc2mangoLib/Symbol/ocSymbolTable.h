@@ -36,7 +36,8 @@ extern const ocSymbolTable * symbolTableRoot;
 
 
 @interface ocSymbolTable (Tools)
-- (ocSymbol *)addClassRefWithName:(NSString *)name;
+- (ocSymbol *)addClassDefineWithName:(NSString *)name;
+- (ocSymbol *)addLinkedClassWithName:(NSString *)name;
 - (ocSymbol *)addStringSection:(const char *)typeencode string:(const char *)str;
 - (ocSymbol *)addLinkedCFunctionSection:(const char *)typeencode name:(const char *)name;
 - (ocSymbol *)addConstantSection:(const char *)typeencode data:(void *)data;

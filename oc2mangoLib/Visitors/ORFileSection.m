@@ -141,6 +141,7 @@ int or_linked_cfunction_recorder_add(const char *typeencode, const char *name) {
     func.function_address = 0;
     func.function_name = or_string_item(name);
     func.type_encode = or_string_item(typeencode);
+    // FIXME: generate function signature
 //    func.signature = { 0, 0 };
     int index = linked_function_recorder.count;
     linked_cfunc_cache[key] = @(index);
