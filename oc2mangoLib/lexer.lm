@@ -1,4 +1,8 @@
 /* 不需要yywrap */
+/*
+ the file extension name of xcode compile lex and yacc as Objective-C / Objective-C++:
+    https://stackoverflow.com/questions/6296758/integrating-bison-flex-yacc-into-xcode
+ */
 %option noyywrap yylineno
 %{
     #include <Foundation/Foundation.h>

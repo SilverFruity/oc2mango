@@ -7,7 +7,7 @@
 //
 
 #import "SymbolParser.h"
-
+#import <oc2mangoLib/ocSymbolTable.hpp>
 @implementation SymbolParser
 - (instancetype)init
 {

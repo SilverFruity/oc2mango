@@ -7,7 +7,7 @@
 //
 
 #import <ORPatchFile/ORPatchFile.h>
-#import "ocSymbolTable.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 

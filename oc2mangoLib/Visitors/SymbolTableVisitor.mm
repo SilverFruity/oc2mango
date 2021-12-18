@@ -7,8 +7,8 @@
 //
 
 #import "SymbolTableVisitor.h"
+#import "ocSymbolTable.hpp"
 #import "ocHandleTypeEncode.h"
-#import "ORFileSection.h"
 static BOOL is_return_declarator = NO;
 
 const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
@@ -62,7 +62,7 @@ static const char *typeEncodeWithSearchSymbolTable(ORDeclaratorNode *node){
     }
     NSInteger tmpPtCount = var.ptCount;
     if (tmpPtCount == 0 && TypeEncodeCharIsBaseType(type)) {
-        char typeEncode[2] = { type, '\0' };
+        char typeEncode[2] = { (char)type, '\0' };
         return strdup(typeEncode);
     }
     while (tmpPtCount > 0) {
@@ -229,7 +229,7 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [symbolTableRoot insert:propSymbol];
     
     // 不使用assing的类型可以确定为NSObject的子类，向根符号表注册类符号
-    MFPropertyModifier modifer = propDecl.propModifer & MFPropertyModifierMemMask;
+    MFPropertyModifier modifer = (MFPropertyModifier)(propDecl.propModifer & MFPropertyModifierMemMask);
     if (modifer != MFPropertyModifierMemAssign) {
         [symbolTableRoot addLinkedClassWithName:node.var.type.name];
     }

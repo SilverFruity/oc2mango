@@ -20,34 +20,6 @@
                ReferencedContainer = "container:oc2mango.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EECF6CA3274A8DB200EC0737"
-               BuildableName = "SymbolTableTests.xctest"
-               BlueprintName = "SymbolTableTests"
-               ReferencedContainer = "container:oc2mango.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EECF6C95274A8D9F00EC0737"
-               BuildableName = "CodeGenTests.xctest"
-               BlueprintName = "CodeGenTests"
-               ReferencedContainer = "container:oc2mango.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -70,16 +42,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EED67A752270AE0F0015AC02"
-               BuildableName = "oc2mangoLibTests.xctest"
-               BlueprintName = "oc2mangoLibTests"
-               ReferencedContainer = "container:oc2mango.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "EECF6CA3274A8DB200EC0737"
                BuildableName = "SymbolTableTests.xctest"
                BlueprintName = "SymbolTableTests"
@@ -90,9 +52,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EECF6C95274A8D9F00EC0737"
-               BuildableName = "CodeGenTests.xctest"
-               BlueprintName = "CodeGenTests"
+               BlueprintIdentifier = "EED67A752270AE0F0015AC02"
+               BuildableName = "oc2mangoLibTests.xctest"
+               BlueprintName = "oc2mangoLibTests"
                ReferencedContainer = "container:oc2mango.xcodeproj">
             </BuildableReference>
          </TestableReference>

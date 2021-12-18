@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ocSymbol.h"
 #import "ocScope.h"
+#import "ORFileSection.hpp"
 
 NS_ASSUME_NONNULL_BEGIN
 @class ocSymbolTable;
@@ -16,13 +17,7 @@ extern const ocSymbolTable * symbolTableRoot;
 @interface ocSymbolTable : NSObject
 {
     @public
-    
-    const void *string_recorder;
-    const void *cfstring_recorder;
-    const void *data_section_recorder;
-    const void *constant_recorder;
-    const void *linked_class_recorder;
-    const void *linked_cfunction_recorder;
+    ORSectionRecorderManager *recorder;
 }
 @property (nonatomic, strong)ocScope *scope;
 - (ocSymbol *)insert:(ocSymbol *)symbol;
@@ -43,7 +38,14 @@ extern const ocSymbolTable * symbolTableRoot;
 - (ocSymbol *)addConstantSection:(const char *)typeencode data:(void *)data;
 - (ocSymbol *)addDataSection:(const char *)typeencode size:(size_t)size;
 @end
-
-
-
 NS_ASSUME_NONNULL_END
+
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+
+void SymbolTableAddLinkedClassWithName(NSString * name);
+
+#ifdef __cplusplus
+}
+#endif //__cplusplus

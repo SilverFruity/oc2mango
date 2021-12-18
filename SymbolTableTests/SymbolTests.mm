@@ -8,10 +8,13 @@
 
 #import <XCTest/XCTest.h>
 #import <oc2mangoLib/oc2mangoLib.h>
-#import <oc2mangoLib/ORFileSection.h>
-#import <oc2mangoLib/ORFile.h>
+#import <oc2mangoLib/ORFileSection.hpp>
+#import <oc2mangoLib/ORFile.hpp>
+#import <oc2mangoLib/ocScope.h>
+#import <oc2mangoLib/ocSymbolTable.hpp>
 #import "SymbolParser.h"
-
+#import <string>
+using namespace std;
 @interface SymbolTests : XCTestCase
 {
     NSString *source;
@@ -281,17 +284,17 @@ union ORValue{
     \"123\"; \
     ";
     AST *ast = [parser parseSource:source];
-    struct or_data_recorder *stringRecorder = (struct or_data_recorder *)symbolTableRoot->string_recorder;
     
+    ORSectionRecorderManager *manager = symbolTableRoot->recorder;
     ORValueNode *node1 = ast.nodes[0];
     XCTAssertTrue(node1.symbol.decl.index == 0);
-    void *string1 = stringRecorder->buffer + node1.symbol.decl.index;
-    XCTAssert([[NSString stringWithUTF8String:string1] isEqualToString:node1.value]);
+
+    const char *string1 = manager->getString(node1.symbol.decl.index);
+    XCTAssert(string(string1) == string([node1.value UTF8String]));
     
     ORValueNode *node2 = ast.nodes[1];
-    XCTAssertTrue(node2.symbol.decl.index == [node1.value length] + 1);
-    void *string2 = stringRecorder->buffer + node2.symbol.decl.index;
-    XCTAssert([[NSString stringWithUTF8String:string2] isEqualToString:node2.value]);
+    const char *string2 = manager->getString(node2.symbol.decl.index);
+    XCTAssert(string(string2) == string([node2.value UTF8String]));
     
     ORValueNode *node3 = ast.nodes[2];
     XCTAssert(node1.symbol.decl.index == node3.symbol.decl.index);
@@ -304,18 +307,17 @@ union ORValue{
     @\"123\"; \
     ";
     AST *ast = [parser parseSource:source];
-    struct or_data_recorder *cfRecorder = (struct or_data_recorder *)symbolTableRoot->cfstring_recorder;
-    struct ORCFString **stringList = (struct ORCFString **)cfRecorder->list;
-    
+    ORSectionRecorderManager *manager = symbolTableRoot->recorder;
+
     ORValueNode *node1 = ast.nodes[0];
     XCTAssertTrue(node1.symbol.decl.index == 0);
-    const char *str = unwrapStringItem(stringList[node1.symbol.decl.index]->string);
+    const char *str = manager->getString(manager->getCFString(node1.symbol.decl.index)->cstring.offset);
     XCTAssertTrue(strcmp(str, [node1.value UTF8String]) == 0);
-    
+
     ORValueNode *node2 = ast.nodes[1];
-    str = unwrapStringItem(stringList[node2.symbol.decl.index]->string);
+    str = manager->getString(manager->getCFString(node2.symbol.decl.index)->cstring.offset);
     XCTAssertTrue(strcmp(str, [node2.value UTF8String]) == 0);
-    
+
     ORValueNode *node3 = ast.nodes[2];
     XCTAssert(node1.symbol.decl.index == node3.symbol.decl.index);
 }
@@ -327,25 +329,26 @@ union ORValue{
     [NSObject new];\
     ";
     AST *ast = [parser parseSource:source];
-    struct or_data_recorder *classRecorder = (struct or_data_recorder *)symbolTableRoot->linked_class_recorder;
-    XCTAssertTrue(classRecorder->count == 4);
+    ORSectionRecorderManager *manager = symbolTableRoot->recorder;
+    struct ORLinkedClass *links = (struct ORLinkedClass *)manager->linkedClassRecorder.buffer;
     
-    struct ORLinkedClass *linked = classRecorder->list[0];
-    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "Test1") == 0);
+    struct ORLinkedClass linked = links[0];
     
-    linked = classRecorder->list[1];
-    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "Test2") == 0);
-    
-    linked = classRecorder->list[2];
-    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "NSObject") == 0);
-    
-    linked = classRecorder->list[3];
-    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "Test3") == 0);
-    
+    XCTAssertTrue(strcmp(manager->getString(linked.class_name.offset), "Test1") == 0);
+
+    linked = links[1];
+    XCTAssertTrue(strcmp(manager->getString(linked.class_name.offset), "Test2") == 0);
+
+    linked = links[2];
+    XCTAssertTrue(strcmp(manager->getString(linked.class_name.offset), "NSObject") == 0);
+
+    linked = links[3];
+    XCTAssertTrue(strcmp(manager->getString(linked.class_name.offset), "Test3") == 0);
+
     ORMethodCall *call = ast.nodes[2];
     ORValueNode *value = (ORValueNode *)call.caller;
-    linked = classRecorder->list[value.symbol.decl.index];
-    XCTAssertTrue(strcmp(unwrapStringItem(linked->class_name), "NSObject") == 0);
+    linked = links[value.symbol.decl.index];
+    XCTAssertTrue(strcmp(manager->getString(linked.class_name.offset), "NSObject") == 0);
     
 }
 - (void)testLinkedCFunctionSection {
@@ -356,20 +359,21 @@ union ORValue{
     int a = CGRectMake(0,0,0,0);\
     ";
     AST *ast = [parser parseSource:source];
-    struct or_data_recorder *funcRecorder = (struct or_data_recorder *)symbolTableRoot->linked_cfunction_recorder;
-    XCTAssertTrue(funcRecorder->count == 2);
-    
-    struct ORLinkedCFunction *cfunc = funcRecorder->list[0];
-    XCTAssertTrue(strcmp(unwrapStringItem(cfunc->function_name), "NSLog") == 0);
-    
-    cfunc = funcRecorder->list[1];
-    XCTAssertTrue(strcmp(unwrapStringItem(cfunc->function_name), "CGRectMake") == 0);
-    
+    ORSectionRecorderManager *manager = symbolTableRoot->recorder;
+    ORDataRecorder funcRecorder = symbolTableRoot->recorder->linkedCFunctionRecorder;
+    XCTAssertTrue(funcRecorder.list_count == 2);
+    struct ORLinkedCFunction *cfuncs = (struct ORLinkedCFunction *)funcRecorder.buffer;
+    struct ORLinkedCFunction cfunc = cfuncs[0];
+    XCTAssertTrue(strcmp(manager->getString(cfunc.function_name.offset), "NSLog") == 0);
+
+    cfunc = cfuncs[1];
+    XCTAssertTrue(strcmp(manager->getString(cfunc.function_name.offset), "CGRectMake") == 0);
+
     ORAssignNode *assignExp = ast.nodes[3];
     ORFunctionCall *call = (ORFunctionCall *)assignExp.expression;
-    cfunc = funcRecorder->list[call.symbol.decl.index];
-    XCTAssertTrue(strcmp(unwrapStringItem(cfunc->function_name), "CGRectMake") == 0);
-    XCTAssertTrue(strcmp(unwrapStringItem(cfunc->type_encode), "^?{CGRect=dddd}dddd") == 0);
+    cfunc = cfuncs[call.symbol.decl.index];
+    XCTAssertTrue(strcmp(manager->getString(cfunc.function_name.offset), "CGRectMake") == 0);
+    XCTAssertTrue(strcmp(manager->getString(cfunc.type_encode.offset), "^?{CGRect=dddd}dddd") == 0);
 }
 
 

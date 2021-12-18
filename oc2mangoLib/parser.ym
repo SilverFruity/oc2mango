@@ -4,8 +4,8 @@
 #import <Foundation/Foundation.h>
 #import "Log.h"
 #import "MakeDeclare.h"
-#import "ocSymbolTable.h"
 
+extern void SymbolTableAddLinkedClassWithName(NSString *className);
 extern int yylex (void);
 extern void yyerror(const char *s);
 extern bool is_variable;
@@ -147,7 +147,7 @@ expression_stats
 | CLASS_DECLARE for_statement_var_list SEMICOLON
 {
     for (ORValueNode *node in (NSMutableArray *)$2){
-        [symbolTableRoot addLinkedClassWithName:node.value];
+        SymbolTableAddLinkedClassWithName(node.value);
     }
 }
 | PROTOCOL IDENTIFIER SEMICOLON

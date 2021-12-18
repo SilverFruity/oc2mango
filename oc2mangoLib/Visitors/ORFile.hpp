@@ -39,7 +39,7 @@ struct ORStringItem{
 
 struct ORCFString {
     void * ref;
-    struct ORStringItem string;
+    struct ORStringItem cstring;
 };
 
 struct ORStringSection{
@@ -140,9 +140,9 @@ struct ORFile {
     struct ORLinkedCFunction *linked_cfunction_section;
     struct ORStruct *struct_section;
     struct ORVariableData *data_section;
-    uint64_t *constant_section;
     struct ORCFString *cf_string_section;
     struct ORStringSection *string_section;
+    uint64_t *constant_section;
     
     struct ORObjcMethod *instance_method_section;
     struct ORObjcMethod *class_method_section;
@@ -156,14 +156,3 @@ struct ORFile {
 inline const char * const or_file_string(struct ORFile *file, int64_t offset){
     return file->string_section->buffer + offset;
 }
-
-/// save string in string_section
-/// @param str string
-/// @retrun  the offset in string_section
-uint32_t or_file_write_string(struct ORFile *file, char *str);
-
-/// use the offset to get str in string_section
-/// @param offset  offset in string_section
-/// @retunrn the string result
-char *or_file_get_read_string(struct ORFile *file, uint32_t offset);
-

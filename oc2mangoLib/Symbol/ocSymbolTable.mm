@@ -6,8 +6,8 @@
 //  Copyright © 2021 SilverFruity. All rights reserved.
 //
 
-#import "ocSymbolTable.h"
-#import "ORFileSection.h"
+#import "ocSymbolTable.hpp"
+#import "ORFileSection.hpp"
 const ocSymbolTable * symbolTableRoot = nil;
 const ocScope *scopeRoot = nil;
 @implementation ocSymbolTable
@@ -17,12 +17,7 @@ const ocScope *scopeRoot = nil;
     if (self) {
         self.scope = [ocScope new];
         scopeRoot = _scope;
-        string_recorder = init_string_recorder();
-        cfstring_recorder = init_cfstring_recorder();
-        data_section_recorder = init_data_section_recorder();
-        constant_recorder = init_constant_section_recorder();
-        linked_class_recorder = init_linked_class_recorder();
-        linked_cfunction_recorder = init_linked_cfunction_recorder();
+        recorder = new ORSectionRecorderManager();
     }
     return self;
 }
@@ -97,7 +92,7 @@ const ocScope *scopeRoot = nil;
     classDecl.typeName = name;
     classDecl.typeEncode = OCTypeStringClass;
     classDecl->isLinkedClass = YES;
-    classDecl.index = or_linked_class_recorder_add(name.UTF8String);
+    classDecl.index = recorder->addLinkedClass(name.UTF8String);
     ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
     [self insertRoot:symbol];
     return symbol;
@@ -106,9 +101,9 @@ const ocScope *scopeRoot = nil;
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
     if (decl.type == OCTypeObject) {
-        decl.index = or_cfstring_recorder_add(str);
+        decl.index = recorder->addCFString(str);
     }else{
-        decl.index = or_string_recorder_add(str);
+        decl.index = recorder->addCString(str).offset;
     }
     decl->isStringConstant = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
@@ -117,7 +112,7 @@ const ocScope *scopeRoot = nil;
 - (ocSymbol *)addLinkedCFunctionSection:(const char *)typeencode name:(const char *)name {
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
-    decl.index = or_linked_cfunction_recorder_add(typeencode, name);
+    decl.index = recorder->addLinkedCFunction(typeencode, name);
     decl->isLinkedCFunction = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:[NSString stringWithUTF8String:name] decl:decl];
     [symbolTableRoot insertRoot:symbol];
@@ -126,7 +121,7 @@ const ocScope *scopeRoot = nil;
 - (ocSymbol *)addConstantSection:(const char *)typeencode data:(void *)data {
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
-    decl.index = or_constant_section_recorder_add(data);
+    decl.index = recorder->addConstant(data);
     decl->isConstant = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
@@ -134,10 +129,15 @@ const ocScope *scopeRoot = nil;
 - (ocSymbol *)addDataSection:(const char *)typeencode size:(size_t)size{
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
-    decl.index = or_data_section_recorder_add(size);
+    decl.index = recorder->addDataSection(size);
     decl->isDataSection = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
 }
 
 @end
+
+
+void SymbolTableAddLinkedClassWithName(NSString * name) {
+    [symbolTableRoot addLinkedClassWithName:name];
+}
