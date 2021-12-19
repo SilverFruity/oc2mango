@@ -86,21 +86,17 @@ struct ORStruct{
 
 struct ORObjcMethod{
     struct objc_method *method;
-    BOOL isClassMethod;
-    struct ORStringItem class_name;
     struct ORStringItem selector;
-    struct ORStringItem method_name;
-    struct ORStringItem method_type_encode;
+    struct ORStringItem type_encode;
     or_file_offset imp;
 };
 
-//typedef int MFPropertyModifier;
 struct ORObjcProperty {
     struct objc_property * objc_prop;
     int modifer;
-    struct ORStringItem class_name;
+    struct ORStringItem type_name;
     struct ORStringItem property_name;
-    struct ORStringItem property_type_encode;
+    struct ORStringItem type_encode;
     struct ORStringItem getter_name;
     struct ORStringItem setter_name;
     struct ORStringItem ivar_name;
@@ -108,14 +104,14 @@ struct ORObjcProperty {
 
 struct ORObjcIvar {
     struct objc_ivar * ivar;
-    struct ORStringItem class_name;
+    struct ORStringItem type_name;
     struct ORStringItem ivar_name;
     struct ORStringItem type_encode;
 };
 
 struct ORFileList {
     int count;
-    or_file_offset item_start_offset;
+    or_file_offset start_index;
 };
 
 struct ORClassItem {
@@ -151,6 +147,10 @@ struct ORFile {
     struct ORClassItem *class_section;
     
     const void *instructions;
+    ORFile(){
+        
+    }
+    
 };
 
 inline const char * const or_file_string(struct ORFile *file, int64_t offset){

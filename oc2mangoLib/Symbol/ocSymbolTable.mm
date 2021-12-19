@@ -11,13 +11,15 @@
 const ocSymbolTable * symbolTableRoot = nil;
 const ocScope *scopeRoot = nil;
 @implementation ocSymbolTable
+- (ORSectionRecorderManager &)recorder {
+    return recorder;
+}
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         self.scope = [ocScope new];
         scopeRoot = _scope;
-        recorder = new ORSectionRecorderManager();
     }
     return self;
 }
@@ -77,12 +79,6 @@ const ocScope *scopeRoot = nil;
 
 
 @implementation ocSymbolTable (Tools)
-- (ocSymbol *)addClassDefineWithName:(NSString *)name {
-    ocSymbol *symbol = [self addLinkedClassWithName:name];
-    symbol.decl->isLinkedClass = NO;
-    symbol.decl->isClassDefine = YES;
-    return symbol;
-}
 - (ocSymbol *)addLinkedClassWithName:(NSString *)name {
     ocSymbol *classSymbol = [symbolTableRoot lookup:name];
     if (classSymbol.decl.isClassRef) {
@@ -92,7 +88,7 @@ const ocScope *scopeRoot = nil;
     classDecl.typeName = name;
     classDecl.typeEncode = OCTypeStringClass;
     classDecl->isLinkedClass = YES;
-    classDecl.index = recorder->addLinkedClass(name.UTF8String);
+    classDecl.index = recorder.addLinkedClass(name.UTF8String);
     ocSymbol *symbol = [ocSymbol symbolWithName:classDecl.typeName decl:classDecl];
     [self insertRoot:symbol];
     return symbol;
@@ -101,9 +97,9 @@ const ocScope *scopeRoot = nil;
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
     if (decl.type == OCTypeObject) {
-        decl.index = recorder->addCFString(str);
+        decl.index = recorder.addCFString(str);
     }else{
-        decl.index = recorder->addCString(str).offset;
+        decl.index = recorder.addCString(str).offset;
     }
     decl->isStringConstant = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
@@ -112,7 +108,7 @@ const ocScope *scopeRoot = nil;
 - (ocSymbol *)addLinkedCFunctionSection:(const char *)typeencode name:(const char *)name {
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
-    decl.index = recorder->addLinkedCFunction(typeencode, name);
+    decl.index = recorder.addLinkedCFunction(typeencode, name);
     decl->isLinkedCFunction = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:[NSString stringWithUTF8String:name] decl:decl];
     [symbolTableRoot insertRoot:symbol];
@@ -121,7 +117,7 @@ const ocScope *scopeRoot = nil;
 - (ocSymbol *)addConstantSection:(const char *)typeencode data:(void *)data {
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
-    decl.index = recorder->addConstant(data);
+    decl.index = recorder.addConstant(data);
     decl->isConstant = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
@@ -129,10 +125,56 @@ const ocScope *scopeRoot = nil;
 - (ocSymbol *)addDataSection:(const char *)typeencode size:(size_t)size{
     ocDecl *decl = [ocDecl new];
     decl.typeEncode = typeencode;
-    decl.index = recorder->addDataSection(size);
+    decl.index = recorder.addDataSection(size);
     decl->isDataSection = YES;
     ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
     return symbol;
+}
+extern const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
+- (ocSymbol *)addClassDefineWithName:(ORClassNode *)node {
+    ocSymbol *symbol = [self addLinkedClassWithName:node.className];
+    symbol.decl->isLinkedClass = NO;
+    symbol.decl->isClassDefine = YES;
+    recorder.addObjcClass(node.className.UTF8String, node.superClassName.UTF8String);
+    return symbol;
+}
+
+- (ocSymbol *)addPropertySection:(ORPropertyNode *)node className:(NSString *)className {
+    ocDecl *decl = [ocDecl new];
+    decl.index = recorder.addObjcProperty(className.UTF8String,
+                                          node.modifier,
+                                          node.var.type.name.UTF8String,
+                                          node.var.var.varname.UTF8String,
+                                          typeEncodeForDeclaratorNode(node.var));
+    decl->isPropertySection = YES;
+    ocSymbol *symbol = [ocSymbol symbolWithName:nil decl:decl];
+    return symbol;
+}
+
+- (ocSymbol *)addIvarSection:(ORDeclaratorNode *)node className:(NSString *)className {
+    recorder.addObjcIvar(className.UTF8String,
+                         node.type.name.UTF8String,
+                         node.var.varname.UTF8String,
+                         typeEncodeForDeclaratorNode(node));
+    return nil;
+}
+
+- (ocSymbol *)addMethodSection:(ORMethodNode *)node className:(NSString *)className {
+    NSMutableString *typeencode = [NSMutableString string];
+    [typeencode appendFormat:@"%s@:", typeEncodeForDeclaratorNode(node.declare.returnType)];
+    for (ORDeclaratorNode *arg in node.declare.parameters) {
+        [typeencode appendFormat:@"%s", typeEncodeForDeclaratorNode(arg)];
+    }
+    if (node.declare.isClassMethod) {
+        recorder.addObjcClassMethod(className.UTF8String,
+                                    node.declare.selectorName.UTF8String,
+                                    typeencode.UTF8String);
+    }else {
+        recorder.addObjcInstanceMethod(className.UTF8String,
+                                       node.declare.selectorName.UTF8String,
+                                       typeencode.UTF8String);
+    }
+    return nil;
 }
 
 @end

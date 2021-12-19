@@ -8,9 +8,6 @@
 
 #import "ORFileSection.hpp"
 #import "RunnerClasses.h"
-#import <string>
-#import <unordered_map>
-#import <iostream>
 using namespace std;
 
 int ORDataRecorder::findInCache(string key){
@@ -122,17 +119,108 @@ int ORSectionRecorderManager::addConstant(void *data) {
     return index;
 }
 
-const char *ORSectionRecorderManager::getString(int offset) {
-    return stringRecorder.buffer + offset;
+int ORSectionRecorderManager::addObjcClass(const char *className,
+                                           const char *superClassName) {
+    
+    struct ORClassItem item;
+    memset(&item, 0, sizeof(struct ORClassItem));
+    item.class_name = addCString(className);
+    item.super_class_name = addCString(superClassName);
+    string key = string(className);
+    int result = objcClassesRecorder.findInCache(key);
+    if (result > -1) {
+        return result;
+    }
+    int index = objcClassesRecorder.list_count;
+    objcClassesRecorder.saveInCache(key, index);
+    objcClassesRecorder.add(&item, sizeof(struct ORClassItem));
+    return index;
+};
+int ORSectionRecorderManager::addObjcProperty(const char *dstClassName,
+                                              int modifer,
+                                              const char *typeName,
+                                              const char *propertyName,
+                                              const char *typeencode){
+    int classIndex = objcClassesRecorder.findInCache(string(dstClassName));
+    assert(classIndex > -1);
+    struct ORClassItem *dstClass = getClassItem(classIndex);
+    if (dstClass->prop_list.count == 0) {
+        dstClass->prop_list.start_index = objcPropsRecroder.list_count;
+    }
+    dstClass->prop_list.count += 1;
+    struct ORObjcProperty prop;
+    memset(&prop, 0, sizeof(struct ORObjcProperty));
+    prop.property_name = addCString(propertyName);
+    prop.modifer = modifer;
+    prop.type_name = addCString(typeName);
+    prop.type_encode = addCString(typeencode);
+    prop.getter_name = addCString(propertyName);
+    string prop_name = string(propertyName);
+    string ivar_name = "_" + prop_name;
+    prop.ivar_name = addCString(ivar_name.data());
+    string setter_name = prop_name;
+    char *chrs = (char *)setter_name.data();
+    chrs[0] = std::toupper(chrs[0]);
+    setter_name = "set" + setter_name;
+    prop.setter_name = addCString(setter_name.data());
+    int index = objcPropsRecroder.list_count;
+    objcPropsRecroder.add(&prop, sizeof(struct ORObjcProperty));
+    addObjcIvar(dstClassName, typeName, ivar_name.data(), typeencode);
+    return index;
+}
+int ORSectionRecorderManager::addObjcClassMethod(const char *dstClassName, const char *selector, const char *typeencode) {
+    int classIndex = objcClassesRecorder.findInCache(string(dstClassName));
+    assert(classIndex > -1);
+    struct ORClassItem *dstClass = getClassItem(classIndex);
+    if (dstClass->class_method_list.count == 0) {
+        dstClass->class_method_list.start_index = objcClassMethodsRecroder.list_count;
+    }
+    dstClass->class_method_list.count += 1;
+    struct ORObjcMethod method;
+    method.selector = addCString(selector);
+    method.type_encode = addCString(typeencode);
+    int index = objcClassMethodsRecroder.list_count;
+    objcClassMethodsRecroder.add(&method, sizeof(struct ORObjcMethod));
+    return index;
+}
+int ORSectionRecorderManager::addObjcInstanceMethod(const char *dstClassName, const char *selector, const char *typeencode) {
+    int classIndex = objcClassesRecorder.findInCache(string(dstClassName));
+    assert(classIndex > -1);
+    struct ORClassItem *dstClass = getClassItem(classIndex);
+    if (dstClass->instance_method_list.count == 0) {
+        dstClass->instance_method_list.start_index = objcInstanceMethodsRecroder.list_count;
+    }
+    dstClass->instance_method_list.count += 1;
+    struct ORObjcMethod method;
+    method.selector = addCString(selector);
+    method.type_encode = addCString(typeencode);
+    int index = objcInstanceMethodsRecroder.list_count;
+    objcInstanceMethodsRecroder.add(&method, sizeof(struct ORObjcMethod));
+    return index;
 }
 
-struct ORCFString *ORSectionRecorderManager::getCFString(int index) {
-    return (struct ORCFString *)cfstringRecorder.buffer + index;
-}
-
-struct ORLinkedCFunction *ORSectionRecorderManager::getLinkdCFunction(int index) {
-    return (struct ORLinkedCFunction *)linkedCFunctionRecorder.buffer + index;
-}
-struct ORLinkedClass *ORSectionRecorderManager::getLinkdClass(int index) {
-    return (struct ORLinkedClass *)cfstringRecorder.buffer + index;
+int ORSectionRecorderManager::addObjcIvar(const char *dstClassName,
+                const char *typeName,
+                const char *ivarName,
+                const char *typeencode){
+    string ivarKey = string(dstClassName) + "." + string(ivarName);
+    int ivarIndex = objcIvarsRecroder.findInCache(ivarKey);
+    if (ivarIndex > -1) {
+        return ivarIndex;
+    }
+    int classIndex = objcClassesRecorder.findInCache(string(dstClassName));
+    assert(classIndex > -1);
+    struct ORClassItem *dstClass = getClassItem(classIndex);
+    if (dstClass->ivar_list.count == 0) {
+        dstClass->ivar_list.start_index = objcIvarsRecroder.list_count;
+    }
+    dstClass->ivar_list.count += 1;
+    struct ORObjcIvar ivar;
+    ivar.type_name = addCString(typeName);
+    ivar.ivar_name = addCString(ivarName);
+    ivar.type_encode = addCString(typeencode);
+    int index = objcIvarsRecroder.list_count;
+    objcIvarsRecroder.saveInCache(ivarKey, index);
+    objcIvarsRecroder.add(&ivar, sizeof(struct ORObjcIvar));
+    return index;
 }

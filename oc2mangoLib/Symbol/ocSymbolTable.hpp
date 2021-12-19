@@ -16,10 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 extern const ocSymbolTable * symbolTableRoot;
 @interface ocSymbolTable : NSObject
 {
-    @public
-    ORSectionRecorderManager *recorder;
+    @private
+    ORSectionRecorderManager recorder;
 }
 @property (nonatomic, strong)ocScope *scope;
+@property (nonatomic, assign, readonly)ORSectionRecorderManager& recorder;
 - (ocSymbol *)insert:(ocSymbol *)symbol;
 - (ocSymbol *)insertRoot:(ocSymbol *)symbol;
 - (ocSymbol *)insertRootWithName:(NSString *)name symbol:(ocSymbol *)symbol;
@@ -31,12 +32,15 @@ extern const ocSymbolTable * symbolTableRoot;
 
 
 @interface ocSymbolTable (Tools)
-- (ocSymbol *)addClassDefineWithName:(NSString *)name;
 - (ocSymbol *)addLinkedClassWithName:(NSString *)name;
 - (ocSymbol *)addStringSection:(const char *)typeencode string:(const char *)str;
 - (ocSymbol *)addLinkedCFunctionSection:(const char *)typeencode name:(const char *)name;
 - (ocSymbol *)addConstantSection:(const char *)typeencode data:(void *)data;
 - (ocSymbol *)addDataSection:(const char *)typeencode size:(size_t)size;
+- (ocSymbol *)addClassDefineWithName:(ORClassNode *)node;
+- (ocSymbol *)addPropertySection:(ORPropertyNode *)node className:(NSString *)className;
+- (ocSymbol *)addIvarSection:(ORDeclaratorNode *)node className:(NSString *)className;
+- (ocSymbol *)addMethodSection:(ORMethodNode *)node className:(NSString *)className;
 @end
 NS_ASSUME_NONNULL_END
 

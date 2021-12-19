@@ -10,5 +10,4 @@
 #define SymbolTableTests_Bridging_Header_h
 
 #import "SymbolParser.h"
-
 #endif /* SymbolTableTests_Bridging_Header_h */

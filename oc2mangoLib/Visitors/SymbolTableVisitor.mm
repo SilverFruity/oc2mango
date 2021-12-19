@@ -308,16 +308,19 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitClassNode:(nonnull ORClassNode *)node {
-    [symbolTableRoot addClassDefineWithName:node.className];
+    node.superClassName = node.superClassName == nil ? @"NSObject" : node.superClassName;
+    [symbolTableRoot addClassDefineWithName:node];
     if (node.superClassName) {
         [symbolTableRoot addLinkedClassWithName:node.superClassName];
     }
     [symbolTableRoot increaseScope];
         
     for (ORPropertyNode *prop in node.properties) {
+        [symbolTableRoot addPropertySection:prop className:node.className];
         [self visit:prop];
     }
     for (ORDeclaratorNode *ivar in node.privateVariables) {
+        [symbolTableRoot addIvarSection:ivar className:node.className];
         ocDecl *ivarDecl = [ocDecl new];
         ivarDecl.typeEncode = typeEncodeForDeclaratorNode(ivar);
         ivarDecl.typeName = ivar.type.name;
@@ -327,6 +330,7 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     }
     // 所有 method 的父作用域是 Class 作用域
     for (ORMethodNode *method in node.methods) {
+        [symbolTableRoot addMethodSection:method className:node.className];
         [self visitMethodNode:method];
     }
     node.scope = symbolTableRoot.scope;
@@ -512,6 +516,11 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 }
 
 - (void)visitDeclaratorNode:(nonnull ORDeclaratorNode *)node {
+    if (node.type.name) {
+        if (ocSymbol *symbol = [symbolTableRoot lookup:node.type.name]) {
+            node.type.symbol = symbol;
+        }
+    }
     ocDecl *decl = [ocDecl new];
     decl.typeName = node.type.name;
     decl.typeEncode = typeEncodeForDeclaratorNode(node);

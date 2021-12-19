@@ -13,7 +13,28 @@ ORTypeNode *makeTypeNode(OCType type ,NSString *name){
     return node;
 }
 ORTypeNode *makeTypeNode(OCType type) __attribute__((overloadable)){
-    return makeTypeNode(type, nil);
+    NSString *typeName = @"";
+    switch (type) {
+        case OCTypeUChar: typeName = @"uint8"; break;
+        case OCTypeUShort: typeName = @"uint16"; break;
+        case OCTypeUInt: typeName = @"uint32"; break;
+        case OCTypeULong: typeName = @"uint64"; break;
+        case OCTypeULongLong: typeName = @"uint64"; break;
+        case OCTypeChar: typeName = @"int8_t"; break;
+        case OCTypeShort: typeName = @"int16_t"; break;
+        case OCTypeInt: typeName = @"int32_t"; break;
+        case OCTypeLong: typeName = @"int64_t"; break;
+        case OCTypeLongLong: typeName = @"int64_t"; break;
+        case OCTypeDouble: typeName = @"double"; break;
+        case OCTypeFloat: typeName = @"float"; break;
+        case OCTypeClass: typeName = @"Class"; break;
+        case OCTypeBOOL: typeName = @"BOOL"; break;
+        case OCTypeSEL: typeName = @"SEL"; break;
+        case OCTypeVoid: typeName = @"void"; break;
+        default:
+            break;
+    }
+    return makeTypeNode(type, typeName);
 }
 ORVariableNode *makeVarNode(NSString *name, NSUInteger ptCount){
     __autoreleasing ORVariableNode *var = [ORVariableNode new];
