@@ -71,17 +71,8 @@
 - (BOOL)isLinkedCFunction {
     return isLinkedCFunction;
 }
-- (BOOL)isProperty{
-    return isProperty;
-}
 - (BOOL)isIvar{
     return isIvar;
-}
-- (BOOL)isMethod{
-    return isMethodDef;
-}
-- (BOOL)isClassMethod{
-    return isClassMethod;
 }
 - (void)dealloc
 {
@@ -99,5 +90,14 @@
 @end
 
 @implementation ocComposeDecl
+
+@end
+
+@implementation ocFunctionDecl
+
+@end
+
+@implementation ocMethodDecl
+
 
 @end

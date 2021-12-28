@@ -66,14 +66,7 @@ class FileTest: XCTestCase {
         };
         """
         let ast = parser.parseSource(source)
-        let file = ORPatchFile.init(nodes: ast.nodes as! [Any])
-        let path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last! + "/binarypatch"
-        file.dump(asBinaryPatch: path)
-        let binaryfile = ORPatchFile.loadBinaryPatch(path)
-        
-        guard let nodes = binaryfile?.nodes else {
-            return
-        }
+        let nodes = ast.nodes as! [Any]
         XCTAssert(parser.isSuccess())
 
         let assign = nodes[0] as? ORDeclaratorNode;

@@ -7,11 +7,56 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BinaryPatchHelper.h"
 #import "OCTypeEncode.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @class ocSymbol, ocScope;
+
+typedef enum: uint8_t{
+    AstEnumEmptyNode = 0,
+    AstEnumPatchFile = 1,
+    AstEnumStringCursorNode = 2,
+    AstEnumStringBufferNode = 3,
+    AstEnumListNode = 4,
+    AstEnumTypeNode = 5,
+    AstEnumVariableNode = 6,
+    AstEnumDeclaratorNode = 7,
+    AstEnumFunctionDeclNode = 8,
+    AstEnumCArrayDeclNode = 9,
+    AstEnumBlockNode = 10,
+    AstEnumValueNode = 11,
+    AstEnumIntegerValue = 12,
+    AstEnumUIntegerValue = 13,
+    AstEnumDoubleValue = 14,
+    AstEnumBoolValue = 15,
+    AstEnumMethodCall = 16,
+    AstEnumFunctionCall = 17,
+    AstEnumFunctionNode = 18,
+    AstEnumSubscriptNode = 19,
+    AstEnumAssignNode = 20,
+    AstEnumInitDeclaratorNode = 21,
+    AstEnumUnaryNode = 22,
+    AstEnumBinaryNode = 23,
+    AstEnumTernaryNode = 24,
+    AstEnumIfStatement = 25,
+    AstEnumWhileStatement = 26,
+    AstEnumDoWhileStatement = 27,
+    AstEnumCaseStatement = 28,
+    AstEnumSwitchStatement = 29,
+    AstEnumForStatement = 30,
+    AstEnumForInStatement = 31,
+    AstEnumControlStatNode = 32,
+    AstEnumPropertyNode = 33,
+    AstEnumMethodDeclNode = 34,
+    AstEnumMethodNode = 35,
+    AstEnumClassNode = 36,
+    AstEnumProtocolNode = 37,
+    AstEnumStructStatNode = 38,
+    AstEnumUnionStatNode = 39,
+    AstEnumEnumStatNode = 40,
+    AstEnumTypedefStatNode = 41,
+}AstEnum;
+
 // MARK: - Node
 @interface ORNode: NSObject
 {

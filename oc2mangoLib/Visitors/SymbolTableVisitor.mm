@@ -203,11 +203,17 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     
     [symbolTableRoot increaseScope];
     // 在函数实现的作用域中添加参数的符号信息
-    for (ORNode *param in node.declare.params) {
-        [self visit:param];
+    int offset = 0;
+    for (ORDeclaratorNode *param in node.declare.params) {
+        ocDecl *decl = [ocDecl new];
+        decl->isArgument = YES;
+        decl.typeName = param.type.name;
+        decl.index = offset;
+        decl.typeEncode = typeEncodeForDeclaratorNode(param);
+        [symbolTableRoot insert:[ocSymbol symbolWithName:param.var.varname decl:decl]];
+        offset += decl.size;
     }
     [self visit:node.scopeImp];
-    
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
     
@@ -219,17 +225,9 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
 
 }
 - (void)visitPropertyNode:(nonnull ORPropertyNode *)node {
-    ocDecl *propDecl = [ocDecl new];
-    propDecl.typeEncode = typeEncodeForDeclaratorNode(node.var);
-    propDecl.typeName = node.var.type.name;
-    propDecl->isProperty = YES;
-    propDecl.propModifer = node.modifier;
-    ocSymbol *propSymbol = [ocSymbol symbolWithName:[NSString stringWithFormat:@"@%@",node.var.var.varname] decl:propDecl];
-    node.symbol = propSymbol;
-    [symbolTableRoot insert:propSymbol];
     
     // 不使用assing的类型可以确定为NSObject的子类，向根符号表注册类符号
-    MFPropertyModifier modifer = (MFPropertyModifier)(propDecl.propModifer & MFPropertyModifierMemMask);
+    MFPropertyModifier modifer = (MFPropertyModifier)(node.modifier & MFPropertyModifierMemMask);
     if (modifer != MFPropertyModifierMemAssign) {
         [symbolTableRoot addLinkedClassWithName:node.var.type.name];
     }
@@ -237,8 +235,8 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     [self visit:node.var];
     is_return_declarator = NO;
     ocDecl *ivarDecl = [ocDecl new];
-    ivarDecl.typeEncode = propDecl.typeEncode;
-    ivarDecl.typeName = propDecl.typeName;
+    ivarDecl.typeEncode = typeEncodeForDeclaratorNode(node.var);
+    ivarDecl.typeName = node.var.type.name;
     ivarDecl->isIvar = YES;
     ocSymbol *ivarSymbol = [ocSymbol symbolWithName:[NSString stringWithFormat:@"_%@",node.var.var.varname] decl:ivarDecl];
     [symbolTableRoot insert:ivarSymbol];
@@ -275,36 +273,11 @@ const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node){
     }
 }
 - (void)visitMethodNode:(nonnull ORMethodNode *)node {
-    
-    //生成 method 签名信息
-    char methodTypeEncode[256] = { 0 };
-    const char *returnTypeEncode = typeEncodeForDeclaratorNode(node.declare.returnType);
-    strcat(methodTypeEncode, returnTypeEncode);
-    strcat(methodTypeEncode, OCTypeStringObject);
-    strcat(methodTypeEncode, OCTypeStringSEL);
-    for (ORDeclaratorNode *param in node.declare.parameters) {
-        strcat(methodTypeEncode, typeEncodeForDeclaratorNode(param));
-    }
-    
-    ocDecl *methodDecl = [ocDecl new];
-    methodDecl.typeEncode = methodTypeEncode;
-    methodDecl.size = sizeOfTypeEncode(returnTypeEncode);
-    methodDecl->isMethodDef = YES;
-    methodDecl->isClassMethod = node.declare.isClassMethod;
-    
-    //向Class作用域添加Method的符号信息
-    ocSymbol *symbol = [ocSymbol new];
-    symbol.decl = methodDecl;
-    symbol.name = node.declare.selectorName;
-    [symbolTableRoot insert:symbol];
-    node.symbol = symbol;
-    
     [symbolTableRoot increaseScope];
     [self visit:node.declare];
     [self visit:node.scopeImp];
     node.scope = symbolTableRoot.scope;
     [symbolTableRoot decreaseScope];
-    
 }
 
 - (void)visitClassNode:(nonnull ORClassNode *)node {
@@ -565,7 +538,6 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
 - (void)visitStructStatNode:(nonnull ORStructStatNode *)node {
     // 展开 struct 内部的符号表作用域
     [symbolTableRoot increaseScope];
-    
     NSMutableString *typeEncode = [@"{" mutableCopy];
     [typeEncode appendString:node.sturctName];
     [typeEncode appendString:@"="];
@@ -610,10 +582,10 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     // 默认内存对齐值(8)时，NSGetSizeAndAlignment的值和offset的值应该相同
     assert(structAlignment == 8 && decl.size == offset);
     decl.size = offset;
+    [symbolTableRoot decreaseScope];
+    
     ocSymbol *symbol = [ocSymbol symbolWithName:node.sturctName decl:decl];
     [symbolTableRoot insertRoot:symbol];
-    node.scope = symbolTableRoot.scope;
-    [symbolTableRoot decreaseScope];
 }
 
 - (void)visitUnionStatNode:(nonnull ORUnionStatNode *)node {
@@ -646,10 +618,9 @@ NSUInteger momeryLayoutAlignment(NSUInteger offset, NSUInteger size, NSUInteger 
     decl.typeName = node.unionName;
     decl.fielsScope = symbolTableRoot.scope;
     decl.keys = keys;
+    [symbolTableRoot decreaseScope];
     ocSymbol *symbol = [ocSymbol symbolWithName:node.unionName decl:decl];
     [symbolTableRoot insertRoot:symbol];
-    node.scope = symbolTableRoot.scope;
-    [symbolTableRoot decreaseScope];
 }
 - (void)visitEnumStatNode:(nonnull OREnumStatNode *)node {
     ocDecl *decl = [ocDecl new];

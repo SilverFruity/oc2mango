@@ -7,17 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ORPatchFile/ORPatchFile.h>
+#import "OCTypeEncode.h"
+#import "RunnerClasses.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ocDecl : NSObject
 {
 @public
-    BOOL isInternalIvar;
-    BOOL isProperty;
+    enum {
+        isArgument,
+        isLocalVar,
+        isIvar,
+        isGlobalVar
+    } variable;
+    
+    BOOL isArgument;
+    BOOL isLocalVar;
+    
     BOOL isIvar;
-    BOOL isMethodDef;
-    BOOL isClassMethod;
     BOOL isClassDefine;
     BOOL isDynamicCArray;
     BOOL isSelf;
@@ -64,10 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isDynamicCArray;
 
-- (BOOL)isProperty;
 - (BOOL)isIvar;
-- (BOOL)isMethod;
-- (BOOL)isClassMethod;
 
 // Data Section
 - (BOOL)isStatic;
@@ -78,6 +83,20 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ocComposeDecl: ocDecl
 @property (nonatomic, strong)NSMutableArray *keys;
 @property (nonatomic, assign)ocScope *fielsScope;
+@end
+
+@interface ocFunctionDecl: ocDecl
+@property (nonatomic, strong)ocDecl *returnDecl;
+@property (nonatomic, strong)NSMutableArray *argsDecl;
+@property (nonatomic, assign)int argsSize;
+@property (nonatomic, assign)int localVarsSize;
+@end
+
+@interface ocMethodDecl: ocDecl
+@property (nonatomic, strong)ocDecl *returnDecl;
+@property (nonatomic, strong)NSMutableArray *argsDecl;
+@property (nonatomic, assign)int argsSize;
+@property (nonatomic, assign)int localVarsSize;
 @end
 
 NS_ASSUME_NONNULL_END

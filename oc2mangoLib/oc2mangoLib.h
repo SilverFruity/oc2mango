@@ -18,6 +18,5 @@ FOUNDATION_EXPORT const unsigned char oc2mangoLibVersionString[];
 #import <oc2mangoLib/SymbolTableVisitor.h>
 #import <oc2mangoLib/Convert2MangoVisitor.h>
 #import <oc2mangoLib/Parser.h>
-#import <ORPatchFile/RunnerClasses.h>
-#import <ORPatchFile/JSONPatchHelper.h>
+#import <oc2mangoLib/RunnerClasses.h>
 

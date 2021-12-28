@@ -7,8 +7,7 @@
 //
 
 #import "ocHandleTypeEncode.h"
-#import <ORPatchFile/ORPatchFile.h>
-
+#import "OCTypeEncode.h"
 void removePointerOfTypeEncode(const char *chr, NSMutableString *buffer){
     if (strlen(chr) == 0) return;
     if (*chr != '^') {

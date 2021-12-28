@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ORPatchFile/RunnerClasses.h>
+#import "RunnerClasses.h"
 NS_ASSUME_NONNULL_BEGIN
 @class AST;
 int startClassProrityDetect(AST *ast, ORClassNode *clazz);

@@ -8,6 +8,7 @@
 
 #import "ocSymbolTable.hpp"
 #import "ORFileSection.hpp"
+
 const ocSymbolTable * symbolTableRoot = nil;
 const ocScope *scopeRoot = nil;
 @implementation ocSymbolTable
@@ -160,19 +161,22 @@ extern const char *typeEncodeForDeclaratorNode(ORDeclaratorNode * node);
 }
 
 - (ocSymbol *)addMethodSection:(ORMethodNode *)node className:(NSString *)className {
-    NSMutableString *typeencode = [NSMutableString string];
-    [typeencode appendFormat:@"%s@:", typeEncodeForDeclaratorNode(node.declare.returnType)];
-    for (ORDeclaratorNode *arg in node.declare.parameters) {
-        [typeencode appendFormat:@"%s", typeEncodeForDeclaratorNode(arg)];
+    char methodTypeEncode[256] = { 0 };
+    const char *returnTypeEncode = typeEncodeForDeclaratorNode(node.declare.returnType);
+    strcat(methodTypeEncode, returnTypeEncode);
+    strcat(methodTypeEncode, OCTypeStringObject);
+    strcat(methodTypeEncode, OCTypeStringSEL);
+    for (ORDeclaratorNode *param in node.declare.parameters) {
+        strcat(methodTypeEncode, typeEncodeForDeclaratorNode(param));
     }
     if (node.declare.isClassMethod) {
         recorder.addObjcClassMethod(className.UTF8String,
                                     node.declare.selectorName.UTF8String,
-                                    typeencode.UTF8String);
+                                    methodTypeEncode);
     }else {
         recorder.addObjcInstanceMethod(className.UTF8String,
                                        node.declare.selectorName.UTF8String,
-                                       typeencode.UTF8String);
+                                       methodTypeEncode);
     }
     return nil;
 }

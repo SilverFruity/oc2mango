@@ -8,7 +8,9 @@
 
 #import "CodeGenVisitor.h"
 #import "SymbolTableVisitor.h"
-
+#import <string>
+#import <list>
+using namespace std;
 @implementation CodeGenVisitor
 
 - (void)visit:(nonnull ORNode *)node {

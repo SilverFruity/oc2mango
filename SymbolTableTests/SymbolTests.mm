@@ -44,23 +44,7 @@ struct ORPoint{
       double z;\
     };\
     ";
-    AST *ast = [parser parseSource:source];
-    ocSymbol *symbol = ast.scope[@"ORPoint"];
-    XCTAssert([symbol.decl isStruct]);
-    XCTAssert(strcmp(symbol.decl.typeEncode, @encode(struct ORPoint)) == 0);
-    ocScope *structScope = ((ORNode *)ast.nodes.lastObject).scope;
-    ocDecl *decl = structScope[@"x"].decl;
-    XCTAssert(decl.index == 0);
-    XCTAssert(decl.size == 8);
-    XCTAssert(decl.type == OCTypeDouble);
-    decl = structScope[@"y"].decl;
-    XCTAssert(decl.index == 8);
-    XCTAssert(decl.size == 4);
-    XCTAssert(decl.type == OCTypeInt);
-    decl = structScope[@"z"].decl;
-    XCTAssert(decl.index == 16);
-    XCTAssert(decl.size == 8);
-    XCTAssert(decl.type == OCTypeDouble);
+    XCTAssertTrue(false);
     
 }
 union ORValue{
@@ -77,22 +61,7 @@ union ORValue{
     };"
     ;
     AST *ast = [parser parseSource:source];
-    ocSymbol *symbol = ast.scope[@"ORValue"];
-    XCTAssert([symbol.decl isUnion]);
-    XCTAssert(strcmp(symbol.decl.typeEncode, @encode(union ORValue)) == 0);
-    ocScope *unionScope = ((ORNode *)ast.nodes.lastObject).scope;
-    ocDecl *decl = unionScope[@"x"].decl;
-    XCTAssert(decl.index == 0);
-    XCTAssert(decl.size == 1);
-    XCTAssert(decl.type == OCTypeChar);
-    decl = unionScope[@"y"].decl;
-    XCTAssert(decl.index == 0);
-    XCTAssert(decl.size == 2);
-    XCTAssert(decl.type == OCTypeShort);
-    decl = unionScope[@"z"].decl;
-    XCTAssert(decl.index == 0);
-    XCTAssert(decl.size == 4);
-    XCTAssert(decl.type == OCTypeInt);
+    XCTAssertTrue(false);
 }
 - (void)testFunction{
     source = @"\
@@ -114,21 +83,8 @@ union ORValue{
     XCTAssert(strcmp(symbol.decl.typeEncode?:"", "^?dii") == 0);
     symbol = ((ORNode *)ast.nodes.lastObject).symbol;
     XCTAssert(strcmp(symbol.decl.typeEncode?:"", "@?dii") == 0);
-    
 }
-- (void)testSimpleDeclarator{
-    source = @"int a; double b;";
-    AST *ast = [parser parseSource:source];
-    ocSymbol *symbol = ast.scope[@"a"];
-    XCTAssert(strcmp(symbol.decl.typeEncode, OCTypeStringInt) == 0);
-    XCTAssert(symbol.decl.type == OCTypeInt);
-    
-    symbol = ast.scope[@"b"];
-    XCTAssert(strcmp(symbol.decl.typeEncode, OCTypeStringDouble) == 0);
-    XCTAssert(symbol.decl.type == OCTypeDouble);
-    
-//    ast.scope[@"b"];
-}
+
 - (void)testClass{
     source = @" \
     @interface TestClass: NSObject\
@@ -147,70 +103,23 @@ union ORValue{
     + (instranceType)objectWithA:(int)a b:(double)b c:(NSString *)c d:(void **)d{ }\
     @end";
     AST *ast = [parser parseSource:source];
-    ORClassNode *classNode = ast.nodes.firstObject;
-    ocSymbol *symbol = classNode.scope[@"_object"];
-    XCTAssert([symbol.decl.typeName isEqualToString:@"id"], @"%@",symbol.decl.typeName);
-    XCTAssert(symbol.decl.type = OCTypeObject);
-    XCTAssert(symbol.decl.isIvar);
-    
-    symbol = classNode.scope[@"@object"];
-    XCTAssert([symbol.decl.typeName isEqualToString:@"id"], @"%@",symbol.decl.typeName);
-    XCTAssert(symbol.decl.type = OCTypeObject);
-    XCTAssert(symbol.decl.isProperty);
-    XCTAssert(symbol.decl.propModifer && (MFPropertyModifierNonatomic | MFPropertyModifierMemStrong));
-    
-    symbol = classNode.scope[@"_string"];
-    XCTAssert([symbol.decl.typeName isEqualToString:@"NSString"], @"%@",symbol.decl.typeName);
-    XCTAssert(symbol.decl.type = OCTypeObject);
-    XCTAssert(strcmp(symbol.decl.typeEncode, "@") == 0);
-    XCTAssert(symbol.decl.isIvar);
-    
-    symbol = classNode.scope[@"@string"];
-    XCTAssert([symbol.decl.typeName isEqualToString:@"NSString"], @"%@",symbol.decl.typeName);
-    XCTAssert(symbol.decl.type = OCTypeObject);
-    XCTAssert(symbol.decl.isProperty);
-    XCTAssert(symbol.decl.propModifer && (MFPropertyModifierNonatomic | MFPropertyModifierMemStrong));
-    
-    symbol = classNode.scope[@"a"];
-    XCTAssert(symbol.decl.type = OCTypeInt);
-    XCTAssert(symbol.decl.isIvar);
-    
-    symbol = classNode.scope[@"b"];
-    XCTAssert(symbol.decl.type = OCTypeDouble);
-    XCTAssert(symbol.decl.isIvar);
-    
-    symbol = classNode.scope[@"d"];
-    XCTAssert(symbol.decl.type = OCTypePointer);
-    XCTAssert(symbol.decl.isIvar);
-    
-    symbol = classNode.scope[@"initWithObject:"];
-    XCTAssert(strcmp(symbol.decl.typeEncode, "@@:@") == 0, @"%s",symbol.decl.typeEncode);
-    XCTAssert(symbol.decl.type = OCTypeObject);
-    XCTAssert(symbol.decl.isMethod);
-    XCTAssert(symbol.decl.isClassMethod == NO);
-    
-    symbol = classNode.scope[@"objectWithA:b:c:d:"];
-    XCTAssert(strcmp(symbol.decl.typeEncode, "@@:id@^^v") == 0, @"%s",symbol.decl.typeEncode);
-    XCTAssert(symbol.decl.type = OCTypeObject);
-    XCTAssert(symbol.decl.isMethod);
-    XCTAssert(symbol.decl.isClassMethod);
-    
-    ORMethodNode *method = classNode.methods[0];
-    symbol = method.scope[@"object"];
-    XCTAssert(symbol.decl.type = OCTypeObject);
-    XCTAssert([symbol.decl.typeName isEqualToString:@"id"], @"%@",symbol.decl.typeName);
-    
-    method = classNode.methods[1];
-    symbol = method.scope[@"a"];
-    XCTAssert(strcmp(symbol.decl.typeEncode, "i") == 0);
-    symbol = method.scope[@"b"];
-    XCTAssert(strcmp(symbol.decl.typeEncode, "d") == 0);
-    symbol = method.scope[@"c"];
-    XCTAssert(strcmp(symbol.decl.typeEncode, "@") == 0);
-    symbol = method.scope[@"d"];
-    XCTAssert(strcmp(symbol.decl.typeEncode, "^^v") == 0, @"%s", symbol.decl.typeEncode);
-    
+    XCTAssertTrue(false);
 }
+
+- (void)testSimpleDeclarator{
+    source = @"int a; double b;";
+    AST *ast = [parser parseSource:source];
+    ocSymbol *symbol = ast.scope[@"a"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, OCTypeStringInt) == 0);
+    XCTAssert(symbol.decl.type == OCTypeInt);
+    
+    symbol = ast.scope[@"b"];
+    XCTAssert(strcmp(symbol.decl.typeEncode, OCTypeStringDouble) == 0);
+    XCTAssert(symbol.decl.type == OCTypeDouble);
+    
+//    ast.scope[@"b"];
+}
+
 - (void)testClassDetect{
     source = @" \
     @interface TestClass: NSObject\
