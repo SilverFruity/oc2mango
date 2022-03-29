@@ -151,6 +151,10 @@ class ClassCodeGenerator{
     }
     //TODO: Destroy
     func destoryFunctionSource()->String{
+        var destoryExps = self.destoryExps
+        if let superContent = generatorCache[self.superClassName]{
+            destoryExps = superContent.destoryExps + destoryExps
+        }
         return """
         void \(structName)Destroy(\(structName) *node){
             \(destoryExps.joined(separator: "\n    "))

@@ -342,6 +342,7 @@ void AstNodeListDestroy(AstNodeList *node){
     for (int i = 0; i < node->count; i++) {
          AstNodeDestroy(node->nodes[i]);
     }
+    free(node->nodes);
     free(node);
 }
 void AstStringBufferNodeDestroy(AstStringBufferNode *node){

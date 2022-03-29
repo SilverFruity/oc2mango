@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1623336264
+//  Created by Jiang on 1648564762
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -203,6 +203,7 @@ void AstNodeListDestroy(AstNodeList *node){
     for (int i = 0; i < node->count; i++) {
          AstNodeDestroy(node->nodes[i]);
     }
+    free(node->nodes);
     free(node);
 }
 void AstStringBufferNodeDestroy(AstStringBufferNode *node){
@@ -1568,6 +1569,7 @@ void AstTypeVarPairDestroy(AstTypeVarPair *node){
     free(node);
 }
 void AstFuncVariableDestroy(AstFuncVariable *node){
+    AstNodeDestroy((AstEmptyNode *)node->varname);
     AstNodeDestroy((AstEmptyNode *)node->pairs);
     free(node);
 }
@@ -1746,6 +1748,7 @@ void AstTypedefExpressoinDestroy(AstTypedefExpressoin *node){
     free(node);
 }
 void AstCArrayVariableDestroy(AstCArrayVariable *node){
+    AstNodeDestroy((AstEmptyNode *)node->varname);
     AstNodeDestroy((AstEmptyNode *)node->prev);
     AstNodeDestroy((AstEmptyNode *)node->capacity);
     free(node);
