@@ -25,7 +25,7 @@ class ClassCodeGenerator{
     var deserializationExps = [String]()
     var destoryExps = [String]()
     var baseLengthCode = ""
-    var baseLength = 0
+    var baseEndVarname: String? = nil
     func addStructNodeField(type: String, varname: String){
         self.structNodeFiels.append("\(type) \(varname);")
     }
@@ -63,16 +63,20 @@ class ClassCodeGenerator{
         //FIX: ORFuncVariable继承问题
         var baseFiels = self.structBaseFiels
         var nodeFiles = self.structNodeFiels
-        var baseLength = AstEmptyNodeLength + self.baseLength
         if let superContent = generatorCache[self.superClassName]{
             baseFiels = superContent.structBaseFiels + baseFiels
             nodeFiles = superContent.structNodeFiels + nodeFiles
-            baseLength += superContent.baseLength
+        }
+        var lengthGrammer = ""
+        if nodeFiles.count > 0 {
+            lengthGrammer = "offsetof(\(self.structName), \(nodeFiles[0].split(separator: " ").last!.split(separator: ";").first!))"
+        } else {
+            lengthGrammer = "sizeof(\(self.structName))"
         }
         let structFiels = baseFiels + nodeFiles
         baseLengthCode =
         """
-        static \(_uintType) \(structName)BaseLength = \(baseLength);\n
+        static \(_uintType) \(structName)BaseLength = \(lengthGrammer);\n
         """
         return """
 

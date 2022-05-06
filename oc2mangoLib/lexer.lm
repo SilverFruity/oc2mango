@@ -210,6 +210,7 @@
 <INITIAL>"uint16"   { return _USHORT; }
 <INITIAL>"uint32"   { return _UINT; }
 <INITIAL>"uint64"   { return _ULLONG; }
+
 <INITIAL>"uint8_t"  { return _UCHAR; }
 <INITIAL>"uint16_t" { return _USHORT; }
 <INITIAL>"uint32_t" { return _UINT; }

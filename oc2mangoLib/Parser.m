@@ -48,19 +48,6 @@ Parser *OCParser = nil;
         NSLog(@"\n----Error: \n  PATH: %@\n  INFO:%@",self.source.filePath,self.error);
     }
     
-//#define JSON_PATCH_TEST
-#ifdef JSON_PATCH_TEST
-    do {
-        NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-        NSString *filePath = [cachePath stringByAppendingPathComponent:@"patch.json"];
-        ORPatchFile *file = [[ORPatchFile alloc] initWithNodes:GlobalAst.nodes];
-        [file dumpAsJsonPatch:filePath encrptMapPath:nil];
-        ORPatchFile *newFile = [ORPatchFile loadJsonPatch:filePath decrptMapPath:nil];
-        GlobalAst = [AST new];
-        [GlobalAst merge:newFile.nodes];
-    } while (0);
-#endif
-    
 #ifndef PATCH_FILE_CODE_GEN
     
 //#define BINARY_PATCH_TEST

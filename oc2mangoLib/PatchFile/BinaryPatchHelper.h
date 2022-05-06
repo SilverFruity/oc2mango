@@ -1,9 +1,11 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1626333610
+//  Created by Jiang on 1651854791
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#include <stddef.h>
+
 @class ORPatchFile;
 
 typedef enum: uint8_t{
@@ -55,34 +57,32 @@ typedef enum: uint8_t{
 #define AstNodeFields \
 uint8_t nodeType;\
 
-#pragma pack(1)
-#pragma pack(show)
 typedef struct {
     AstNodeFields
 }AstEmptyNode;
 
-static uint32_t AstEmptyNodeLength = 1;
+static uint32_t AstEmptyNodeLength = sizeof(AstEmptyNode);
 
 typedef struct {
     AstNodeFields
     uint32_t count;
     AstEmptyNode **nodes;
 }AstNodeList;
-static uint32_t AstNodeListBaseLength = 5;
+static uint32_t AstNodeListBaseLength = offsetof(AstNodeList, nodes);
 
 typedef struct {
     AstNodeFields
     uint32_t offset;
     uint32_t strLen;
 }AstStringCursor;
-static uint32_t AstStringCursorBaseLength = 9;
+static uint32_t AstStringCursorBaseLength = sizeof(AstStringCursor);
 
 typedef struct {
     AstNodeFields
     uint32_t cursor;
     char *buffer;
 }AstStringBufferNode;
-static uint32_t AstStringBufferNodeBaseLength = 5;
+static uint32_t AstStringBufferNodeBaseLength = offsetof(AstStringBufferNode, buffer);
 
 typedef struct {
     AstNodeFields
@@ -92,10 +92,8 @@ typedef struct {
     AstStringCursor *osVersion;
     AstNodeList *nodes;
 }AstPatchFile;
-static uint32_t AstPatchFileBaseLength = 2;
+static uint32_t AstPatchFileBaseLength = offsetof(AstPatchFile, strings);
 
-#pragma pack()
-#pragma pack(show)
 
 AstPatchFile *AstPatchFileConvert(ORPatchFile *patch, uint32_t *length);
 ORPatchFile *AstPatchFileDeConvert(AstPatchFile *node);
@@ -103,8 +101,6 @@ void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *curso
 AstPatchFile *AstPatchFileDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
 void AstPatchFileDestroy(AstPatchFile *node);
 ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength);
-#pragma pack(1)
-
 typedef struct {
     AstNodeFields
     uint32_t type;
@@ -345,6 +341,3 @@ typedef struct {
     AstEmptyNode * expression;
     AstStringCursor * typeNewName;
 }AstTypedefStatNode;
-
-#pragma pack()
-#pragma pack(show)

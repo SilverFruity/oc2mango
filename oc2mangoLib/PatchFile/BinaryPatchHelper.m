@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1626333610
+//  Created by Jiang on 1651854791
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -203,6 +203,7 @@ void AstNodeListDestroy(AstNodeList *node){
     for (int i = 0; i < node->count; i++) {
          AstNodeDestroy(node->nodes[i]);
     }
+    free(node->nodes);
     free(node);
 }
 void AstStringBufferNodeDestroy(AstStringBufferNode *node){
@@ -216,46 +217,45 @@ void AstPatchFileDestroy(AstPatchFile *node){
     AstNodeDestroy((AstEmptyNode *)node->nodes);
     free(node);
 }
-#include <stddef.h>
 
 #pragma mark - Struct BaseLength
-static uint32_t AstTypeNodeBaseLength = 9;
-static uint32_t AstVariableNodeBaseLength = 3;
-static uint32_t AstDeclaratorNodeBaseLength = 1;
-static uint32_t AstFunctionDeclNodeBaseLength = 2;
-static uint32_t AstCArrayDeclNodeBaseLength = 1;
-static uint32_t AstBlockNodeBaseLength = 1;
-static uint32_t AstValueNodeBaseLength = 5;
-static uint32_t AstIntegerValueBaseLength = 9;
-static uint32_t AstUIntegerValueBaseLength = 9;
-static uint32_t AstDoubleValueBaseLength = 9;
-static uint32_t AstBoolValueBaseLength = 2;
-static uint32_t AstMethodCallBaseLength = 3;
-static uint32_t AstFunctionCallBaseLength = 1;
-static uint32_t AstFunctionNodeBaseLength = 1;
-static uint32_t AstSubscriptNodeBaseLength = 1;
-static uint32_t AstAssignNodeBaseLength = 5;
-static uint32_t AstInitDeclaratorNodeBaseLength = 1;
-static uint32_t AstUnaryNodeBaseLength = 5;
-static uint32_t AstBinaryNodeBaseLength = 5;
-static uint32_t AstTernaryNodeBaseLength = 1;
-static uint32_t AstIfStatementBaseLength = 1;
-static uint32_t AstWhileStatementBaseLength = 1;
-static uint32_t AstDoWhileStatementBaseLength = 1;
-static uint32_t AstCaseStatementBaseLength = 1;
-static uint32_t AstSwitchStatementBaseLength = 1;
-static uint32_t AstForStatementBaseLength = 1;
-static uint32_t AstForInStatementBaseLength = 1;
-static uint32_t AstControlStatNodeBaseLength = 9;
-static uint32_t AstPropertyNodeBaseLength = 1;
-static uint32_t AstMethodDeclNodeBaseLength = 2;
-static uint32_t AstMethodNodeBaseLength = 1;
-static uint32_t AstClassNodeBaseLength = 1;
-static uint32_t AstProtocolNodeBaseLength = 1;
-static uint32_t AstStructStatNodeBaseLength = 1;
-static uint32_t AstUnionStatNodeBaseLength = 1;
-static uint32_t AstEnumStatNodeBaseLength = 5;
-static uint32_t AstTypedefStatNodeBaseLength = 1;
+static uint32_t AstTypeNodeBaseLength = offsetof(AstTypeNode, name);
+static uint32_t AstVariableNodeBaseLength = offsetof(AstVariableNode, varname);
+static uint32_t AstDeclaratorNodeBaseLength = offsetof(AstDeclaratorNode, type);
+static uint32_t AstFunctionDeclNodeBaseLength = offsetof(AstFunctionDeclNode, type);
+static uint32_t AstCArrayDeclNodeBaseLength = offsetof(AstCArrayDeclNode, type);
+static uint32_t AstBlockNodeBaseLength = offsetof(AstBlockNode, statements);
+static uint32_t AstValueNodeBaseLength = offsetof(AstValueNode, value);
+static uint32_t AstIntegerValueBaseLength = sizeof(AstIntegerValue);
+static uint32_t AstUIntegerValueBaseLength = sizeof(AstUIntegerValue);
+static uint32_t AstDoubleValueBaseLength = sizeof(AstDoubleValue);
+static uint32_t AstBoolValueBaseLength = sizeof(AstBoolValue);
+static uint32_t AstMethodCallBaseLength = offsetof(AstMethodCall, caller);
+static uint32_t AstFunctionCallBaseLength = offsetof(AstFunctionCall, caller);
+static uint32_t AstFunctionNodeBaseLength = offsetof(AstFunctionNode, declare);
+static uint32_t AstSubscriptNodeBaseLength = offsetof(AstSubscriptNode, caller);
+static uint32_t AstAssignNodeBaseLength = offsetof(AstAssignNode, value);
+static uint32_t AstInitDeclaratorNodeBaseLength = offsetof(AstInitDeclaratorNode, declarator);
+static uint32_t AstUnaryNodeBaseLength = offsetof(AstUnaryNode, value);
+static uint32_t AstBinaryNodeBaseLength = offsetof(AstBinaryNode, left);
+static uint32_t AstTernaryNodeBaseLength = offsetof(AstTernaryNode, expression);
+static uint32_t AstIfStatementBaseLength = offsetof(AstIfStatement, condition);
+static uint32_t AstWhileStatementBaseLength = offsetof(AstWhileStatement, condition);
+static uint32_t AstDoWhileStatementBaseLength = offsetof(AstDoWhileStatement, condition);
+static uint32_t AstCaseStatementBaseLength = offsetof(AstCaseStatement, value);
+static uint32_t AstSwitchStatementBaseLength = offsetof(AstSwitchStatement, value);
+static uint32_t AstForStatementBaseLength = offsetof(AstForStatement, varExpressions);
+static uint32_t AstForInStatementBaseLength = offsetof(AstForInStatement, expression);
+static uint32_t AstControlStatNodeBaseLength = offsetof(AstControlStatNode, expression);
+static uint32_t AstPropertyNodeBaseLength = offsetof(AstPropertyNode, keywords);
+static uint32_t AstMethodDeclNodeBaseLength = offsetof(AstMethodDeclNode, returnType);
+static uint32_t AstMethodNodeBaseLength = offsetof(AstMethodNode, declare);
+static uint32_t AstClassNodeBaseLength = offsetof(AstClassNode, className);
+static uint32_t AstProtocolNodeBaseLength = offsetof(AstProtocolNode, protcolName);
+static uint32_t AstStructStatNodeBaseLength = offsetof(AstStructStatNode, sturctName);
+static uint32_t AstUnionStatNodeBaseLength = offsetof(AstUnionStatNode, unionName);
+static uint32_t AstEnumStatNodeBaseLength = offsetof(AstEnumStatNode, enumName);
+static uint32_t AstTypedefStatNodeBaseLength = offsetof(AstTypedefStatNode, expression);
 
 #pragma mark - Class Convert To Struct
 AstTypeNode *AstTypeNodeConvert(ORTypeNode *exp, AstPatchFile *patch, uint32_t *length){
@@ -1475,10 +1475,14 @@ void AstDeclaratorNodeDestroy(AstDeclaratorNode *node){
     free(node);
 }
 void AstFunctionDeclNodeDestroy(AstFunctionDeclNode *node){
+    AstNodeDestroy((AstEmptyNode *)node->type);
+    AstNodeDestroy((AstEmptyNode *)node->var);
     AstNodeDestroy((AstEmptyNode *)node->params);
     free(node);
 }
 void AstCArrayDeclNodeDestroy(AstCArrayDeclNode *node){
+    AstNodeDestroy((AstEmptyNode *)node->type);
+    AstNodeDestroy((AstEmptyNode *)node->var);
     AstNodeDestroy((AstEmptyNode *)node->prev);
     AstNodeDestroy((AstEmptyNode *)node->capacity);
     free(node);
@@ -1731,7 +1735,7 @@ AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
     }
     AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
     memset(node, 0, sizeof(AstEmptyNode));
-    *length += 1;
+    *length += AstEmptyNodeLength;
     return node;
 }
 id AstNodeDeConvert(ORNode *parent,AstEmptyNode *node, AstPatchFile *patch){
@@ -1824,8 +1828,8 @@ id AstNodeDeConvert(ORNode *parent,AstEmptyNode *node, AstPatchFile *patch){
 void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor){
     switch(node->nodeType){
         case AstEnumEmptyNode: {
-            memcpy(buffer + *cursor, node, 1);
-            *cursor += 1;
+            memcpy(buffer + *cursor, node, AstEmptyNodeLength);
+            *cursor += AstEmptyNodeLength;
             break;
         }
         case AstEnumListNode:
@@ -2000,7 +2004,7 @@ AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bu
         default:{
             AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
             memset(node, 0, sizeof(AstEmptyNode));
-            *cursor += 1;
+            *cursor += AstEmptyNodeLength;
             return node;
         }
     }

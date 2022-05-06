@@ -27,9 +27,7 @@ let withSemicolonConvertExp =  forUnitTest ? "\n    node->withSemicolon = exp.wi
 var withSemicolonDeconvertExp =  forUnitTest ? "\n    exp.withSemicolon = node->withSemicolon;" : ""
 withSemicolonDeconvertExp += setNodeTypeWhileDeconvert
 
-let withSemicolonLength = forUnitTest ? 1 : 0
 
-let AstEmptyNodeLength = 1 + withSemicolonLength
 let _byteType = "uint8_t"
 let _byteLength = 1
 let _uintType = "uint32_t"
@@ -76,6 +74,8 @@ var headerSource =
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#include <stddef.h>
+
 @class \(PatchFileClass);
 
 \(AstEnums)
@@ -83,34 +83,32 @@ var headerSource =
 #define \(NodeDefine) \\
 \(EnumValueType) nodeType;\\\(withSemicolon)
 
-#pragma pack(1)
-#pragma pack(show)
 typedef struct {
     \(NodeDefine)
 }AstEmptyNode;
 
-static \(_uintType) AstEmptyNodeLength = \(AstEmptyNodeLength);
+static \(_uintType) AstEmptyNodeLength = sizeof(AstEmptyNode);
 
 typedef struct {
     \(NodeDefine)
     \(_uintType) count;
     AstEmptyNode **nodes;
 }AstNodeList;
-static uint32_t AstNodeListBaseLength = \(AstEmptyNodeLength + _uintLength);
+static uint32_t AstNodeListBaseLength = offsetof(AstNodeList, nodes);
 
 typedef struct {
     \(NodeDefine)
     \(_uintType) offset;
     \(_uintType) strLen;
 }AstStringCursor;
-static \(_uintType) AstStringCursorBaseLength = \(AstEmptyNodeLength + _uintLength * 2);
+static \(_uintType) AstStringCursorBaseLength = sizeof(AstStringCursor);
 
 typedef struct {
     \(NodeDefine)
     \(_uintType) cursor;
     char *buffer;
 }AstStringBufferNode;
-static \(_uintType) AstStringBufferNodeBaseLength = \(AstEmptyNodeLength + _uintLength);
+static \(_uintType) AstStringBufferNodeBaseLength = offsetof(AstStringBufferNode, buffer);
 
 typedef struct {
     \(NodeDefine)
@@ -120,10 +118,8 @@ typedef struct {
     AstStringCursor *osVersion;
     AstNodeList *nodes;
 }AstPatchFile;
-static \(_uintType) AstPatchFileBaseLength = \(AstEmptyNodeLength + 1);
+static \(_uintType) AstPatchFileBaseLength = offsetof(AstPatchFile, strings);
 
-#pragma pack()
-#pragma pack(show)
 
 AstPatchFile *AstPatchFileConvert(\(PatchFileClass) *patch, uint32_t *length);
 \(PatchFileClass) *AstPatchFileDeConvert(AstPatchFile *node);
@@ -367,12 +363,13 @@ for node in ast.nodes{
     }
     let generator = ClassCodeGenerator(className: classNode.className, superClassName:classNode.superClassName)
     let properties = classNode.properties as! [ORPropertyNode]
+    var notBaseTypeVarName: String? = nil
     for prop in properties{
         if prop.keywords.contains("readonly"){
             continue
         }
         let varname = prop.var.var.varname ?? ""
-        if let typename = prop.var.type.name{
+        if let typename = prop.var.type.name {
             if typename == "NSMutableArray" {
                 generator.addStructNodeField(type: "AstNodeList *", varname: varname)
                 generator.addNodeConvertExp(varname: varname, nodeName: "AstNodeList")
@@ -380,6 +377,9 @@ for node in ast.nodes{
                 generator.addSerializationExp(varname: varname)
                 generator.addDeserializationExp(varname: varname, nodeName: "AstNodeList")
                 generator.addDestroyExp(varname: varname)
+                if generator.baseEndVarname == nil {
+                    generator.baseEndVarname = varname
+                }
             }else if typename.hasPrefix("OR") || typename == "id"{
                 generator.addStructNodeField(type: "AstEmptyNode *", varname: varname)
                 generator.addNodeConvertExp(varname: varname, nodeName: "AstEmptyNode")
@@ -387,6 +387,9 @@ for node in ast.nodes{
                 generator.addSerializationExp(varname: varname)
                 generator.addDeserializationExp(varname: varname, nodeName: "AstEmptyNode")
                 generator.addDestroyExp(varname: varname)
+                if generator.baseEndVarname == nil {
+                    generator.baseEndVarname = varname
+                }
             }else if typename == "NSString"{
                 generator.addStructNodeField(type: "AstStringCursor *", varname: varname)
                 generator.addNodeConvertExp(varname: varname, nodeName: "AstStringCursor")
@@ -394,11 +397,13 @@ for node in ast.nodes{
                 generator.addSerializationExp(varname: varname)
                 generator.addDeserializationExp(varname: varname, nodeName: "AstStringCursor")
                 generator.addDestroyExp(varname: varname)
+                if generator.baseEndVarname == nil {
+                    generator.baseEndVarname = varname
+                }
             }else{
-                generator.addStructNodeField(type: _uintType, varname: varname)
+                generator.addStructBaseFiled(type: _uintType, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
-                generator.baseLength += _uintLength
             }
             
         }else{
@@ -406,47 +411,29 @@ for node in ast.nodes{
                 generator.addStructBaseFiled(type: "BOOL", varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
-                generator.baseLength += 1
             }else if prop.var.type.type == OCTypeUChar{
                 generator.addStructBaseFiled(type: _byteType, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
-                generator.baseLength += _byteLength
             }else if prop.var.type.type == OCTypeLongLong{
                 generator.addStructBaseFiled(type: _int64Type, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
-                generator.baseLength += _int64Length
             }else if prop.var.type.type == OCTypeULongLong{
                 generator.addStructBaseFiled(type: _uint64Type, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
-                generator.baseLength += _uint64Length
             }else if prop.var.type.type == OCTypeDouble{
                 generator.addStructBaseFiled(type: _doubleType, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
-                generator.baseLength += _doubleLength
             }
         }
     }
     generators.append(generator)
 }
-headerSource +=
-"""
-
-#pragma pack(1)
-
-"""
 _ = generators.map({ headerSource += $0.structDeclareSource() })
 
-headerSource +=
-"""
-
-#pragma pack()
-#pragma pack(show)
-
-"""
 
 impSource +=
 """
@@ -575,7 +562,7 @@ AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
     }\(convertExps.joined(separator: ""))
     AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
     memset(node, 0, sizeof(AstEmptyNode));
-    *length += \(AstEmptyNodeLength);
+    *length += AstEmptyNodeLength;
     return node;
 }
 
@@ -602,8 +589,8 @@ impSource +=
 void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor){
     switch(node->nodeType){
         case AstEnumEmptyNode: {
-            memcpy(buffer + *cursor, node, \(AstEmptyNodeLength));
-            *cursor += \(AstEmptyNodeLength);
+            memcpy(buffer + *cursor, node, AstEmptyNodeLength);
+            *cursor += AstEmptyNodeLength;
             break;
         }
         case AstEnumListNode:
@@ -634,7 +621,7 @@ AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bu
         default:{
             AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
             memset(node, 0, sizeof(AstEmptyNode));
-            *cursor += \(AstEmptyNodeLength);
+            *cursor += AstEmptyNodeLength;
             return node;
         }
     }
