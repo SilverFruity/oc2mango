@@ -7,68 +7,95 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04815F7B25F0EA9A00342ADA /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
+		04815F7C25F0EA9A00342ADA /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
+		04815F7D25F0EA9A00342ADA /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
+		04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
+		04C4481B25F0E2F600E3F443 /* ORPatchFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16224FEB62C00C85B31 /* ORPatchFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
+		04C4483325F0E95C00E3F443 /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */; };
+		1872080B26857F3A003C4DC6 /* SymbolTableVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1872080926857F3A003C4DC6 /* SymbolTableVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1872080C26857F3A003C4DC6 /* SymbolTableVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1872080A26857F3A003C4DC6 /* SymbolTableVisitor.m */; };
+		1872080F2685824A003C4DC6 /* ocDecl.h in Headers */ = {isa = PBXBuildFile; fileRef = 1872080D2685824A003C4DC6 /* ocDecl.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		187208102685824A003C4DC6 /* ocDecl.m in Sources */ = {isa = PBXBuildFile; fileRef = 1872080E2685824A003C4DC6 /* ocDecl.m */; };
+		18720813268594D8003C4DC6 /* ocHandleTypeEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */; };
+		18720814268594D8003C4DC6 /* ocHandleTypeEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 18720812268594D8003C4DC6 /* ocHandleTypeEncode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18819E28268329D800CC85DD /* Convert2MangoVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18819E26268329D800CC85DD /* Convert2MangoVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
+		18E852CC26842CC5009B9A3E /* CodeGenVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */; };
+		18E852CD26842CC5009B9A3E /* CodeGenVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */; };
+		18E852D426846324009B9A3E /* AstVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852D226846324009B9A3E /* AstVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18E852D526846324009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
+		18E852D726846394009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
+		18E852D826846394009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
+		18E852D926846399009B9A3E /* AstVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852D326846324009B9A3E /* AstVisitor.m */; };
+		18E852DD26846BA0009B9A3E /* ocSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852DB26846BA0009B9A3E /* ocSymbol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18E852DE26846BA0009B9A3E /* ocSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852DC26846BA0009B9A3E /* ocSymbol.m */; };
+		18E852E2268472AE009B9A3E /* ocScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852E0268472AE009B9A3E /* ocScope.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18E852E3268472AE009B9A3E /* ocScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852E1268472AE009B9A3E /* ocScope.m */; };
+		18E852E626847337009B9A3E /* ocSymbolTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E852E426847337009B9A3E /* ocSymbolTable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18E852E726847337009B9A3E /* ocSymbolTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E852E526847337009B9A3E /* ocSymbolTable.m */; };
 		32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */; };
 		6354B702229B894800C0FDED /* ConvertOuput.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6354B701229B894800C0FDED /* ConvertOuput.txt */; };
 		639D738422939E89005C6577 /* ExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639D738322939E89005C6577 /* ExpressionTest.swift */; };
 		EE147261227F054300566B3F /* ClassDeclareTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE147260227F054300566B3F /* ClassDeclareTest.swift */; };
 		EE1C71F122882F750077A71E /* TestSource.imp in Resources */ = {isa = PBXBuildFile; fileRef = EE1C71EE22882DBF0077A71E /* TestSource.imp */; };
 		EE1C71F42288314C0077A71E /* FileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1C71F32288314C0077A71E /* FileTest.swift */; };
-		EE4BAFE624364CAA00A2A080 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
-		EE4BAFE724364CAA00A2A080 /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
+		EE4B041026823E00009032B2 /* OCTypeEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = EE4B040D26823E00009032B2 /* OCTypeEncode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE4B042826824213009032B2 /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
+		EE4B042926824213009032B2 /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EE4BAFE624364CAA00A2A080 /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
+		EE4BAFE724364CAA00A2A080 /* parser.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* parser.y */; };
 		EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
 		EE4BAFE924364CEA00A2A080 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
-		EE4BAFEA24364CEA00A2A080 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE4BAFEB24364CEA00A2A080 /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE4BAFEC24364CEA00A2A080 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
-		EE4BAFF424364CEA00A2A080 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
-		EE4BAFF524364CEA00A2A080 /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
-		EE4ED3662668FFF40035F134 /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
-		EE4ED3672668FFF40035F134 /* ORPatchFile.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EE4BAFF424364CEA00A2A080 /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
+		EE4BAFF524364CEA00A2A080 /* parser.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* parser.y */; };
 		EE4F367C24F9251C00F685AF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4F367B24F9251C00F685AF /* main.swift */; };
 		EE4F368024F9254400F685AF /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
 		EE4F368124F9254400F685AF /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
-		EE4F368324F9254400F685AF /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE4F368424F9254400F685AF /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE4F368524F9254400F685AF /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
-		EE4F368624F9254400F685AF /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
-		EE4F368724F9254400F685AF /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
+		EE4F368624F9254400F685AF /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
+		EE4F368724F9254400F685AF /* parser.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* parser.y */; };
 		EE5534CF2290032700A4B32E /* AST.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534CD2290032700A4B32E /* AST.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE5534D02290032700A4B32E /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
-		EE5534D32290053800A4B32E /* Convert.h in Headers */ = {isa = PBXBuildFile; fileRef = EE5534D12290053800A4B32E /* Convert.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE5534D42290053800A4B32E /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5534DB22900DFF00A4B32E /* ConvertTest.swift */; };
 		EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F05226CB443008712C2 /* MakeDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C0A624FE97D500C85B31 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE66C0A524FE97D500C85B31 /* main.swift */; };
 		EE66C0AA24FE982B00C85B31 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67AA92270B1C70015AC02 /* Parser.m */; };
 		EE66C0AB24FE982B00C85B31 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
-		EE66C0AD24FE982B00C85B31 /* Convert.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534D22290053800A4B32E /* Convert.m */; };
 		EE66C0AE24FE982B00C85B31 /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE66C0AF24FE982B00C85B31 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
-		EE66C0B024FE982B00C85B31 /* cal.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* cal.l */; };
-		EE66C0B124FE982B00C85B31 /* cal.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* cal.y */; };
-		EE66C16824FEB62C00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
-		EE66C16A24FEB62C00C85B31 /* BinaryPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16024FEB62C00C85B31 /* BinaryPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE66C16B24FEB62C00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
-		EE66C16C24FEB62C00C85B31 /* ORPatchFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16224FEB62C00C85B31 /* ORPatchFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE66C16D24FEB62C00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
+		EE66C0B024FE982B00C85B31 /* lexer.l in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDB225E496600616C7E /* lexer.l */; };
+		EE66C0B124FE982B00C85B31 /* parser.y in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CDA225E496600616C7E /* parser.y */; };
 		EE66C16E24FEB62C00C85B31 /* RunnerClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16424FEB62C00C85B31 /* RunnerClasses.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C16F24FEB62C00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
-		EE66C17124FEB62C00C85B31 /* JSONPatchHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66C18524FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EE66C18624FEC14A00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
 		EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		EE66C18824FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
-		EE66C19124FEC14B00C85B31 /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
-		EE66C19224FEC14B00C85B31 /* JSONPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16124FEB62C00C85B31 /* JSONPatchHelper.m */; };
-		EE66C19324FEC14B00C85B31 /* ORPatchFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */; };
 		EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16524FEB62C00C85B31 /* RunnerClasses.m */; };
 		EE6E6CD3225E488000616C7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE6E6CD2225E488000616C7E /* main.m */; };
+		EE75225A26836797004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
+		EE75226026836798004F855C /* Convert2MangoVisitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 18819E27268329D800CC85DD /* Convert2MangoVisitor.m */; };
+		EE75647B275FB10F0016CFB6 /* ORFile.h in Headers */ = {isa = PBXBuildFile; fileRef = EE756479275FB10F0016CFB6 /* ORFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE75647C275FB10F0016CFB6 /* ORFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE75647A275FB10F0016CFB6 /* ORFile.m */; };
 		EE9592DF24F7CA9D00D8ABE0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */; };
+		EE99E7652764879A00881AED /* ORFileSection.h in Headers */ = {isa = PBXBuildFile; fileRef = EE99E7632764879A00881AED /* ORFileSection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE99E7662764879A00881AED /* ORFileSection.m in Sources */ = {isa = PBXBuildFile; fileRef = EE99E7642764879A00881AED /* ORFileSection.m */; };
+		EE99E76727662C9B00881AED /* SymbolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3FF6C268873CA00630C4E /* SymbolTests.m */; };
+		EE99E76A27663ABC00881AED /* SymbolParser.m in Sources */ = {isa = PBXBuildFile; fileRef = EE99E76927663ABC00881AED /* SymbolParser.m */; };
 		EEB17FFB22849273003D5C36 /* MethodCallTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB17FFA22849273003D5C36 /* MethodCallTest.swift */; };
+		EEB7396C268616EC00855E4A /* BinaryPatchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66C16324FEB62C00C85B31 /* BinaryPatchHelper.m */; };
 		EEC0886B2669014C00538E9A /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EEC088712669015800538E9A /* ORPatchFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE66C15624FEB61300C85B31 /* ORPatchFile.framework */; };
+		EECF6CA7274A8DB200EC0737 /* SymbolTableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EECF6CA6274A8DB200EC0737 /* SymbolTableTests.swift */; };
+		EECF6CA8274A8DB200EC0737 /* oc2mangoLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */; };
 		EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */ = {isa = PBXBuildFile; fileRef = EED67A702270AE0E0015AC02 /* oc2mangoLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EED67A972270B0CA0015AC02 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EED67A942270AEE40015AC02 /* Log.m */; };
 		EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */ = {isa = PBXBuildFile; fileRef = EE982F06226CB4E4008712C2 /* MakeDeclare.m */; };
@@ -78,12 +105,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		EE4ED3682668FFF40035F134 /* PBXContainerItemProxy */ = {
+		EE4B042A26824213009032B2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EE66C15524FEB61300C85B31;
 			remoteInfo = ORPatchFile;
+		};
+		EE4B04322682421E009032B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EE66C15524FEB61300C85B31;
+			remoteInfo = ORPatchFile;
+		};
+		EE99E76C276656A300881AED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EE66C15524FEB61300C85B31;
+			remoteInfo = ORPatchFile;
+		};
+		EECF6CA9274A8DB200EC0737 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE6E6CC7225E488000616C7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EED67A6D2270AE0E0015AC02;
+			remoteInfo = oc2mangoLib;
 		};
 		EED67A782270AE0F0015AC02 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -95,13 +143,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		EE4ED36A2668FFF40035F134 /* Embed Frameworks */ = {
+		EE4B042C26824213009032B2 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				EE4ED3672668FFF40035F134 /* ORPatchFile.framework in Embed Frameworks */,
+				EE4B042926824213009032B2 /* ORPatchFile.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,19 +185,36 @@
 
 /* Begin PBXFileReference section */
 		185DBCE72668CFF000828CE5 /* ClassCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassCodeGenerator.swift; sourceTree = "<group>"; };
+		1872080926857F3A003C4DC6 /* SymbolTableVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SymbolTableVisitor.h; sourceTree = "<group>"; };
+		1872080A26857F3A003C4DC6 /* SymbolTableVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolTableVisitor.m; sourceTree = "<group>"; };
+		1872080D2685824A003C4DC6 /* ocDecl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocDecl.h; sourceTree = "<group>"; };
+		1872080E2685824A003C4DC6 /* ocDecl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocDecl.m; sourceTree = "<group>"; };
+		18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ocHandleTypeEncode.m; sourceTree = "<group>"; };
+		18720812268594D8003C4DC6 /* ocHandleTypeEncode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ocHandleTypeEncode.h; sourceTree = "<group>"; };
+		18819E26268329D800CC85DD /* Convert2MangoVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert2MangoVisitor.h; sourceTree = "<group>"; };
+		18819E27268329D800CC85DD /* Convert2MangoVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert2MangoVisitor.m; sourceTree = "<group>"; };
+		18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CodeGenVisitor.h; sourceTree = "<group>"; };
+		18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CodeGenVisitor.m; sourceTree = "<group>"; };
+		18E852D226846324009B9A3E /* AstVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AstVisitor.h; path = oc2mangoLib/PatchFile/AstVisitor.h; sourceTree = SOURCE_ROOT; };
+		18E852D326846324009B9A3E /* AstVisitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AstVisitor.m; path = oc2mangoLib/PatchFile/AstVisitor.m; sourceTree = SOURCE_ROOT; };
+		18E852DB26846BA0009B9A3E /* ocSymbol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocSymbol.h; sourceTree = "<group>"; };
+		18E852DC26846BA0009B9A3E /* ocSymbol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocSymbol.m; sourceTree = "<group>"; };
+		18E852E0268472AE009B9A3E /* ocScope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocScope.h; sourceTree = "<group>"; };
+		18E852E1268472AE009B9A3E /* ocScope.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocScope.m; sourceTree = "<group>"; };
+		18E852E426847337009B9A3E /* ocSymbolTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ocSymbolTable.h; sourceTree = "<group>"; };
+		18E852E526847337009B9A3E /* ocSymbolTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ocSymbolTable.m; sourceTree = "<group>"; };
 		32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClassSecretKeyMap.h; path = oc2mangoLib/PatchFile/ClassSecretKeyMap.h; sourceTree = SOURCE_ROOT; };
 		6354B701229B894800C0FDED /* ConvertOuput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConvertOuput.txt; sourceTree = "<group>"; };
 		639D738322939E89005C6577 /* ExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionTest.swift; sourceTree = "<group>"; };
 		EE147260227F054300566B3F /* ClassDeclareTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassDeclareTest.swift; sourceTree = "<group>"; };
 		EE1C71EE22882DBF0077A71E /* TestSource.imp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestSource.imp; sourceTree = "<group>"; };
 		EE1C71F32288314C0077A71E /* FileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTest.swift; sourceTree = "<group>"; };
+		EE4B040D26823E00009032B2 /* OCTypeEncode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCTypeEncode.h; path = oc2mangoLib/PatchFile/OCTypeEncode.h; sourceTree = SOURCE_ROOT; };
 		EE4F367924F9251C00F685AF /* BinaryPatchCodeGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BinaryPatchCodeGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE4F367B24F9251C00F685AF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		EE4F368824F9259D00F685AF /* BinaryPatchCodeGenerator-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BinaryPatchCodeGenerator-Bridging-Header.h"; sourceTree = "<group>"; };
 		EE5534CD2290032700A4B32E /* AST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AST.h; sourceTree = "<group>"; };
 		EE5534CE2290032700A4B32E /* AST.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AST.m; sourceTree = "<group>"; };
-		EE5534D12290053800A4B32E /* Convert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
-		EE5534D22290053800A4B32E /* Convert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Convert.m; sourceTree = "<group>"; };
 		EE5534DB22900DFF00A4B32E /* ConvertTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertTest.swift; sourceTree = "<group>"; };
 		EE66C0A324FE97D500C85B31 /* PatchGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PatchGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE66C0A524FE97D500C85B31 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -166,12 +231,23 @@
 		EE66C16724FEB62C00C85B31 /* JSONPatchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSONPatchHelper.h; path = oc2mangoLib/PatchFile/JSONPatchHelper.h; sourceTree = SOURCE_ROOT; };
 		EE6E6CCF225E488000616C7E /* oc2mango */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oc2mango; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6E6CD2225E488000616C7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		EE6E6CDA225E496600616C7E /* cal.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = cal.y; sourceTree = "<group>"; };
-		EE6E6CDB225E496600616C7E /* cal.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = cal.l; sourceTree = "<group>"; };
+		EE6E6CDA225E496600616C7E /* parser.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = parser.y; sourceTree = "<group>"; };
+		EE6E6CDB225E496600616C7E /* lexer.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = lexer.l; sourceTree = "<group>"; };
+		EE756479275FB10F0016CFB6 /* ORFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORFile.h; sourceTree = "<group>"; };
+		EE75647A275FB10F0016CFB6 /* ORFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORFile.m; sourceTree = "<group>"; };
+		EE75647D275FB1330016CFB6 /* ORInstructions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORInstructions.h; sourceTree = "<group>"; };
 		EE9592DE24F7CA9D00D8ABE0 /* ArchiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveTests.swift; sourceTree = "<group>"; };
 		EE982F05226CB443008712C2 /* MakeDeclare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MakeDeclare.h; sourceTree = "<group>"; };
 		EE982F06226CB4E4008712C2 /* MakeDeclare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MakeDeclare.m; sourceTree = "<group>"; };
+		EE99E7632764879A00881AED /* ORFileSection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORFileSection.h; sourceTree = "<group>"; };
+		EE99E7642764879A00881AED /* ORFileSection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ORFileSection.m; sourceTree = "<group>"; };
+		EE99E76827663ABC00881AED /* SymbolParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SymbolParser.h; sourceTree = "<group>"; };
+		EE99E76927663ABC00881AED /* SymbolParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolParser.m; sourceTree = "<group>"; };
+		EE99E76B27663D1F00881AED /* SymbolTableTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SymbolTableTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		EEB17FFA22849273003D5C36 /* MethodCallTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodCallTest.swift; sourceTree = "<group>"; };
+		EEB3FF6C268873CA00630C4E /* SymbolTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SymbolTests.m; sourceTree = "<group>"; };
+		EECF6CA4274A8DB200EC0737 /* SymbolTableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SymbolTableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EECF6CA6274A8DB200EC0737 /* SymbolTableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolTableTests.swift; sourceTree = "<group>"; };
 		EED67A6E2270AE0E0015AC02 /* oc2mangoLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = oc2mangoLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EED67A702270AE0E0015AC02 /* oc2mangoLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = oc2mangoLib.h; sourceTree = "<group>"; };
 		EED67A712270AE0E0015AC02 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -214,11 +290,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EECF6CA1274A8DB200EC0737 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EECF6CA8274A8DB200EC0737 /* oc2mangoLib.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EED67A6B2270AE0E0015AC02 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE4ED3662668FFF40035F134 /* ORPatchFile.framework in Frameworks */,
+				EE4B042826824213009032B2 /* ORPatchFile.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,6 +318,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18819E25268329C700CC85DD /* Visitors */ = {
+			isa = PBXGroup;
+			children = (
+				EE756479275FB10F0016CFB6 /* ORFile.h */,
+				EE75647A275FB10F0016CFB6 /* ORFile.m */,
+				EE99E7632764879A00881AED /* ORFileSection.h */,
+				EE99E7642764879A00881AED /* ORFileSection.m */,
+				1872080926857F3A003C4DC6 /* SymbolTableVisitor.h */,
+				1872080A26857F3A003C4DC6 /* SymbolTableVisitor.m */,
+				18E852CA26842CC5009B9A3E /* CodeGenVisitor.h */,
+				18E852CB26842CC5009B9A3E /* CodeGenVisitor.m */,
+				18819E26268329D800CC85DD /* Convert2MangoVisitor.h */,
+				18819E27268329D800CC85DD /* Convert2MangoVisitor.m */,
+				EE75647D275FB1330016CFB6 /* ORInstructions.h */,
+			);
+			path = Visitors;
+			sourceTree = "<group>";
+		};
+		18E852DA26846B97009B9A3E /* Symbol */ = {
+			isa = PBXGroup;
+			children = (
+				18720812268594D8003C4DC6 /* ocHandleTypeEncode.h */,
+				18720811268594D7003C4DC6 /* ocHandleTypeEncode.m */,
+				1872080D2685824A003C4DC6 /* ocDecl.h */,
+				1872080E2685824A003C4DC6 /* ocDecl.m */,
+				18E852E426847337009B9A3E /* ocSymbolTable.h */,
+				18E852E526847337009B9A3E /* ocSymbolTable.m */,
+				18E852DB26846BA0009B9A3E /* ocSymbol.h */,
+				18E852DC26846BA0009B9A3E /* ocSymbol.m */,
+				18E852E0268472AE009B9A3E /* ocScope.h */,
+				18E852E1268472AE009B9A3E /* ocScope.m */,
+			);
+			path = Symbol;
+			sourceTree = "<group>";
+		};
 		EE147262227F0A4E00566B3F /* Declare */ = {
 			isa = PBXGroup;
 			children = (
@@ -291,6 +410,9 @@
 				32C54D05256B4AAA00D067A2 /* ClassSecretKeyMap.h */,
 				EE66C16224FEB62C00C85B31 /* ORPatchFile.h */,
 				EE66C15E24FEB62B00C85B31 /* ORPatchFile.m */,
+				EE4B040D26823E00009032B2 /* OCTypeEncode.h */,
+				18E852D226846324009B9A3E /* AstVisitor.h */,
+				18E852D326846324009B9A3E /* AstVisitor.m */,
 				EE66C16424FEB62C00C85B31 /* RunnerClasses.h */,
 				EE66C16524FEB62C00C85B31 /* RunnerClasses.m */,
 			);
@@ -306,6 +428,7 @@
 				EE6E6CD1225E488000616C7E /* oc2mango */,
 				EED67A6F2270AE0E0015AC02 /* oc2mangoLib */,
 				EED67A7A2270AE0F0015AC02 /* oc2mangoLibTests */,
+				EECF6CA5274A8DB200EC0737 /* SymbolTableTests */,
 				EE6E6CD0225E488000616C7E /* Products */,
 				EED67AA52270B1170015AC02 /* Frameworks */,
 			);
@@ -320,6 +443,7 @@
 				EE4F367924F9251C00F685AF /* BinaryPatchCodeGenerator */,
 				EE66C0A324FE97D500C85B31 /* PatchGenerator */,
 				EE66C15624FEB61300C85B31 /* ORPatchFile.framework */,
+				EECF6CA4274A8DB200EC0737 /* SymbolTableTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -343,14 +467,24 @@
 		EE982EE5226B601C008712C2 /* Builders */ = {
 			isa = PBXGroup;
 			children = (
-				EE5534D12290053800A4B32E /* Convert.h */,
-				EE5534D22290053800A4B32E /* Convert.m */,
 				EE5534CD2290032700A4B32E /* AST.h */,
 				EE5534CE2290032700A4B32E /* AST.m */,
 				EE982F05226CB443008712C2 /* MakeDeclare.h */,
 				EE982F06226CB4E4008712C2 /* MakeDeclare.m */,
 			);
 			path = Builders;
+			sourceTree = "<group>";
+		};
+		EECF6CA5274A8DB200EC0737 /* SymbolTableTests */ = {
+			isa = PBXGroup;
+			children = (
+				EE99E76827663ABC00881AED /* SymbolParser.h */,
+				EE99E76927663ABC00881AED /* SymbolParser.m */,
+				EEB3FF6C268873CA00630C4E /* SymbolTests.m */,
+				EECF6CA6274A8DB200EC0737 /* SymbolTableTests.swift */,
+				EE99E76B27663D1F00881AED /* SymbolTableTests-Bridging-Header.h */,
+			);
+			path = SymbolTableTests;
 			sourceTree = "<group>";
 		};
 		EED67A6F2270AE0E0015AC02 /* oc2mangoLib */ = {
@@ -360,9 +494,11 @@
 				EED67AA92270B1C70015AC02 /* Parser.m */,
 				EED67A932270AEE40015AC02 /* Log.h */,
 				EED67A942270AEE40015AC02 /* Log.m */,
+				18E852DA26846B97009B9A3E /* Symbol */,
+				18819E25268329C700CC85DD /* Visitors */,
 				EE982EE5226B601C008712C2 /* Builders */,
-				EE6E6CDB225E496600616C7E /* cal.l */,
-				EE6E6CDA225E496600616C7E /* cal.y */,
+				EE6E6CDB225E496600616C7E /* lexer.l */,
+				EE6E6CDA225E496600616C7E /* parser.y */,
 				EED67A702270AE0E0015AC02 /* oc2mangoLib.h */,
 				EED67A712270AE0E0015AC02 /* Info.plist */,
 			);
@@ -398,11 +534,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04C4481B25F0E2F600E3F443 /* ORPatchFile.h in Headers */,
 				32C54D06256B4AAA00D067A2 /* ClassSecretKeyMap.h in Headers */,
-				EE66C16C24FEB62C00C85B31 /* ORPatchFile.h in Headers */,
+				04C4483325F0E95C00E3F443 /* BinaryPatchHelper.h in Headers */,
+				18E852D426846324009B9A3E /* AstVisitor.h in Headers */,
+				04C4483425F0E95C00E3F443 /* JSONPatchHelper.h in Headers */,
 				EE66C16E24FEB62C00C85B31 /* RunnerClasses.h in Headers */,
-				EE66C16A24FEB62C00C85B31 /* BinaryPatchHelper.h in Headers */,
-				EE66C17124FEB62C00C85B31 /* JSONPatchHelper.h in Headers */,
+				EE4B041026823E00009032B2 /* OCTypeEncode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,11 +548,20 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1872080F2685824A003C4DC6 /* ocDecl.h in Headers */,
+				18E852DD26846BA0009B9A3E /* ocSymbol.h in Headers */,
+				18720814268594D8003C4DC6 /* ocHandleTypeEncode.h in Headers */,
+				EE99E7652764879A00881AED /* ORFileSection.h in Headers */,
 				EED67A7E2270AE0F0015AC02 /* oc2mangoLib.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
+				EE75647B275FB10F0016CFB6 /* ORFile.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
+				18819E28268329D800CC85DD /* Convert2MangoVisitor.h in Headers */,
+				18E852CC26842CC5009B9A3E /* CodeGenVisitor.h in Headers */,
+				18E852E626847337009B9A3E /* ocSymbolTable.h in Headers */,
+				18E852E2268472AE009B9A3E /* ocScope.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
-				EE5534D32290053800A4B32E /* Convert.h in Headers */,
+				1872080B26857F3A003C4DC6 /* SymbolTableVisitor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,6 +638,25 @@
 			productReference = EE6E6CCF225E488000616C7E /* oc2mango */;
 			productType = "com.apple.product-type.tool";
 		};
+		EECF6CA3274A8DB200EC0737 /* SymbolTableTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EECF6CAB274A8DB200EC0737 /* Build configuration list for PBXNativeTarget "SymbolTableTests" */;
+			buildPhases = (
+				EECF6CA0274A8DB200EC0737 /* Sources */,
+				EECF6CA1274A8DB200EC0737 /* Frameworks */,
+				EECF6CA2274A8DB200EC0737 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EE99E76D276656A300881AED /* PBXTargetDependency */,
+				EECF6CAA274A8DB200EC0737 /* PBXTargetDependency */,
+			);
+			name = SymbolTableTests;
+			productName = SymbolTableTests;
+			productReference = EECF6CA4274A8DB200EC0737 /* SymbolTableTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		EED67A6D2270AE0E0015AC02 /* oc2mangoLib */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EED67A832270AE0F0015AC02 /* Build configuration list for PBXNativeTarget "oc2mangoLib" */;
@@ -499,12 +665,12 @@
 				EED67A6A2270AE0E0015AC02 /* Sources */,
 				EED67A6B2270AE0E0015AC02 /* Frameworks */,
 				EED67A6C2270AE0E0015AC02 /* Resources */,
-				EE4ED36A2668FFF40035F134 /* Embed Frameworks */,
+				EE4B042C26824213009032B2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EE4ED3692668FFF40035F134 /* PBXTargetDependency */,
+				EE4B042B26824213009032B2 /* PBXTargetDependency */,
 			);
 			name = oc2mangoLib;
 			productName = oc2mangoLib;
@@ -522,6 +688,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				EE4B04332682421E009032B2 /* PBXTargetDependency */,
 				EED67A792270AE0F0015AC02 /* PBXTargetDependency */,
 			);
 			name = oc2mangoLibTests;
@@ -535,7 +702,7 @@
 		EE6E6CC7225E488000616C7E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1160;
+				LastSwiftUpdateCheck = 1310;
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = SilverFruity;
 				TargetAttributes = {
@@ -550,6 +717,9 @@
 					};
 					EE6E6CCE225E488000616C7E = {
 						CreatedOnToolsVersion = 10.1;
+					};
+					EECF6CA3274A8DB200EC0737 = {
+						CreatedOnToolsVersion = 13.1;
 					};
 					EED67A6D2270AE0E0015AC02 = {
 						CreatedOnToolsVersion = 10.1;
@@ -578,12 +748,20 @@
 				EE4F367824F9251C00F685AF /* BinaryPatchCodeGenerator */,
 				EE66C0A224FE97D500C85B31 /* PatchGenerator */,
 				EE66C15524FEB61300C85B31 /* ORPatchFile */,
+				EECF6CA3274A8DB200EC0737 /* SymbolTableTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EE66C15424FEB61300C85B31 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EECF6CA2274A8DB200EC0737 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -638,12 +816,11 @@
 				EE4F368124F9254400F685AF /* Log.m in Sources */,
 				EE4F368024F9254400F685AF /* Parser.m in Sources */,
 				185DBCE82668CFF000828CE5 /* ClassCodeGenerator.swift in Sources */,
-				EE4F368724F9254400F685AF /* cal.y in Sources */,
+				EE4F368724F9254400F685AF /* parser.y in Sources */,
 				EE4F368524F9254400F685AF /* MakeDeclare.m in Sources */,
 				EE66C18C24FEC14A00C85B31 /* RunnerClasses.m in Sources */,
 				EE4F367C24F9251C00F685AF /* main.swift in Sources */,
-				EE4F368324F9254400F685AF /* Convert.m in Sources */,
-				EE4F368624F9254400F685AF /* cal.l in Sources */,
+				EE4F368624F9254400F685AF /* lexer.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,15 +831,16 @@
 				EE66C0AE24FE982B00C85B31 /* AST.m in Sources */,
 				EE66C0AB24FE982B00C85B31 /* Log.m in Sources */,
 				EE66C0AA24FE982B00C85B31 /* Parser.m in Sources */,
-				EE66C0B124FE982B00C85B31 /* cal.y in Sources */,
+				EE75225A26836797004F855C /* Convert2MangoVisitor.m in Sources */,
+				EE66C0B124FE982B00C85B31 /* parser.y in Sources */,
+				18E852D926846399009B9A3E /* AstVisitor.m in Sources */,
 				EE66C18524FEC14A00C85B31 /* BinaryPatchHelper.m in Sources */,
 				EE66C0AF24FE982B00C85B31 /* MakeDeclare.m in Sources */,
 				EE66C18824FEC14A00C85B31 /* RunnerClasses.m in Sources */,
 				EE66C0A624FE97D500C85B31 /* main.swift in Sources */,
-				EE66C0AD24FE982B00C85B31 /* Convert.m in Sources */,
 				EE66C18724FEC14A00C85B31 /* ORPatchFile.m in Sources */,
 				EE66C18624FEC14A00C85B31 /* JSONPatchHelper.m in Sources */,
-				EE66C0B024FE982B00C85B31 /* cal.l in Sources */,
+				EE66C0B024FE982B00C85B31 /* lexer.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -670,10 +848,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE66C16B24FEB62C00C85B31 /* JSONPatchHelper.m in Sources */,
-				EE66C16D24FEB62C00C85B31 /* BinaryPatchHelper.m in Sources */,
+				04C4483125F0E95C00E3F443 /* JSONPatchHelper.m in Sources */,
+				04815F8C25F0EAC300342ADA /* ORPatchFile.m in Sources */,
+				EEB7396C268616EC00855E4A /* BinaryPatchHelper.m in Sources */,
+				18E852D526846324009B9A3E /* AstVisitor.m in Sources */,
 				EE66C16F24FEB62C00C85B31 /* RunnerClasses.m in Sources */,
-				EE66C16824FEB62C00C85B31 /* ORPatchFile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -681,18 +860,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04815F7C25F0EA9A00342ADA /* BinaryPatchHelper.m in Sources */,
 				EE4BAFEB24364CEA00A2A080 /* AST.m in Sources */,
 				EE4BAFE824364CEA00A2A080 /* Parser.m in Sources */,
-				EE4BAFF524364CEA00A2A080 /* cal.y in Sources */,
-				EE4BAFEA24364CEA00A2A080 /* Convert.m in Sources */,
-				EE66C19124FEC14B00C85B31 /* BinaryPatchHelper.m in Sources */,
+				EE75226026836798004F855C /* Convert2MangoVisitor.m in Sources */,
+				EE4BAFF524364CEA00A2A080 /* parser.y in Sources */,
+				18E852D826846394009B9A3E /* AstVisitor.m in Sources */,
+				04815F7B25F0EA9A00342ADA /* ORPatchFile.m in Sources */,
+				04815F7D25F0EA9A00342ADA /* JSONPatchHelper.m in Sources */,
 				EE4BAFE924364CEA00A2A080 /* Log.m in Sources */,
 				EE66C19424FEC14B00C85B31 /* RunnerClasses.m in Sources */,
 				EE6E6CD3225E488000616C7E /* main.m in Sources */,
 				EE4BAFEC24364CEA00A2A080 /* MakeDeclare.m in Sources */,
-				EE66C19324FEC14B00C85B31 /* ORPatchFile.m in Sources */,
-				EE66C19224FEC14B00C85B31 /* JSONPatchHelper.m in Sources */,
-				EE4BAFF424364CEA00A2A080 /* cal.l in Sources */,
+				EE4BAFF424364CEA00A2A080 /* lexer.l in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EECF6CA0274A8DB200EC0737 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EECF6CA7274A8DB200EC0737 /* SymbolTableTests.swift in Sources */,
+				EE99E76727662C9B00881AED /* SymbolTests.m in Sources */,
+				EE99E76A27663ABC00881AED /* SymbolParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -700,13 +890,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18E852E726847337009B9A3E /* ocSymbolTable.m in Sources */,
+				18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */,
+				18E852D726846394009B9A3E /* AstVisitor.m in Sources */,
+				1872080C26857F3A003C4DC6 /* SymbolTableVisitor.m in Sources */,
+				EE75647C275FB10F0016CFB6 /* ORFile.m in Sources */,
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
-				EE4BAFE724364CAA00A2A080 /* cal.y in Sources */,
-				EE5534D42290053800A4B32E /* Convert.m in Sources */,
+				EE4BAFE724364CAA00A2A080 /* parser.y in Sources */,
+				18E852E3268472AE009B9A3E /* ocScope.m in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
+				18E852DE26846BA0009B9A3E /* ocSymbol.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,
 				EED67A982270B0CA0015AC02 /* MakeDeclare.m in Sources */,
-				EE4BAFE624364CAA00A2A080 /* cal.l in Sources */,
+				EE99E7662764879A00881AED /* ORFileSection.m in Sources */,
+				18720813268594D8003C4DC6 /* ocHandleTypeEncode.m in Sources */,
+				18E852CD26842CC5009B9A3E /* CodeGenVisitor.m in Sources */,
+				187208102685824A003C4DC6 /* ocDecl.m in Sources */,
+				EE4BAFE624364CAA00A2A080 /* lexer.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -727,10 +927,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		EE4ED3692668FFF40035F134 /* PBXTargetDependency */ = {
+		EE4B042B26824213009032B2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
-			targetProxy = EE4ED3682668FFF40035F134 /* PBXContainerItemProxy */;
+			targetProxy = EE4B042A26824213009032B2 /* PBXContainerItemProxy */;
+		};
+		EE4B04332682421E009032B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
+			targetProxy = EE4B04322682421E009032B2 /* PBXContainerItemProxy */;
+		};
+		EE99E76D276656A300881AED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EE66C15524FEB61300C85B31 /* ORPatchFile */;
+			targetProxy = EE99E76C276656A300881AED /* PBXContainerItemProxy */;
+		};
+		EECF6CAA274A8DB200EC0737 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EED67A6D2270AE0E0015AC02 /* oc2mangoLib */;
+			targetProxy = EECF6CA9274A8DB200EC0737 /* PBXContainerItemProxy */;
 		};
 		EED67A792270AE0F0015AC02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -768,7 +983,7 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
@@ -784,7 +999,7 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
@@ -800,7 +1015,7 @@
 				DEVELOPMENT_TEAM = SH4YVD7HDL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "$SRCROOT/$PRODUCT_NAME/$PRODUCT_NAME-Bridging-Header.h";
@@ -831,7 +1046,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -860,7 +1075,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -984,7 +1199,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -994,20 +1208,77 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		EECF6CAC274A8DB200EC0737 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SilverFruity.SymbolTableTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "SymbolTableTests/SymbolTableTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EECF6CAD274A8DB200EC0737 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SilverFruity.SymbolTableTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "SymbolTableTests/SymbolTableTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 		EED67A7F2270AE0F0015AC02 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = Y24269T3LX;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1027,7 +1298,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1039,12 +1310,13 @@
 		EED67A802270AE0F0015AC02 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = Y24269T3LX;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1064,7 +1336,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1079,6 +1351,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = Y24269T3LX;
 				INFOPLIST_FILE = oc2mangoLibTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1088,6 +1361,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = silverfruity.oc2mangoLibTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SWIFT_OBJC_BRIDGING_HEADER = "oc2mangoLibTests/oc2mangoLibTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
@@ -1100,6 +1374,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = Y24269T3LX;
 				INFOPLIST_FILE = oc2mangoLibTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1109,6 +1384,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = silverfruity.oc2mangoLibTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SWIFT_OBJC_BRIDGING_HEADER = "oc2mangoLibTests/oc2mangoLibTests-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 			};
@@ -1158,6 +1434,15 @@
 			buildConfigurations = (
 				EE6E6CD7225E488000616C7E /* Debug */,
 				EE6E6CD8225E488000616C7E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EECF6CAB274A8DB200EC0737 /* Build configuration list for PBXNativeTarget "SymbolTableTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EECF6CAC274A8DB200EC0737 /* Debug */,
+				EECF6CAD274A8DB200EC0737 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

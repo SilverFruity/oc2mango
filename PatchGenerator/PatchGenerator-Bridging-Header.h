@@ -6,7 +6,7 @@
 //  Copyright © 2020 SilverFruity. All rights reserved.
 //
 
-#import "Convert.h"
+
 #import "Parser.h"
 #import "RunnerClasses.h"
 #import "ORPatchFile.h"

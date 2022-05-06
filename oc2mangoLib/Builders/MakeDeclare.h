@@ -11,45 +11,50 @@
 #import "RunnerClasses.h"
 
 
-extern ORTypeSpecial *makeTypeSpecial(TypeKind type, NSString *name);
-extern ORTypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)) ;
-extern ORVariable *makeVar(NSString *name, NSUInteger ptCount);
-extern ORVariable *makeVar(NSString *name) __attribute__((overloadable)) ;
-extern ORTypeVarPair *makeTypeVarPair(ORTypeSpecial *type, ORVariable *var);
+extern ORTypeNode *makeTypeNode(OCType type, NSString *name);
+extern ORTypeNode *makeTypeNode(OCType type) __attribute__((overloadable)) ;
+extern ORVariableNode *makeVarNode(NSString *name, NSUInteger ptCount);
+extern ORVariableNode *makeVarNode(NSString *name) __attribute__((overloadable)) ;
 
-extern ORClass *makeOCClass(NSString *className);
-extern ORProtocol *makeORProtcol(NSString *protocolName);
-extern ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORTypeVarPair *returnType);
-extern ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare, ORScopeImp *scopeImp);
-extern ORFuncDeclare *makeFuncDeclare(ORTypeVarPair *returnType, ORFuncVariable *var);
+extern ORClassNode *makeOCClass(NSString *className);
+extern ORProtocolNode *makeORProtcol(NSString *protocolName);
+extern ORPropertyNode *makePropertyDeclare(NSMutableArray *keywords, ORDeclaratorNode *var);
+extern ORMethodDeclNode *makeMethodDeclare(BOOL isClassMethod, ORDeclaratorNode *returnType);
+extern ORMethodNode *makeMethodImplementation(ORMethodDeclNode *declare, ORBlockNode *scopeImp);
+extern ORFunctionDeclNode *makeFunctionSignNode(void);
+extern ORMethodCall *makeMethodCall(void);
 
-extern ORValueExpression *makeValue(OC_VALUE_TYPE type, id value);
-extern ORValueExpression *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
-extern ORScopeImp *makeScopeImp(void);
-extern ORCFuncCall *makeFuncCall(ORNode *caller, NSMutableArray *expressions);
-extern ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type);
-extern ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type);
-extern ORTernaryExpression *makeTernaryExpression(void);
-extern ORAssignExpression *makeAssignExpression(AssignOperatorType type);
-extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORNode * exp);
+extern ORValueNode *makeValue(OC_VALUE_TYPE type, id value);
+extern ORValueNode *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)) ;
 
+extern ORBlockNode *makeScopeImp(NSMutableArray *stats);
+extern ORBlockNode *makeScopeImp(void) __attribute__((overloadable));
+extern ORFunctionCall *makeFuncCall(ORValueNode *caller, NSMutableArray *expressions);
+extern ORUnaryNode *makeUnaryExpression(UnaryOperatorType type, ORNode *node);
+extern ORBinaryNode *makeBinaryExpression(BinaryOperatorType type, ORNode *left, ORNode *right);
+extern ORTernaryNode *makeTernaryExpression(void);
+extern ORAssignNode *makeAssignExpression(AssignOperatorType type);
 
-extern ORIfStatement *makeIfStatement(ORNode *judgement, ORScopeImp *imp);
-extern ORWhileStatement *makeWhileStatement(ORNode *judgement, ORScopeImp *imp);
-extern ORDoWhileStatement *makeDoWhileStatement(ORNode *judgement, ORScopeImp *imp);
-extern ORCaseStatement *makeCaseStatement(ORValueExpression *value);
-extern ORSwitchStatement *makeSwitchStatement(ORValueExpression *value);
-extern ORForStatement *makeForStatement(ORScopeImp *imp);
-extern ORForInStatement *makeForInStatement(ORScopeImp *imp);
+extern ORDeclaratorNode *makeDeclaratorNode(ORTypeNode *type, ORVariableNode *var);
+extern ORFunctionDeclNode *makeFunctionDeclNode(void);
+extern ORInitDeclaratorNode *makeInitDeclaratorNode(ORDeclaratorNode *declarator,ORNode * exp);
+extern ORSubscriptNode *makeSubscriptNode(ORNode *caller, ORNode *key);
 
-extern ORReturnStatement *makeReturnStatement(ORNode * expression);
-extern ORBreakStatement *makeBreakStatement(void);
-extern ORContinueStatement *makeContinueStatement(void);
+extern ORFunctionNode *makeFunctionNode(ORFunctionDeclNode *decl, ORBlockNode *block);
+extern ORIfStatement *makeIfStatement(ORNode *judgement, ORBlockNode *imp);
+extern ORWhileStatement *makeWhileStatement(ORNode *judgement, ORBlockNode *imp);
+extern ORDoWhileStatement *makeDoWhileStatement(ORNode *judgement, ORBlockNode *imp);
+extern ORCaseStatement *makeCaseStatement(ORValueNode *value);
+extern ORSwitchStatement *makeSwitchStatement(ORValueNode *value);
+extern ORForStatement *makeForStatement(ORBlockNode *imp);
+extern ORForInStatement *makeForInStatement(ORBlockNode *imp);
 
-extern ORTypedefExpressoin *makeTypedefExp(id exp,NSString *newName);
-extern ORStructExpressoin *makeStructExp(NSString *name, NSMutableArray *fields);
-extern ORUnionExpressoin *makeUnionExp(NSString *name, NSMutableArray *fields);
-extern OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArray *fields);
+extern ORControlStatNode *makeControlStatement(ORControlStateType type,ORNode * expression);
+
+extern ORTypedefStatNode *makeTypedefExp(id exp,NSString *newName);
+extern ORStructStatNode *makeStructExp(NSString *name, NSMutableArray *fields);
+extern ORUnionStatNode *makeUnionExp(NSString *name, NSMutableArray *fields);
+extern OREnumStatNode *makeEnumExp(NSString *name, ORTypeNode *type, NSMutableArray *fields);
 
 extern ORNode *makeIntegerValue(uint64_t value);
 extern ORNode *makeNegativeIntegerValue(int64_t value);
@@ -60,3 +65,5 @@ void startStringBuffer(void);
 char *endStringBuffer(void);
 void stringBufferAppendCharacter(char chr);
 void stringBufferAppendString(char *str);
+
+NSMutableArray *makeMutableArray(id object);

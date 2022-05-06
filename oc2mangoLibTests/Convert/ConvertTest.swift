@@ -10,7 +10,7 @@ import XCTest
 
 class ConvertTest: XCTestCase {
     let parser = Parser()
-    let convert = Convert()
+    let convert = Convert2MangoVisitor()
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -25,16 +25,19 @@ class ConvertTest: XCTestCase {
 int x;
 NSObject *x;
 BOOL x;
+id a = nil;
 """
         let ast = parser.parseSource(source)
         XCTAssert(parser.isSuccess())
         let result = convert.convert(ast.globalStatements[0] as Any)
         let result1 = convert.convert(ast.globalStatements[1] as Any)
         let result2 = convert.convert(ast.globalStatements[2] as Any)
+        let result3 = convert.convert(ast.globalStatements[3] as Any)
         XCTAssert(parser.error == nil)
         XCTAssert(result == "int x;",result)
         XCTAssert(result1 == "NSObject *x;",result1)
         XCTAssert(result2 == "BOOL x;",result2)
+        XCTAssert(result3 == "id a = nil;",result3)
         
     }
     
@@ -394,36 +397,15 @@ let source =
     func testMangoBlockTypeAdapt(){
         let source =
         """
-        @interface SFHTTPClient: NSObject
-        @property (nonatomic,readonly) void(^a)(NSString *name);
-        @end
-        @implementation SFHTTPClient
-        + (instancetype)imageMakerWithProcessHandler:(UIImage * (^)(UIImage *image))processHandler isEnableHandler:(BOOL (^)(void))isEnableHandler identifierHandler:(NSString *(^)(void))identifierHandler{
-
-        }
-        @end
         void(^a)(NSString *name) = nil;
-        void(*a)(NSString *name) = nil;
+        //void(*a)(NSString *name) = nil;
         """
         let ast = parser.parseSource(source)
         XCTAssert(parser.isSuccess())
-        
-        let result = convert.convert(ast.class(forName: "SFHTTPClient") as Any)
-        XCTAssert(result ==
-            """
-            class SFHTTPClient:NSObject{
-            @property(nonatomic,readonly)Block a;
-
-            +(id )imageMakerWithProcessHandler:(Block)processHandler isEnableHandler:(Block)isEnableHandler identifierHandler:(Block)identifierHandler{
-            }
-            }
-
-            ""","\n"+result)
-        
         let result1 = convert.convert(ast.globalStatements[0] as Any)
         XCTAssert(result1 == "Block a = nil;","\n"+result1)
-        let result2 = convert.convert(ast.globalStatements[1] as Any)
-        XCTAssert(result2 == "Point a = nil;","\n"+result2)
+//        let result2 = convert.convert(ast.globalStatements[1] as Any)
+//        XCTAssert(result2 == "Point a = nil;","\n"+result2)
         
     }
     func testMethodDeclare(){

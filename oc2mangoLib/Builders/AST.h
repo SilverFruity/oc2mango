@@ -10,18 +10,25 @@
 #import <ORPatchFile/RunnerClasses.h>
 NS_ASSUME_NONNULL_BEGIN
 @class AST;
-int startClassProrityDetect(AST *ast, ORClass *class);
-
+int startClassProrityDetect(AST *ast, ORClassNode *clazz);
+extern ORClassNode *curClassNode;
+extern ORProtocolNode *curProtocolNode;
+void handlePrivateVarDecls(NSArray *decls);
+void handlePropertyDecls(ORPropertyNode *node);
+void handleMethodDecl(ORMethodDeclNode *node);
+void handleMethodImp(ORMethodNode *node);
 extern AST *GlobalAst;
+@class ocScope;
 @interface AST : NSObject
+@property(nonatomic,strong)ocScope *scope;
 @property(nonatomic,nonnull,strong)NSMutableArray *nodes;
 @property(nonatomic,nonnull,strong)NSMutableArray *globalStatements;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *classCache;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *protcolCache;
-- (nonnull ORClass *)classForName:(NSString *)className;
-- (nonnull ORProtocol *)protcolForName:(NSString *)protcolName;
+- (nonnull ORClassNode *)classForName:(NSString *)className;
+- (nonnull ORProtocolNode *)protcolForName:(NSString *)protcolName;
 - (void)addGlobalStatements:(id)objects;
-- (NSArray <ORClass *>*)sortClasses;
+- (NSArray <ORClassNode *>*)sortClasses;
 /// 合并ast
 - (void)merge:(NSArray *)nodes;
 @end

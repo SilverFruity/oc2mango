@@ -13,7 +13,9 @@ let resultDir = CommandLine.arguments[2]
 let parser = Parser()
 let source = CodeSource.init(filePath: filepath)
 let ast = parser.parseCodeSource(source)
-
+if (parser.error != nil){
+    exit(0);
+}
 let NodeDefine = "AstNodeFields"
 let PatchFileClass = "ORPatchFile"
 let resultFileName = "BinaryPatchHelper"
@@ -43,7 +45,7 @@ let EnumValueType = "uint8_t"
 var enumVarDecls = [String]()
 var enumStartIndex = 5;
 for node in ast.nodes{
-    guard let classNode = node as? ORClass else {
+    guard let classNode = node as? ORClassNode else {
         continue
     }
     if classNode.className == "ORNode" {
@@ -360,11 +362,11 @@ void AstPatchFileDestroy(AstPatchFile *node){
 """
 var generators = [ClassCodeGenerator]()
 for node in ast.nodes{
-    guard let classNode = node as? ORClass, classNode.className != "ORNode" else {
+    guard let classNode = node as? ORClassNode, classNode.className != "ORNode" else {
         continue
     }
     let generator = ClassCodeGenerator(className: classNode.className, superClassName:classNode.superClassName)
-    let properties = classNode.properties as! [ORPropertyDeclare]
+    let properties = classNode.properties as! [ORPropertyNode]
     for prop in properties{
         if prop.keywords.contains("readonly"){
             continue
@@ -400,27 +402,27 @@ for node in ast.nodes{
             }
             
         }else{
-            if prop.var.type.type == TypeBOOL {
+            if prop.var.type.type == OCTypeBOOL {
                 generator.addStructBaseFiled(type: "BOOL", varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
                 generator.baseLength += 1
-            }else if prop.var.type.type == TypeUChar{
+            }else if prop.var.type.type == OCTypeUChar{
                 generator.addStructBaseFiled(type: _byteType, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
                 generator.baseLength += _byteLength
-            }else if prop.var.type.type == TypeLongLong{
+            }else if prop.var.type.type == OCTypeLongLong{
                 generator.addStructBaseFiled(type: _int64Type, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
                 generator.baseLength += _int64Length
-            }else if prop.var.type.type == TypeULongLong{
+            }else if prop.var.type.type == OCTypeULongLong{
                 generator.addStructBaseFiled(type: _uint64Type, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
                 generator.baseLength += _uint64Length
-            }else if prop.var.type.type == TypeDouble{
+            }else if prop.var.type.type == OCTypeDouble{
                 generator.addStructBaseFiled(type: _doubleType, varname: varname)
                 generator.addBaseConvertExp(varname: varname)
                 generator.addBaseDeconvertExp(varname: varname)
@@ -506,7 +508,7 @@ var serializationExps = [String]()
 var deserializationExps = [String]()
 var destoryExps = [String]()
 for node in ast.nodes{
-    guard let classNode = node as? ORClass else {
+    guard let classNode = node as? ORClassNode else {
         continue
     }
     if classNode.className == "ORNode" {

@@ -2,7 +2,7 @@
 //  ClassCodeGenerator.swift
 //  BinaryPatchCodeGenerator
 //
-//  Created by APPLE on 2021/6/3.
+//  Created by Jiang on 2021/6/3.
 //  Copyright © 2021 SilverFruity. All rights reserved.
 //
 

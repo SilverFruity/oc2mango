@@ -8,6 +8,8 @@
 
 #import "Parser.h"
 #import "RunnerClasses.h"
+#import "oc2mangoLib.h"
+
 Parser *OCParser = nil;
 @implementation CodeSource
 - (instancetype)initWithFilePath:(NSString *)filePath{
@@ -24,15 +26,6 @@ Parser *OCParser = nil;
 }
 @end
 @implementation Parser
-
-+ (instancetype)shared{
-    static dispatch_once_t onceToken;
-    static Parser * _instance = nil;
-    dispatch_once(&onceToken, ^{
-        _instance = [Parser new];
-    });
-    return _instance;
-}
 - (BOOL)isSuccess{
     return self.source && self.error == nil;
 }

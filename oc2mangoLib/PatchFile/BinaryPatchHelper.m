@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1648564762
+//  Created by Jiang on 1626333610
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -203,7 +203,6 @@ void AstNodeListDestroy(AstNodeList *node){
     for (int i = 0; i < node->count; i++) {
          AstNodeDestroy(node->nodes[i]);
     }
-    free(node->nodes);
     free(node);
 }
 void AstStringBufferNodeDestroy(AstStringBufferNode *node){
@@ -219,26 +218,26 @@ void AstPatchFileDestroy(AstPatchFile *node){
 }
 
 #pragma mark - Struct BaseLength
-static uint32_t AstTypeSpecialBaseLength = 5;
-static uint32_t AstVariableBaseLength = 3;
-static uint32_t AstTypeVarPairBaseLength = 1;
-static uint32_t AstFuncVariableBaseLength = 4;
-static uint32_t AstFuncDeclareBaseLength = 1;
-static uint32_t AstScopeImpBaseLength = 1;
-static uint32_t AstValueExpressionBaseLength = 5;
+static uint32_t AstTypeNodeBaseLength = 9;
+static uint32_t AstVariableNodeBaseLength = 3;
+static uint32_t AstDeclaratorNodeBaseLength = 1;
+static uint32_t AstFunctionDeclNodeBaseLength = 2;
+static uint32_t AstCArrayDeclNodeBaseLength = 1;
+static uint32_t AstBlockNodeBaseLength = 1;
+static uint32_t AstValueNodeBaseLength = 5;
 static uint32_t AstIntegerValueBaseLength = 9;
 static uint32_t AstUIntegerValueBaseLength = 9;
 static uint32_t AstDoubleValueBaseLength = 9;
 static uint32_t AstBoolValueBaseLength = 2;
 static uint32_t AstMethodCallBaseLength = 3;
-static uint32_t AstCFuncCallBaseLength = 1;
-static uint32_t AstFunctionImpBaseLength = 1;
-static uint32_t AstSubscriptExpressionBaseLength = 1;
-static uint32_t AstAssignExpressionBaseLength = 5;
-static uint32_t AstDeclareExpressionBaseLength = 5;
-static uint32_t AstUnaryExpressionBaseLength = 5;
-static uint32_t AstBinaryExpressionBaseLength = 5;
-static uint32_t AstTernaryExpressionBaseLength = 1;
+static uint32_t AstFunctionCallBaseLength = 1;
+static uint32_t AstFunctionNodeBaseLength = 1;
+static uint32_t AstSubscriptNodeBaseLength = 1;
+static uint32_t AstAssignNodeBaseLength = 5;
+static uint32_t AstInitDeclaratorNodeBaseLength = 1;
+static uint32_t AstUnaryNodeBaseLength = 5;
+static uint32_t AstBinaryNodeBaseLength = 5;
+static uint32_t AstTernaryNodeBaseLength = 1;
 static uint32_t AstIfStatementBaseLength = 1;
 static uint32_t AstWhileStatementBaseLength = 1;
 static uint32_t AstDoWhileStatementBaseLength = 1;
@@ -246,85 +245,84 @@ static uint32_t AstCaseStatementBaseLength = 1;
 static uint32_t AstSwitchStatementBaseLength = 1;
 static uint32_t AstForStatementBaseLength = 1;
 static uint32_t AstForInStatementBaseLength = 1;
-static uint32_t AstReturnStatementBaseLength = 1;
-static uint32_t AstBreakStatementBaseLength = 1;
-static uint32_t AstContinueStatementBaseLength = 1;
-static uint32_t AstPropertyDeclareBaseLength = 1;
-static uint32_t AstMethodDeclareBaseLength = 2;
-static uint32_t AstMethodImplementationBaseLength = 1;
-static uint32_t AstClassBaseLength = 1;
-static uint32_t AstProtocolBaseLength = 1;
-static uint32_t AstStructExpressoinBaseLength = 1;
-static uint32_t AstEnumExpressoinBaseLength = 5;
-static uint32_t AstTypedefExpressoinBaseLength = 1;
-static uint32_t AstCArrayVariableBaseLength = 3;
-static uint32_t AstUnionExpressoinBaseLength = 1;
+static uint32_t AstControlStatNodeBaseLength = 9;
+static uint32_t AstPropertyNodeBaseLength = 1;
+static uint32_t AstMethodDeclNodeBaseLength = 2;
+static uint32_t AstMethodNodeBaseLength = 1;
+static uint32_t AstClassNodeBaseLength = 1;
+static uint32_t AstProtocolNodeBaseLength = 1;
+static uint32_t AstStructStatNodeBaseLength = 1;
+static uint32_t AstUnionStatNodeBaseLength = 1;
+static uint32_t AstEnumStatNodeBaseLength = 5;
+static uint32_t AstTypedefStatNodeBaseLength = 1;
 
 #pragma mark - Class Convert To Struct
-AstTypeSpecial *AstTypeSpecialConvert(ORTypeSpecial *exp, AstPatchFile *patch, uint32_t *length){
-    AstTypeSpecial *node = malloc(sizeof(AstTypeSpecial));
-    memset(node, 0, sizeof(AstTypeSpecial));
-    node->nodeType = AstEnumTypeSpecial;
+AstTypeNode *AstTypeNodeConvert(ORTypeNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstTypeNode *node = malloc(sizeof(AstTypeNode));
+    memset(node, 0, sizeof(AstTypeNode));
+    node->nodeType = AstEnumTypeNode;
     node->type = exp.type;
+    node->modifier = exp.modifier;
     node->name = (AstStringCursor *)AstNodeConvert(exp.name, patch, length);
-    *length += AstTypeSpecialBaseLength;
+    *length += AstTypeNodeBaseLength;
     return node;
 }
-AstVariable *AstVariableConvert(ORVariable *exp, AstPatchFile *patch, uint32_t *length){
-    AstVariable *node = malloc(sizeof(AstVariable));
-    memset(node, 0, sizeof(AstVariable));
-    node->nodeType = AstEnumVariable;
+AstVariableNode *AstVariableNodeConvert(ORVariableNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstVariableNode *node = malloc(sizeof(AstVariableNode));
+    memset(node, 0, sizeof(AstVariableNode));
+    node->nodeType = AstEnumVariableNode;
     node->isBlock = exp.isBlock;
     node->ptCount = exp.ptCount;
     node->varname = (AstStringCursor *)AstNodeConvert(exp.varname, patch, length);
-    *length += AstVariableBaseLength;
+    *length += AstVariableNodeBaseLength;
     return node;
 }
-AstTypeVarPair *AstTypeVarPairConvert(ORTypeVarPair *exp, AstPatchFile *patch, uint32_t *length){
-    AstTypeVarPair *node = malloc(sizeof(AstTypeVarPair));
-    memset(node, 0, sizeof(AstTypeVarPair));
-    node->nodeType = AstEnumTypeVarPair;
+AstDeclaratorNode *AstDeclaratorNodeConvert(ORDeclaratorNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstDeclaratorNode *node = malloc(sizeof(AstDeclaratorNode));
+    memset(node, 0, sizeof(AstDeclaratorNode));
+    node->nodeType = AstEnumDeclaratorNode;
     node->type = (AstEmptyNode *)AstNodeConvert(exp.type, patch, length);
     node->var = (AstEmptyNode *)AstNodeConvert(exp.var, patch, length);
-    *length += AstTypeVarPairBaseLength;
+    *length += AstDeclaratorNodeBaseLength;
     return node;
 }
-AstFuncVariable *AstFuncVariableConvert(ORFuncVariable *exp, AstPatchFile *patch, uint32_t *length){
-    AstFuncVariable *node = malloc(sizeof(AstFuncVariable));
-    memset(node, 0, sizeof(AstFuncVariable));
-    node->nodeType = AstEnumFuncVariable;
-    node->isBlock = exp.isBlock;
-    node->ptCount = exp.ptCount;
-    node->varname = (AstStringCursor *)AstNodeConvert(exp.varname, patch, length);
+AstFunctionDeclNode *AstFunctionDeclNodeConvert(ORFunctionDeclNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstFunctionDeclNode *node = malloc(sizeof(AstFunctionDeclNode));
+    memset(node, 0, sizeof(AstFunctionDeclNode));
+    node->nodeType = AstEnumFunctionDeclNode;
+    node->type = (AstEmptyNode *)AstNodeConvert(exp.type, patch, length);
+    node->var = (AstEmptyNode *)AstNodeConvert(exp.var, patch, length);
     node->isMultiArgs = exp.isMultiArgs;
-    node->pairs = (AstNodeList *)AstNodeConvert(exp.pairs, patch, length);
-    *length += AstFuncVariableBaseLength;
+    node->params = (AstNodeList *)AstNodeConvert(exp.params, patch, length);
+    *length += AstFunctionDeclNodeBaseLength;
     return node;
 }
-AstFuncDeclare *AstFuncDeclareConvert(ORFuncDeclare *exp, AstPatchFile *patch, uint32_t *length){
-    AstFuncDeclare *node = malloc(sizeof(AstFuncDeclare));
-    memset(node, 0, sizeof(AstFuncDeclare));
-    node->nodeType = AstEnumFuncDeclare;
-    node->returnType = (AstEmptyNode *)AstNodeConvert(exp.returnType, patch, length);
-    node->funVar = (AstEmptyNode *)AstNodeConvert(exp.funVar, patch, length);
-    *length += AstFuncDeclareBaseLength;
+AstCArrayDeclNode *AstCArrayDeclNodeConvert(ORCArrayDeclNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstCArrayDeclNode *node = malloc(sizeof(AstCArrayDeclNode));
+    memset(node, 0, sizeof(AstCArrayDeclNode));
+    node->nodeType = AstEnumCArrayDeclNode;
+    node->type = (AstEmptyNode *)AstNodeConvert(exp.type, patch, length);
+    node->var = (AstEmptyNode *)AstNodeConvert(exp.var, patch, length);
+    node->prev = (AstEmptyNode *)AstNodeConvert(exp.prev, patch, length);
+    node->capacity = (AstEmptyNode *)AstNodeConvert(exp.capacity, patch, length);
+    *length += AstCArrayDeclNodeBaseLength;
     return node;
 }
-AstScopeImp *AstScopeImpConvert(ORScopeImp *exp, AstPatchFile *patch, uint32_t *length){
-    AstScopeImp *node = malloc(sizeof(AstScopeImp));
-    memset(node, 0, sizeof(AstScopeImp));
-    node->nodeType = AstEnumScopeImp;
+AstBlockNode *AstBlockNodeConvert(ORBlockNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstBlockNode *node = malloc(sizeof(AstBlockNode));
+    memset(node, 0, sizeof(AstBlockNode));
+    node->nodeType = AstEnumBlockNode;
     node->statements = (AstNodeList *)AstNodeConvert(exp.statements, patch, length);
-    *length += AstScopeImpBaseLength;
+    *length += AstBlockNodeBaseLength;
     return node;
 }
-AstValueExpression *AstValueExpressionConvert(ORValueExpression *exp, AstPatchFile *patch, uint32_t *length){
-    AstValueExpression *node = malloc(sizeof(AstValueExpression));
-    memset(node, 0, sizeof(AstValueExpression));
-    node->nodeType = AstEnumValueExpression;
+AstValueNode *AstValueNodeConvert(ORValueNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstValueNode *node = malloc(sizeof(AstValueNode));
+    memset(node, 0, sizeof(AstValueNode));
+    node->nodeType = AstEnumValueNode;
     node->value_type = exp.value_type;
     node->value = (AstEmptyNode *)AstNodeConvert(exp.value, patch, length);
-    *length += AstValueExpressionBaseLength;
+    *length += AstValueNodeBaseLength;
     return node;
 }
 AstIntegerValue *AstIntegerValueConvert(ORIntegerValue *exp, AstPatchFile *patch, uint32_t *length){
@@ -364,86 +362,85 @@ AstMethodCall *AstMethodCallConvert(ORMethodCall *exp, AstPatchFile *patch, uint
     memset(node, 0, sizeof(AstMethodCall));
     node->nodeType = AstEnumMethodCall;
     node->methodOperator = exp.methodOperator;
-    node->isAssignedValue = exp.isAssignedValue;
+    node->isStructRef = exp.isStructRef;
     node->caller = (AstEmptyNode *)AstNodeConvert(exp.caller, patch, length);
-    node->names = (AstNodeList *)AstNodeConvert(exp.names, patch, length);
+    node->selectorName = (AstStringCursor *)AstNodeConvert(exp.selectorName, patch, length);
     node->values = (AstNodeList *)AstNodeConvert(exp.values, patch, length);
     *length += AstMethodCallBaseLength;
     return node;
 }
-AstCFuncCall *AstCFuncCallConvert(ORCFuncCall *exp, AstPatchFile *patch, uint32_t *length){
-    AstCFuncCall *node = malloc(sizeof(AstCFuncCall));
-    memset(node, 0, sizeof(AstCFuncCall));
-    node->nodeType = AstEnumCFuncCall;
+AstFunctionCall *AstFunctionCallConvert(ORFunctionCall *exp, AstPatchFile *patch, uint32_t *length){
+    AstFunctionCall *node = malloc(sizeof(AstFunctionCall));
+    memset(node, 0, sizeof(AstFunctionCall));
+    node->nodeType = AstEnumFunctionCall;
     node->caller = (AstEmptyNode *)AstNodeConvert(exp.caller, patch, length);
     node->expressions = (AstNodeList *)AstNodeConvert(exp.expressions, patch, length);
-    *length += AstCFuncCallBaseLength;
+    *length += AstFunctionCallBaseLength;
     return node;
 }
-AstFunctionImp *AstFunctionImpConvert(ORFunctionImp *exp, AstPatchFile *patch, uint32_t *length){
-    AstFunctionImp *node = malloc(sizeof(AstFunctionImp));
-    memset(node, 0, sizeof(AstFunctionImp));
-    node->nodeType = AstEnumFunctionImp;
+AstFunctionNode *AstFunctionNodeConvert(ORFunctionNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstFunctionNode *node = malloc(sizeof(AstFunctionNode));
+    memset(node, 0, sizeof(AstFunctionNode));
+    node->nodeType = AstEnumFunctionNode;
     node->declare = (AstEmptyNode *)AstNodeConvert(exp.declare, patch, length);
     node->scopeImp = (AstEmptyNode *)AstNodeConvert(exp.scopeImp, patch, length);
-    *length += AstFunctionImpBaseLength;
+    *length += AstFunctionNodeBaseLength;
     return node;
 }
-AstSubscriptExpression *AstSubscriptExpressionConvert(ORSubscriptExpression *exp, AstPatchFile *patch, uint32_t *length){
-    AstSubscriptExpression *node = malloc(sizeof(AstSubscriptExpression));
-    memset(node, 0, sizeof(AstSubscriptExpression));
-    node->nodeType = AstEnumSubscriptExpression;
+AstSubscriptNode *AstSubscriptNodeConvert(ORSubscriptNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstSubscriptNode *node = malloc(sizeof(AstSubscriptNode));
+    memset(node, 0, sizeof(AstSubscriptNode));
+    node->nodeType = AstEnumSubscriptNode;
     node->caller = (AstEmptyNode *)AstNodeConvert(exp.caller, patch, length);
     node->keyExp = (AstEmptyNode *)AstNodeConvert(exp.keyExp, patch, length);
-    *length += AstSubscriptExpressionBaseLength;
+    *length += AstSubscriptNodeBaseLength;
     return node;
 }
-AstAssignExpression *AstAssignExpressionConvert(ORAssignExpression *exp, AstPatchFile *patch, uint32_t *length){
-    AstAssignExpression *node = malloc(sizeof(AstAssignExpression));
-    memset(node, 0, sizeof(AstAssignExpression));
-    node->nodeType = AstEnumAssignExpression;
+AstAssignNode *AstAssignNodeConvert(ORAssignNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstAssignNode *node = malloc(sizeof(AstAssignNode));
+    memset(node, 0, sizeof(AstAssignNode));
+    node->nodeType = AstEnumAssignNode;
     node->assignType = exp.assignType;
     node->value = (AstEmptyNode *)AstNodeConvert(exp.value, patch, length);
     node->expression = (AstEmptyNode *)AstNodeConvert(exp.expression, patch, length);
-    *length += AstAssignExpressionBaseLength;
+    *length += AstAssignNodeBaseLength;
     return node;
 }
-AstDeclareExpression *AstDeclareExpressionConvert(ORDeclareExpression *exp, AstPatchFile *patch, uint32_t *length){
-    AstDeclareExpression *node = malloc(sizeof(AstDeclareExpression));
-    memset(node, 0, sizeof(AstDeclareExpression));
-    node->nodeType = AstEnumDeclareExpression;
-    node->modifier = exp.modifier;
-    node->pair = (AstEmptyNode *)AstNodeConvert(exp.pair, patch, length);
+AstInitDeclaratorNode *AstInitDeclaratorNodeConvert(ORInitDeclaratorNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstInitDeclaratorNode *node = malloc(sizeof(AstInitDeclaratorNode));
+    memset(node, 0, sizeof(AstInitDeclaratorNode));
+    node->nodeType = AstEnumInitDeclaratorNode;
+    node->declarator = (AstEmptyNode *)AstNodeConvert(exp.declarator, patch, length);
     node->expression = (AstEmptyNode *)AstNodeConvert(exp.expression, patch, length);
-    *length += AstDeclareExpressionBaseLength;
+    *length += AstInitDeclaratorNodeBaseLength;
     return node;
 }
-AstUnaryExpression *AstUnaryExpressionConvert(ORUnaryExpression *exp, AstPatchFile *patch, uint32_t *length){
-    AstUnaryExpression *node = malloc(sizeof(AstUnaryExpression));
-    memset(node, 0, sizeof(AstUnaryExpression));
-    node->nodeType = AstEnumUnaryExpression;
+AstUnaryNode *AstUnaryNodeConvert(ORUnaryNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstUnaryNode *node = malloc(sizeof(AstUnaryNode));
+    memset(node, 0, sizeof(AstUnaryNode));
+    node->nodeType = AstEnumUnaryNode;
     node->operatorType = exp.operatorType;
     node->value = (AstEmptyNode *)AstNodeConvert(exp.value, patch, length);
-    *length += AstUnaryExpressionBaseLength;
+    *length += AstUnaryNodeBaseLength;
     return node;
 }
-AstBinaryExpression *AstBinaryExpressionConvert(ORBinaryExpression *exp, AstPatchFile *patch, uint32_t *length){
-    AstBinaryExpression *node = malloc(sizeof(AstBinaryExpression));
-    memset(node, 0, sizeof(AstBinaryExpression));
-    node->nodeType = AstEnumBinaryExpression;
+AstBinaryNode *AstBinaryNodeConvert(ORBinaryNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstBinaryNode *node = malloc(sizeof(AstBinaryNode));
+    memset(node, 0, sizeof(AstBinaryNode));
+    node->nodeType = AstEnumBinaryNode;
     node->operatorType = exp.operatorType;
     node->left = (AstEmptyNode *)AstNodeConvert(exp.left, patch, length);
     node->right = (AstEmptyNode *)AstNodeConvert(exp.right, patch, length);
-    *length += AstBinaryExpressionBaseLength;
+    *length += AstBinaryNodeBaseLength;
     return node;
 }
-AstTernaryExpression *AstTernaryExpressionConvert(ORTernaryExpression *exp, AstPatchFile *patch, uint32_t *length){
-    AstTernaryExpression *node = malloc(sizeof(AstTernaryExpression));
-    memset(node, 0, sizeof(AstTernaryExpression));
-    node->nodeType = AstEnumTernaryExpression;
+AstTernaryNode *AstTernaryNodeConvert(ORTernaryNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstTernaryNode *node = malloc(sizeof(AstTernaryNode));
+    memset(node, 0, sizeof(AstTernaryNode));
+    node->nodeType = AstEnumTernaryNode;
     node->expression = (AstEmptyNode *)AstNodeConvert(exp.expression, patch, length);
     node->values = (AstNodeList *)AstNodeConvert(exp.values, patch, length);
-    *length += AstTernaryExpressionBaseLength;
+    *length += AstTernaryNodeBaseLength;
     return node;
 }
 AstIfStatement *AstIfStatementConvert(ORIfStatement *exp, AstPatchFile *patch, uint32_t *length){
@@ -451,8 +448,8 @@ AstIfStatement *AstIfStatementConvert(ORIfStatement *exp, AstPatchFile *patch, u
     memset(node, 0, sizeof(AstIfStatement));
     node->nodeType = AstEnumIfStatement;
     node->condition = (AstEmptyNode *)AstNodeConvert(exp.condition, patch, length);
-    node->last = (AstEmptyNode *)AstNodeConvert(exp.last, patch, length);
     node->scopeImp = (AstEmptyNode *)AstNodeConvert(exp.scopeImp, patch, length);
+    node->statements = (AstNodeList *)AstNodeConvert(exp.statements, patch, length);
     *length += AstIfStatementBaseLength;
     return node;
 }
@@ -489,7 +486,6 @@ AstSwitchStatement *AstSwitchStatementConvert(ORSwitchStatement *exp, AstPatchFi
     node->nodeType = AstEnumSwitchStatement;
     node->value = (AstEmptyNode *)AstNodeConvert(exp.value, patch, length);
     node->cases = (AstNodeList *)AstNodeConvert(exp.cases, patch, length);
-    node->scopeImp = (AstEmptyNode *)AstNodeConvert(exp.scopeImp, patch, length);
     *length += AstSwitchStatementBaseLength;
     return node;
 }
@@ -514,145 +510,118 @@ AstForInStatement *AstForInStatementConvert(ORForInStatement *exp, AstPatchFile 
     *length += AstForInStatementBaseLength;
     return node;
 }
-AstReturnStatement *AstReturnStatementConvert(ORReturnStatement *exp, AstPatchFile *patch, uint32_t *length){
-    AstReturnStatement *node = malloc(sizeof(AstReturnStatement));
-    memset(node, 0, sizeof(AstReturnStatement));
-    node->nodeType = AstEnumReturnStatement;
+AstControlStatNode *AstControlStatNodeConvert(ORControlStatNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstControlStatNode *node = malloc(sizeof(AstControlStatNode));
+    memset(node, 0, sizeof(AstControlStatNode));
+    node->nodeType = AstEnumControlStatNode;
+    node->type = exp.type;
     node->expression = (AstEmptyNode *)AstNodeConvert(exp.expression, patch, length);
-    *length += AstReturnStatementBaseLength;
+    *length += AstControlStatNodeBaseLength;
     return node;
 }
-AstBreakStatement *AstBreakStatementConvert(ORBreakStatement *exp, AstPatchFile *patch, uint32_t *length){
-    AstBreakStatement *node = malloc(sizeof(AstBreakStatement));
-    memset(node, 0, sizeof(AstBreakStatement));
-    node->nodeType = AstEnumBreakStatement;
-    
-    *length += AstBreakStatementBaseLength;
-    return node;
-}
-AstContinueStatement *AstContinueStatementConvert(ORContinueStatement *exp, AstPatchFile *patch, uint32_t *length){
-    AstContinueStatement *node = malloc(sizeof(AstContinueStatement));
-    memset(node, 0, sizeof(AstContinueStatement));
-    node->nodeType = AstEnumContinueStatement;
-    
-    *length += AstContinueStatementBaseLength;
-    return node;
-}
-AstPropertyDeclare *AstPropertyDeclareConvert(ORPropertyDeclare *exp, AstPatchFile *patch, uint32_t *length){
-    AstPropertyDeclare *node = malloc(sizeof(AstPropertyDeclare));
-    memset(node, 0, sizeof(AstPropertyDeclare));
-    node->nodeType = AstEnumPropertyDeclare;
+AstPropertyNode *AstPropertyNodeConvert(ORPropertyNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstPropertyNode *node = malloc(sizeof(AstPropertyNode));
+    memset(node, 0, sizeof(AstPropertyNode));
+    node->nodeType = AstEnumPropertyNode;
     node->keywords = (AstNodeList *)AstNodeConvert(exp.keywords, patch, length);
     node->var = (AstEmptyNode *)AstNodeConvert(exp.var, patch, length);
-    *length += AstPropertyDeclareBaseLength;
+    *length += AstPropertyNodeBaseLength;
     return node;
 }
-AstMethodDeclare *AstMethodDeclareConvert(ORMethodDeclare *exp, AstPatchFile *patch, uint32_t *length){
-    AstMethodDeclare *node = malloc(sizeof(AstMethodDeclare));
-    memset(node, 0, sizeof(AstMethodDeclare));
-    node->nodeType = AstEnumMethodDeclare;
+AstMethodDeclNode *AstMethodDeclNodeConvert(ORMethodDeclNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstMethodDeclNode *node = malloc(sizeof(AstMethodDeclNode));
+    memset(node, 0, sizeof(AstMethodDeclNode));
+    node->nodeType = AstEnumMethodDeclNode;
     node->isClassMethod = exp.isClassMethod;
     node->returnType = (AstEmptyNode *)AstNodeConvert(exp.returnType, patch, length);
     node->methodNames = (AstNodeList *)AstNodeConvert(exp.methodNames, patch, length);
-    node->parameterTypes = (AstNodeList *)AstNodeConvert(exp.parameterTypes, patch, length);
-    node->parameterNames = (AstNodeList *)AstNodeConvert(exp.parameterNames, patch, length);
-    *length += AstMethodDeclareBaseLength;
+    node->parameters = (AstNodeList *)AstNodeConvert(exp.parameters, patch, length);
+    *length += AstMethodDeclNodeBaseLength;
     return node;
 }
-AstMethodImplementation *AstMethodImplementationConvert(ORMethodImplementation *exp, AstPatchFile *patch, uint32_t *length){
-    AstMethodImplementation *node = malloc(sizeof(AstMethodImplementation));
-    memset(node, 0, sizeof(AstMethodImplementation));
-    node->nodeType = AstEnumMethodImplementation;
+AstMethodNode *AstMethodNodeConvert(ORMethodNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstMethodNode *node = malloc(sizeof(AstMethodNode));
+    memset(node, 0, sizeof(AstMethodNode));
+    node->nodeType = AstEnumMethodNode;
     node->declare = (AstEmptyNode *)AstNodeConvert(exp.declare, patch, length);
     node->scopeImp = (AstEmptyNode *)AstNodeConvert(exp.scopeImp, patch, length);
-    *length += AstMethodImplementationBaseLength;
+    *length += AstMethodNodeBaseLength;
     return node;
 }
-AstClass *AstClassConvert(ORClass *exp, AstPatchFile *patch, uint32_t *length){
-    AstClass *node = malloc(sizeof(AstClass));
-    memset(node, 0, sizeof(AstClass));
-    node->nodeType = AstEnumClass;
+AstClassNode *AstClassNodeConvert(ORClassNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstClassNode *node = malloc(sizeof(AstClassNode));
+    memset(node, 0, sizeof(AstClassNode));
+    node->nodeType = AstEnumClassNode;
     node->className = (AstStringCursor *)AstNodeConvert(exp.className, patch, length);
     node->superClassName = (AstStringCursor *)AstNodeConvert(exp.superClassName, patch, length);
     node->protocols = (AstNodeList *)AstNodeConvert(exp.protocols, patch, length);
     node->properties = (AstNodeList *)AstNodeConvert(exp.properties, patch, length);
     node->privateVariables = (AstNodeList *)AstNodeConvert(exp.privateVariables, patch, length);
     node->methods = (AstNodeList *)AstNodeConvert(exp.methods, patch, length);
-    *length += AstClassBaseLength;
+    *length += AstClassNodeBaseLength;
     return node;
 }
-AstProtocol *AstProtocolConvert(ORProtocol *exp, AstPatchFile *patch, uint32_t *length){
-    AstProtocol *node = malloc(sizeof(AstProtocol));
-    memset(node, 0, sizeof(AstProtocol));
-    node->nodeType = AstEnumProtocol;
+AstProtocolNode *AstProtocolNodeConvert(ORProtocolNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstProtocolNode *node = malloc(sizeof(AstProtocolNode));
+    memset(node, 0, sizeof(AstProtocolNode));
+    node->nodeType = AstEnumProtocolNode;
     node->protcolName = (AstStringCursor *)AstNodeConvert(exp.protcolName, patch, length);
     node->protocols = (AstNodeList *)AstNodeConvert(exp.protocols, patch, length);
     node->properties = (AstNodeList *)AstNodeConvert(exp.properties, patch, length);
     node->methods = (AstNodeList *)AstNodeConvert(exp.methods, patch, length);
-    *length += AstProtocolBaseLength;
+    *length += AstProtocolNodeBaseLength;
     return node;
 }
-AstStructExpressoin *AstStructExpressoinConvert(ORStructExpressoin *exp, AstPatchFile *patch, uint32_t *length){
-    AstStructExpressoin *node = malloc(sizeof(AstStructExpressoin));
-    memset(node, 0, sizeof(AstStructExpressoin));
-    node->nodeType = AstEnumStructExpressoin;
+AstStructStatNode *AstStructStatNodeConvert(ORStructStatNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstStructStatNode *node = malloc(sizeof(AstStructStatNode));
+    memset(node, 0, sizeof(AstStructStatNode));
+    node->nodeType = AstEnumStructStatNode;
     node->sturctName = (AstStringCursor *)AstNodeConvert(exp.sturctName, patch, length);
     node->fields = (AstNodeList *)AstNodeConvert(exp.fields, patch, length);
-    *length += AstStructExpressoinBaseLength;
+    *length += AstStructStatNodeBaseLength;
     return node;
 }
-AstEnumExpressoin *AstEnumExpressoinConvert(OREnumExpressoin *exp, AstPatchFile *patch, uint32_t *length){
-    AstEnumExpressoin *node = malloc(sizeof(AstEnumExpressoin));
-    memset(node, 0, sizeof(AstEnumExpressoin));
-    node->nodeType = AstEnumEnumExpressoin;
+AstUnionStatNode *AstUnionStatNodeConvert(ORUnionStatNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstUnionStatNode *node = malloc(sizeof(AstUnionStatNode));
+    memset(node, 0, sizeof(AstUnionStatNode));
+    node->nodeType = AstEnumUnionStatNode;
+    node->unionName = (AstStringCursor *)AstNodeConvert(exp.unionName, patch, length);
+    node->fields = (AstNodeList *)AstNodeConvert(exp.fields, patch, length);
+    *length += AstUnionStatNodeBaseLength;
+    return node;
+}
+AstEnumStatNode *AstEnumStatNodeConvert(OREnumStatNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstEnumStatNode *node = malloc(sizeof(AstEnumStatNode));
+    memset(node, 0, sizeof(AstEnumStatNode));
+    node->nodeType = AstEnumEnumStatNode;
     node->valueType = exp.valueType;
     node->enumName = (AstStringCursor *)AstNodeConvert(exp.enumName, patch, length);
     node->fields = (AstNodeList *)AstNodeConvert(exp.fields, patch, length);
-    *length += AstEnumExpressoinBaseLength;
+    *length += AstEnumStatNodeBaseLength;
     return node;
 }
-AstTypedefExpressoin *AstTypedefExpressoinConvert(ORTypedefExpressoin *exp, AstPatchFile *patch, uint32_t *length){
-    AstTypedefExpressoin *node = malloc(sizeof(AstTypedefExpressoin));
-    memset(node, 0, sizeof(AstTypedefExpressoin));
-    node->nodeType = AstEnumTypedefExpressoin;
+AstTypedefStatNode *AstTypedefStatNodeConvert(ORTypedefStatNode *exp, AstPatchFile *patch, uint32_t *length){
+    AstTypedefStatNode *node = malloc(sizeof(AstTypedefStatNode));
+    memset(node, 0, sizeof(AstTypedefStatNode));
+    node->nodeType = AstEnumTypedefStatNode;
     node->expression = (AstEmptyNode *)AstNodeConvert(exp.expression, patch, length);
     node->typeNewName = (AstStringCursor *)AstNodeConvert(exp.typeNewName, patch, length);
-    *length += AstTypedefExpressoinBaseLength;
-    return node;
-}
-AstCArrayVariable *AstCArrayVariableConvert(ORCArrayVariable *exp, AstPatchFile *patch, uint32_t *length){
-    AstCArrayVariable *node = malloc(sizeof(AstCArrayVariable));
-    memset(node, 0, sizeof(AstCArrayVariable));
-    node->nodeType = AstEnumCArrayVariable;
-    node->isBlock = exp.isBlock;
-    node->ptCount = exp.ptCount;
-    node->varname = (AstStringCursor *)AstNodeConvert(exp.varname, patch, length);
-    node->prev = (AstEmptyNode *)AstNodeConvert(exp.prev, patch, length);
-    node->capacity = (AstEmptyNode *)AstNodeConvert(exp.capacity, patch, length);
-    *length += AstCArrayVariableBaseLength;
-    return node;
-}
-AstUnionExpressoin *AstUnionExpressoinConvert(ORUnionExpressoin *exp, AstPatchFile *patch, uint32_t *length){
-    AstUnionExpressoin *node = malloc(sizeof(AstUnionExpressoin));
-    memset(node, 0, sizeof(AstUnionExpressoin));
-    node->nodeType = AstEnumUnionExpressoin;
-    node->unionName = (AstStringCursor *)AstNodeConvert(exp.unionName, patch, length);
-    node->fields = (AstNodeList *)AstNodeConvert(exp.fields, patch, length);
-    *length += AstUnionExpressoinBaseLength;
+    *length += AstTypedefStatNodeBaseLength;
     return node;
 }
 
 #pragma mark - Struct Convert To Class
-ORTypeSpecial *AstTypeSpecialDeConvert(ORNode *parent, AstTypeSpecial *node, AstPatchFile *patch){
-    ORTypeSpecial *exp = [ORTypeSpecial new];
+ORTypeNode *AstTypeNodeDeConvert(ORNode *parent, AstTypeNode *node, AstPatchFile *patch){
+    ORTypeNode *exp = [ORTypeNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.type = node->type;
+    exp.modifier = node->modifier;
     exp.name = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->name, patch);
     return exp;
 }
-ORVariable *AstVariableDeConvert(ORNode *parent, AstVariable *node, AstPatchFile *patch){
-    ORVariable *exp = [ORVariable new];
+ORVariableNode *AstVariableNodeDeConvert(ORNode *parent, AstVariableNode *node, AstPatchFile *patch){
+    ORVariableNode *exp = [ORVariableNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.isBlock = node->isBlock;
@@ -660,42 +629,43 @@ ORVariable *AstVariableDeConvert(ORNode *parent, AstVariable *node, AstPatchFile
     exp.varname = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->varname, patch);
     return exp;
 }
-ORTypeVarPair *AstTypeVarPairDeConvert(ORNode *parent, AstTypeVarPair *node, AstPatchFile *patch){
-    ORTypeVarPair *exp = [ORTypeVarPair new];
+ORDeclaratorNode *AstDeclaratorNodeDeConvert(ORNode *parent, AstDeclaratorNode *node, AstPatchFile *patch){
+    ORDeclaratorNode *exp = [ORDeclaratorNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.type = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->type, patch);
     exp.var = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->var, patch);
     return exp;
 }
-ORFuncVariable *AstFuncVariableDeConvert(ORNode *parent, AstFuncVariable *node, AstPatchFile *patch){
-    ORFuncVariable *exp = [ORFuncVariable new];
+ORFunctionDeclNode *AstFunctionDeclNodeDeConvert(ORNode *parent, AstFunctionDeclNode *node, AstPatchFile *patch){
+    ORFunctionDeclNode *exp = [ORFunctionDeclNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.isBlock = node->isBlock;
-    exp.ptCount = node->ptCount;
-    exp.varname = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->varname, patch);
+    exp.type = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->type, patch);
+    exp.var = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->var, patch);
     exp.isMultiArgs = node->isMultiArgs;
-    exp.pairs = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->pairs, patch);
+    exp.params = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->params, patch);
     return exp;
 }
-ORFuncDeclare *AstFuncDeclareDeConvert(ORNode *parent, AstFuncDeclare *node, AstPatchFile *patch){
-    ORFuncDeclare *exp = [ORFuncDeclare new];
+ORCArrayDeclNode *AstCArrayDeclNodeDeConvert(ORNode *parent, AstCArrayDeclNode *node, AstPatchFile *patch){
+    ORCArrayDeclNode *exp = [ORCArrayDeclNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.returnType = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->returnType, patch);
-    exp.funVar = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->funVar, patch);
+    exp.type = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->type, patch);
+    exp.var = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->var, patch);
+    exp.prev = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->prev, patch);
+    exp.capacity = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->capacity, patch);
     return exp;
 }
-ORScopeImp *AstScopeImpDeConvert(ORNode *parent, AstScopeImp *node, AstPatchFile *patch){
-    ORScopeImp *exp = [ORScopeImp new];
+ORBlockNode *AstBlockNodeDeConvert(ORNode *parent, AstBlockNode *node, AstPatchFile *patch){
+    ORBlockNode *exp = [ORBlockNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.statements = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->statements, patch);
     return exp;
 }
-ORValueExpression *AstValueExpressionDeConvert(ORNode *parent, AstValueExpression *node, AstPatchFile *patch){
-    ORValueExpression *exp = [ORValueExpression new];
+ORValueNode *AstValueNodeDeConvert(ORNode *parent, AstValueNode *node, AstPatchFile *patch){
+    ORValueNode *exp = [ORValueNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.value_type = node->value_type;
@@ -735,38 +705,38 @@ ORMethodCall *AstMethodCallDeConvert(ORNode *parent, AstMethodCall *node, AstPat
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.methodOperator = node->methodOperator;
-    exp.isAssignedValue = node->isAssignedValue;
+    exp.isStructRef = node->isStructRef;
     exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
-    exp.names = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->names, patch);
+    exp.selectorName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->selectorName, patch);
     exp.values = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->values, patch);
     return exp;
 }
-ORCFuncCall *AstCFuncCallDeConvert(ORNode *parent, AstCFuncCall *node, AstPatchFile *patch){
-    ORCFuncCall *exp = [ORCFuncCall new];
+ORFunctionCall *AstFunctionCallDeConvert(ORNode *parent, AstFunctionCall *node, AstPatchFile *patch){
+    ORFunctionCall *exp = [ORFunctionCall new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
     exp.expressions = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->expressions, patch);
     return exp;
 }
-ORFunctionImp *AstFunctionImpDeConvert(ORNode *parent, AstFunctionImp *node, AstPatchFile *patch){
-    ORFunctionImp *exp = [ORFunctionImp new];
+ORFunctionNode *AstFunctionNodeDeConvert(ORNode *parent, AstFunctionNode *node, AstPatchFile *patch){
+    ORFunctionNode *exp = [ORFunctionNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.declare = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->declare, patch);
     exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORSubscriptExpression *AstSubscriptExpressionDeConvert(ORNode *parent, AstSubscriptExpression *node, AstPatchFile *patch){
-    ORSubscriptExpression *exp = [ORSubscriptExpression new];
+ORSubscriptNode *AstSubscriptNodeDeConvert(ORNode *parent, AstSubscriptNode *node, AstPatchFile *patch){
+    ORSubscriptNode *exp = [ORSubscriptNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.caller = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->caller, patch);
     exp.keyExp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->keyExp, patch);
     return exp;
 }
-ORAssignExpression *AstAssignExpressionDeConvert(ORNode *parent, AstAssignExpression *node, AstPatchFile *patch){
-    ORAssignExpression *exp = [ORAssignExpression new];
+ORAssignNode *AstAssignNodeDeConvert(ORNode *parent, AstAssignNode *node, AstPatchFile *patch){
+    ORAssignNode *exp = [ORAssignNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.assignType = node->assignType;
@@ -774,25 +744,24 @@ ORAssignExpression *AstAssignExpressionDeConvert(ORNode *parent, AstAssignExpres
     exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
     return exp;
 }
-ORDeclareExpression *AstDeclareExpressionDeConvert(ORNode *parent, AstDeclareExpression *node, AstPatchFile *patch){
-    ORDeclareExpression *exp = [ORDeclareExpression new];
+ORInitDeclaratorNode *AstInitDeclaratorNodeDeConvert(ORNode *parent, AstInitDeclaratorNode *node, AstPatchFile *patch){
+    ORInitDeclaratorNode *exp = [ORInitDeclaratorNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
-    exp.modifier = node->modifier;
-    exp.pair = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->pair, patch);
+    exp.declarator = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->declarator, patch);
     exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
     return exp;
 }
-ORUnaryExpression *AstUnaryExpressionDeConvert(ORNode *parent, AstUnaryExpression *node, AstPatchFile *patch){
-    ORUnaryExpression *exp = [ORUnaryExpression new];
+ORUnaryNode *AstUnaryNodeDeConvert(ORNode *parent, AstUnaryNode *node, AstPatchFile *patch){
+    ORUnaryNode *exp = [ORUnaryNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.operatorType = node->operatorType;
     exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
     return exp;
 }
-ORBinaryExpression *AstBinaryExpressionDeConvert(ORNode *parent, AstBinaryExpression *node, AstPatchFile *patch){
-    ORBinaryExpression *exp = [ORBinaryExpression new];
+ORBinaryNode *AstBinaryNodeDeConvert(ORNode *parent, AstBinaryNode *node, AstPatchFile *patch){
+    ORBinaryNode *exp = [ORBinaryNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.operatorType = node->operatorType;
@@ -800,8 +769,8 @@ ORBinaryExpression *AstBinaryExpressionDeConvert(ORNode *parent, AstBinaryExpres
     exp.right = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->right, patch);
     return exp;
 }
-ORTernaryExpression *AstTernaryExpressionDeConvert(ORNode *parent, AstTernaryExpression *node, AstPatchFile *patch){
-    ORTernaryExpression *exp = [ORTernaryExpression new];
+ORTernaryNode *AstTernaryNodeDeConvert(ORNode *parent, AstTernaryNode *node, AstPatchFile *patch){
+    ORTernaryNode *exp = [ORTernaryNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
@@ -813,8 +782,8 @@ ORIfStatement *AstIfStatementDeConvert(ORNode *parent, AstIfStatement *node, Ast
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.condition = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->condition, patch);
-    exp.last = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->last, patch);
     exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
+    exp.statements = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->statements, patch);
     return exp;
 }
 ORWhileStatement *AstWhileStatementDeConvert(ORNode *parent, AstWhileStatement *node, AstPatchFile *patch){
@@ -847,7 +816,6 @@ ORSwitchStatement *AstSwitchStatementDeConvert(ORNode *parent, AstSwitchStatemen
     exp.nodeType = node->nodeType;
     exp.value = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->value, patch);
     exp.cases = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->cases, patch);
-    exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
 ORForStatement *AstForStatementDeConvert(ORNode *parent, AstForStatement *node, AstPatchFile *patch){
@@ -869,56 +837,42 @@ ORForInStatement *AstForInStatementDeConvert(ORNode *parent, AstForInStatement *
     exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORReturnStatement *AstReturnStatementDeConvert(ORNode *parent, AstReturnStatement *node, AstPatchFile *patch){
-    ORReturnStatement *exp = [ORReturnStatement new];
+ORControlStatNode *AstControlStatNodeDeConvert(ORNode *parent, AstControlStatNode *node, AstPatchFile *patch){
+    ORControlStatNode *exp = [ORControlStatNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
+    exp.type = node->type;
     exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
     return exp;
 }
-ORBreakStatement *AstBreakStatementDeConvert(ORNode *parent, AstBreakStatement *node, AstPatchFile *patch){
-    ORBreakStatement *exp = [ORBreakStatement new];
-    exp.parentNode = parent;
-    exp.nodeType = node->nodeType;
-    
-    return exp;
-}
-ORContinueStatement *AstContinueStatementDeConvert(ORNode *parent, AstContinueStatement *node, AstPatchFile *patch){
-    ORContinueStatement *exp = [ORContinueStatement new];
-    exp.parentNode = parent;
-    exp.nodeType = node->nodeType;
-    
-    return exp;
-}
-ORPropertyDeclare *AstPropertyDeclareDeConvert(ORNode *parent, AstPropertyDeclare *node, AstPatchFile *patch){
-    ORPropertyDeclare *exp = [ORPropertyDeclare new];
+ORPropertyNode *AstPropertyNodeDeConvert(ORNode *parent, AstPropertyNode *node, AstPatchFile *patch){
+    ORPropertyNode *exp = [ORPropertyNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.keywords = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->keywords, patch);
     exp.var = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->var, patch);
     return exp;
 }
-ORMethodDeclare *AstMethodDeclareDeConvert(ORNode *parent, AstMethodDeclare *node, AstPatchFile *patch){
-    ORMethodDeclare *exp = [ORMethodDeclare new];
+ORMethodDeclNode *AstMethodDeclNodeDeConvert(ORNode *parent, AstMethodDeclNode *node, AstPatchFile *patch){
+    ORMethodDeclNode *exp = [ORMethodDeclNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.isClassMethod = node->isClassMethod;
     exp.returnType = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->returnType, patch);
     exp.methodNames = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->methodNames, patch);
-    exp.parameterTypes = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->parameterTypes, patch);
-    exp.parameterNames = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->parameterNames, patch);
+    exp.parameters = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->parameters, patch);
     return exp;
 }
-ORMethodImplementation *AstMethodImplementationDeConvert(ORNode *parent, AstMethodImplementation *node, AstPatchFile *patch){
-    ORMethodImplementation *exp = [ORMethodImplementation new];
+ORMethodNode *AstMethodNodeDeConvert(ORNode *parent, AstMethodNode *node, AstPatchFile *patch){
+    ORMethodNode *exp = [ORMethodNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.declare = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->declare, patch);
     exp.scopeImp = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->scopeImp, patch);
     return exp;
 }
-ORClass *AstClassDeConvert(ORNode *parent, AstClass *node, AstPatchFile *patch){
-    ORClass *exp = [ORClass new];
+ORClassNode *AstClassNodeDeConvert(ORNode *parent, AstClassNode *node, AstPatchFile *patch){
+    ORClassNode *exp = [ORClassNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.className = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->className, patch);
@@ -929,8 +883,8 @@ ORClass *AstClassDeConvert(ORNode *parent, AstClass *node, AstPatchFile *patch){
     exp.methods = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->methods, patch);
     return exp;
 }
-ORProtocol *AstProtocolDeConvert(ORNode *parent, AstProtocol *node, AstPatchFile *patch){
-    ORProtocol *exp = [ORProtocol new];
+ORProtocolNode *AstProtocolNodeDeConvert(ORNode *parent, AstProtocolNode *node, AstPatchFile *patch){
+    ORProtocolNode *exp = [ORProtocolNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.protcolName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->protcolName, patch);
@@ -939,16 +893,24 @@ ORProtocol *AstProtocolDeConvert(ORNode *parent, AstProtocol *node, AstPatchFile
     exp.methods = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->methods, patch);
     return exp;
 }
-ORStructExpressoin *AstStructExpressoinDeConvert(ORNode *parent, AstStructExpressoin *node, AstPatchFile *patch){
-    ORStructExpressoin *exp = [ORStructExpressoin new];
+ORStructStatNode *AstStructStatNodeDeConvert(ORNode *parent, AstStructStatNode *node, AstPatchFile *patch){
+    ORStructStatNode *exp = [ORStructStatNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.sturctName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->sturctName, patch);
     exp.fields = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->fields, patch);
     return exp;
 }
-OREnumExpressoin *AstEnumExpressoinDeConvert(ORNode *parent, AstEnumExpressoin *node, AstPatchFile *patch){
-    OREnumExpressoin *exp = [OREnumExpressoin new];
+ORUnionStatNode *AstUnionStatNodeDeConvert(ORNode *parent, AstUnionStatNode *node, AstPatchFile *patch){
+    ORUnionStatNode *exp = [ORUnionStatNode new];
+    exp.parentNode = parent;
+    exp.nodeType = node->nodeType;
+    exp.unionName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->unionName, patch);
+    exp.fields = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->fields, patch);
+    return exp;
+}
+OREnumStatNode *AstEnumStatNodeDeConvert(ORNode *parent, AstEnumStatNode *node, AstPatchFile *patch){
+    OREnumStatNode *exp = [OREnumStatNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.valueType = node->valueType;
@@ -956,71 +918,55 @@ OREnumExpressoin *AstEnumExpressoinDeConvert(ORNode *parent, AstEnumExpressoin *
     exp.fields = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->fields, patch);
     return exp;
 }
-ORTypedefExpressoin *AstTypedefExpressoinDeConvert(ORNode *parent, AstTypedefExpressoin *node, AstPatchFile *patch){
-    ORTypedefExpressoin *exp = [ORTypedefExpressoin new];
+ORTypedefStatNode *AstTypedefStatNodeDeConvert(ORNode *parent, AstTypedefStatNode *node, AstPatchFile *patch){
+    ORTypedefStatNode *exp = [ORTypedefStatNode new];
     exp.parentNode = parent;
     exp.nodeType = node->nodeType;
     exp.expression = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->expression, patch);
     exp.typeNewName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->typeNewName, patch);
     return exp;
 }
-ORCArrayVariable *AstCArrayVariableDeConvert(ORNode *parent, AstCArrayVariable *node, AstPatchFile *patch){
-    ORCArrayVariable *exp = [ORCArrayVariable new];
-    exp.parentNode = parent;
-    exp.nodeType = node->nodeType;
-    exp.isBlock = node->isBlock;
-    exp.ptCount = node->ptCount;
-    exp.varname = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->varname, patch);
-    exp.prev = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->prev, patch);
-    exp.capacity = (id)AstNodeDeConvert(exp, (AstEmptyNode *)node->capacity, patch);
-    return exp;
-}
-ORUnionExpressoin *AstUnionExpressoinDeConvert(ORNode *parent, AstUnionExpressoin *node, AstPatchFile *patch){
-    ORUnionExpressoin *exp = [ORUnionExpressoin new];
-    exp.parentNode = parent;
-    exp.nodeType = node->nodeType;
-    exp.unionName = (NSString *)AstNodeDeConvert(exp, (AstEmptyNode *)node->unionName, patch);
-    exp.fields = (NSMutableArray *)AstNodeDeConvert(exp, (AstEmptyNode *)node->fields, patch);
-    return exp;
-}
 
 #pragma mark - Struct Write To Buffer
-void AstTypeSpecialSerailization(AstTypeSpecial *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstTypeSpecialBaseLength);
-    *cursor += AstTypeSpecialBaseLength;
+void AstTypeNodeSerailization(AstTypeNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstTypeNodeBaseLength);
+    *cursor += AstTypeNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->name, buffer, cursor);
 }
-void AstVariableSerailization(AstVariable *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstVariableBaseLength);
-    *cursor += AstVariableBaseLength;
+void AstVariableNodeSerailization(AstVariableNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstVariableNodeBaseLength);
+    *cursor += AstVariableNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->varname, buffer, cursor);
 }
-void AstTypeVarPairSerailization(AstTypeVarPair *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstTypeVarPairBaseLength);
-    *cursor += AstTypeVarPairBaseLength;
+void AstDeclaratorNodeSerailization(AstDeclaratorNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstDeclaratorNodeBaseLength);
+    *cursor += AstDeclaratorNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->type, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->var, buffer, cursor);
 }
-void AstFuncVariableSerailization(AstFuncVariable *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstFuncVariableBaseLength);
-    *cursor += AstFuncVariableBaseLength;
-    AstNodeSerailization((AstEmptyNode *)node->varname, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->pairs, buffer, cursor);
+void AstFunctionDeclNodeSerailization(AstFunctionDeclNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstFunctionDeclNodeBaseLength);
+    *cursor += AstFunctionDeclNodeBaseLength;
+    AstNodeSerailization((AstEmptyNode *)node->type, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->var, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->params, buffer, cursor);
 }
-void AstFuncDeclareSerailization(AstFuncDeclare *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstFuncDeclareBaseLength);
-    *cursor += AstFuncDeclareBaseLength;
-    AstNodeSerailization((AstEmptyNode *)node->returnType, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->funVar, buffer, cursor);
+void AstCArrayDeclNodeSerailization(AstCArrayDeclNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstCArrayDeclNodeBaseLength);
+    *cursor += AstCArrayDeclNodeBaseLength;
+    AstNodeSerailization((AstEmptyNode *)node->type, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->var, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->prev, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->capacity, buffer, cursor);
 }
-void AstScopeImpSerailization(AstScopeImp *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstScopeImpBaseLength);
-    *cursor += AstScopeImpBaseLength;
+void AstBlockNodeSerailization(AstBlockNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstBlockNodeBaseLength);
+    *cursor += AstBlockNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->statements, buffer, cursor);
 }
-void AstValueExpressionSerailization(AstValueExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstValueExpressionBaseLength);
-    *cursor += AstValueExpressionBaseLength;
+void AstValueNodeSerailization(AstValueNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstValueNodeBaseLength);
+    *cursor += AstValueNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->value, buffer, cursor);
 }
 void AstIntegerValueSerailization(AstIntegerValue *node, void *buffer, uint32_t *cursor){
@@ -1047,53 +993,53 @@ void AstMethodCallSerailization(AstMethodCall *node, void *buffer, uint32_t *cur
     memcpy(buffer + *cursor, node, AstMethodCallBaseLength);
     *cursor += AstMethodCallBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->caller, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->names, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->selectorName, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->values, buffer, cursor);
 }
-void AstCFuncCallSerailization(AstCFuncCall *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstCFuncCallBaseLength);
-    *cursor += AstCFuncCallBaseLength;
+void AstFunctionCallSerailization(AstFunctionCall *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstFunctionCallBaseLength);
+    *cursor += AstFunctionCallBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->caller, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->expressions, buffer, cursor);
 }
-void AstFunctionImpSerailization(AstFunctionImp *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstFunctionImpBaseLength);
-    *cursor += AstFunctionImpBaseLength;
+void AstFunctionNodeSerailization(AstFunctionNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstFunctionNodeBaseLength);
+    *cursor += AstFunctionNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->declare, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->scopeImp, buffer, cursor);
 }
-void AstSubscriptExpressionSerailization(AstSubscriptExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstSubscriptExpressionBaseLength);
-    *cursor += AstSubscriptExpressionBaseLength;
+void AstSubscriptNodeSerailization(AstSubscriptNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstSubscriptNodeBaseLength);
+    *cursor += AstSubscriptNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->caller, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->keyExp, buffer, cursor);
 }
-void AstAssignExpressionSerailization(AstAssignExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstAssignExpressionBaseLength);
-    *cursor += AstAssignExpressionBaseLength;
+void AstAssignNodeSerailization(AstAssignNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstAssignNodeBaseLength);
+    *cursor += AstAssignNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->value, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->expression, buffer, cursor);
 }
-void AstDeclareExpressionSerailization(AstDeclareExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstDeclareExpressionBaseLength);
-    *cursor += AstDeclareExpressionBaseLength;
-    AstNodeSerailization((AstEmptyNode *)node->pair, buffer, cursor);
+void AstInitDeclaratorNodeSerailization(AstInitDeclaratorNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstInitDeclaratorNodeBaseLength);
+    *cursor += AstInitDeclaratorNodeBaseLength;
+    AstNodeSerailization((AstEmptyNode *)node->declarator, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->expression, buffer, cursor);
 }
-void AstUnaryExpressionSerailization(AstUnaryExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstUnaryExpressionBaseLength);
-    *cursor += AstUnaryExpressionBaseLength;
+void AstUnaryNodeSerailization(AstUnaryNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstUnaryNodeBaseLength);
+    *cursor += AstUnaryNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->value, buffer, cursor);
 }
-void AstBinaryExpressionSerailization(AstBinaryExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstBinaryExpressionBaseLength);
-    *cursor += AstBinaryExpressionBaseLength;
+void AstBinaryNodeSerailization(AstBinaryNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstBinaryNodeBaseLength);
+    *cursor += AstBinaryNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->left, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->right, buffer, cursor);
 }
-void AstTernaryExpressionSerailization(AstTernaryExpression *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstTernaryExpressionBaseLength);
-    *cursor += AstTernaryExpressionBaseLength;
+void AstTernaryNodeSerailization(AstTernaryNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstTernaryNodeBaseLength);
+    *cursor += AstTernaryNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->expression, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->values, buffer, cursor);
 }
@@ -1101,8 +1047,8 @@ void AstIfStatementSerailization(AstIfStatement *node, void *buffer, uint32_t *c
     memcpy(buffer + *cursor, node, AstIfStatementBaseLength);
     *cursor += AstIfStatementBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->condition, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->last, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->scopeImp, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->statements, buffer, cursor);
 }
 void AstWhileStatementSerailization(AstWhileStatement *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, AstWhileStatementBaseLength);
@@ -1127,7 +1073,6 @@ void AstSwitchStatementSerailization(AstSwitchStatement *node, void *buffer, uin
     *cursor += AstSwitchStatementBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->value, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->cases, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->scopeImp, buffer, cursor);
 }
 void AstForStatementSerailization(AstForStatement *node, void *buffer, uint32_t *cursor){
     memcpy(buffer + *cursor, node, AstForStatementBaseLength);
@@ -1144,44 +1089,33 @@ void AstForInStatementSerailization(AstForInStatement *node, void *buffer, uint3
     AstNodeSerailization((AstEmptyNode *)node->value, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->scopeImp, buffer, cursor);
 }
-void AstReturnStatementSerailization(AstReturnStatement *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstReturnStatementBaseLength);
-    *cursor += AstReturnStatementBaseLength;
+void AstControlStatNodeSerailization(AstControlStatNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstControlStatNodeBaseLength);
+    *cursor += AstControlStatNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->expression, buffer, cursor);
 }
-void AstBreakStatementSerailization(AstBreakStatement *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstBreakStatementBaseLength);
-    *cursor += AstBreakStatementBaseLength;
-    
-}
-void AstContinueStatementSerailization(AstContinueStatement *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstContinueStatementBaseLength);
-    *cursor += AstContinueStatementBaseLength;
-    
-}
-void AstPropertyDeclareSerailization(AstPropertyDeclare *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstPropertyDeclareBaseLength);
-    *cursor += AstPropertyDeclareBaseLength;
+void AstPropertyNodeSerailization(AstPropertyNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstPropertyNodeBaseLength);
+    *cursor += AstPropertyNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->keywords, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->var, buffer, cursor);
 }
-void AstMethodDeclareSerailization(AstMethodDeclare *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstMethodDeclareBaseLength);
-    *cursor += AstMethodDeclareBaseLength;
+void AstMethodDeclNodeSerailization(AstMethodDeclNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstMethodDeclNodeBaseLength);
+    *cursor += AstMethodDeclNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->returnType, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->methodNames, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->parameterTypes, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->parameterNames, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->parameters, buffer, cursor);
 }
-void AstMethodImplementationSerailization(AstMethodImplementation *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstMethodImplementationBaseLength);
-    *cursor += AstMethodImplementationBaseLength;
+void AstMethodNodeSerailization(AstMethodNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstMethodNodeBaseLength);
+    *cursor += AstMethodNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->declare, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->scopeImp, buffer, cursor);
 }
-void AstClassSerailization(AstClass *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstClassBaseLength);
-    *cursor += AstClassBaseLength;
+void AstClassNodeSerailization(AstClassNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstClassNodeBaseLength);
+    *cursor += AstClassNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->className, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->superClassName, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->protocols, buffer, cursor);
@@ -1189,96 +1123,92 @@ void AstClassSerailization(AstClass *node, void *buffer, uint32_t *cursor){
     AstNodeSerailization((AstEmptyNode *)node->privateVariables, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->methods, buffer, cursor);
 }
-void AstProtocolSerailization(AstProtocol *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstProtocolBaseLength);
-    *cursor += AstProtocolBaseLength;
+void AstProtocolNodeSerailization(AstProtocolNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstProtocolNodeBaseLength);
+    *cursor += AstProtocolNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->protcolName, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->protocols, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->properties, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->methods, buffer, cursor);
 }
-void AstStructExpressoinSerailization(AstStructExpressoin *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstStructExpressoinBaseLength);
-    *cursor += AstStructExpressoinBaseLength;
+void AstStructStatNodeSerailization(AstStructStatNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstStructStatNodeBaseLength);
+    *cursor += AstStructStatNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->sturctName, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->fields, buffer, cursor);
 }
-void AstEnumExpressoinSerailization(AstEnumExpressoin *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstEnumExpressoinBaseLength);
-    *cursor += AstEnumExpressoinBaseLength;
-    AstNodeSerailization((AstEmptyNode *)node->enumName, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->fields, buffer, cursor);
-}
-void AstTypedefExpressoinSerailization(AstTypedefExpressoin *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstTypedefExpressoinBaseLength);
-    *cursor += AstTypedefExpressoinBaseLength;
-    AstNodeSerailization((AstEmptyNode *)node->expression, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->typeNewName, buffer, cursor);
-}
-void AstCArrayVariableSerailization(AstCArrayVariable *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstCArrayVariableBaseLength);
-    *cursor += AstCArrayVariableBaseLength;
-    AstNodeSerailization((AstEmptyNode *)node->varname, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->prev, buffer, cursor);
-    AstNodeSerailization((AstEmptyNode *)node->capacity, buffer, cursor);
-}
-void AstUnionExpressoinSerailization(AstUnionExpressoin *node, void *buffer, uint32_t *cursor){
-    memcpy(buffer + *cursor, node, AstUnionExpressoinBaseLength);
-    *cursor += AstUnionExpressoinBaseLength;
+void AstUnionStatNodeSerailization(AstUnionStatNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstUnionStatNodeBaseLength);
+    *cursor += AstUnionStatNodeBaseLength;
     AstNodeSerailization((AstEmptyNode *)node->unionName, buffer, cursor);
     AstNodeSerailization((AstEmptyNode *)node->fields, buffer, cursor);
 }
+void AstEnumStatNodeSerailization(AstEnumStatNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstEnumStatNodeBaseLength);
+    *cursor += AstEnumStatNodeBaseLength;
+    AstNodeSerailization((AstEmptyNode *)node->enumName, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->fields, buffer, cursor);
+}
+void AstTypedefStatNodeSerailization(AstTypedefStatNode *node, void *buffer, uint32_t *cursor){
+    memcpy(buffer + *cursor, node, AstTypedefStatNodeBaseLength);
+    *cursor += AstTypedefStatNodeBaseLength;
+    AstNodeSerailization((AstEmptyNode *)node->expression, buffer, cursor);
+    AstNodeSerailization((AstEmptyNode *)node->typeNewName, buffer, cursor);
+}
 
 #pragma mark - Buffer Data Convert To Struct
-AstTypeSpecial *AstTypeSpecialDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstTypeSpecial *node = malloc(sizeof(AstTypeSpecial));
-    memcpy(node, buffer + *cursor, AstTypeSpecialBaseLength);
-    *cursor += AstTypeSpecialBaseLength;
+AstTypeNode *AstTypeNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstTypeNode *node = malloc(sizeof(AstTypeNode));
+    memcpy(node, buffer + *cursor, AstTypeNodeBaseLength);
+    *cursor += AstTypeNodeBaseLength;
     node->name =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstVariable *AstVariableDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstVariable *node = malloc(sizeof(AstVariable));
-    memcpy(node, buffer + *cursor, AstVariableBaseLength);
-    *cursor += AstVariableBaseLength;
+AstVariableNode *AstVariableNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstVariableNode *node = malloc(sizeof(AstVariableNode));
+    memcpy(node, buffer + *cursor, AstVariableNodeBaseLength);
+    *cursor += AstVariableNodeBaseLength;
     node->varname =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstTypeVarPair *AstTypeVarPairDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstTypeVarPair *node = malloc(sizeof(AstTypeVarPair));
-    memcpy(node, buffer + *cursor, AstTypeVarPairBaseLength);
-    *cursor += AstTypeVarPairBaseLength;
+AstDeclaratorNode *AstDeclaratorNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstDeclaratorNode *node = malloc(sizeof(AstDeclaratorNode));
+    memcpy(node, buffer + *cursor, AstDeclaratorNodeBaseLength);
+    *cursor += AstDeclaratorNodeBaseLength;
     node->type =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->var =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstFuncVariable *AstFuncVariableDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstFuncVariable *node = malloc(sizeof(AstFuncVariable));
-    memcpy(node, buffer + *cursor, AstFuncVariableBaseLength);
-    *cursor += AstFuncVariableBaseLength;
-    node->varname =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->pairs =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
+AstFunctionDeclNode *AstFunctionDeclNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstFunctionDeclNode *node = malloc(sizeof(AstFunctionDeclNode));
+    memcpy(node, buffer + *cursor, AstFunctionDeclNodeBaseLength);
+    *cursor += AstFunctionDeclNodeBaseLength;
+    node->type =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->var =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->params =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstFuncDeclare *AstFuncDeclareDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstFuncDeclare *node = malloc(sizeof(AstFuncDeclare));
-    memcpy(node, buffer + *cursor, AstFuncDeclareBaseLength);
-    *cursor += AstFuncDeclareBaseLength;
-    node->returnType =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->funVar =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+AstCArrayDeclNode *AstCArrayDeclNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstCArrayDeclNode *node = malloc(sizeof(AstCArrayDeclNode));
+    memcpy(node, buffer + *cursor, AstCArrayDeclNodeBaseLength);
+    *cursor += AstCArrayDeclNodeBaseLength;
+    node->type =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->var =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->prev =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->capacity =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstScopeImp *AstScopeImpDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstScopeImp *node = malloc(sizeof(AstScopeImp));
-    memcpy(node, buffer + *cursor, AstScopeImpBaseLength);
-    *cursor += AstScopeImpBaseLength;
+AstBlockNode *AstBlockNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstBlockNode *node = malloc(sizeof(AstBlockNode));
+    memcpy(node, buffer + *cursor, AstBlockNodeBaseLength);
+    *cursor += AstBlockNodeBaseLength;
     node->statements =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstValueExpression *AstValueExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstValueExpression *node = malloc(sizeof(AstValueExpression));
-    memcpy(node, buffer + *cursor, AstValueExpressionBaseLength);
-    *cursor += AstValueExpressionBaseLength;
+AstValueNode *AstValueNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstValueNode *node = malloc(sizeof(AstValueNode));
+    memcpy(node, buffer + *cursor, AstValueNodeBaseLength);
+    *cursor += AstValueNodeBaseLength;
     node->value =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
@@ -1315,69 +1245,69 @@ AstMethodCall *AstMethodCallDeserialization(void *buffer, uint32_t *cursor, uint
     memcpy(node, buffer + *cursor, AstMethodCallBaseLength);
     *cursor += AstMethodCallBaseLength;
     node->caller =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->names =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->selectorName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->values =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstCFuncCall *AstCFuncCallDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstCFuncCall *node = malloc(sizeof(AstCFuncCall));
-    memcpy(node, buffer + *cursor, AstCFuncCallBaseLength);
-    *cursor += AstCFuncCallBaseLength;
+AstFunctionCall *AstFunctionCallDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstFunctionCall *node = malloc(sizeof(AstFunctionCall));
+    memcpy(node, buffer + *cursor, AstFunctionCallBaseLength);
+    *cursor += AstFunctionCallBaseLength;
     node->caller =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->expressions =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstFunctionImp *AstFunctionImpDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstFunctionImp *node = malloc(sizeof(AstFunctionImp));
-    memcpy(node, buffer + *cursor, AstFunctionImpBaseLength);
-    *cursor += AstFunctionImpBaseLength;
+AstFunctionNode *AstFunctionNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstFunctionNode *node = malloc(sizeof(AstFunctionNode));
+    memcpy(node, buffer + *cursor, AstFunctionNodeBaseLength);
+    *cursor += AstFunctionNodeBaseLength;
     node->declare =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->scopeImp =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstSubscriptExpression *AstSubscriptExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstSubscriptExpression *node = malloc(sizeof(AstSubscriptExpression));
-    memcpy(node, buffer + *cursor, AstSubscriptExpressionBaseLength);
-    *cursor += AstSubscriptExpressionBaseLength;
+AstSubscriptNode *AstSubscriptNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstSubscriptNode *node = malloc(sizeof(AstSubscriptNode));
+    memcpy(node, buffer + *cursor, AstSubscriptNodeBaseLength);
+    *cursor += AstSubscriptNodeBaseLength;
     node->caller =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->keyExp =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstAssignExpression *AstAssignExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstAssignExpression *node = malloc(sizeof(AstAssignExpression));
-    memcpy(node, buffer + *cursor, AstAssignExpressionBaseLength);
-    *cursor += AstAssignExpressionBaseLength;
+AstAssignNode *AstAssignNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstAssignNode *node = malloc(sizeof(AstAssignNode));
+    memcpy(node, buffer + *cursor, AstAssignNodeBaseLength);
+    *cursor += AstAssignNodeBaseLength;
     node->value =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->expression =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstDeclareExpression *AstDeclareExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstDeclareExpression *node = malloc(sizeof(AstDeclareExpression));
-    memcpy(node, buffer + *cursor, AstDeclareExpressionBaseLength);
-    *cursor += AstDeclareExpressionBaseLength;
-    node->pair =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+AstInitDeclaratorNode *AstInitDeclaratorNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstInitDeclaratorNode *node = malloc(sizeof(AstInitDeclaratorNode));
+    memcpy(node, buffer + *cursor, AstInitDeclaratorNodeBaseLength);
+    *cursor += AstInitDeclaratorNodeBaseLength;
+    node->declarator =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->expression =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstUnaryExpression *AstUnaryExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstUnaryExpression *node = malloc(sizeof(AstUnaryExpression));
-    memcpy(node, buffer + *cursor, AstUnaryExpressionBaseLength);
-    *cursor += AstUnaryExpressionBaseLength;
+AstUnaryNode *AstUnaryNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstUnaryNode *node = malloc(sizeof(AstUnaryNode));
+    memcpy(node, buffer + *cursor, AstUnaryNodeBaseLength);
+    *cursor += AstUnaryNodeBaseLength;
     node->value =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstBinaryExpression *AstBinaryExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstBinaryExpression *node = malloc(sizeof(AstBinaryExpression));
-    memcpy(node, buffer + *cursor, AstBinaryExpressionBaseLength);
-    *cursor += AstBinaryExpressionBaseLength;
+AstBinaryNode *AstBinaryNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstBinaryNode *node = malloc(sizeof(AstBinaryNode));
+    memcpy(node, buffer + *cursor, AstBinaryNodeBaseLength);
+    *cursor += AstBinaryNodeBaseLength;
     node->left =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->right =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstTernaryExpression *AstTernaryExpressionDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstTernaryExpression *node = malloc(sizeof(AstTernaryExpression));
-    memcpy(node, buffer + *cursor, AstTernaryExpressionBaseLength);
-    *cursor += AstTernaryExpressionBaseLength;
+AstTernaryNode *AstTernaryNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstTernaryNode *node = malloc(sizeof(AstTernaryNode));
+    memcpy(node, buffer + *cursor, AstTernaryNodeBaseLength);
+    *cursor += AstTernaryNodeBaseLength;
     node->expression =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->values =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
@@ -1387,8 +1317,8 @@ AstIfStatement *AstIfStatementDeserialization(void *buffer, uint32_t *cursor, ui
     memcpy(node, buffer + *cursor, AstIfStatementBaseLength);
     *cursor += AstIfStatementBaseLength;
     node->condition =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->last =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->scopeImp =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->statements =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
 AstWhileStatement *AstWhileStatementDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
@@ -1421,7 +1351,6 @@ AstSwitchStatement *AstSwitchStatementDeserialization(void *buffer, uint32_t *cu
     *cursor += AstSwitchStatementBaseLength;
     node->value =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->cases =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->scopeImp =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
 AstForStatement *AstForStatementDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
@@ -1443,57 +1372,42 @@ AstForInStatement *AstForInStatementDeserialization(void *buffer, uint32_t *curs
     node->scopeImp =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstReturnStatement *AstReturnStatementDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstReturnStatement *node = malloc(sizeof(AstReturnStatement));
-    memcpy(node, buffer + *cursor, AstReturnStatementBaseLength);
-    *cursor += AstReturnStatementBaseLength;
+AstControlStatNode *AstControlStatNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstControlStatNode *node = malloc(sizeof(AstControlStatNode));
+    memcpy(node, buffer + *cursor, AstControlStatNodeBaseLength);
+    *cursor += AstControlStatNodeBaseLength;
     node->expression =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstBreakStatement *AstBreakStatementDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstBreakStatement *node = malloc(sizeof(AstBreakStatement));
-    memcpy(node, buffer + *cursor, AstBreakStatementBaseLength);
-    *cursor += AstBreakStatementBaseLength;
-    
-    return node;
-}
-AstContinueStatement *AstContinueStatementDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstContinueStatement *node = malloc(sizeof(AstContinueStatement));
-    memcpy(node, buffer + *cursor, AstContinueStatementBaseLength);
-    *cursor += AstContinueStatementBaseLength;
-    
-    return node;
-}
-AstPropertyDeclare *AstPropertyDeclareDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstPropertyDeclare *node = malloc(sizeof(AstPropertyDeclare));
-    memcpy(node, buffer + *cursor, AstPropertyDeclareBaseLength);
-    *cursor += AstPropertyDeclareBaseLength;
+AstPropertyNode *AstPropertyNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstPropertyNode *node = malloc(sizeof(AstPropertyNode));
+    memcpy(node, buffer + *cursor, AstPropertyNodeBaseLength);
+    *cursor += AstPropertyNodeBaseLength;
     node->keywords =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->var =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstMethodDeclare *AstMethodDeclareDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstMethodDeclare *node = malloc(sizeof(AstMethodDeclare));
-    memcpy(node, buffer + *cursor, AstMethodDeclareBaseLength);
-    *cursor += AstMethodDeclareBaseLength;
+AstMethodDeclNode *AstMethodDeclNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstMethodDeclNode *node = malloc(sizeof(AstMethodDeclNode));
+    memcpy(node, buffer + *cursor, AstMethodDeclNodeBaseLength);
+    *cursor += AstMethodDeclNodeBaseLength;
     node->returnType =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->methodNames =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->parameterTypes =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->parameterNames =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->parameters =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstMethodImplementation *AstMethodImplementationDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstMethodImplementation *node = malloc(sizeof(AstMethodImplementation));
-    memcpy(node, buffer + *cursor, AstMethodImplementationBaseLength);
-    *cursor += AstMethodImplementationBaseLength;
+AstMethodNode *AstMethodNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstMethodNode *node = malloc(sizeof(AstMethodNode));
+    memcpy(node, buffer + *cursor, AstMethodNodeBaseLength);
+    *cursor += AstMethodNodeBaseLength;
     node->declare =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->scopeImp =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstClass *AstClassDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstClass *node = malloc(sizeof(AstClass));
-    memcpy(node, buffer + *cursor, AstClassBaseLength);
-    *cursor += AstClassBaseLength;
+AstClassNode *AstClassNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstClassNode *node = malloc(sizeof(AstClassNode));
+    memcpy(node, buffer + *cursor, AstClassNodeBaseLength);
+    *cursor += AstClassNodeBaseLength;
     node->className =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->superClassName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->protocols =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
@@ -1502,87 +1416,77 @@ AstClass *AstClassDeserialization(void *buffer, uint32_t *cursor, uint32_t buffe
     node->methods =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstProtocol *AstProtocolDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstProtocol *node = malloc(sizeof(AstProtocol));
-    memcpy(node, buffer + *cursor, AstProtocolBaseLength);
-    *cursor += AstProtocolBaseLength;
+AstProtocolNode *AstProtocolNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstProtocolNode *node = malloc(sizeof(AstProtocolNode));
+    memcpy(node, buffer + *cursor, AstProtocolNodeBaseLength);
+    *cursor += AstProtocolNodeBaseLength;
     node->protcolName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->protocols =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->properties =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->methods =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstStructExpressoin *AstStructExpressoinDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstStructExpressoin *node = malloc(sizeof(AstStructExpressoin));
-    memcpy(node, buffer + *cursor, AstStructExpressoinBaseLength);
-    *cursor += AstStructExpressoinBaseLength;
+AstStructStatNode *AstStructStatNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstStructStatNode *node = malloc(sizeof(AstStructStatNode));
+    memcpy(node, buffer + *cursor, AstStructStatNodeBaseLength);
+    *cursor += AstStructStatNodeBaseLength;
     node->sturctName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->fields =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
-AstEnumExpressoin *AstEnumExpressoinDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstEnumExpressoin *node = malloc(sizeof(AstEnumExpressoin));
-    memcpy(node, buffer + *cursor, AstEnumExpressoinBaseLength);
-    *cursor += AstEnumExpressoinBaseLength;
-    node->enumName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->fields =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    return node;
-}
-AstTypedefExpressoin *AstTypedefExpressoinDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstTypedefExpressoin *node = malloc(sizeof(AstTypedefExpressoin));
-    memcpy(node, buffer + *cursor, AstTypedefExpressoinBaseLength);
-    *cursor += AstTypedefExpressoinBaseLength;
-    node->expression =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->typeNewName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    return node;
-}
-AstCArrayVariable *AstCArrayVariableDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstCArrayVariable *node = malloc(sizeof(AstCArrayVariable));
-    memcpy(node, buffer + *cursor, AstCArrayVariableBaseLength);
-    *cursor += AstCArrayVariableBaseLength;
-    node->varname =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->prev =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    node->capacity =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
-    return node;
-}
-AstUnionExpressoin *AstUnionExpressoinDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
-    AstUnionExpressoin *node = malloc(sizeof(AstUnionExpressoin));
-    memcpy(node, buffer + *cursor, AstUnionExpressoinBaseLength);
-    *cursor += AstUnionExpressoinBaseLength;
+AstUnionStatNode *AstUnionStatNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstUnionStatNode *node = malloc(sizeof(AstUnionStatNode));
+    memcpy(node, buffer + *cursor, AstUnionStatNodeBaseLength);
+    *cursor += AstUnionStatNodeBaseLength;
     node->unionName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
     node->fields =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
     return node;
 }
+AstEnumStatNode *AstEnumStatNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstEnumStatNode *node = malloc(sizeof(AstEnumStatNode));
+    memcpy(node, buffer + *cursor, AstEnumStatNodeBaseLength);
+    *cursor += AstEnumStatNodeBaseLength;
+    node->enumName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->fields =(AstNodeList *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    return node;
+}
+AstTypedefStatNode *AstTypedefStatNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength){
+    AstTypedefStatNode *node = malloc(sizeof(AstTypedefStatNode));
+    memcpy(node, buffer + *cursor, AstTypedefStatNodeBaseLength);
+    *cursor += AstTypedefStatNodeBaseLength;
+    node->expression =(AstEmptyNode *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    node->typeNewName =(AstStringCursor *) AstNodeDeserialization(buffer, cursor, bufferLength);
+    return node;
+}
 
 #pragma mark - Free Struct Memory
-void AstTypeSpecialDestroy(AstTypeSpecial *node){
+void AstTypeNodeDestroy(AstTypeNode *node){
     AstNodeDestroy((AstEmptyNode *)node->name);
     free(node);
 }
-void AstVariableDestroy(AstVariable *node){
+void AstVariableNodeDestroy(AstVariableNode *node){
     AstNodeDestroy((AstEmptyNode *)node->varname);
     free(node);
 }
-void AstTypeVarPairDestroy(AstTypeVarPair *node){
+void AstDeclaratorNodeDestroy(AstDeclaratorNode *node){
     AstNodeDestroy((AstEmptyNode *)node->type);
     AstNodeDestroy((AstEmptyNode *)node->var);
     free(node);
 }
-void AstFuncVariableDestroy(AstFuncVariable *node){
-    AstNodeDestroy((AstEmptyNode *)node->varname);
-    AstNodeDestroy((AstEmptyNode *)node->pairs);
+void AstFunctionDeclNodeDestroy(AstFunctionDeclNode *node){
+    AstNodeDestroy((AstEmptyNode *)node->params);
     free(node);
 }
-void AstFuncDeclareDestroy(AstFuncDeclare *node){
-    AstNodeDestroy((AstEmptyNode *)node->returnType);
-    AstNodeDestroy((AstEmptyNode *)node->funVar);
+void AstCArrayDeclNodeDestroy(AstCArrayDeclNode *node){
+    AstNodeDestroy((AstEmptyNode *)node->prev);
+    AstNodeDestroy((AstEmptyNode *)node->capacity);
     free(node);
 }
-void AstScopeImpDestroy(AstScopeImp *node){
+void AstBlockNodeDestroy(AstBlockNode *node){
     AstNodeDestroy((AstEmptyNode *)node->statements);
     free(node);
 }
-void AstValueExpressionDestroy(AstValueExpression *node){
+void AstValueNodeDestroy(AstValueNode *node){
     AstNodeDestroy((AstEmptyNode *)node->value);
     free(node);
 }
@@ -1604,53 +1508,53 @@ void AstBoolValueDestroy(AstBoolValue *node){
 }
 void AstMethodCallDestroy(AstMethodCall *node){
     AstNodeDestroy((AstEmptyNode *)node->caller);
-    AstNodeDestroy((AstEmptyNode *)node->names);
+    AstNodeDestroy((AstEmptyNode *)node->selectorName);
     AstNodeDestroy((AstEmptyNode *)node->values);
     free(node);
 }
-void AstCFuncCallDestroy(AstCFuncCall *node){
+void AstFunctionCallDestroy(AstFunctionCall *node){
     AstNodeDestroy((AstEmptyNode *)node->caller);
     AstNodeDestroy((AstEmptyNode *)node->expressions);
     free(node);
 }
-void AstFunctionImpDestroy(AstFunctionImp *node){
+void AstFunctionNodeDestroy(AstFunctionNode *node){
     AstNodeDestroy((AstEmptyNode *)node->declare);
     AstNodeDestroy((AstEmptyNode *)node->scopeImp);
     free(node);
 }
-void AstSubscriptExpressionDestroy(AstSubscriptExpression *node){
+void AstSubscriptNodeDestroy(AstSubscriptNode *node){
     AstNodeDestroy((AstEmptyNode *)node->caller);
     AstNodeDestroy((AstEmptyNode *)node->keyExp);
     free(node);
 }
-void AstAssignExpressionDestroy(AstAssignExpression *node){
+void AstAssignNodeDestroy(AstAssignNode *node){
     AstNodeDestroy((AstEmptyNode *)node->value);
     AstNodeDestroy((AstEmptyNode *)node->expression);
     free(node);
 }
-void AstDeclareExpressionDestroy(AstDeclareExpression *node){
-    AstNodeDestroy((AstEmptyNode *)node->pair);
+void AstInitDeclaratorNodeDestroy(AstInitDeclaratorNode *node){
+    AstNodeDestroy((AstEmptyNode *)node->declarator);
     AstNodeDestroy((AstEmptyNode *)node->expression);
     free(node);
 }
-void AstUnaryExpressionDestroy(AstUnaryExpression *node){
+void AstUnaryNodeDestroy(AstUnaryNode *node){
     AstNodeDestroy((AstEmptyNode *)node->value);
     free(node);
 }
-void AstBinaryExpressionDestroy(AstBinaryExpression *node){
+void AstBinaryNodeDestroy(AstBinaryNode *node){
     AstNodeDestroy((AstEmptyNode *)node->left);
     AstNodeDestroy((AstEmptyNode *)node->right);
     free(node);
 }
-void AstTernaryExpressionDestroy(AstTernaryExpression *node){
+void AstTernaryNodeDestroy(AstTernaryNode *node){
     AstNodeDestroy((AstEmptyNode *)node->expression);
     AstNodeDestroy((AstEmptyNode *)node->values);
     free(node);
 }
 void AstIfStatementDestroy(AstIfStatement *node){
     AstNodeDestroy((AstEmptyNode *)node->condition);
-    AstNodeDestroy((AstEmptyNode *)node->last);
     AstNodeDestroy((AstEmptyNode *)node->scopeImp);
+    AstNodeDestroy((AstEmptyNode *)node->statements);
     free(node);
 }
 void AstWhileStatementDestroy(AstWhileStatement *node){
@@ -1671,7 +1575,6 @@ void AstCaseStatementDestroy(AstCaseStatement *node){
 void AstSwitchStatementDestroy(AstSwitchStatement *node){
     AstNodeDestroy((AstEmptyNode *)node->value);
     AstNodeDestroy((AstEmptyNode *)node->cases);
-    AstNodeDestroy((AstEmptyNode *)node->scopeImp);
     free(node);
 }
 void AstForStatementDestroy(AstForStatement *node){
@@ -1687,36 +1590,27 @@ void AstForInStatementDestroy(AstForInStatement *node){
     AstNodeDestroy((AstEmptyNode *)node->scopeImp);
     free(node);
 }
-void AstReturnStatementDestroy(AstReturnStatement *node){
+void AstControlStatNodeDestroy(AstControlStatNode *node){
     AstNodeDestroy((AstEmptyNode *)node->expression);
     free(node);
 }
-void AstBreakStatementDestroy(AstBreakStatement *node){
-    
-    free(node);
-}
-void AstContinueStatementDestroy(AstContinueStatement *node){
-    
-    free(node);
-}
-void AstPropertyDeclareDestroy(AstPropertyDeclare *node){
+void AstPropertyNodeDestroy(AstPropertyNode *node){
     AstNodeDestroy((AstEmptyNode *)node->keywords);
     AstNodeDestroy((AstEmptyNode *)node->var);
     free(node);
 }
-void AstMethodDeclareDestroy(AstMethodDeclare *node){
+void AstMethodDeclNodeDestroy(AstMethodDeclNode *node){
     AstNodeDestroy((AstEmptyNode *)node->returnType);
     AstNodeDestroy((AstEmptyNode *)node->methodNames);
-    AstNodeDestroy((AstEmptyNode *)node->parameterTypes);
-    AstNodeDestroy((AstEmptyNode *)node->parameterNames);
+    AstNodeDestroy((AstEmptyNode *)node->parameters);
     free(node);
 }
-void AstMethodImplementationDestroy(AstMethodImplementation *node){
+void AstMethodNodeDestroy(AstMethodNode *node){
     AstNodeDestroy((AstEmptyNode *)node->declare);
     AstNodeDestroy((AstEmptyNode *)node->scopeImp);
     free(node);
 }
-void AstClassDestroy(AstClass *node){
+void AstClassNodeDestroy(AstClassNode *node){
     AstNodeDestroy((AstEmptyNode *)node->className);
     AstNodeDestroy((AstEmptyNode *)node->superClassName);
     AstNodeDestroy((AstEmptyNode *)node->protocols);
@@ -1725,37 +1619,31 @@ void AstClassDestroy(AstClass *node){
     AstNodeDestroy((AstEmptyNode *)node->methods);
     free(node);
 }
-void AstProtocolDestroy(AstProtocol *node){
+void AstProtocolNodeDestroy(AstProtocolNode *node){
     AstNodeDestroy((AstEmptyNode *)node->protcolName);
     AstNodeDestroy((AstEmptyNode *)node->protocols);
     AstNodeDestroy((AstEmptyNode *)node->properties);
     AstNodeDestroy((AstEmptyNode *)node->methods);
     free(node);
 }
-void AstStructExpressoinDestroy(AstStructExpressoin *node){
+void AstStructStatNodeDestroy(AstStructStatNode *node){
     AstNodeDestroy((AstEmptyNode *)node->sturctName);
     AstNodeDestroy((AstEmptyNode *)node->fields);
     free(node);
 }
-void AstEnumExpressoinDestroy(AstEnumExpressoin *node){
+void AstUnionStatNodeDestroy(AstUnionStatNode *node){
+    AstNodeDestroy((AstEmptyNode *)node->unionName);
+    AstNodeDestroy((AstEmptyNode *)node->fields);
+    free(node);
+}
+void AstEnumStatNodeDestroy(AstEnumStatNode *node){
     AstNodeDestroy((AstEmptyNode *)node->enumName);
     AstNodeDestroy((AstEmptyNode *)node->fields);
     free(node);
 }
-void AstTypedefExpressoinDestroy(AstTypedefExpressoin *node){
+void AstTypedefStatNodeDestroy(AstTypedefStatNode *node){
     AstNodeDestroy((AstEmptyNode *)node->expression);
     AstNodeDestroy((AstEmptyNode *)node->typeNewName);
-    free(node);
-}
-void AstCArrayVariableDestroy(AstCArrayVariable *node){
-    AstNodeDestroy((AstEmptyNode *)node->varname);
-    AstNodeDestroy((AstEmptyNode *)node->prev);
-    AstNodeDestroy((AstEmptyNode *)node->capacity);
-    free(node);
-}
-void AstUnionExpressoinDestroy(AstUnionExpressoin *node){
-    AstNodeDestroy((AstEmptyNode *)node->unionName);
-    AstNodeDestroy((AstEmptyNode *)node->fields);
     free(node);
 }
 
@@ -1765,22 +1653,20 @@ AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
         return (AstEmptyNode *)createStringCursor((NSString *)exp, patch, length);
     }else if ([exp isKindOfClass:[NSArray class]]) {
         return (AstEmptyNode *)AstNodeListConvert((NSArray *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORCArrayVariable class]]){
-        return (AstEmptyNode *)AstCArrayVariableConvert((ORCArrayVariable *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORFuncVariable class]]){
-        return (AstEmptyNode *)AstFuncVariableConvert((ORFuncVariable *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORTypeSpecial class]]){
-        return (AstEmptyNode *)AstTypeSpecialConvert((ORTypeSpecial *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORVariable class]]){
-        return (AstEmptyNode *)AstVariableConvert((ORVariable *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORTypeVarPair class]]){
-        return (AstEmptyNode *)AstTypeVarPairConvert((ORTypeVarPair *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORFuncDeclare class]]){
-        return (AstEmptyNode *)AstFuncDeclareConvert((ORFuncDeclare *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORScopeImp class]]){
-        return (AstEmptyNode *)AstScopeImpConvert((ORScopeImp *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORValueExpression class]]){
-        return (AstEmptyNode *)AstValueExpressionConvert((ORValueExpression *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORCArrayDeclNode class]]){
+        return (AstEmptyNode *)AstCArrayDeclNodeConvert((ORCArrayDeclNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORFunctionDeclNode class]]){
+        return (AstEmptyNode *)AstFunctionDeclNodeConvert((ORFunctionDeclNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORTypeNode class]]){
+        return (AstEmptyNode *)AstTypeNodeConvert((ORTypeNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORVariableNode class]]){
+        return (AstEmptyNode *)AstVariableNodeConvert((ORVariableNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORDeclaratorNode class]]){
+        return (AstEmptyNode *)AstDeclaratorNodeConvert((ORDeclaratorNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORBlockNode class]]){
+        return (AstEmptyNode *)AstBlockNodeConvert((ORBlockNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORValueNode class]]){
+        return (AstEmptyNode *)AstValueNodeConvert((ORValueNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORIntegerValue class]]){
         return (AstEmptyNode *)AstIntegerValueConvert((ORIntegerValue *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORUIntegerValue class]]){
@@ -1791,22 +1677,22 @@ AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
         return (AstEmptyNode *)AstBoolValueConvert((ORBoolValue *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORMethodCall class]]){
         return (AstEmptyNode *)AstMethodCallConvert((ORMethodCall *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORCFuncCall class]]){
-        return (AstEmptyNode *)AstCFuncCallConvert((ORCFuncCall *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORFunctionImp class]]){
-        return (AstEmptyNode *)AstFunctionImpConvert((ORFunctionImp *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORSubscriptExpression class]]){
-        return (AstEmptyNode *)AstSubscriptExpressionConvert((ORSubscriptExpression *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORAssignExpression class]]){
-        return (AstEmptyNode *)AstAssignExpressionConvert((ORAssignExpression *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORDeclareExpression class]]){
-        return (AstEmptyNode *)AstDeclareExpressionConvert((ORDeclareExpression *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORUnaryExpression class]]){
-        return (AstEmptyNode *)AstUnaryExpressionConvert((ORUnaryExpression *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORBinaryExpression class]]){
-        return (AstEmptyNode *)AstBinaryExpressionConvert((ORBinaryExpression *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORTernaryExpression class]]){
-        return (AstEmptyNode *)AstTernaryExpressionConvert((ORTernaryExpression *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORFunctionCall class]]){
+        return (AstEmptyNode *)AstFunctionCallConvert((ORFunctionCall *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORFunctionNode class]]){
+        return (AstEmptyNode *)AstFunctionNodeConvert((ORFunctionNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORSubscriptNode class]]){
+        return (AstEmptyNode *)AstSubscriptNodeConvert((ORSubscriptNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORAssignNode class]]){
+        return (AstEmptyNode *)AstAssignNodeConvert((ORAssignNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORInitDeclaratorNode class]]){
+        return (AstEmptyNode *)AstInitDeclaratorNodeConvert((ORInitDeclaratorNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORUnaryNode class]]){
+        return (AstEmptyNode *)AstUnaryNodeConvert((ORUnaryNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORBinaryNode class]]){
+        return (AstEmptyNode *)AstBinaryNodeConvert((ORBinaryNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORTernaryNode class]]){
+        return (AstEmptyNode *)AstTernaryNodeConvert((ORTernaryNode *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORIfStatement class]]){
         return (AstEmptyNode *)AstIfStatementConvert((ORIfStatement *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORWhileStatement class]]){
@@ -1821,30 +1707,26 @@ AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
         return (AstEmptyNode *)AstForStatementConvert((ORForStatement *)exp, patch, length);
     }else if ([exp isKindOfClass:[ORForInStatement class]]){
         return (AstEmptyNode *)AstForInStatementConvert((ORForInStatement *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORReturnStatement class]]){
-        return (AstEmptyNode *)AstReturnStatementConvert((ORReturnStatement *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORBreakStatement class]]){
-        return (AstEmptyNode *)AstBreakStatementConvert((ORBreakStatement *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORContinueStatement class]]){
-        return (AstEmptyNode *)AstContinueStatementConvert((ORContinueStatement *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORPropertyDeclare class]]){
-        return (AstEmptyNode *)AstPropertyDeclareConvert((ORPropertyDeclare *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORMethodDeclare class]]){
-        return (AstEmptyNode *)AstMethodDeclareConvert((ORMethodDeclare *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORMethodImplementation class]]){
-        return (AstEmptyNode *)AstMethodImplementationConvert((ORMethodImplementation *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORClass class]]){
-        return (AstEmptyNode *)AstClassConvert((ORClass *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORProtocol class]]){
-        return (AstEmptyNode *)AstProtocolConvert((ORProtocol *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORStructExpressoin class]]){
-        return (AstEmptyNode *)AstStructExpressoinConvert((ORStructExpressoin *)exp, patch, length);
-    }else if ([exp isKindOfClass:[OREnumExpressoin class]]){
-        return (AstEmptyNode *)AstEnumExpressoinConvert((OREnumExpressoin *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORTypedefExpressoin class]]){
-        return (AstEmptyNode *)AstTypedefExpressoinConvert((ORTypedefExpressoin *)exp, patch, length);
-    }else if ([exp isKindOfClass:[ORUnionExpressoin class]]){
-        return (AstEmptyNode *)AstUnionExpressoinConvert((ORUnionExpressoin *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORControlStatNode class]]){
+        return (AstEmptyNode *)AstControlStatNodeConvert((ORControlStatNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORPropertyNode class]]){
+        return (AstEmptyNode *)AstPropertyNodeConvert((ORPropertyNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORMethodDeclNode class]]){
+        return (AstEmptyNode *)AstMethodDeclNodeConvert((ORMethodDeclNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORMethodNode class]]){
+        return (AstEmptyNode *)AstMethodNodeConvert((ORMethodNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORClassNode class]]){
+        return (AstEmptyNode *)AstClassNodeConvert((ORClassNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORProtocolNode class]]){
+        return (AstEmptyNode *)AstProtocolNodeConvert((ORProtocolNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORStructStatNode class]]){
+        return (AstEmptyNode *)AstStructStatNodeConvert((ORStructStatNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORUnionStatNode class]]){
+        return (AstEmptyNode *)AstUnionStatNodeConvert((ORUnionStatNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[OREnumStatNode class]]){
+        return (AstEmptyNode *)AstEnumStatNodeConvert((OREnumStatNode *)exp, patch, length);
+    }else if ([exp isKindOfClass:[ORTypedefStatNode class]]){
+        return (AstEmptyNode *)AstTypedefStatNodeConvert((ORTypedefStatNode *)exp, patch, length);
     }
     AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
     memset(node, 0, sizeof(AstEmptyNode));
@@ -1859,20 +1741,20 @@ id AstNodeDeConvert(ORNode *parent,AstEmptyNode *node, AstPatchFile *patch){
             return AstNodeListDeConvert(parent, (AstNodeList *)node, patch);
         case AstEnumStringCursorNode:
             return getNSStringWithStringCursor((AstStringCursor *) node, patch);
-        case AstEnumTypeSpecial:
-            return (ORNode *)AstTypeSpecialDeConvert(parent, (AstTypeSpecial *)node, patch);
-        case AstEnumVariable:
-            return (ORNode *)AstVariableDeConvert(parent, (AstVariable *)node, patch);
-        case AstEnumTypeVarPair:
-            return (ORNode *)AstTypeVarPairDeConvert(parent, (AstTypeVarPair *)node, patch);
-        case AstEnumFuncVariable:
-            return (ORNode *)AstFuncVariableDeConvert(parent, (AstFuncVariable *)node, patch);
-        case AstEnumFuncDeclare:
-            return (ORNode *)AstFuncDeclareDeConvert(parent, (AstFuncDeclare *)node, patch);
-        case AstEnumScopeImp:
-            return (ORNode *)AstScopeImpDeConvert(parent, (AstScopeImp *)node, patch);
-        case AstEnumValueExpression:
-            return (ORNode *)AstValueExpressionDeConvert(parent, (AstValueExpression *)node, patch);
+        case AstEnumTypeNode:
+            return (ORNode *)AstTypeNodeDeConvert(parent, (AstTypeNode *)node, patch);
+        case AstEnumVariableNode:
+            return (ORNode *)AstVariableNodeDeConvert(parent, (AstVariableNode *)node, patch);
+        case AstEnumDeclaratorNode:
+            return (ORNode *)AstDeclaratorNodeDeConvert(parent, (AstDeclaratorNode *)node, patch);
+        case AstEnumFunctionDeclNode:
+            return (ORNode *)AstFunctionDeclNodeDeConvert(parent, (AstFunctionDeclNode *)node, patch);
+        case AstEnumCArrayDeclNode:
+            return (ORNode *)AstCArrayDeclNodeDeConvert(parent, (AstCArrayDeclNode *)node, patch);
+        case AstEnumBlockNode:
+            return (ORNode *)AstBlockNodeDeConvert(parent, (AstBlockNode *)node, patch);
+        case AstEnumValueNode:
+            return (ORNode *)AstValueNodeDeConvert(parent, (AstValueNode *)node, patch);
         case AstEnumIntegerValue:
             return (ORNode *)AstIntegerValueDeConvert(parent, (AstIntegerValue *)node, patch);
         case AstEnumUIntegerValue:
@@ -1883,22 +1765,22 @@ id AstNodeDeConvert(ORNode *parent,AstEmptyNode *node, AstPatchFile *patch){
             return (ORNode *)AstBoolValueDeConvert(parent, (AstBoolValue *)node, patch);
         case AstEnumMethodCall:
             return (ORNode *)AstMethodCallDeConvert(parent, (AstMethodCall *)node, patch);
-        case AstEnumCFuncCall:
-            return (ORNode *)AstCFuncCallDeConvert(parent, (AstCFuncCall *)node, patch);
-        case AstEnumFunctionImp:
-            return (ORNode *)AstFunctionImpDeConvert(parent, (AstFunctionImp *)node, patch);
-        case AstEnumSubscriptExpression:
-            return (ORNode *)AstSubscriptExpressionDeConvert(parent, (AstSubscriptExpression *)node, patch);
-        case AstEnumAssignExpression:
-            return (ORNode *)AstAssignExpressionDeConvert(parent, (AstAssignExpression *)node, patch);
-        case AstEnumDeclareExpression:
-            return (ORNode *)AstDeclareExpressionDeConvert(parent, (AstDeclareExpression *)node, patch);
-        case AstEnumUnaryExpression:
-            return (ORNode *)AstUnaryExpressionDeConvert(parent, (AstUnaryExpression *)node, patch);
-        case AstEnumBinaryExpression:
-            return (ORNode *)AstBinaryExpressionDeConvert(parent, (AstBinaryExpression *)node, patch);
-        case AstEnumTernaryExpression:
-            return (ORNode *)AstTernaryExpressionDeConvert(parent, (AstTernaryExpression *)node, patch);
+        case AstEnumFunctionCall:
+            return (ORNode *)AstFunctionCallDeConvert(parent, (AstFunctionCall *)node, patch);
+        case AstEnumFunctionNode:
+            return (ORNode *)AstFunctionNodeDeConvert(parent, (AstFunctionNode *)node, patch);
+        case AstEnumSubscriptNode:
+            return (ORNode *)AstSubscriptNodeDeConvert(parent, (AstSubscriptNode *)node, patch);
+        case AstEnumAssignNode:
+            return (ORNode *)AstAssignNodeDeConvert(parent, (AstAssignNode *)node, patch);
+        case AstEnumInitDeclaratorNode:
+            return (ORNode *)AstInitDeclaratorNodeDeConvert(parent, (AstInitDeclaratorNode *)node, patch);
+        case AstEnumUnaryNode:
+            return (ORNode *)AstUnaryNodeDeConvert(parent, (AstUnaryNode *)node, patch);
+        case AstEnumBinaryNode:
+            return (ORNode *)AstBinaryNodeDeConvert(parent, (AstBinaryNode *)node, patch);
+        case AstEnumTernaryNode:
+            return (ORNode *)AstTernaryNodeDeConvert(parent, (AstTernaryNode *)node, patch);
         case AstEnumIfStatement:
             return (ORNode *)AstIfStatementDeConvert(parent, (AstIfStatement *)node, patch);
         case AstEnumWhileStatement:
@@ -1913,32 +1795,26 @@ id AstNodeDeConvert(ORNode *parent,AstEmptyNode *node, AstPatchFile *patch){
             return (ORNode *)AstForStatementDeConvert(parent, (AstForStatement *)node, patch);
         case AstEnumForInStatement:
             return (ORNode *)AstForInStatementDeConvert(parent, (AstForInStatement *)node, patch);
-        case AstEnumReturnStatement:
-            return (ORNode *)AstReturnStatementDeConvert(parent, (AstReturnStatement *)node, patch);
-        case AstEnumBreakStatement:
-            return (ORNode *)AstBreakStatementDeConvert(parent, (AstBreakStatement *)node, patch);
-        case AstEnumContinueStatement:
-            return (ORNode *)AstContinueStatementDeConvert(parent, (AstContinueStatement *)node, patch);
-        case AstEnumPropertyDeclare:
-            return (ORNode *)AstPropertyDeclareDeConvert(parent, (AstPropertyDeclare *)node, patch);
-        case AstEnumMethodDeclare:
-            return (ORNode *)AstMethodDeclareDeConvert(parent, (AstMethodDeclare *)node, patch);
-        case AstEnumMethodImplementation:
-            return (ORNode *)AstMethodImplementationDeConvert(parent, (AstMethodImplementation *)node, patch);
-        case AstEnumClass:
-            return (ORNode *)AstClassDeConvert(parent, (AstClass *)node, patch);
-        case AstEnumProtocol:
-            return (ORNode *)AstProtocolDeConvert(parent, (AstProtocol *)node, patch);
-        case AstEnumStructExpressoin:
-            return (ORNode *)AstStructExpressoinDeConvert(parent, (AstStructExpressoin *)node, patch);
-        case AstEnumEnumExpressoin:
-            return (ORNode *)AstEnumExpressoinDeConvert(parent, (AstEnumExpressoin *)node, patch);
-        case AstEnumTypedefExpressoin:
-            return (ORNode *)AstTypedefExpressoinDeConvert(parent, (AstTypedefExpressoin *)node, patch);
-        case AstEnumCArrayVariable:
-            return (ORNode *)AstCArrayVariableDeConvert(parent, (AstCArrayVariable *)node, patch);
-        case AstEnumUnionExpressoin:
-            return (ORNode *)AstUnionExpressoinDeConvert(parent, (AstUnionExpressoin *)node, patch);
+        case AstEnumControlStatNode:
+            return (ORNode *)AstControlStatNodeDeConvert(parent, (AstControlStatNode *)node, patch);
+        case AstEnumPropertyNode:
+            return (ORNode *)AstPropertyNodeDeConvert(parent, (AstPropertyNode *)node, patch);
+        case AstEnumMethodDeclNode:
+            return (ORNode *)AstMethodDeclNodeDeConvert(parent, (AstMethodDeclNode *)node, patch);
+        case AstEnumMethodNode:
+            return (ORNode *)AstMethodNodeDeConvert(parent, (AstMethodNode *)node, patch);
+        case AstEnumClassNode:
+            return (ORNode *)AstClassNodeDeConvert(parent, (AstClassNode *)node, patch);
+        case AstEnumProtocolNode:
+            return (ORNode *)AstProtocolNodeDeConvert(parent, (AstProtocolNode *)node, patch);
+        case AstEnumStructStatNode:
+            return (ORNode *)AstStructStatNodeDeConvert(parent, (AstStructStatNode *)node, patch);
+        case AstEnumUnionStatNode:
+            return (ORNode *)AstUnionStatNodeDeConvert(parent, (AstUnionStatNode *)node, patch);
+        case AstEnumEnumStatNode:
+            return (ORNode *)AstEnumStatNodeDeConvert(parent, (AstEnumStatNode *)node, patch);
+        case AstEnumTypedefStatNode:
+            return (ORNode *)AstTypedefStatNodeDeConvert(parent, (AstTypedefStatNode *)node, patch);
 
         default: return [ORNode new];
     }
@@ -1957,20 +1833,20 @@ void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor){
             AstStringCursorSerailization((AstStringCursor *) node, buffer, cursor); break;
         case AstEnumStringBufferNode:
             AstStringBufferNodeSerailization((AstStringBufferNode *) node, buffer, cursor);break;
-        case AstEnumTypeSpecial:
-            AstTypeSpecialSerailization((AstTypeSpecial *)node, buffer, cursor); break;
-        case AstEnumVariable:
-            AstVariableSerailization((AstVariable *)node, buffer, cursor); break;
-        case AstEnumTypeVarPair:
-            AstTypeVarPairSerailization((AstTypeVarPair *)node, buffer, cursor); break;
-        case AstEnumFuncVariable:
-            AstFuncVariableSerailization((AstFuncVariable *)node, buffer, cursor); break;
-        case AstEnumFuncDeclare:
-            AstFuncDeclareSerailization((AstFuncDeclare *)node, buffer, cursor); break;
-        case AstEnumScopeImp:
-            AstScopeImpSerailization((AstScopeImp *)node, buffer, cursor); break;
-        case AstEnumValueExpression:
-            AstValueExpressionSerailization((AstValueExpression *)node, buffer, cursor); break;
+        case AstEnumTypeNode:
+            AstTypeNodeSerailization((AstTypeNode *)node, buffer, cursor); break;
+        case AstEnumVariableNode:
+            AstVariableNodeSerailization((AstVariableNode *)node, buffer, cursor); break;
+        case AstEnumDeclaratorNode:
+            AstDeclaratorNodeSerailization((AstDeclaratorNode *)node, buffer, cursor); break;
+        case AstEnumFunctionDeclNode:
+            AstFunctionDeclNodeSerailization((AstFunctionDeclNode *)node, buffer, cursor); break;
+        case AstEnumCArrayDeclNode:
+            AstCArrayDeclNodeSerailization((AstCArrayDeclNode *)node, buffer, cursor); break;
+        case AstEnumBlockNode:
+            AstBlockNodeSerailization((AstBlockNode *)node, buffer, cursor); break;
+        case AstEnumValueNode:
+            AstValueNodeSerailization((AstValueNode *)node, buffer, cursor); break;
         case AstEnumIntegerValue:
             AstIntegerValueSerailization((AstIntegerValue *)node, buffer, cursor); break;
         case AstEnumUIntegerValue:
@@ -1981,22 +1857,22 @@ void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor){
             AstBoolValueSerailization((AstBoolValue *)node, buffer, cursor); break;
         case AstEnumMethodCall:
             AstMethodCallSerailization((AstMethodCall *)node, buffer, cursor); break;
-        case AstEnumCFuncCall:
-            AstCFuncCallSerailization((AstCFuncCall *)node, buffer, cursor); break;
-        case AstEnumFunctionImp:
-            AstFunctionImpSerailization((AstFunctionImp *)node, buffer, cursor); break;
-        case AstEnumSubscriptExpression:
-            AstSubscriptExpressionSerailization((AstSubscriptExpression *)node, buffer, cursor); break;
-        case AstEnumAssignExpression:
-            AstAssignExpressionSerailization((AstAssignExpression *)node, buffer, cursor); break;
-        case AstEnumDeclareExpression:
-            AstDeclareExpressionSerailization((AstDeclareExpression *)node, buffer, cursor); break;
-        case AstEnumUnaryExpression:
-            AstUnaryExpressionSerailization((AstUnaryExpression *)node, buffer, cursor); break;
-        case AstEnumBinaryExpression:
-            AstBinaryExpressionSerailization((AstBinaryExpression *)node, buffer, cursor); break;
-        case AstEnumTernaryExpression:
-            AstTernaryExpressionSerailization((AstTernaryExpression *)node, buffer, cursor); break;
+        case AstEnumFunctionCall:
+            AstFunctionCallSerailization((AstFunctionCall *)node, buffer, cursor); break;
+        case AstEnumFunctionNode:
+            AstFunctionNodeSerailization((AstFunctionNode *)node, buffer, cursor); break;
+        case AstEnumSubscriptNode:
+            AstSubscriptNodeSerailization((AstSubscriptNode *)node, buffer, cursor); break;
+        case AstEnumAssignNode:
+            AstAssignNodeSerailization((AstAssignNode *)node, buffer, cursor); break;
+        case AstEnumInitDeclaratorNode:
+            AstInitDeclaratorNodeSerailization((AstInitDeclaratorNode *)node, buffer, cursor); break;
+        case AstEnumUnaryNode:
+            AstUnaryNodeSerailization((AstUnaryNode *)node, buffer, cursor); break;
+        case AstEnumBinaryNode:
+            AstBinaryNodeSerailization((AstBinaryNode *)node, buffer, cursor); break;
+        case AstEnumTernaryNode:
+            AstTernaryNodeSerailization((AstTernaryNode *)node, buffer, cursor); break;
         case AstEnumIfStatement:
             AstIfStatementSerailization((AstIfStatement *)node, buffer, cursor); break;
         case AstEnumWhileStatement:
@@ -2011,32 +1887,26 @@ void AstNodeSerailization(AstEmptyNode *node, void *buffer, uint32_t *cursor){
             AstForStatementSerailization((AstForStatement *)node, buffer, cursor); break;
         case AstEnumForInStatement:
             AstForInStatementSerailization((AstForInStatement *)node, buffer, cursor); break;
-        case AstEnumReturnStatement:
-            AstReturnStatementSerailization((AstReturnStatement *)node, buffer, cursor); break;
-        case AstEnumBreakStatement:
-            AstBreakStatementSerailization((AstBreakStatement *)node, buffer, cursor); break;
-        case AstEnumContinueStatement:
-            AstContinueStatementSerailization((AstContinueStatement *)node, buffer, cursor); break;
-        case AstEnumPropertyDeclare:
-            AstPropertyDeclareSerailization((AstPropertyDeclare *)node, buffer, cursor); break;
-        case AstEnumMethodDeclare:
-            AstMethodDeclareSerailization((AstMethodDeclare *)node, buffer, cursor); break;
-        case AstEnumMethodImplementation:
-            AstMethodImplementationSerailization((AstMethodImplementation *)node, buffer, cursor); break;
-        case AstEnumClass:
-            AstClassSerailization((AstClass *)node, buffer, cursor); break;
-        case AstEnumProtocol:
-            AstProtocolSerailization((AstProtocol *)node, buffer, cursor); break;
-        case AstEnumStructExpressoin:
-            AstStructExpressoinSerailization((AstStructExpressoin *)node, buffer, cursor); break;
-        case AstEnumEnumExpressoin:
-            AstEnumExpressoinSerailization((AstEnumExpressoin *)node, buffer, cursor); break;
-        case AstEnumTypedefExpressoin:
-            AstTypedefExpressoinSerailization((AstTypedefExpressoin *)node, buffer, cursor); break;
-        case AstEnumCArrayVariable:
-            AstCArrayVariableSerailization((AstCArrayVariable *)node, buffer, cursor); break;
-        case AstEnumUnionExpressoin:
-            AstUnionExpressoinSerailization((AstUnionExpressoin *)node, buffer, cursor); break;
+        case AstEnumControlStatNode:
+            AstControlStatNodeSerailization((AstControlStatNode *)node, buffer, cursor); break;
+        case AstEnumPropertyNode:
+            AstPropertyNodeSerailization((AstPropertyNode *)node, buffer, cursor); break;
+        case AstEnumMethodDeclNode:
+            AstMethodDeclNodeSerailization((AstMethodDeclNode *)node, buffer, cursor); break;
+        case AstEnumMethodNode:
+            AstMethodNodeSerailization((AstMethodNode *)node, buffer, cursor); break;
+        case AstEnumClassNode:
+            AstClassNodeSerailization((AstClassNode *)node, buffer, cursor); break;
+        case AstEnumProtocolNode:
+            AstProtocolNodeSerailization((AstProtocolNode *)node, buffer, cursor); break;
+        case AstEnumStructStatNode:
+            AstStructStatNodeSerailization((AstStructStatNode *)node, buffer, cursor); break;
+        case AstEnumUnionStatNode:
+            AstUnionStatNodeSerailization((AstUnionStatNode *)node, buffer, cursor); break;
+        case AstEnumEnumStatNode:
+            AstEnumStatNodeSerailization((AstEnumStatNode *)node, buffer, cursor); break;
+        case AstEnumTypedefStatNode:
+            AstTypedefStatNodeSerailization((AstTypedefStatNode *)node, buffer, cursor); break;
 
         default: break;
     }
@@ -2051,20 +1921,20 @@ AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bu
             return (AstEmptyNode *)AstNodeListDeserialization(buffer, cursor, bufferLength);
         case AstEnumStringCursorNode:
             return (AstEmptyNode *)AstStringCursorDeserialization(buffer, cursor, bufferLength);
-        case AstEnumTypeSpecial:
-            return (AstEmptyNode *)AstTypeSpecialDeserialization(buffer, cursor, bufferLength);
-        case AstEnumVariable:
-            return (AstEmptyNode *)AstVariableDeserialization(buffer, cursor, bufferLength);
-        case AstEnumTypeVarPair:
-            return (AstEmptyNode *)AstTypeVarPairDeserialization(buffer, cursor, bufferLength);
-        case AstEnumFuncVariable:
-            return (AstEmptyNode *)AstFuncVariableDeserialization(buffer, cursor, bufferLength);
-        case AstEnumFuncDeclare:
-            return (AstEmptyNode *)AstFuncDeclareDeserialization(buffer, cursor, bufferLength);
-        case AstEnumScopeImp:
-            return (AstEmptyNode *)AstScopeImpDeserialization(buffer, cursor, bufferLength);
-        case AstEnumValueExpression:
-            return (AstEmptyNode *)AstValueExpressionDeserialization(buffer, cursor, bufferLength);
+        case AstEnumTypeNode:
+            return (AstEmptyNode *)AstTypeNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumVariableNode:
+            return (AstEmptyNode *)AstVariableNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumDeclaratorNode:
+            return (AstEmptyNode *)AstDeclaratorNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumFunctionDeclNode:
+            return (AstEmptyNode *)AstFunctionDeclNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumCArrayDeclNode:
+            return (AstEmptyNode *)AstCArrayDeclNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumBlockNode:
+            return (AstEmptyNode *)AstBlockNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumValueNode:
+            return (AstEmptyNode *)AstValueNodeDeserialization(buffer, cursor, bufferLength);
         case AstEnumIntegerValue:
             return (AstEmptyNode *)AstIntegerValueDeserialization(buffer, cursor, bufferLength);
         case AstEnumUIntegerValue:
@@ -2075,22 +1945,22 @@ AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bu
             return (AstEmptyNode *)AstBoolValueDeserialization(buffer, cursor, bufferLength);
         case AstEnumMethodCall:
             return (AstEmptyNode *)AstMethodCallDeserialization(buffer, cursor, bufferLength);
-        case AstEnumCFuncCall:
-            return (AstEmptyNode *)AstCFuncCallDeserialization(buffer, cursor, bufferLength);
-        case AstEnumFunctionImp:
-            return (AstEmptyNode *)AstFunctionImpDeserialization(buffer, cursor, bufferLength);
-        case AstEnumSubscriptExpression:
-            return (AstEmptyNode *)AstSubscriptExpressionDeserialization(buffer, cursor, bufferLength);
-        case AstEnumAssignExpression:
-            return (AstEmptyNode *)AstAssignExpressionDeserialization(buffer, cursor, bufferLength);
-        case AstEnumDeclareExpression:
-            return (AstEmptyNode *)AstDeclareExpressionDeserialization(buffer, cursor, bufferLength);
-        case AstEnumUnaryExpression:
-            return (AstEmptyNode *)AstUnaryExpressionDeserialization(buffer, cursor, bufferLength);
-        case AstEnumBinaryExpression:
-            return (AstEmptyNode *)AstBinaryExpressionDeserialization(buffer, cursor, bufferLength);
-        case AstEnumTernaryExpression:
-            return (AstEmptyNode *)AstTernaryExpressionDeserialization(buffer, cursor, bufferLength);
+        case AstEnumFunctionCall:
+            return (AstEmptyNode *)AstFunctionCallDeserialization(buffer, cursor, bufferLength);
+        case AstEnumFunctionNode:
+            return (AstEmptyNode *)AstFunctionNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumSubscriptNode:
+            return (AstEmptyNode *)AstSubscriptNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumAssignNode:
+            return (AstEmptyNode *)AstAssignNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumInitDeclaratorNode:
+            return (AstEmptyNode *)AstInitDeclaratorNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumUnaryNode:
+            return (AstEmptyNode *)AstUnaryNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumBinaryNode:
+            return (AstEmptyNode *)AstBinaryNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumTernaryNode:
+            return (AstEmptyNode *)AstTernaryNodeDeserialization(buffer, cursor, bufferLength);
         case AstEnumIfStatement:
             return (AstEmptyNode *)AstIfStatementDeserialization(buffer, cursor, bufferLength);
         case AstEnumWhileStatement:
@@ -2105,32 +1975,26 @@ AstEmptyNode *AstNodeDeserialization(void *buffer, uint32_t *cursor, uint32_t bu
             return (AstEmptyNode *)AstForStatementDeserialization(buffer, cursor, bufferLength);
         case AstEnumForInStatement:
             return (AstEmptyNode *)AstForInStatementDeserialization(buffer, cursor, bufferLength);
-        case AstEnumReturnStatement:
-            return (AstEmptyNode *)AstReturnStatementDeserialization(buffer, cursor, bufferLength);
-        case AstEnumBreakStatement:
-            return (AstEmptyNode *)AstBreakStatementDeserialization(buffer, cursor, bufferLength);
-        case AstEnumContinueStatement:
-            return (AstEmptyNode *)AstContinueStatementDeserialization(buffer, cursor, bufferLength);
-        case AstEnumPropertyDeclare:
-            return (AstEmptyNode *)AstPropertyDeclareDeserialization(buffer, cursor, bufferLength);
-        case AstEnumMethodDeclare:
-            return (AstEmptyNode *)AstMethodDeclareDeserialization(buffer, cursor, bufferLength);
-        case AstEnumMethodImplementation:
-            return (AstEmptyNode *)AstMethodImplementationDeserialization(buffer, cursor, bufferLength);
-        case AstEnumClass:
-            return (AstEmptyNode *)AstClassDeserialization(buffer, cursor, bufferLength);
-        case AstEnumProtocol:
-            return (AstEmptyNode *)AstProtocolDeserialization(buffer, cursor, bufferLength);
-        case AstEnumStructExpressoin:
-            return (AstEmptyNode *)AstStructExpressoinDeserialization(buffer, cursor, bufferLength);
-        case AstEnumEnumExpressoin:
-            return (AstEmptyNode *)AstEnumExpressoinDeserialization(buffer, cursor, bufferLength);
-        case AstEnumTypedefExpressoin:
-            return (AstEmptyNode *)AstTypedefExpressoinDeserialization(buffer, cursor, bufferLength);
-        case AstEnumCArrayVariable:
-            return (AstEmptyNode *)AstCArrayVariableDeserialization(buffer, cursor, bufferLength);
-        case AstEnumUnionExpressoin:
-            return (AstEmptyNode *)AstUnionExpressoinDeserialization(buffer, cursor, bufferLength);
+        case AstEnumControlStatNode:
+            return (AstEmptyNode *)AstControlStatNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumPropertyNode:
+            return (AstEmptyNode *)AstPropertyNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumMethodDeclNode:
+            return (AstEmptyNode *)AstMethodDeclNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumMethodNode:
+            return (AstEmptyNode *)AstMethodNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumClassNode:
+            return (AstEmptyNode *)AstClassNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumProtocolNode:
+            return (AstEmptyNode *)AstProtocolNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumStructStatNode:
+            return (AstEmptyNode *)AstStructStatNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumUnionStatNode:
+            return (AstEmptyNode *)AstUnionStatNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumEnumStatNode:
+            return (AstEmptyNode *)AstEnumStatNodeDeserialization(buffer, cursor, bufferLength);
+        case AstEnumTypedefStatNode:
+            return (AstEmptyNode *)AstTypedefStatNodeDeserialization(buffer, cursor, bufferLength);
 
         default:{
             AstEmptyNode *node = malloc(sizeof(AstEmptyNode));
@@ -2151,20 +2015,20 @@ void AstNodeDestroy(AstEmptyNode *node){
             AstStringCursorDestroy((AstStringCursor *) node); break;
         case AstEnumStringBufferNode:
             AstStringBufferNodeDestroy((AstStringBufferNode *) node); break;
-        case AstEnumTypeSpecial:
-            AstTypeSpecialDestroy((AstTypeSpecial *)node); break;
-        case AstEnumVariable:
-            AstVariableDestroy((AstVariable *)node); break;
-        case AstEnumTypeVarPair:
-            AstTypeVarPairDestroy((AstTypeVarPair *)node); break;
-        case AstEnumFuncVariable:
-            AstFuncVariableDestroy((AstFuncVariable *)node); break;
-        case AstEnumFuncDeclare:
-            AstFuncDeclareDestroy((AstFuncDeclare *)node); break;
-        case AstEnumScopeImp:
-            AstScopeImpDestroy((AstScopeImp *)node); break;
-        case AstEnumValueExpression:
-            AstValueExpressionDestroy((AstValueExpression *)node); break;
+        case AstEnumTypeNode:
+            AstTypeNodeDestroy((AstTypeNode *)node); break;
+        case AstEnumVariableNode:
+            AstVariableNodeDestroy((AstVariableNode *)node); break;
+        case AstEnumDeclaratorNode:
+            AstDeclaratorNodeDestroy((AstDeclaratorNode *)node); break;
+        case AstEnumFunctionDeclNode:
+            AstFunctionDeclNodeDestroy((AstFunctionDeclNode *)node); break;
+        case AstEnumCArrayDeclNode:
+            AstCArrayDeclNodeDestroy((AstCArrayDeclNode *)node); break;
+        case AstEnumBlockNode:
+            AstBlockNodeDestroy((AstBlockNode *)node); break;
+        case AstEnumValueNode:
+            AstValueNodeDestroy((AstValueNode *)node); break;
         case AstEnumIntegerValue:
             AstIntegerValueDestroy((AstIntegerValue *)node); break;
         case AstEnumUIntegerValue:
@@ -2175,22 +2039,22 @@ void AstNodeDestroy(AstEmptyNode *node){
             AstBoolValueDestroy((AstBoolValue *)node); break;
         case AstEnumMethodCall:
             AstMethodCallDestroy((AstMethodCall *)node); break;
-        case AstEnumCFuncCall:
-            AstCFuncCallDestroy((AstCFuncCall *)node); break;
-        case AstEnumFunctionImp:
-            AstFunctionImpDestroy((AstFunctionImp *)node); break;
-        case AstEnumSubscriptExpression:
-            AstSubscriptExpressionDestroy((AstSubscriptExpression *)node); break;
-        case AstEnumAssignExpression:
-            AstAssignExpressionDestroy((AstAssignExpression *)node); break;
-        case AstEnumDeclareExpression:
-            AstDeclareExpressionDestroy((AstDeclareExpression *)node); break;
-        case AstEnumUnaryExpression:
-            AstUnaryExpressionDestroy((AstUnaryExpression *)node); break;
-        case AstEnumBinaryExpression:
-            AstBinaryExpressionDestroy((AstBinaryExpression *)node); break;
-        case AstEnumTernaryExpression:
-            AstTernaryExpressionDestroy((AstTernaryExpression *)node); break;
+        case AstEnumFunctionCall:
+            AstFunctionCallDestroy((AstFunctionCall *)node); break;
+        case AstEnumFunctionNode:
+            AstFunctionNodeDestroy((AstFunctionNode *)node); break;
+        case AstEnumSubscriptNode:
+            AstSubscriptNodeDestroy((AstSubscriptNode *)node); break;
+        case AstEnumAssignNode:
+            AstAssignNodeDestroy((AstAssignNode *)node); break;
+        case AstEnumInitDeclaratorNode:
+            AstInitDeclaratorNodeDestroy((AstInitDeclaratorNode *)node); break;
+        case AstEnumUnaryNode:
+            AstUnaryNodeDestroy((AstUnaryNode *)node); break;
+        case AstEnumBinaryNode:
+            AstBinaryNodeDestroy((AstBinaryNode *)node); break;
+        case AstEnumTernaryNode:
+            AstTernaryNodeDestroy((AstTernaryNode *)node); break;
         case AstEnumIfStatement:
             AstIfStatementDestroy((AstIfStatement *)node); break;
         case AstEnumWhileStatement:
@@ -2205,32 +2069,26 @@ void AstNodeDestroy(AstEmptyNode *node){
             AstForStatementDestroy((AstForStatement *)node); break;
         case AstEnumForInStatement:
             AstForInStatementDestroy((AstForInStatement *)node); break;
-        case AstEnumReturnStatement:
-            AstReturnStatementDestroy((AstReturnStatement *)node); break;
-        case AstEnumBreakStatement:
-            AstBreakStatementDestroy((AstBreakStatement *)node); break;
-        case AstEnumContinueStatement:
-            AstContinueStatementDestroy((AstContinueStatement *)node); break;
-        case AstEnumPropertyDeclare:
-            AstPropertyDeclareDestroy((AstPropertyDeclare *)node); break;
-        case AstEnumMethodDeclare:
-            AstMethodDeclareDestroy((AstMethodDeclare *)node); break;
-        case AstEnumMethodImplementation:
-            AstMethodImplementationDestroy((AstMethodImplementation *)node); break;
-        case AstEnumClass:
-            AstClassDestroy((AstClass *)node); break;
-        case AstEnumProtocol:
-            AstProtocolDestroy((AstProtocol *)node); break;
-        case AstEnumStructExpressoin:
-            AstStructExpressoinDestroy((AstStructExpressoin *)node); break;
-        case AstEnumEnumExpressoin:
-            AstEnumExpressoinDestroy((AstEnumExpressoin *)node); break;
-        case AstEnumTypedefExpressoin:
-            AstTypedefExpressoinDestroy((AstTypedefExpressoin *)node); break;
-        case AstEnumCArrayVariable:
-            AstCArrayVariableDestroy((AstCArrayVariable *)node); break;
-        case AstEnumUnionExpressoin:
-            AstUnionExpressoinDestroy((AstUnionExpressoin *)node); break;
+        case AstEnumControlStatNode:
+            AstControlStatNodeDestroy((AstControlStatNode *)node); break;
+        case AstEnumPropertyNode:
+            AstPropertyNodeDestroy((AstPropertyNode *)node); break;
+        case AstEnumMethodDeclNode:
+            AstMethodDeclNodeDestroy((AstMethodDeclNode *)node); break;
+        case AstEnumMethodNode:
+            AstMethodNodeDestroy((AstMethodNode *)node); break;
+        case AstEnumClassNode:
+            AstClassNodeDestroy((AstClassNode *)node); break;
+        case AstEnumProtocolNode:
+            AstProtocolNodeDestroy((AstProtocolNode *)node); break;
+        case AstEnumStructStatNode:
+            AstStructStatNodeDestroy((AstStructStatNode *)node); break;
+        case AstEnumUnionStatNode:
+            AstUnionStatNodeDestroy((AstUnionStatNode *)node); break;
+        case AstEnumEnumStatNode:
+            AstEnumStatNodeDestroy((AstEnumStatNode *)node); break;
+        case AstEnumTypedefStatNode:
+            AstTypedefStatNodeDestroy((AstTypedefStatNode *)node); break;
     
         default: break;
     }

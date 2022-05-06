@@ -8,53 +8,55 @@
 
 #import "MakeDeclare.h"
 
-
-ORTypeSpecial *makeTypeSpecial(TypeKind type ,NSString *name){
-    return [ORTypeSpecial specialWithType:type name:name];
+ORTypeNode *makeTypeNode(OCType type ,NSString *name){
+    __autoreleasing ORTypeNode *node = [ORTypeNode specialWithType:type name:name];
+    return node;
 }
-ORTypeSpecial *makeTypeSpecial(TypeKind type) __attribute__((overloadable)){
-    return makeTypeSpecial(type, nil);
+ORTypeNode *makeTypeNode(OCType type) __attribute__((overloadable)){
+    return makeTypeNode(type, nil);
 }
-ORVariable *makeVar(NSString *name, NSUInteger ptCount){
-    ORVariable *var = [ORVariable new];
+ORVariableNode *makeVarNode(NSString *name, NSUInteger ptCount){
+    __autoreleasing ORVariableNode *var = [ORVariableNode new];
     var.ptCount = ptCount;
     var.varname = name;
     return var;
 }
-ORVariable *makeVar(NSString *name) __attribute__((overloadable)){
-    return makeVar(name, 0);
-}
-extern ORTypeVarPair *makeTypeVarPair(ORTypeSpecial *type, ORVariable *var){
-    ORTypeVarPair *pair = [ORTypeVarPair new];
-    pair.type = type;
-    pair.var = var;
-    return pair;
+ORVariableNode *makeVarNode(NSString *name) __attribute__((overloadable)){
+    return makeVarNode(name, 0);
 }
 
-ORClass *makeOCClass(NSString *className){
-    return [ORClass classWithClassName:className];
+ORClassNode *makeOCClass(NSString *className){
+    __autoreleasing ORClassNode *node = [ORClassNode classNodeWithClassName:className];
+    return node;
 }
-ORProtocol *makeORProtcol(NSString *protocolName){
-    return [ORProtocol protcolWithProtcolName:protocolName];
+ORProtocolNode *makeORProtcol(NSString *protocolName){
+    __autoreleasing ORProtocolNode *node = [ORProtocolNode protcolWithProtcolName:protocolName];
+    return node;
 }
-ORMethodDeclare *makeMethodDeclare(BOOL isClassMethod, ORTypeVarPair *returnType){
-    ORMethodDeclare *method = [ORMethodDeclare new];
+ORPropertyNode *makePropertyDeclare(NSMutableArray *keywords, ORDeclaratorNode *var){
+    __autoreleasing ORPropertyNode *node = [ORPropertyNode new];
+    node.keywords = keywords;
+    node.var = var;
+    return node;
+}
+ORMethodDeclNode *makeMethodDeclare(BOOL isClassMethod, ORDeclaratorNode *returnType){
+    __autoreleasing ORMethodDeclNode *method = [ORMethodDeclNode new];
     method.methodNames = [NSMutableArray array];
-    method.parameterNames  = [NSMutableArray array];
-    method.parameterTypes = [NSMutableArray array];
+    method.parameters = [NSMutableArray array];
     method.isClassMethod = isClassMethod;
     method.returnType = returnType;
     return method;
 }
-ORFuncDeclare *makeFuncDeclare(ORTypeVarPair *returnType,ORFuncVariable *var){
-    ORFuncDeclare *decl = [ORFuncDeclare new];
-    decl.returnType = returnType;
-    decl.funVar = var;
+ORFunctionDeclNode *makeFunctionSignNode(void){
+    __autoreleasing ORFunctionDeclNode *decl = [ORFunctionDeclNode new];
     return decl;
 }
-
-ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare, ORScopeImp *scopeImp){
-    ORMethodImplementation *imp = [ORMethodImplementation new];
+extern ORMethodCall *makeMethodCall(void){
+    __autoreleasing ORMethodCall *call = [ORMethodCall new];
+    return call;
+}
+ORMethodNode *makeMethodImplementation(ORMethodDeclNode *declare, ORBlockNode *scopeImp){
+    __autoreleasing ORMethodNode *imp = [ORMethodNode new];
     imp.declare = declare;
     imp.scopeImp = scopeImp;
     return imp;
@@ -62,127 +64,156 @@ ORMethodImplementation *makeMethodImplementation(ORMethodDeclare *declare, ORSco
 
 
 
-ORValueExpression *makeValue(OC_VALUE_TYPE type, id value){
-    ORValueExpression *ocvalue = [ORValueExpression new];
+ORValueNode *makeValue(OC_VALUE_TYPE type, id value){
+    __autoreleasing ORValueNode *ocvalue = [ORValueNode new];
     ocvalue.value_type = type;
     ocvalue.value = value;
     return ocvalue;
 }
-ORValueExpression *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
+ORValueNode *makeValue(OC_VALUE_TYPE type) __attribute__((overloadable)){
     return makeValue(type, nil);
 }
-
-ORScopeImp *makeScopeImp(){
-    return [[ORScopeImp alloc] init];
+ORBlockNode *makeScopeImp(NSMutableArray *stats){
+    __autoreleasing ORBlockNode *node = [ORBlockNode new];
+    if (stats) {
+        if ([stats isKindOfClass:[NSArray class]]) {
+            [node.statements addObjectsFromArray:stats];
+        }else{
+            [node.statements addObject:stats];
+        }
+    }
+    return node;
 }
-ORCFuncCall *makeFuncCall(ORValueExpression *caller, NSMutableArray *expressions){
-    ORCFuncCall *call = [ORCFuncCall new];
+ORBlockNode *makeScopeImp(void) __attribute__((overloadable)){
+    return makeScopeImp(nil);
+}
+ORFunctionCall *makeFuncCall(ORValueNode *caller, NSMutableArray *expressions){
+    __autoreleasing ORFunctionCall *call = [ORFunctionCall new];
     call.caller = caller;
     call.expressions = expressions;
     return call;
 }
-ORUnaryExpression *makeUnaryExpression(UnaryOperatorType type){
-    ORUnaryExpression *expression = [ORUnaryExpression  new];
+ORUnaryNode *makeUnaryExpression(UnaryOperatorType type, ORNode *node){
+    __autoreleasing ORUnaryNode *expression = [ORUnaryNode  new];
     expression.operatorType = type;
+    expression.value = node;
     return expression;
 }
-ORBinaryExpression *makeBinaryExpression(BinaryOperatorType type)
-{
-    ORBinaryExpression *expression = [ORBinaryExpression new];
+ORBinaryNode *makeBinaryExpression(BinaryOperatorType type, ORNode *left, ORNode *right){
+    __autoreleasing ORBinaryNode *expression = [ORBinaryNode new];
     expression.operatorType = type;
+    expression.left = left;
+    expression.right = right;
     return expression;
 }
-ORTernaryExpression *makeTernaryExpression(){
-    return [ORTernaryExpression  new];
+ORTernaryNode *makeTernaryExpression(){
+    __autoreleasing ORTernaryNode *node = [ORTernaryNode new];
+    return node;
 }
 
-ORAssignExpression *makeAssignExpression(AssignOperatorType type){
-    ORAssignExpression *expression = [ORAssignExpression new];
+ORAssignNode *makeAssignExpression(AssignOperatorType type){
+    __autoreleasing ORAssignNode *expression = [ORAssignNode new];
     expression.assignType = type;
     return expression;
 }
-extern ORDeclareExpression *makeDeclareExpression(ORTypeSpecial *type,ORVariable *var,ORNode * exp){
-    ORDeclareExpression *declare = [ORDeclareExpression new];
-    declare.pair = makeTypeVarPair(type, var);
+ORDeclaratorNode *makeDeclaratorNode(ORTypeNode *type,ORVariableNode *var){
+    __autoreleasing ORDeclaratorNode *node = [ORDeclaratorNode new];
+    node.type = type;
+    node.var = var;
+    return node;
+}
+
+ORInitDeclaratorNode *makeInitDeclaratorNode(ORDeclaratorNode *declarator,ORNode * exp){
+    
+    __autoreleasing ORInitDeclaratorNode *declare = [ORInitDeclaratorNode new];
+    declare.declarator = declarator;
     declare.expression = exp;
     return declare;
 }
 
-
-
-ORIfStatement *makeIfStatement(ORNode * judgement, ORScopeImp *imp){
-    ORIfStatement *statement = [ORIfStatement new];
+ORFunctionDeclNode *makeFunctionDeclNode(void){
+    __autoreleasing ORFunctionDeclNode *node = [ORFunctionDeclNode new];
+    return node;
+}
+ORSubscriptNode *makeSubscriptNode(ORNode *caller, ORNode *key){
+    __autoreleasing ORSubscriptNode *node = [ORSubscriptNode new];
+    node.caller = caller;
+    node.keyExp = key;
+    return node;
+}
+ORFunctionNode *makeFunctionNode(ORFunctionDeclNode *decl, ORBlockNode *block){
+    __autoreleasing ORFunctionNode *node = [ORFunctionNode new];
+    node.declare = decl;
+    node.scopeImp = block;
+    return node;
+}
+ORIfStatement *makeIfStatement(ORNode * judgement, ORBlockNode *imp){
+    __autoreleasing ORIfStatement *statement = [ORIfStatement new];
     statement.scopeImp = imp;
     statement.condition = judgement;
     return statement;
 }
-ORWhileStatement *makeWhileStatement(ORNode *judgement, ORScopeImp *imp){
-    ORWhileStatement *statement = [ORWhileStatement new];
+ORWhileStatement *makeWhileStatement(ORNode *judgement, ORBlockNode *imp){
+    __autoreleasing ORWhileStatement *statement = [ORWhileStatement new];
     statement.scopeImp = imp;
     statement.condition = judgement;
     return statement;
 }
-ORDoWhileStatement *makeDoWhileStatement(ORNode *judgement, ORScopeImp *imp){
-    ORDoWhileStatement *statement = [ORDoWhileStatement new];
+ORDoWhileStatement *makeDoWhileStatement(ORNode *judgement, ORBlockNode *imp){
+    __autoreleasing ORDoWhileStatement *statement = [ORDoWhileStatement new];
     statement.condition = judgement;
     statement.scopeImp = imp;
     return statement;
 }
-ORCaseStatement *makeCaseStatement(ORValueExpression *value){
-    ORCaseStatement *statement = [ORCaseStatement new];
+ORCaseStatement *makeCaseStatement(ORValueNode *value){
+    __autoreleasing ORCaseStatement *statement = [ORCaseStatement new];
     statement.value = value;
     statement.scopeImp = makeScopeImp();
     return statement;
 }
-ORSwitchStatement *makeSwitchStatement(ORValueExpression *value){
-    ORSwitchStatement *statement = [ORSwitchStatement new];
+ORSwitchStatement *makeSwitchStatement(ORValueNode *value){
+    __autoreleasing ORSwitchStatement *statement = [ORSwitchStatement new];
     statement.value = value;
     return statement;
 }
-ORForStatement *makeForStatement(ORScopeImp *imp){
-    ORForStatement *statement = [ORForStatement new];
+ORForStatement *makeForStatement(ORBlockNode *imp){
+    __autoreleasing ORForStatement *statement = [ORForStatement new];
     statement.scopeImp = imp;
     return statement;
 }
-ORForInStatement *makeForInStatement(ORScopeImp *imp){
-    ORForInStatement *statement = [ORForInStatement new];
+ORForInStatement *makeForInStatement(ORBlockNode *imp){
+    __autoreleasing ORForInStatement *statement = [ORForInStatement new];
     statement.scopeImp = imp;
     return statement;
 }
 
-ORReturnStatement *makeReturnStatement(ORNode* expression){
-    ORReturnStatement *statement = [ORReturnStatement new];
+extern ORControlStatNode *makeControlStatement(ORControlStateType type,ORNode * expression){
+    __autoreleasing ORControlStatNode *statement = [ORControlStatNode new];
+    statement.type = type;
     statement.expression = expression;
     return statement;
 }
-ORBreakStatement *makeBreakStatement(void){
-    return [ORBreakStatement new];
-}
 
-ORContinueStatement *makeContinueStatement(void){
-    return [ORContinueStatement new];
-}
-
-ORTypedefExpressoin *makeTypedefExp(id exp,NSString *newName){
-    ORTypedefExpressoin *typedefExp = [[ORTypedefExpressoin alloc] init];
+ORTypedefStatNode *makeTypedefExp(id exp,NSString *newName){
+    __autoreleasing ORTypedefStatNode *typedefExp = [[ORTypedefStatNode alloc] init];
     typedefExp.expression = exp;
     typedefExp.typeNewName = newName;
     return typedefExp;
 }
-ORStructExpressoin *makeStructExp(NSString *name, NSMutableArray *fields){
-    ORStructExpressoin *exp = [[ORStructExpressoin alloc] init];
+ORStructStatNode *makeStructExp(NSString *name, NSMutableArray *fields){
+    __autoreleasing ORStructStatNode *exp = [[ORStructStatNode alloc] init];
     exp.sturctName = name;
     exp.fields = fields;
     return exp;
 }
-ORUnionExpressoin *makeUnionExp(NSString *name, NSMutableArray *fields){
-    ORUnionExpressoin *exp = [[ORUnionExpressoin alloc] init];
+ORUnionStatNode *makeUnionExp(NSString *name, NSMutableArray *fields){
+    __autoreleasing ORUnionStatNode *exp = [[ORUnionStatNode alloc] init];
     exp.unionName = name;
     exp.fields = fields;
     return exp;
 }
-OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArray *fields){
-    OREnumExpressoin *exp = [[OREnumExpressoin alloc] init];
+OREnumStatNode *makeEnumExp(NSString *name, ORTypeNode *type, NSMutableArray *fields){
+    __autoreleasing OREnumStatNode *exp = [[OREnumStatNode alloc] init];
     exp.enumName = name;
     exp.valueType = type.type;
     exp.fields = fields;
@@ -191,11 +222,11 @@ OREnumExpressoin *makeEnumExp(NSString *name, ORTypeSpecial *type, NSMutableArra
 
 ORNode *makeIntegerValue(uint64_t value){
     if (value <= INT64_MAX) {
-        ORIntegerValue *ivalue = [ORIntegerValue new];
+        __autoreleasing ORIntegerValue *ivalue = [ORIntegerValue new];
         ivalue.value = (int64_t)value;
         return ivalue;
     }else{
-        ORUIntegerValue *uvalue = [ORUIntegerValue new];
+        __autoreleasing ORUIntegerValue *uvalue = [ORUIntegerValue new];
         uvalue.value = value;
         return uvalue;
     }
@@ -207,13 +238,13 @@ ORNode *makeNegativeIntegerValue(int64_t value){
 }
 
 ORDoubleValue *makeDoubleValue(double value){
-    ORDoubleValue *dvalue = [ORDoubleValue new];
+    __autoreleasing ORDoubleValue *dvalue = [ORDoubleValue new];
     dvalue.value = value;
     return dvalue;
 }
 
 ORBoolValue *makeBoolValue(BOOL value){
-    ORBoolValue *dvalue = [ORBoolValue new];
+    __autoreleasing ORBoolValue *dvalue = [ORBoolValue new];
     dvalue.value = value;
     return dvalue;
 }
@@ -253,4 +284,11 @@ void stringBufferAppendString(char *str){
     }
     strncpy(string_buffer+string_buffer_index, str, len);
     string_buffer_index += len;
+}
+NSMutableArray *makeMutableArray(id object){
+    __autoreleasing NSMutableArray *array = [NSMutableArray array];
+    if (object) {
+        [array addObject:object];
+    }
+    return array;
 }

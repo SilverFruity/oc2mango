@@ -24,7 +24,6 @@ extern Parser *OCParser;
 @property(nonatomic,nonnull,strong)NSLock *lock;
 @property(nonatomic,nullable,copy)NSString *error;
 @property(nonatomic,nullable,strong)CodeSource *source;
-+ (nonnull instancetype)shared;
 - (AST *)parseCodeSource:(CodeSource *)source;
 - (AST *)parseSource:(nullable NSString *)source;
 - (BOOL)isSuccess;
