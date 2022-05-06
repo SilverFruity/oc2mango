@@ -121,49 +121,6 @@ BOOL ORPatchFileVersionCompare(NSString *current, NSString *constaint){
     [data writeToFile:patchPath atomically:YES];
     return patchPath;
 }
-+ (instancetype)loadJsonPatch:(NSString *)patchPatch {
-    NSData *fileData = [[NSData alloc] initWithContentsOfFile:patchPatch];
-    if (fileData == nil) {
-        return nil;
-    }
-    NSError *error;
-    NSDictionary *jsonDict;
-    
-#ifdef DEBUG
-    jsonDict = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:&error];
-#else
-    @try {
-        jsonDict = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:&error];
-    } @catch (NSException *exception) {
-        NSLog(@"%@", exception.reason);
-    }
-#endif
-    
-    if (error || !jsonDict || ![jsonDict isKindOfClass:[NSDictionary class]]) {
-        NSLog(@"%@",error);
-        return nil;
-    }
-    NSLog(@"json file length %.2f KB", (double)fileData.length / 1000.0);
-    ORPatchFile *file = [ORPatchFile new];
-    [file setValuesForKeysWithDictionary:jsonDict];
-    if (file.canUseable == NO) {
-        return nil;
-    }
-    [JSONPatchHelper unArchivePatch:file object:jsonDict];
-    return file;
-}
-- (NSString *)dumpAsJsonPatch:(NSString *)patchPath{
-    NSDictionary *dictionary = [JSONPatchHelper archivePatch:self];
-    if (!dictionary) { return @"json empty error"; }
-    NSError *error = nil;
-    NSData *data = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
-    if (error) {
-        NSLog(@"%@",error);
-        return error.localizedDescription;
-    }
-    [data writeToFile:patchPath atomically:YES];
-    return patchPath;
-}
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key{
     
 }

@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "RunnerClasses.h"
-#import <ORPatchFile/JSONPatchHelper.h>
 #import <ORPatchFile/BinaryPatchHelper.h>
 #import <ORPatchFile/AstVisitor.h>
 #import <ORPatchFile/OCTypeEncode.h>

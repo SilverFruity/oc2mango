@@ -216,6 +216,7 @@ void AstPatchFileDestroy(AstPatchFile *node){
     AstNodeDestroy((AstEmptyNode *)node->nodes);
     free(node);
 }
+#include <stddef.h>
 
 #pragma mark - Struct BaseLength
 static uint32_t AstTypeNodeBaseLength = 9;
