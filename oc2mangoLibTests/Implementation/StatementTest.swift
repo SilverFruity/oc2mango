@@ -171,7 +171,7 @@ for (int x = 0, b = 0; x < 1 && b < 20; x++, b++) {
         let source =
 """
 
-for (UIView *view in self.view.subviews) {
+for (__kindof UIView *view in self.view.subviews) {
     
 }
 

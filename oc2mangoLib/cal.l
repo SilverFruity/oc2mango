@@ -127,6 +127,7 @@
 <INITIAL>"__bridge_transfer" ;
 <INITIAL>"__bridge_retained" ;
 <INITIAL>"__unused" ;
+<INITIAL>"__kindof" ;
 
 <INITIAL>"@required" ;
 <INITIAL>"@optional" ;
