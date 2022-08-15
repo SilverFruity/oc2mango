@@ -315,6 +315,8 @@ typedef enum: uint32_t{
 @interface ORMethodImplementation: ORNode
 @property (nonatomic,strong) ORMethodDeclare * declare;
 @property (nonatomic,strong) ORScopeImp *scopeImp;
+- (void)setClassNode:(Class)classNode;
+- (Class)classNode;
 @end
 
 @interface ORClass: ORNode

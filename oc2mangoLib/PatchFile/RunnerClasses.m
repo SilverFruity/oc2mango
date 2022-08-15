@@ -215,11 +215,20 @@
 }
 @end
 @implementation ORMethodImplementation
+{
+    Class _classNode;
+}
 - (NSUInteger)hash{
     return [[self.declare selectorName] stringByAppendingFormat:@"%d",self.declare.isClassMethod].hash;
 }
 - (BOOL)isEqual:(id)object{
     return [self hash] == [object hash];
+}
+- (void)setClassNode:(Class)classNode {
+    _classNode = classNode;
+}
+- (Class)classNode {
+    return _classNode;
 }
 @end
 @implementation ORClass
