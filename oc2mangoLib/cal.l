@@ -142,7 +142,8 @@
 <INITIAL>"bool" { TypeReturn(BOOL); }
 <INITIAL>"void" { TypeReturn(void); }
 <INITIAL>"instancetype" { TypeReturn(instancetype); }
-
+<INITIAL>"IBOutlet" ;
+<INITIAL>"IBAction" { TypeReturn(void); }
 
 <INITIAL>"return" { TypeReturn(return); }
 <INITIAL>"for" { TypeReturn(for); }

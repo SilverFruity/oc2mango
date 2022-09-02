@@ -7,7 +7,7 @@
 //
 
 import XCTest
-
+import oc2mangoLib
 class ClassDeclareTest: XCTestCase {
     let parser = Parser()
     override func setUp() {
@@ -358,5 +358,28 @@ void func(NSString *a, int *b){
         XCTAssert(parser.isSuccess())
         let value = ast.protcolCache["Demo"] as! ORProtocol
         XCTAssert(value.protocols == ["NSObject","Test"])
+    }
+    func testUIKitSpecial() {
+        let source =
+        """
+        @interface Demo: UIViewController
+        @property (weak, nonatomic) IBOutlet UIButton *cornerBorderButton;
+        @property (weak, nonatomic) IBOutlet UIButton *gradientButton;
+        @property (weak, nonatomic) IBOutlet UIButton *avatarButton;
+        @property (weak, nonatomic) IBOutlet SFCSBView *testView;
+        @end
+        @implementation Demo
+        - (IBAction)clickHandler:(UIButton *)sender {
+        }
+        @end
+        """
+        let ast = parser.parseSource(source)
+        XCTAssert(parser.isSuccess())
+        let klass = ast.classCache["Demo"] as! ORClass
+        XCTAssert(klass.className == "Demo")
+        let buttonProp = klass.properties.firstObject as! ORPropertyDeclare
+        XCTAssert(buttonProp.var.var.varname == "cornerBorderButton")
+        let method = klass.methods.firstObject as! ORMethodImplementation
+        XCTAssert(method.declare.selectorName() == "clickHandler:");
     }
 }
