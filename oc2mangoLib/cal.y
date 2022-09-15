@@ -47,7 +47,7 @@ SHIFTLEFT SHIFTRIGHT MOD ASSIGN MOD_ASSIGN
 %type  <expression> objc_method_call primary_expression numerical_value_type block_implementation  function_implementation  objc_method_call_pramameters  expression_list  unary_expression postfix_expression
 %type <Operator>  assign_operator unary_operator
 %type <statement> expression_statement if_statement while_statement dowhile_statement switch_statement for_statement forin_statement  case_statement_list control_statement  case_statement
-%type <expression> expression expression_optional  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys for_statement_var_list
+%type <expression> expression expression_optional  assign_expression ternary_expression logic_or_expression multiplication_expression additive_expression bite_shift_expression equality_expression bite_and_expression bite_xor_expression  relational_expression bite_or_expression logic_and_expression dict_entrys
 %type <expression> declaration init_declarator declarator declarator_optional direct_declarator direct_declarator_optional init_declarator_list  block_parameters_optinal parameter_type_list type_specifier_optional class_name class_name_suffix
 %type <IntValue> pointer pointer_optional
 %type <declaration_modifier> declaration_modifier
@@ -636,19 +636,6 @@ switch_statement:
          }
         ;
 
-for_statement_var_list:
-        | primary_expression
-        {
-            NSMutableArray *list = [NSMutableArray array];
-            [list addObject:_transfer(id)$1];
-            $$ = _vretained list;
-        }
-        | for_statement_var_list COMMA primary_expression
-        {
-            NSMutableArray *list = (__bridge_transfer NSMutableArray *)$1;
-            [list addObject:_transfer(id) $3];
-            $$ = _vretained list;
-        }
 
 for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
         {
@@ -658,10 +645,10 @@ for_statement: _for LP declaration SEMICOLON expression SEMICOLON expression_lis
             statement.expressions = _typeId $7;
             $$ = _vretained statement;
         }
-        |  _for LP for_statement_var_list SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
+        |  _for LP assign_expression SEMICOLON expression SEMICOLON expression_list RP LC function_implementation RC
                {
                    ORForStatement* statement = makeForStatement(_transfer(ORScopeImp *) $10);
-                   statement.varExpressions = _typeId $3;
+                   statement.varExpressions = [@[_typeId $3] mutableCopy];
                    statement.condition = _typeId $5;
                    statement.expressions = _typeId $7;
                    $$ = _vretained statement;

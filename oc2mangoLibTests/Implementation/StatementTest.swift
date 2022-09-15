@@ -153,6 +153,9 @@ switch (x) {
     func testForStatement(){
         let source =
 """
+int i;
+for (i = 0; i < 1; i++) {
+}
 
 for (int x = 0; x < 1; x++) {
 }
