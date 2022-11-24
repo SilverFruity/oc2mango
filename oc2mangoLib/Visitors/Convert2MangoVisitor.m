@@ -7,6 +7,9 @@
 //
 
 #import "Convert2MangoVisitor.h"
+#import "RunnerClasses.h"
+#import "AstVisitor.h"
+
 static NSString *convertBuffer = nil;
 @implementation Convert2MangoVisitor
 - (NSString *)convert:(ORNode *)node{

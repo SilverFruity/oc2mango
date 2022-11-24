@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AST.h"
-#import "ORPatchFile.h"
-#import "BinaryPatchHelper.h"
+
 NS_ASSUME_NONNULL_BEGIN
 @class Parser;
 extern Parser *OCParser;

@@ -11,14 +11,14 @@
 
 #define OR_IMPL(node_name)\
 @implementation OR##node_name (AstEnumExtension)\
-- (void)initialNodeType:(AstEnum)nodeType{\
+- (void)initialNodeType {\
     self.nodeType = AstEnum##node_name;\
 }\
 @end
 NODE_LIST(OR_IMPL)
 #undef OR_IMPL
 @implementation ORNode (AstEnumExtension)
-- (void)initialNodeType:(AstEnum)nodeType{
+- (void)initialNodeType {
     self.nodeType = AstEnumEmptyNode;
 }
 @end
@@ -26,7 +26,7 @@ NODE_LIST(OR_IMPL)
 @implementation ORNode
 - (instancetype)init{
     self = [super init];
-    [self initialNodeType:AstEnumEmptyNode];
+    [self initialNodeType];
     return self;
 }
 - (BOOL)isConst{
@@ -42,6 +42,11 @@ NODE_LIST(OR_IMPL)
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key{
     
 }
+- (NSInteger)integerValue {
+    NSAssert(false, @"ORNode not integer value!");
+    return 0;
+}
+
 @end
 
 @implementation ORTypeNode
@@ -163,7 +168,6 @@ NODE_LIST(OR_IMPL)
     imp.declare = [self.declare copy];
     imp.scopeImp = self.scopeImp;
     imp.declare.var.isBlock = NO;
-    imp.symbol = self.symbol;
     imp.parentNode = self.parentNode;
     return imp;
 }
@@ -303,11 +307,7 @@ NODE_LIST(OR_IMPL)
 - (instancetype)init
 {
     self = [super init];
-    self.properties  = [NSMutableArray array];
-    self.privateVariables = [NSMutableArray array];
-    self.properties = [NSMutableArray array];
-    self.methods = [NSMutableArray array];
-    
+    self.nodes = [NSMutableArray array];
     return self;
 }
 - (void)merge:(ORClassNode *)target key:(nonnull NSString *)key{
@@ -317,6 +317,33 @@ NODE_LIST(OR_IMPL)
     [comparedSet minusSet:sourceSet];
     NSMutableArray *array = [self valueForKey:key];
     [array addObjectsFromArray:comparedSet.allObjects];
+}
+- (NSMutableArray<ORPropertyNode *> *)properties {
+    NSMutableArray *list = [NSMutableArray array];
+    for (ORNode *node in self.nodes) {
+        if ([node isKindOfClass:[ORPropertyNode class]]) {
+            [list addObject:node];
+        }
+    }
+    return list;
+}
+- (NSMutableArray<ORMethodNode *> *)methods {
+    NSMutableArray *list = [NSMutableArray array];
+    for (ORNode *node in self.nodes) {
+        if ([node isKindOfClass:[ORMethodNode class]]) {
+            [list addObject:node];
+        }
+    }
+    return list;
+}
+- (NSMutableArray<ORDeclaratorNode *> *)privateVariables {
+    NSMutableArray *list = [NSMutableArray array];
+    for (ORNode *node in self.nodes) {
+        if ([node isKindOfClass:[ORDeclaratorNode class]]) {
+            [list addObject:node];
+        }
+    }
+    return list;
 }
 @end
 
@@ -329,10 +356,26 @@ NODE_LIST(OR_IMPL)
 - (instancetype)init
 {
     self = [super init];
-    self.properties  = [NSMutableArray array];
-    self.properties = [NSMutableArray array];
-    self.methods = [NSMutableArray array];
+    self.nodes = [NSMutableArray array];
     return self;
+}
+- (NSMutableArray<ORPropertyNode *> *)properties {
+    NSMutableArray *list = [NSMutableArray array];
+    for (ORNode *node in self.nodes) {
+        if ([node isKindOfClass:[ORPropertyNode class]]) {
+            [list addObject:node];
+        }
+    }
+    return list;
+}
+- (NSMutableArray<ORMethodNode *> *)methods {
+    NSMutableArray *list = [NSMutableArray array];
+    for (ORNode *node in self.nodes) {
+        if ([node isKindOfClass:[ORMethodNode class]]) {
+            [list addObject:node];
+        }
+    }
+    return list;
 }
 @end
 

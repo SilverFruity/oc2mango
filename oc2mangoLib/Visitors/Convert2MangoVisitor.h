@@ -6,10 +6,10 @@
 //  Copyright © 2021 SilverFruity. All rights reserved.
 //
 
-#import <ORPatchFile/ORPatchFile.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+@protocol AstVisitor;
 @interface Convert2MangoVisitor : NSObject <AstVisitor>
 /// Convert
 /// @param node ORNode

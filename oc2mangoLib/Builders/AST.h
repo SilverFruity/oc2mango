@@ -7,9 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ORPatchFile/RunnerClasses.h>
+#import "RunnerClasses.h"
+
 NS_ASSUME_NONNULL_BEGIN
+@protocol AstVisitorAccepter;
 @class AST;
+
 int startClassProrityDetect(AST *ast, ORClassNode *clazz);
 extern ORClassNode *curClassNode;
 extern ORProtocolNode *curProtocolNode;
@@ -17,12 +20,12 @@ void handlePrivateVarDecls(NSArray *decls);
 void handlePropertyDecls(ORPropertyNode *node);
 void handleMethodDecl(ORMethodDeclNode *node);
 void handleMethodImp(ORMethodNode *node);
+
+
 extern AST *GlobalAst;
-@class ocScope;
-@interface AST : NSObject
-@property(nonatomic,strong)ocScope *scope;
-@property(nonatomic,nonnull,strong)NSMutableArray *nodes;
-@property(nonatomic,nonnull,strong)NSMutableArray *globalStatements;
+@interface AST : NSObject <AstVisitorAccepter>
+@property(nonatomic,readonly)ORClassNode *topLevel;
+@property(nonatomic,nonnull,strong)NSMutableArray <ORClassNode *>*classes;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *classCache;
 @property(nonatomic,nonnull,strong)NSMutableDictionary *protcolCache;
 - (nonnull ORClassNode *)classForName:(NSString *)className;
@@ -30,6 +33,13 @@ extern AST *GlobalAst;
 - (void)addGlobalStatements:(id)objects;
 - (NSArray <ORClassNode *>*)sortClasses;
 /// 合并ast
-- (void)merge:(NSArray *)nodes;
+- (void)merge:(NSArray *)classes;
+- (void)prepareForAccept;
+- (void)accept:(id<AstVisitor>)visitor;
+@end
+
+@interface AST (ForUnitTest)
+@property(nonatomic,readonly)NSMutableArray *globalStatements;
+@property(nonatomic,readonly)NSMutableArray *nodes;
 @end
 NS_ASSUME_NONNULL_END

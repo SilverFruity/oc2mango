@@ -8,33 +8,28 @@
 
 #import "AST.h"
 #import "MakeDeclare.h"
+#import "AstVisitor.h"
+
 ORClassNode *curClassNode = nil;
 ORProtocolNode *curProtocolNode = nil;
 
-NSArray *SupplementarySetArray(NSArray *source, NSArray *compared){
-    NSMutableSet *sourceSet = [NSMutableSet setWithArray:source];
-    NSMutableSet *compredSet = [NSMutableSet setWithArray:compared];
-    [compredSet unionSet:sourceSet];
-    [compredSet minusSet:sourceSet];
-    return  compredSet.allObjects;
-}
 void handlePrivateVarDecls(NSArray *decls){
     if (curClassNode)
-        [curClassNode.privateVariables addObjectsFromArray:decls];
+        [curClassNode.nodes addObjectsFromArray:decls];
 }
 void handlePropertyDecls(ORPropertyNode *node){
     if (curClassNode)
-        [curClassNode.properties addObject:node];
+        [curClassNode.nodes addObject:node];
     if (curProtocolNode)
-        [curProtocolNode.properties addObject:node];
+        [curProtocolNode.nodes addObject:node];
 }
 void handleMethodDecl(ORMethodDeclNode *node){
     if (curProtocolNode)
-        [curProtocolNode.methods addObject:node];
+        [curProtocolNode.nodes addObject:node];
 }
 void handleMethodImp(ORMethodNode *node){
     if (curClassNode)
-        [curClassNode.methods addObject:node];
+        [curClassNode.nodes addObject:node];
 }
 AST *GlobalAst = nil;
 void classProrityDetect(AST *ast,ORClassNode *class, int *level){
@@ -55,11 +50,15 @@ int startClassProrityDetect(AST *ast, ORClassNode *clazz){
     return prority;
 }
 @implementation AST
+{
+    ORClassNode * _topLevel;
+}
 - (ORClassNode *)classForName:(NSString *)className{
+    NSAssert(className != nil && className.length > 0, @"");
     ORClassNode *class = self.classCache[className];
     if (!class) {
         class = makeOCClass(className);
-        [self.nodes addObject:class];
+        [self.classes addObject:class];
         self.classCache[className] = class;
     }
     return class;
@@ -68,7 +67,7 @@ int startClassProrityDetect(AST *ast, ORClassNode *clazz){
     ORProtocolNode *protocol = self.protcolCache[protcolName];
     if (!protocol) {
         protocol = makeORProtcol(protcolName);
-        [self.nodes addObject:protocol];
+        [self.topLevel.nodes addObject:protocol];
         self.protcolCache[protcolName] = protocol;
     }
     return protocol;
@@ -76,19 +75,18 @@ int startClassProrityDetect(AST *ast, ORClassNode *clazz){
 - (instancetype)init
 {
     self = [super init];
-    self.classCache = [NSMutableDictionary dictionary];
-    self.protcolCache = [NSMutableDictionary dictionary];
-    self.nodes = [NSMutableArray array];
-    self.globalStatements = [NSMutableArray array];
+    _topLevel = [ORClassNode classNodeWithClassName:nil];
+    _classCache = [NSMutableDictionary dictionary];
+    _protcolCache = [NSMutableDictionary dictionary];
+    _topLevel.isTopLevel = YES;
+    _classes = [@[self.topLevel] mutableCopy];
     return self;
 }
 - (void)addGlobalStatements:(id)objects{
     if ([objects isKindOfClass:[NSArray class]]) {
-        [self.globalStatements addObjectsFromArray:objects];
-        [self.nodes addObjectsFromArray:objects];
+        [self.topLevel.nodes addObjectsFromArray:objects];
     }else{
-        [self.globalStatements addObject:objects];
-        [self.nodes addObject:objects];
+        [self.topLevel.nodes addObject:objects];
     }
 }
 - (NSArray *)sortClasses{
@@ -101,33 +99,52 @@ int startClassProrityDetect(AST *ast, ORClassNode *clazz){
     classes = [classes sortedArrayUsingComparator:^NSComparisonResult(ORClassNode *obj1, ORClassNode *obj2) {
         return classProrityDict[obj1.className].intValue > classProrityDict[obj2.className].intValue;
     }];
-    return classes;
+    return [classes copy];
 }
-- (void)merge:(NSArray *)nodes{
-    [nodes enumerateObjectsUsingBlock:^(ORNode *node, NSUInteger idx, BOOL * _Nonnull stop) {
+- (void)merge:(NSArray *)classes{
+    [classes enumerateObjectsUsingBlock:^(ORNode *node, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([node isKindOfClass:[ORClassNode class]]) {
             ORClassNode *classNode = (ORClassNode *)node;
-            ORClassNode *current = self.classCache[classNode.className];
+            bool isTopLevel = classNode.isTopLevel;
+            ORClassNode *current = isTopLevel ? self.topLevel : self.classCache[classNode.className];
             if (current) {
-                [current merge:classNode key:@"privateVariables"];
-                [current merge:classNode key:@"properties"];
-                [current merge:classNode key:@"protocols"];
-                [current merge:classNode key:@"methods"];
+                [current merge:classNode key:@"nodes"];
                 if (!current.superClassName && classNode.superClassName) {
                     current.superClassName = classNode.superClassName;
                 }
             }else{
-                self.classCache[classNode.className] = node;
-                [self.nodes addObject:node];
+                self.classCache[classNode.className] = classNode;
+                [self.classes addObject:classNode];
             }
         }else if([node isKindOfClass:[ORProtocolNode class]]){
             ORProtocolNode *protocolNode = (ORProtocolNode *)node;
             self.protcolCache[protocolNode.protcolName] = protocolNode;
-            [self.nodes addObject:protocolNode];
+            [self.topLevel.nodes addObject:protocolNode];
         }else{
             [self addGlobalStatements:node];
         }
     }];
+}
+
+- (void)prepareForAccept {
+    NSArray *sortedClasses = [self sortClasses];
+    self.classes = [@[self.topLevel] mutableCopy];
+    [self.classes addObjectsFromArray:sortedClasses];
+}
+
+- (void)accept:(id<AstVisitor>)visitor {
+    [self.nodes accept:visitor];
+}
+
+- (NSMutableArray *)globalStatements {
+    return self.topLevel.nodes;
+}
+
+- (NSMutableArray *)nodes {
+    NSMutableArray *list = [NSMutableArray array];
+    [list addObjectsFromArray:self.topLevel.nodes];
+    [list addObjectsFromArray:[self.classes subarrayWithRange:NSMakeRange(1, self.classes.count - 1)]];
+    return list;
 }
 @end
 

@@ -39,23 +39,6 @@ class ArchiveTests: XCTestCase {
         XCTAssert(result == resultStr,"\n"+result)
     }
     
-    func testVersionCompare(){
-        XCTAssert(ORPatchFileVersionCompare("13.3.1", ">=13.0"))
-        XCTAssert(ORPatchFileVersionCompare("13.3.1", ">10.0"))
-        XCTAssert(ORPatchFileVersionCompare("13.3.1", "<=14.0"))
-        XCTAssert(ORPatchFileVersionCompare("13.3.1", "<14.1.1"))
-        XCTAssert(ORPatchFileVersionCompare("13.3.1", "=13.3.1"))
-        XCTAssert(ORPatchFileVersionCompare("13.3.1", "13.3.1"))
-        XCTAssert(ORPatchFileVersionCompare("13.3.1", "*"))
-        
-        XCTAssert(ORPatchFileVersionCompare("12.3.1", ">=13.0") == false)
-        XCTAssert(ORPatchFileVersionCompare("9.3.1", ">10.0") == false)
-        XCTAssert(ORPatchFileVersionCompare("14.3.1", "<=14.0") == false)
-        XCTAssert(ORPatchFileVersionCompare("14.1.2", "<14.1.1") == false)
-        XCTAssert(ORPatchFileVersionCompare("13.3.2", "=13.3.1") == false)
-        XCTAssert(ORPatchFileVersionCompare("13.1.1", "13.1") == false)
-        XCTAssert(ORPatchFileVersionCompare("1", "*"))
-    }
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.

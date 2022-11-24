@@ -7,22 +7,65 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BinaryPatchHelper.h"
 #import "OCTypeEncode.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@class ocSymbol, ocScope;
+
+typedef enum: uint8_t{
+    AstEnumEmptyNode = 0,
+    AstEnumPatchFile = 1,
+    AstEnumStringCursorNode = 2,
+    AstEnumStringBufferNode = 3,
+    AstEnumListNode = 4,
+    AstEnumTypeNode = 5,
+    AstEnumVariableNode = 6,
+    AstEnumDeclaratorNode = 7,
+    AstEnumFunctionDeclNode = 8,
+    AstEnumCArrayDeclNode = 9,
+    AstEnumBlockNode = 10,
+    AstEnumValueNode = 11,
+    AstEnumIntegerValue = 12,
+    AstEnumUIntegerValue = 13,
+    AstEnumDoubleValue = 14,
+    AstEnumBoolValue = 15,
+    AstEnumMethodCall = 16,
+    AstEnumFunctionCall = 17,
+    AstEnumFunctionNode = 18,
+    AstEnumSubscriptNode = 19,
+    AstEnumAssignNode = 20,
+    AstEnumInitDeclaratorNode = 21,
+    AstEnumUnaryNode = 22,
+    AstEnumBinaryNode = 23,
+    AstEnumTernaryNode = 24,
+    AstEnumIfStatement = 25,
+    AstEnumWhileStatement = 26,
+    AstEnumDoWhileStatement = 27,
+    AstEnumCaseStatement = 28,
+    AstEnumSwitchStatement = 29,
+    AstEnumForStatement = 30,
+    AstEnumForInStatement = 31,
+    AstEnumControlStatNode = 32,
+    AstEnumPropertyNode = 33,
+    AstEnumMethodDeclNode = 34,
+    AstEnumMethodNode = 35,
+    AstEnumClassNode = 36,
+    AstEnumProtocolNode = 37,
+    AstEnumStructStatNode = 38,
+    AstEnumUnionStatNode = 39,
+    AstEnumEnumStatNode = 40,
+    AstEnumTypedefStatNode = 41,
+}AstEnum;
+
+@protocol AstVisitor;
+@protocol AstVisitorAccepter
+- (void)accept:(id <AstVisitor>)visitor;
+@end
+
 // MARK: - Node
-@interface ORNode: NSObject
-{
-@public
-    ocSymbol *_symbol;
-}
+@interface ORNode: NSObject <AstVisitorAccepter>
 @property (nonatomic, assign)AstEnum nodeType;
 @property (nonatomic, assign)BOOL withSemicolon;
 @property (nonatomic, weak)ORNode *parentNode;
-@property (nonatomic, strong)ocScope *scope;
-@property (nonatomic, strong)ocSymbol *symbol;
 - (BOOL)isConst;
 - (NSInteger)integerValue;
 + (id)copyWithNode:(ORNode *)node;
@@ -314,21 +357,20 @@ typedef enum: uint32_t{
 @end
 
 @interface ORClassNode: ORNode
+@property (nonatomic,assign) bool isTopLevel;
 @property (nonatomic,copy)NSString *className;
 @property (nonatomic,copy)NSString *superClassName;
 @property (nonatomic,strong)NSMutableArray <NSString *>*protocols;
-@property (nonatomic,strong)NSMutableArray <ORPropertyNode *>*properties;
-@property (nonatomic,strong)NSMutableArray <ORDeclaratorNode *>*privateVariables;
-@property (nonatomic,strong)NSMutableArray <ORMethodNode *>*methods;
-+ (instancetype)classNodeWithClassName:(NSString *)className;
+@property (nonatomic,strong) NSMutableArray <ORNode *>*nodes;
+
++ (instancetype)classNodeWithClassName:(nullable NSString *)className;
 - (void)merge:(ORClassNode *)target key:(NSString *)key;
 @end
 
 @interface ORProtocolNode: ORNode
 @property (nonatomic,copy)NSString *protcolName;
 @property (nonatomic,strong,nullable)NSMutableArray <NSString *>*protocols;
-@property (nonatomic,strong)NSMutableArray <ORPropertyNode *>*properties;
-@property (nonatomic,strong)NSMutableArray <ORMethodDeclNode *>*methods;
+@property (nonatomic,strong) NSMutableArray <ORNode *>*nodes;
 + (instancetype)protcolWithProtcolName:(NSString *)protcolName;
 @end
 
@@ -355,5 +397,15 @@ typedef enum: uint32_t{
 @end
 
 
+@interface ORProtocolNode (ForUnitTest)
+@property (nonatomic,readonly)NSMutableArray <ORPropertyNode *>*properties;
+@property (nonatomic,readonly)NSMutableArray <ORMethodDeclNode *>*methods;
+@end
+
+@interface ORClassNode (ForUnitTest)
+@property (nonatomic,readonly)NSMutableArray <ORPropertyNode *>*properties;
+@property (nonatomic,readonly)NSMutableArray <ORDeclaratorNode *>*privateVariables;
+@property (nonatomic,readonly)NSMutableArray <ORMethodNode *>*methods;
+@end
 
 NS_ASSUME_NONNULL_END

@@ -60,6 +60,10 @@ NODE_LIST(VISITOR_METHOD);
 - (void)visit:(ORNode *)node;
 @end
 
+@interface NSArray (AstVisitor)
+- (void)accept:(id<AstVisitor>)visitor;
+@end
+
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
