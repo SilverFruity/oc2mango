@@ -7,7 +7,7 @@
 //
 
 #import "Parser.h"
-#import "RunnerClasses.h"
+#import "AstClasses.h"
 #import "oc2mangoLib.h"
 
 Parser *OCParser = nil;

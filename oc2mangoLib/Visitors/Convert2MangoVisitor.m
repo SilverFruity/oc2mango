@@ -7,7 +7,7 @@
 //
 
 #import "Convert2MangoVisitor.h"
-#import "RunnerClasses.h"
+#import "AstClasses.h"
 #import "AstVisitor.h"
 
 static NSString *convertBuffer = nil;

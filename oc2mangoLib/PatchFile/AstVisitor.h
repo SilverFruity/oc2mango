@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RunnerClasses.h"
+#import "AstClasses.h"
 //VSCode正则: @interface (.*)?:[.\w\W]*?@end
 #define NODE_LIST(V)\
 V(TypeNode)\

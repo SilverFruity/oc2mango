@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Parser.h"
-#import "RunnerClasses.h"
+#import "AstClasses.h"
 
 
 extern ORTypeNode *makeTypeNode(OCType type, NSString *name);

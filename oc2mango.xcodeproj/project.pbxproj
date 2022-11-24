@@ -34,8 +34,8 @@
 		EE5534D02290032700A4B32E /* AST.m in Sources */ = {isa = PBXBuildFile; fileRef = EE5534CE2290032700A4B32E /* AST.m */; };
 		EE5534DC22900DFF00A4B32E /* ConvertTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5534DB22900DFF00A4B32E /* ConvertTest.swift */; };
 		EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */ = {isa = PBXBuildFile; fileRef = EE982F05226CB443008712C2 /* MakeDeclare.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE66B5F3292FDA4900B6ED8C /* RunnerClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66B5ED292FDA4900B6ED8C /* RunnerClasses.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EE66B5F4292FDA4900B6ED8C /* RunnerClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66B5EE292FDA4900B6ED8C /* RunnerClasses.m */; };
+		EE66B5F3292FDA4900B6ED8C /* AstClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66B5ED292FDA4900B6ED8C /* AstClasses.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EE66B5F4292FDA4900B6ED8C /* AstClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66B5EE292FDA4900B6ED8C /* AstClasses.m */; };
 		EE66B5F5292FDA4900B6ED8C /* AstClasses+Visitor.m in Sources */ = {isa = PBXBuildFile; fileRef = EE66B5EF292FDA4900B6ED8C /* AstClasses+Visitor.m */; };
 		EE66B5F6292FDA4900B6ED8C /* OCTypeEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66B5F0292FDA4900B6ED8C /* OCTypeEncode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE66B5F7292FDA4900B6ED8C /* AstVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = EE66B5F1292FDA4900B6ED8C /* AstVisitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -116,8 +116,8 @@
 		EE5534CD2290032700A4B32E /* AST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AST.h; sourceTree = "<group>"; };
 		EE5534CE2290032700A4B32E /* AST.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AST.m; sourceTree = "<group>"; };
 		EE5534DB22900DFF00A4B32E /* ConvertTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertTest.swift; sourceTree = "<group>"; };
-		EE66B5ED292FDA4900B6ED8C /* RunnerClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RunnerClasses.h; path = oc2mangoLib/PatchFile/RunnerClasses.h; sourceTree = SOURCE_ROOT; };
-		EE66B5EE292FDA4900B6ED8C /* RunnerClasses.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RunnerClasses.m; path = oc2mangoLib/PatchFile/RunnerClasses.m; sourceTree = SOURCE_ROOT; };
+		EE66B5ED292FDA4900B6ED8C /* AstClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AstClasses.h; path = oc2mangoLib/PatchFile/AstClasses.h; sourceTree = SOURCE_ROOT; };
+		EE66B5EE292FDA4900B6ED8C /* AstClasses.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AstClasses.m; path = oc2mangoLib/PatchFile/AstClasses.m; sourceTree = SOURCE_ROOT; };
 		EE66B5EF292FDA4900B6ED8C /* AstClasses+Visitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AstClasses+Visitor.m"; path = "oc2mangoLib/PatchFile/AstClasses+Visitor.m"; sourceTree = SOURCE_ROOT; };
 		EE66B5F0292FDA4900B6ED8C /* OCTypeEncode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCTypeEncode.h; path = oc2mangoLib/PatchFile/OCTypeEncode.h; sourceTree = SOURCE_ROOT; };
 		EE66B5F1292FDA4900B6ED8C /* AstVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AstVisitor.h; path = oc2mangoLib/PatchFile/AstVisitor.h; sourceTree = SOURCE_ROOT; };
@@ -192,8 +192,8 @@
 				EE66B5F0292FDA4900B6ED8C /* OCTypeEncode.h */,
 				EE66B5F1292FDA4900B6ED8C /* AstVisitor.h */,
 				EE66B5F2292FDA4900B6ED8C /* AstVisitor.m */,
-				EE66B5ED292FDA4900B6ED8C /* RunnerClasses.h */,
-				EE66B5EE292FDA4900B6ED8C /* RunnerClasses.m */,
+				EE66B5ED292FDA4900B6ED8C /* AstClasses.h */,
+				EE66B5EE292FDA4900B6ED8C /* AstClasses.m */,
 				EE66B5EF292FDA4900B6ED8C /* AstClasses+Visitor.m */,
 				18819E26268329D800CC85DD /* Convert2MangoVisitor.h */,
 				18819E27268329D800CC85DD /* Convert2MangoVisitor.m */,
@@ -350,7 +350,7 @@
 				EE66B5F7292FDA4900B6ED8C /* AstVisitor.h in Headers */,
 				EE5534CF2290032700A4B32E /* AST.h in Headers */,
 				EED67AAA2270B1C70015AC02 /* Parser.h in Headers */,
-				EE66B5F3292FDA4900B6ED8C /* RunnerClasses.h in Headers */,
+				EE66B5F3292FDA4900B6ED8C /* AstClasses.h in Headers */,
 				18819E28268329D800CC85DD /* Convert2MangoVisitor.h in Headers */,
 				EE5534DD2290158700A4B32E /* MakeDeclare.h in Headers */,
 			);
@@ -588,7 +588,7 @@
 			files = (
 				18819E29268329D800CC85DD /* Convert2MangoVisitor.m in Sources */,
 				EE5534D02290032700A4B32E /* AST.m in Sources */,
-				EE66B5F4292FDA4900B6ED8C /* RunnerClasses.m in Sources */,
+				EE66B5F4292FDA4900B6ED8C /* AstClasses.m in Sources */,
 				EE4BAFE724364CAA00A2A080 /* parser.ym in Sources */,
 				EED67AAB2270B1C70015AC02 /* Parser.m in Sources */,
 				EED67A972270B0CA0015AC02 /* Log.m in Sources */,

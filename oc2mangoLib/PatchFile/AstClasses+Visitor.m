@@ -7,7 +7,7 @@
 //
 
 #import "AstVisitor.h"
-#import "RunnerClasses.h"
+#import "AstClasses.h"
 
 @implementation NSArray (AstVisitor)
 - (void)accept:(id<AstVisitor>)visitor {

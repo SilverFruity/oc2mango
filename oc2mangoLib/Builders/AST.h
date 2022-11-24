@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RunnerClasses.h"
+#import "AstClasses.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol AstVisitorAccepter;
