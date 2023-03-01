@@ -105,7 +105,6 @@ int startClassProrityDetect(AST *ast, ORClass *class){
             [self.nodes addObject:protocolNode];
         }else{
             [self addGlobalStatements:node];
-            [self.nodes addObject:node];
         }
     }];
 }
