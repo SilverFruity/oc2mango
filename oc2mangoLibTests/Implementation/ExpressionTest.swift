@@ -338,5 +338,13 @@ class ExpressionTest: XCTestCase {
         XCTAssert(param2.declare.returnType.type.type == TypeVoid)
         XCTAssert(param2.declare.funVar.pairs.count == 0)
     }
-
+    func testChineseStringWithQuotation(){
+        source =
+        """
+        NSString *str = @"库\\"";
+        NSString *str = @"库 \\"";
+        """
+        let ast = parser.parseSource(source);
+        XCTAssert(parser.isSuccess())
+    }
 }

@@ -339,10 +339,6 @@ BEGIN STRING_LITERAL_STATE;
 <STRING_LITERAL_STATE>\\n	{ stringBufferAppendCharacter('\n'); }
 <STRING_LITERAL_STATE>\\t	{ stringBufferAppendCharacter('\t'); }
 <STRING_LITERAL_STATE>\\\\	{ stringBufferAppendCharacter('\\'); }
-<STRING_LITERAL_STATE>[\x81-\x9f\xe0-\xef][\x40-\x7e\x80-\xfc] {
-	stringBufferAppendCharacter(yytext[0]);
-    stringBufferAppendCharacter(yytext[1]);
-}
 
 <INITIAL>\n.* {
     strncpy(linebuf,yytext + 1,sizeof(linebuf));
