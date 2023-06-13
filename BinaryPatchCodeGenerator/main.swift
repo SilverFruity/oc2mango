@@ -129,6 +129,7 @@ void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *curso
 AstPatchFile *AstPatchFileDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
 void AstPatchFileDestroy(AstPatchFile *node);
 ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength);
+void AstNodeListTagged(id parentNode, NSArray *nodes);
 """
 
 var impSource = """
@@ -378,6 +379,7 @@ for node in ast.nodes{
                 generator.addSerializationExp(varname: varname)
                 generator.addDeserializationExp(varname: varname, nodeName: "AstNodeList")
                 generator.addDestroyExp(varname: varname)
+                generator.addNodeTaggedExp(varname: varname);
             }else if typename.hasPrefix("OR") || typename == "id"{
                 generator.addStructNodeField(type: "AstEmptyNode *", varname: varname)
                 generator.addNodeConvertExp(varname: varname, nodeName: "AstEmptyNode")
@@ -385,6 +387,7 @@ for node in ast.nodes{
                 generator.addSerializationExp(varname: varname)
                 generator.addDeserializationExp(varname: varname, nodeName: "AstEmptyNode")
                 generator.addDestroyExp(varname: varname)
+                generator.addNodeTaggedExp(varname: varname);
             }else if typename == "NSString"{
                 generator.addStructNodeField(type: "AstStringCursor *", varname: varname)
                 generator.addNodeConvertExp(varname: varname, nodeName: "AstStringCursor")
@@ -500,11 +503,22 @@ impSource +=
 
 _ = generators.map({ impSource += $0.destoryFunctionSource() })
 
+impSource +=
+"""
+
+#pragma mark - Add NodeType To Node
+void AstNodeTagged(id parentNode, id node);
+
+"""
+
+_ = generators.map({ impSource += $0.taggedFunctionSource() })
+
 var convertExps = [String]()
 var deConvertExps = [String]()
 var serializationExps = [String]()
 var deserializationExps = [String]()
 var destoryExps = [String]()
+var taggedExps = [String]()
 for node in ast.nodes{
     guard let classNode = node as? ORClass else {
         continue
@@ -551,6 +565,14 @@ for node in ast.nodes{
         case \(enumName):
                 \(structName)Destroy((\(structName) *)node); break;
         
+    """
+    )
+    taggedExps.append(
+    """
+    else if ([node isKindOfClass:[\(className) class]]){
+            \(className)Tagged(parentNode, (\(className) *)node);
+            return;
+        }
     """
     )
     
@@ -658,6 +680,21 @@ void AstNodeDestroy(AstEmptyNode *node){
 }
 
 """
+
+impSource +=
+"""
+void AstNodeListTagged(id parentNode, NSArray *nodes) {
+    for (id node in nodes) {
+        AstNodeTagged(parentNode, node);
+    }
+}
+void AstNodeTagged(id parentNode, id node) {
+    if ([node isKindOfClass:[NSArray class]]) {
+        AstNodeListTagged(parentNode, node);
+    }\(taggedExps.joined(separator: ""))
+}
+"""
+
 let headerFilePath = resultDir + "/" + resultFileName + ".h"
 let impFilePath = resultDir + "/" + resultFileName + ".m"
 try? headerSource.write(toFile: headerFilePath, atomically: true, encoding: .utf8)

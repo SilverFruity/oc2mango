@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.m
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1648564762
+//  Created by Jiang on 1686668443
 //  Copyright © 2020 SilverFruity. All rights reserved.
 #import "BinaryPatchHelper.h"
 #import "ORPatchFile.h"
@@ -1759,6 +1759,243 @@ void AstUnionExpressoinDestroy(AstUnionExpressoin *node){
     free(node);
 }
 
+#pragma mark - Add NodeType To Node
+void AstNodeTagged(id parentNode, id node);
+void ORTypeSpecialTagged(id parentNode, ORTypeSpecial *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumTypeSpecial;
+    
+}
+void ORVariableTagged(id parentNode, ORVariable *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumVariable;
+    
+}
+void ORTypeVarPairTagged(id parentNode, ORTypeVarPair *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumTypeVarPair;
+    AstNodeTagged(exp, exp.type);
+    AstNodeTagged(exp, exp.var);
+}
+void ORFuncVariableTagged(id parentNode, ORFuncVariable *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumFuncVariable;
+    AstNodeTagged(exp, exp.pairs);
+}
+void ORFuncDeclareTagged(id parentNode, ORFuncDeclare *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumFuncDeclare;
+    AstNodeTagged(exp, exp.returnType);
+    AstNodeTagged(exp, exp.funVar);
+}
+void ORScopeImpTagged(id parentNode, ORScopeImp *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumScopeImp;
+    AstNodeTagged(exp, exp.statements);
+}
+void ORValueExpressionTagged(id parentNode, ORValueExpression *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumValueExpression;
+    AstNodeTagged(exp, exp.value);
+}
+void ORIntegerValueTagged(id parentNode, ORIntegerValue *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumIntegerValue;
+    
+}
+void ORUIntegerValueTagged(id parentNode, ORUIntegerValue *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumUIntegerValue;
+    
+}
+void ORDoubleValueTagged(id parentNode, ORDoubleValue *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumDoubleValue;
+    
+}
+void ORBoolValueTagged(id parentNode, ORBoolValue *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumBoolValue;
+    
+}
+void ORMethodCallTagged(id parentNode, ORMethodCall *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumMethodCall;
+    AstNodeTagged(exp, exp.caller);
+    AstNodeTagged(exp, exp.names);
+    AstNodeTagged(exp, exp.values);
+}
+void ORCFuncCallTagged(id parentNode, ORCFuncCall *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumCFuncCall;
+    AstNodeTagged(exp, exp.caller);
+    AstNodeTagged(exp, exp.expressions);
+}
+void ORFunctionImpTagged(id parentNode, ORFunctionImp *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumFunctionImp;
+    AstNodeTagged(exp, exp.declare);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORSubscriptExpressionTagged(id parentNode, ORSubscriptExpression *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumSubscriptExpression;
+    AstNodeTagged(exp, exp.caller);
+    AstNodeTagged(exp, exp.keyExp);
+}
+void ORAssignExpressionTagged(id parentNode, ORAssignExpression *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumAssignExpression;
+    AstNodeTagged(exp, exp.value);
+    AstNodeTagged(exp, exp.expression);
+}
+void ORDeclareExpressionTagged(id parentNode, ORDeclareExpression *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumDeclareExpression;
+    AstNodeTagged(exp, exp.pair);
+    AstNodeTagged(exp, exp.expression);
+}
+void ORUnaryExpressionTagged(id parentNode, ORUnaryExpression *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumUnaryExpression;
+    AstNodeTagged(exp, exp.value);
+}
+void ORBinaryExpressionTagged(id parentNode, ORBinaryExpression *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumBinaryExpression;
+    AstNodeTagged(exp, exp.left);
+    AstNodeTagged(exp, exp.right);
+}
+void ORTernaryExpressionTagged(id parentNode, ORTernaryExpression *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumTernaryExpression;
+    AstNodeTagged(exp, exp.expression);
+    AstNodeTagged(exp, exp.values);
+}
+void ORIfStatementTagged(id parentNode, ORIfStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumIfStatement;
+    AstNodeTagged(exp, exp.condition);
+    AstNodeTagged(exp, exp.last);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORWhileStatementTagged(id parentNode, ORWhileStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumWhileStatement;
+    AstNodeTagged(exp, exp.condition);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORDoWhileStatementTagged(id parentNode, ORDoWhileStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumDoWhileStatement;
+    AstNodeTagged(exp, exp.condition);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORCaseStatementTagged(id parentNode, ORCaseStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumCaseStatement;
+    AstNodeTagged(exp, exp.value);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORSwitchStatementTagged(id parentNode, ORSwitchStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumSwitchStatement;
+    AstNodeTagged(exp, exp.value);
+    AstNodeTagged(exp, exp.cases);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORForStatementTagged(id parentNode, ORForStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumForStatement;
+    AstNodeTagged(exp, exp.varExpressions);
+    AstNodeTagged(exp, exp.condition);
+    AstNodeTagged(exp, exp.expressions);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORForInStatementTagged(id parentNode, ORForInStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumForInStatement;
+    AstNodeTagged(exp, exp.expression);
+    AstNodeTagged(exp, exp.value);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORReturnStatementTagged(id parentNode, ORReturnStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumReturnStatement;
+    AstNodeTagged(exp, exp.expression);
+}
+void ORBreakStatementTagged(id parentNode, ORBreakStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumBreakStatement;
+    
+}
+void ORContinueStatementTagged(id parentNode, ORContinueStatement *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumContinueStatement;
+    
+}
+void ORPropertyDeclareTagged(id parentNode, ORPropertyDeclare *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumPropertyDeclare;
+    AstNodeTagged(exp, exp.keywords);
+    AstNodeTagged(exp, exp.var);
+}
+void ORMethodDeclareTagged(id parentNode, ORMethodDeclare *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumMethodDeclare;
+    AstNodeTagged(exp, exp.returnType);
+    AstNodeTagged(exp, exp.methodNames);
+    AstNodeTagged(exp, exp.parameterTypes);
+    AstNodeTagged(exp, exp.parameterNames);
+}
+void ORMethodImplementationTagged(id parentNode, ORMethodImplementation *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumMethodImplementation;
+    AstNodeTagged(exp, exp.declare);
+    AstNodeTagged(exp, exp.scopeImp);
+}
+void ORClassTagged(id parentNode, ORClass *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumClass;
+    AstNodeTagged(exp, exp.protocols);
+    AstNodeTagged(exp, exp.properties);
+    AstNodeTagged(exp, exp.privateVariables);
+    AstNodeTagged(exp, exp.methods);
+}
+void ORProtocolTagged(id parentNode, ORProtocol *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumProtocol;
+    AstNodeTagged(exp, exp.protocols);
+    AstNodeTagged(exp, exp.properties);
+    AstNodeTagged(exp, exp.methods);
+}
+void ORStructExpressoinTagged(id parentNode, ORStructExpressoin *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumStructExpressoin;
+    AstNodeTagged(exp, exp.fields);
+}
+void OREnumExpressoinTagged(id parentNode, OREnumExpressoin *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumEnumExpressoin;
+    AstNodeTagged(exp, exp.fields);
+}
+void ORTypedefExpressoinTagged(id parentNode, ORTypedefExpressoin *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumTypedefExpressoin;
+    AstNodeTagged(exp, exp.expression);
+}
+void ORCArrayVariableTagged(id parentNode, ORCArrayVariable *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumCArrayVariable;
+    AstNodeTagged(exp, exp.prev);
+    AstNodeTagged(exp, exp.capacity);
+}
+void ORUnionExpressoinTagged(id parentNode, ORUnionExpressoin *exp){
+    exp.parentNode = parentNode;
+    exp.nodeType = AstEnumUnionExpressoin;
+    AstNodeTagged(exp, exp.fields);
+}
+
 #pragma mark - Dispatch
 AstEmptyNode *AstNodeConvert(id exp, AstPatchFile *patch, uint32_t *length){
     if ([exp isKindOfClass:[NSString class]]) {
@@ -2233,5 +2470,135 @@ void AstNodeDestroy(AstEmptyNode *node){
             AstUnionExpressoinDestroy((AstUnionExpressoin *)node); break;
     
         default: break;
+    }
+}
+void AstNodeListTagged(id parentNode, NSArray *nodes) {
+    for (id node in nodes) {
+        AstNodeTagged(parentNode, node);
+    }
+}
+void AstNodeTagged(id parentNode, id node) {
+    if ([node isKindOfClass:[NSArray class]]) {
+        AstNodeListTagged(parentNode, node);
+    }else if ([node isKindOfClass:[ORTypeSpecial class]]){
+        ORTypeSpecialTagged(parentNode, (ORTypeSpecial *)node);
+        return;
+    }else if ([node isKindOfClass:[ORVariable class]]){
+        ORVariableTagged(parentNode, (ORVariable *)node);
+        return;
+    }else if ([node isKindOfClass:[ORTypeVarPair class]]){
+        ORTypeVarPairTagged(parentNode, (ORTypeVarPair *)node);
+        return;
+    }else if ([node isKindOfClass:[ORFuncVariable class]]){
+        ORFuncVariableTagged(parentNode, (ORFuncVariable *)node);
+        return;
+    }else if ([node isKindOfClass:[ORFuncDeclare class]]){
+        ORFuncDeclareTagged(parentNode, (ORFuncDeclare *)node);
+        return;
+    }else if ([node isKindOfClass:[ORScopeImp class]]){
+        ORScopeImpTagged(parentNode, (ORScopeImp *)node);
+        return;
+    }else if ([node isKindOfClass:[ORValueExpression class]]){
+        ORValueExpressionTagged(parentNode, (ORValueExpression *)node);
+        return;
+    }else if ([node isKindOfClass:[ORIntegerValue class]]){
+        ORIntegerValueTagged(parentNode, (ORIntegerValue *)node);
+        return;
+    }else if ([node isKindOfClass:[ORUIntegerValue class]]){
+        ORUIntegerValueTagged(parentNode, (ORUIntegerValue *)node);
+        return;
+    }else if ([node isKindOfClass:[ORDoubleValue class]]){
+        ORDoubleValueTagged(parentNode, (ORDoubleValue *)node);
+        return;
+    }else if ([node isKindOfClass:[ORBoolValue class]]){
+        ORBoolValueTagged(parentNode, (ORBoolValue *)node);
+        return;
+    }else if ([node isKindOfClass:[ORMethodCall class]]){
+        ORMethodCallTagged(parentNode, (ORMethodCall *)node);
+        return;
+    }else if ([node isKindOfClass:[ORCFuncCall class]]){
+        ORCFuncCallTagged(parentNode, (ORCFuncCall *)node);
+        return;
+    }else if ([node isKindOfClass:[ORFunctionImp class]]){
+        ORFunctionImpTagged(parentNode, (ORFunctionImp *)node);
+        return;
+    }else if ([node isKindOfClass:[ORSubscriptExpression class]]){
+        ORSubscriptExpressionTagged(parentNode, (ORSubscriptExpression *)node);
+        return;
+    }else if ([node isKindOfClass:[ORAssignExpression class]]){
+        ORAssignExpressionTagged(parentNode, (ORAssignExpression *)node);
+        return;
+    }else if ([node isKindOfClass:[ORDeclareExpression class]]){
+        ORDeclareExpressionTagged(parentNode, (ORDeclareExpression *)node);
+        return;
+    }else if ([node isKindOfClass:[ORUnaryExpression class]]){
+        ORUnaryExpressionTagged(parentNode, (ORUnaryExpression *)node);
+        return;
+    }else if ([node isKindOfClass:[ORBinaryExpression class]]){
+        ORBinaryExpressionTagged(parentNode, (ORBinaryExpression *)node);
+        return;
+    }else if ([node isKindOfClass:[ORTernaryExpression class]]){
+        ORTernaryExpressionTagged(parentNode, (ORTernaryExpression *)node);
+        return;
+    }else if ([node isKindOfClass:[ORIfStatement class]]){
+        ORIfStatementTagged(parentNode, (ORIfStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORWhileStatement class]]){
+        ORWhileStatementTagged(parentNode, (ORWhileStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORDoWhileStatement class]]){
+        ORDoWhileStatementTagged(parentNode, (ORDoWhileStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORCaseStatement class]]){
+        ORCaseStatementTagged(parentNode, (ORCaseStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORSwitchStatement class]]){
+        ORSwitchStatementTagged(parentNode, (ORSwitchStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORForStatement class]]){
+        ORForStatementTagged(parentNode, (ORForStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORForInStatement class]]){
+        ORForInStatementTagged(parentNode, (ORForInStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORReturnStatement class]]){
+        ORReturnStatementTagged(parentNode, (ORReturnStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORBreakStatement class]]){
+        ORBreakStatementTagged(parentNode, (ORBreakStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORContinueStatement class]]){
+        ORContinueStatementTagged(parentNode, (ORContinueStatement *)node);
+        return;
+    }else if ([node isKindOfClass:[ORPropertyDeclare class]]){
+        ORPropertyDeclareTagged(parentNode, (ORPropertyDeclare *)node);
+        return;
+    }else if ([node isKindOfClass:[ORMethodDeclare class]]){
+        ORMethodDeclareTagged(parentNode, (ORMethodDeclare *)node);
+        return;
+    }else if ([node isKindOfClass:[ORMethodImplementation class]]){
+        ORMethodImplementationTagged(parentNode, (ORMethodImplementation *)node);
+        return;
+    }else if ([node isKindOfClass:[ORClass class]]){
+        ORClassTagged(parentNode, (ORClass *)node);
+        return;
+    }else if ([node isKindOfClass:[ORProtocol class]]){
+        ORProtocolTagged(parentNode, (ORProtocol *)node);
+        return;
+    }else if ([node isKindOfClass:[ORStructExpressoin class]]){
+        ORStructExpressoinTagged(parentNode, (ORStructExpressoin *)node);
+        return;
+    }else if ([node isKindOfClass:[OREnumExpressoin class]]){
+        OREnumExpressoinTagged(parentNode, (OREnumExpressoin *)node);
+        return;
+    }else if ([node isKindOfClass:[ORTypedefExpressoin class]]){
+        ORTypedefExpressoinTagged(parentNode, (ORTypedefExpressoin *)node);
+        return;
+    }else if ([node isKindOfClass:[ORCArrayVariable class]]){
+        ORCArrayVariableTagged(parentNode, (ORCArrayVariable *)node);
+        return;
+    }else if ([node isKindOfClass:[ORUnionExpressoin class]]){
+        ORUnionExpressoinTagged(parentNode, (ORUnionExpressoin *)node);
+        return;
     }
 }

@@ -23,6 +23,7 @@ class ClassCodeGenerator{
     var deConvertExps = [String]()
     var serializationExps = [String]()
     var deserializationExps = [String]()
+    var taggedExps = [String]()
     var destoryExps = [String]()
     var baseLengthCode = ""
     var baseLength = 0
@@ -52,6 +53,9 @@ class ClassCodeGenerator{
     }
     func addDestroyExp(varname: String){
         destoryExps.append("AstNodeDestroy((AstEmptyNode *)node->\(varname));")
+    }
+    func addNodeTaggedExp(varname: String){
+        self.taggedExps.append("AstNodeTagged(exp, exp.\(varname));")
     }
     init(className: String, superClassName: String) {
         self.className = className
@@ -159,6 +163,17 @@ class ClassCodeGenerator{
         void \(structName)Destroy(\(structName) *node){
             \(destoryExps.joined(separator: "\n    "))
             free(node);
+        }
+        
+        """
+    }
+    //TODO: Tagged
+    func taggedFunctionSource()->String{
+        return """
+        void \(className)Tagged(id parentNode, \(className) *exp){
+            exp.parentNode = parentNode;
+            exp.nodeType = \(enumName);
+            \(self.taggedExps.joined(separator: "\n    "))
         }
         
         """

@@ -86,7 +86,12 @@ Parser *OCParser = nil;
 #endif
     
 #endif
-    
+
+// not work for 'BinaryPatchCodeGenerator' project
+#if !defined(BINARY_CODE_GENERATOR)
+    // add nodeType and parendNode for all nodes
+    AstNodeListTagged(GlobalAst, GlobalAst.nodes);
+#endif
 
     return GlobalAst;
 }

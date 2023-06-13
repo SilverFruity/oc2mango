@@ -1,6 +1,6 @@
 //  BinaryPatchHelper.h
 //  Generate By BinaryPatchGenerator
-//  Created by Jiang on 1648564762
+//  Created by Jiang on 1686668443
 //  Copyright © 2020 SilverFruity. All rights reserved.
 
 #import <Foundation/Foundation.h>
@@ -106,6 +106,7 @@ void AstPatchFileSerialization(AstPatchFile *node, void *buffer, uint32_t *curso
 AstPatchFile *AstPatchFileDeserialization(void *buffer, uint32_t *cursor, uint32_t bufferLength);
 void AstPatchFileDestroy(AstPatchFile *node);
 ORPatchFile *AstPatchFileGenerateCheckFile(void *buffer, uint32_t bufferLength);
+void AstNodeListTagged(id parentNode, NSArray *nodes);
 #pragma pack(1)
 
 typedef struct {
