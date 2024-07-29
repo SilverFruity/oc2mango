@@ -51,6 +51,9 @@ Parser *OCParser = nil;
     if (yyparse()) {
         yyrestart(NULL);
     }
+
+    source.error = self.error;
+
     if (self.error) {
         NSLog(@"\n----Error: \n  PATH: %@\n  INFO:%@",self.source.filePath,self.error);
     }

@@ -131,14 +131,20 @@ func main(){
     let parser = Parser()
     print("References:\(inputRefrenceFiles.reduce("   ", { $0 + "\n   " + $1}))")
     let refsNodes = NSMutableArray.init()
+    var sourceFiles = [CodeSource]()
+    
     // for refs:
     for path in inputRefrenceFiles{
-        refsNodes.addObjects(from: parser.parseCodeSource(CodeSource(filePath: path)).nodes as! [Any])
+        let source = CodeSource(filePath: path)
+        sourceFiles.append(source)
+        refsNodes.addObjects(from: parser.parseCodeSource(source).nodes as! [Any])
     }
     print("InputFiles:\(inputSourceFiles.reduce("   ", { $0 + "\n   " + $1}))")
     let inputAst = AST.init()
     for path in inputSourceFiles{
-        inputAst.merge(parser.parseCodeSource(CodeSource(filePath: path)).nodes as! [Any])
+        let source = CodeSource(filePath: path);
+        sourceFiles.append(source)
+        inputAst.merge(parser.parseCodeSource(source).nodes as! [Any])
     }
     let nodes = NSMutableArray.init()
     nodes.addObjects(from: refsNodes as! [Any])
@@ -154,6 +160,12 @@ func main(){
         let dst = patchFile.dump(asJsonPatch: result.output)
         print("Save Json File: \(dst)")
         break
+    }
+
+    for source in sourceFiles{
+        if let error = source.error {
+            exit(-1);
+        }
     }
     
 }

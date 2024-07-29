@@ -16,6 +16,7 @@ extern Parser *OCParser;
 @interface CodeSource: NSObject
 @property(nonatomic,nullable,copy)NSString *source;
 @property(nonatomic,nullable,copy)NSString *filePath;
+@property(nonatomic,nullable,copy)NSString *error;
 - (instancetype)initWithFilePath:(NSString *)filePath;
 - (instancetype)initWithSource:(NSString *)source;
 @end
