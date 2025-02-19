@@ -578,7 +578,7 @@ if_statement:
         ;
 
 dowhile_statement: 
-        _do LC function_implementation RC _while LP expression RP
+        _do LC function_implementation RC _while LP expression RP SEMICOLON
         {
             ORDoWhileStatement *statement = makeDoWhileStatement(_transfer(id)$7,_transfer(ORScopeImp *)$3);
             $$ = _vretained statement;
